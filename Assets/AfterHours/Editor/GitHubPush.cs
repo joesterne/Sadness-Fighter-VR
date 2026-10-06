@@ -42,7 +42,7 @@ namespace AfterHours.Editor
             using(new EditorGUI.DisabledScope(running))message=EditorGUILayout.TextArea(message,GUILayout.ExpandHeight(true));
             EditorGUILayout.EndScrollView();
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Commit as (only used if git on this computer has no name and email yet; saved in this repository's settings)",EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.LabelField("Commit as. Saved in this repository's git settings. If GitHub keeps your email private, use your GitHub noreply address.",EditorStyles.wordWrappedMiniLabel);
             using(new EditorGUI.DisabledScope(running))
             {
                 authorName=EditorGUILayout.TextField("Name",authorName);
@@ -79,14 +79,15 @@ namespace AfterHours.Editor
                 Step("Checking the repository");
                 string branch=Git(root,"rev-parse --abbrev-ref HEAD").Trim();
                 string remote=Git(root,"remote get-url origin").Trim();
-                if(Git(root,"config user.email",check:false).Trim().Length==0)
+                string configured=Git(root,"config user.email",check:false).Trim();
+                if(name.Length>0&&email.Length>0&&!string.Equals(email,configured,StringComparison.OrdinalIgnoreCase))
                 {
-                    if(name.Length==0||email.Length==0||name.Contains("\"")||email.Contains("\""))
-                        throw new Exception("Git doesn't know who you are yet. Fill in Name and Email under 'Commit as', then push again.");
+                    if(name.Contains("\"")||email.Contains("\""))throw new Exception("The name and email can't contain quotation marks.");
                     // Stored in this repository's own settings, not globally.
-                    Git(root,"config user.name \""+name+"\"");Git(root,"config user.email \""+email+"\"");
+                    Git(root,"config user.name \""+name+"\"");Git(root,"config user.email \""+email+"\"");configured=email;
                     Note("Commits from this repository are now made as "+name+" <"+email+">.");
                 }
+                if(configured.Length==0)throw new Exception("Git doesn't know who you are yet. Fill in Name and Email under 'Commit as', then push again.");
                 Note("Branch "+branch+" → "+remote);
                 Step("Checking GitHub for newer work");
                 Git(root,"fetch origin",600);
@@ -94,6 +95,17 @@ namespace AfterHours.Editor
                 // Never overwrite work on GitHub that isn't on this computer.
                 if(remoteBranch&&Code(root,"merge-base --is-ancestor origin/"+branch+" HEAD")!=0)
                     throw new Exception("GitHub has commits on "+branch+" that this computer doesn't. Pull them first, then push again.");
+                // A commit made under an earlier identity that never reached GitHub takes the current one.
+                if(remoteBranch)
+                {
+                    var authors=Git(root,"log origin/"+branch+"..HEAD --format=%ae").Split('\n').Select(a=>a.Trim()).Where(a=>a.Length>0).ToList();
+                    if(authors.Any(a=>!string.Equals(a,configured,StringComparison.OrdinalIgnoreCase)))
+                    {
+                        if(authors.Count>1)throw new Exception("Unpushed commits were made as a different author. Fix them with an interactive rebase, then push again.");
+                        Step("Updating the unpushed commit's author to "+configured);
+                        Git(root,"commit --amend --no-edit --reset-author -q",600);
+                    }
+                }
                 Step("Staging changes");
                 Git(root,"add -A",900);
                 var staged=Git(root,"diff --cached --name-only").Split('\n').Select(s=>s.Trim()).Where(s=>s.Length>0).ToList();
@@ -110,7 +122,11 @@ namespace AfterHours.Editor
                 else Note("Nothing new to commit.");
                 if(remoteBranch&&Git(root,"rev-list --count origin/"+branch+"..HEAD").Trim()=="0"){Finish("GitHub is already up to date ("+branch+").",false);return;}
                 Step("Pushing to GitHub. Large files go through Git LFS, so this can take several minutes");
-                Note(Git(root,"push -u origin "+branch,3600));
+                var (pushCode,pushOutput)=Execute(root,"push -u origin "+branch,3600);
+                Note(pushOutput);
+                if(pushCode!=0&&pushOutput.Contains("GH007"))
+                    throw new Exception("GitHub keeps your email address private, so it refused commits that show it. Under 'Commit as', use your GitHub noreply address (GitHub → Settings → Emails), then push again. Nothing was lost; the commit is kept here.");
+                if(pushCode!=0)throw new Exception("git push failed ("+pushCode+"). See the log above.");
                 Finish("Pushed "+Git(root,"rev-parse --short HEAD").Trim()+" to "+remote+" ("+branch+").",false);
             }
             catch(Exception e){Finish(e.Message,true);}
