@@ -20,7 +20,7 @@ namespace AfterHours.Editor
         {
             if(sequence!=null)return;if(!EditorApplication.isPlaying||P.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             checkpoint=PlayerPrefs.GetString(CheckpointStore.Key);hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);hadProgress=PlayerPrefs.HasKey("AfterHours.Progress.v1");progress=PlayerPrefs.GetInt("AfterHours.Progress.v1");
-            D.saveEnabled=false;mouse=InputSystem.AddDevice<Mouse>("NavigationTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("NavigationTestKeyboard");
+            D.saveEnabled=false;if(D.intro)D.intro.Hide();mouse=InputSystem.AddDevice<Mouse>("NavigationTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("NavigationTestKeyboard");
             results.Clear();
             if(remainingOnly&&File.Exists("Documentation/Navigation-validation.txt"))
             {

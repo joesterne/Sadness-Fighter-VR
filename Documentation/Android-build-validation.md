@@ -112,6 +112,50 @@ The lobby doors, CONTINUE, and each chapter's task buttons (ROW, BREW, ASK FOR H
 - The shareable release APK built with zero errors. It is 70 MB. Permissions are unchanged (hand tracking and internet only), it contains no XR Operator layer, and it contains no LAN address.
 - It was not installed: Unity's `adb` found no Quest over USB.
 
+## October 6: competition build
+
+Prepared for the Meta VR Start Developer Competition, whose rules require hands-only play from an airplane seat and a release-signed APK in a "Competition" release channel.
+
+### Seated, hands-only play
+
+- **Pick up from the seat.** Pointing and pinching picks up an object up to 10 m away (was 3.5 m), and it glides to the hand. The pointer snaps to the nearest object within 4 degrees, and the hand ray stops at it, so it is clear what a pinch will take.
+- **Send to a destination.** Holding an object and pointing at where it belongs lights the destination up. Letting go sends the object there in a short arc: the truck's bay, the spout (the cup only, and it lands upright), and each archive tray. A note on the wrong tray drifts back to the desk. Drop zones ignore objects while they glide, so nothing counts twice.
+- **Arrival points** in the warehouse, kitchen and archive are now in front of the work. The kitchen watchers stand on both sides of the machine, all within 60 degrees of it.
+- **Compact menu.** The panel is 53 × 52 cm at 65 cm, so it fits inside the central field of view, with CLOSE in the top corner.
+- **First-visit guide** with a content note.
+
+### Sound
+
+Nineteen original sounds, synthesised by `Tools/make_audio.py`: an ambience for every room, a theme in the lobby and on the rooftop, a crowd murmur that follows the number of watchers, and feedback for selecting, grabbing, sending, landing, the menu, teleporting, turning, rowing, spilling and pouring. Room changes fade the sound with the picture. The audio adds 1.6 MB to the APK.
+
+### Release signing
+
+**After Hours → Create release signing key** created `UserSettings/AfterHours-release.keystore` (RSA 2048, valid until 2054) and a random password in `UserSettings/AfterHours-release-key.txt`. `UserSettings` is not committed. The release build applies the key and clears it from the project settings afterwards.
+
+### Results
+
+All four suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Airplane-seat checks (new) | 58 of 58 |
+| Gameplay journey | 53 of 53 |
+| Menu and seated checks | 43 of 43 |
+| Navigation | 94 of 94 |
+
+The airplane-seat suite found one problem, now fixed: six of the eight kitchen watchers stood 66 to 94 degrees to the side of the machine, beyond the edge of the view for a player facing it. They now stand within 59 degrees.
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 72 MB |
+| Version | 0.2.0, version code 401376 |
+| Signing | APK Signature Scheme v2, release key `CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:42:6E:26:3A:9A:E9:F7:51:6D:55:A9:E1:3C:24:01:63:1B:3F:F8:26:44:9E:42:7D:51:5E:CF:E3`. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 36 |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | The DevAgent settings in the APK are empty, and the XR Operator layer is excluded. |
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -119,7 +163,9 @@ These still need a physical headset playtest (see `Playtest.md`):
 - frame rate at render scale 1.0
 - thermals
 - text readability, including the menu labels
-- seated reach
+- seated reach on a real chair (the airplane-seat suite checks it in the editor)
+- hands-only play from start to finish
+- sound levels on the headset's speakers
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

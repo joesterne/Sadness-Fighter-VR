@@ -1,14 +1,34 @@
-# First headset playtest
+# Headset playtest
 
-Start with enough clear space to reach forward and to either side. The ocean is designed for stationary rowing. Every chapter can be left with LOBBY in the menu (left menu button, or a left palm pinch with hands), and the rooftop is available before completing any puzzle.
+Two passes. The first is the competition's own check: hands only, from an airplane seat. The second covers controllers, standing play and saving. Every chapter can be left with LOBBY in the menu, and the rooftop is open before any puzzle is finished.
 
-1. Start while seated. Open the menu with the left menu button. Check it appears within easy reach and every label is readable. Select SEATED VIEW, then cycle SEATED HEIGHT through low, mid, and high. Confirm the view, hands and menu rise together and the selected default returns after restarting. Try the turn buttons, TURN AROUND and FACE FORWARD. Put the controllers down and open the menu with a left palm pinch; select a button with a hand ray. Switch back to standing to confirm tracked height is restored.
-2. Still seated, try the sticks: right stick snap turns, pull back to turn around, and with MOVEMENT set to TELEPORT ONLY the left stick turns too. Teleport to a point off to one side and check you land facing it. Walk with the stick and check the comfort vignette is gentle and clears when you stop; try COMFORT VIGNETTE off.
-3. Put the controllers down and confirm the hand rays appear. Pinch to select a room and pinch/release on the floor to teleport. Return to controllers and confirm the input changes without restarting.
-4. In the ocean, pick up each paddle, reach forward, and pull toward yourself. Check that the short fades feel comfortable. The ROW button provides the same progress without rowing gestures.
-5. In the warehouse, carry a box with each controller and each hand. Grab one up close and one from a distance: the box itself should move with your hand, not just its label. Release it inside the truck's marked bay; check that it counts once. A dropped box should remain reachable.
-6. In the kitchen, make a few spills and observe the crowd. Try KITCHEN CROWD in the menu, then ASK FOR HELP. Place the cup beneath the spout and brew three pours.
-7. In the archive, try an incorrect tray, retrieve the note, and place it correctly. Complete all six notes.
-8. Stop midway through each chapter, close the app, then reopen and select CONTINUE. Confirm paddle strokes, delivered boxes, sorted notes, help, and coffee pours were retained. Loose objects may return to their starting places. Visit the rooftop after all four chapters; completed chapters should also remain marked.
+Before starting, uninstall any older copy, then install the release APK (**After Hours → Install release APK on connected Quest**). To see the first-visit card again on a headset that has already played, clear the app's data in the headset's settings, or uninstall and reinstall.
 
-Record the Quest model, standing or seated use, preferred locomotion, any unreadable text, unreachable objects, discomfort, and visible frame drops. Use a headset performance overlay to measure frame rate before treating this prototype as ready for distribution.
+## Pass 1: hands only, airplane seat
+
+Sit in an upright chair with no table in front of you. Keep your elbows near your sides: imagine a seat back in front of you and neighbours on both sides, so nothing further than about 60 cm (2 ft) from your chest. Put the controllers out of reach before launching.
+
+1. **First visit.** The card in the lobby should be readable without leaning. Read the content note, then pinch CONTINUE and GOT IT. Look at your left palm and pinch: the menu opens and the card moves on by itself. Close the menu and pinch START.
+2. **Menu.** Open it again with a left palm pinch. Check that every button is readable and inside your view without turning your head. Select SEATED VIEW and try SEATED HEIGHT. Use TURN AROUND and FACE FORWARD. Close it.
+3. **Ocean.** Pinch ROW until you reach the shore (fourteen strokes). Try pinching a paddle and pulling once.
+4. **Heavy things.** For each box: point at it and pinch. It should glide to your hand. Point at the truck, check that the bay outline lights up, and open your fingers. The box should glide into the bay and count once. Check how forgiving the aim feels at the far side of the truck.
+5. **A small spill.** Pinch BREW twice. The watchers should appear at both sides of the machine, where you can see them without turning round, and the murmur should rise. Pinch ASK FOR HELP: the crowd leaves and the room goes quiet. Pick up the cup, point under the spout (the gold disc lights up), let go, and check it lands upright. Pinch BREW three times.
+6. **The infinite archive.** Send one note to the wrong tray: it should drift back to the desk. Then file all six.
+7. **Rooftop.** Open the menu, select LOBBY, and pinch the rooftop door.
+
+Pass 1 passes if you finished everything without standing, leaning out of the imagined seat, reaching beyond the 60 cm, or picking up a controller. Note anything that needed a second try.
+
+## Pass 2: controllers, standing, saving
+
+1. Pick up the controllers and confirm the input changes without restarting. Open the menu with the left menu button. Try the right stick: snap turns, and pull back to turn around. With MOVEMENT set to TELEPORT ONLY, the left stick turns too. Teleport to one side and check you land facing where you pointed.
+2. Walk with the left stick and check the comfort vignette softens the edges gently and clears when you stop. Try COMFORT VIGNETTE off.
+3. Stand up, switch SEATED VIEW off, and check the tracked height returns.
+4. In the warehouse, grab a box up close and carry it into the bay by hand instead of sending it.
+5. Stop midway through each chapter, close the app, reopen it and select CONTINUE. Paddle strokes, delivered boxes, sorted notes, help and coffee pours should all be kept. Loose objects may return to their starting places. Completed chapters stay marked, and the first-visit card should not return.
+
+## What to record
+
+- Quest model, seated or standing, hands or controllers.
+- Frame rate: turn on the headset's performance overlay (Meta Quest Developer Hub, or OVR Metrics Tool) and note the lowest figure in each room. The target is a steady 72 fps or better.
+- Any text you couldn't read, anything you couldn't reach, any discomfort, and any sound that was too loud, too quiet or missing.
+- How long the whole journey took. The competition judges play for up to ten minutes.

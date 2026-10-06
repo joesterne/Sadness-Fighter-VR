@@ -41,10 +41,16 @@ namespace AfterHours.Editor
                 saved+=MenuShot(d,cam,0,"Comfort menu - lobby")?1:0;
                 saved+=MenuShot(d,cam,3,"Comfort menu - kitchen")?1:0;
                 saved+=VignetteShot(d,cam)?1:0;
+                // What a seated player sees: the first-visit guide, and each room's destinations lit as if aimed at.
+                saved+=GuideShot(d,cam)?1:0;
+                saved+=TargetShot(d,cam,2,"Heavy things - send to the truck")?1:0;
+                saved+=TargetShot(d,cam,3,"A small spill - send the cup")?1:0;
+                saved+=TargetShot(d,cam,4,"The infinite archive - send to a tray")?1:0;
             }
             finally
             {
                 if(d.menu)d.menu.gameObject.SetActive(false);
+                if(d.intro)d.intro.Hide();
                 ShaderUtil.allowAsyncCompilation=async;
                 for(int i=0;i<d.rooms.Length;i++)d.rooms[i].root.SetActive(wasActive[i]);
                 Object.DestroyImmediate(go);
@@ -64,6 +70,30 @@ namespace AfterHours.Editor
                 return Shot(d,room,cam,name,eye,eye+forward*2+Vector3.down*.5f,"Menu - ");
             }
             finally{d.menu.gameObject.SetActive(false);d.currentRoom=was;}
+        }
+        static bool GuideShot(GameDirector d,Camera cam)
+        {
+            if(!d.intro){Debug.LogError("[RoomPreviews] The scene has no first-visit guide. Rebuild it first.");return false;}
+            try
+            {
+                d.intro.Begin();
+                foreach(var text in d.intro.GetComponentsInChildren<TMPro.TMP_Text>(true))text.ForceMeshUpdate();
+                var eye=d.rooms[0].spawn.position+Vector3.up*1.6f;
+                return Shot(d,0,cam,"First visit guide",eye,d.intro.transform.position+Vector3.down*.05f,"Seated - ");
+            }
+            finally{d.intro.Hide();}
+        }
+        static bool TargetShot(GameDirector d,Camera cam,int room,string name)
+        {
+            var targets=d.rooms[room].root.GetComponentsInChildren<SendTarget>(true);
+            if(targets.Length==0){Debug.LogError("[RoomPreviews] "+d.rooms[room].title+" has no send targets. Rebuild the scene first.");return false;}
+            try
+            {
+                var look=Vector3.zero;foreach(var t in targets){t.Show(true);look+=t.LandingPoint;}look/=targets.Length;
+                var eye=d.rooms[room].spawn.position+Vector3.up*1.6f;
+                return Shot(d,room,cam,name,eye,look,"Seated - ");
+            }
+            finally{foreach(var t in targets)t.Show(false);}
         }
         static bool VignetteShot(GameDirector d,Camera cam)
         {

@@ -10,12 +10,23 @@ Open `Assets/AfterHours/Scenes/AfterHours.unity` in Unity 6000.6.3f1 and press P
 
 - **The lobby**: choose a chapter in any order. Detailed office memories sit behind glass. The surrounding spaces use a midnight/teal palette with restrained coral and brass accents.
 - **Ocean of shame**: fourteen paddle strokes bring a lighthouse and welcoming shore closer. Hold either paddle and pull toward yourself, or select the accessible ROW button. Short fades move the scenery while keeping the boat and player stable.
-- **Heavy things**: carry five named feelings—anger, fear, relief, grief, uncertainty—to a truck. Release each box in the marked processing bay. Every feeling is accepted; processing is not disposal.
-- **A small spill**: the coffee machine leaks and additional people watch with each mistake, up to eight. ASK FOR HELP is available immediately, releases the pressure fault, and dismisses the audience. Place your cup under the spout and brew three small pours. **KITCHEN CROWD** in the menu hides the crowd without changing the task.
-- **The infinite archive**: sort six notes into FACT, FEAR, and STILL TRUE. Repeated filing cabinets fade into the distance. Incorrect placements invite another try, without penalties.
+- **Heavy things**: five named feelings—anger, fear, relief, grief, uncertainty—wait in front of you. Pinch a box to pick it up, point at the truck, and let go: the box glides into the processing bay. Every feeling is accepted; processing is not disposal.
+- **A small spill**: the coffee machine leaks and additional people watch with each mistake, up to eight. A low murmur grows with the crowd. ASK FOR HELP is available immediately, releases the pressure fault, dismisses the audience and quiets the room. Pick up your cup, point under the spout and let go, then brew three small pours. **KITCHEN CROWD** in the menu hides the crowd without changing the task.
+- **The infinite archive**: sort six notes into FACT, FEAR, and STILL TRUE: pick one up, point at its tray and let go. Repeated filing cabinets fade into the distance. A note sent to the wrong tray drifts back to the desk for another try, without penalties.
 - **Room for tomorrow**: a rooftop for rest, available from the beginning. Completing all four chapters changes the ending to “You are more than your job.”
 
 Completed chapters and partial progress persist locally between launches. Every paddle stroke, delivered box, sorted note, and coffee step saves automatically. Loose objects return to their starting positions when the app reopens; accepted items stay processed. CONTINUE in the lobby returns to the last room. **TRY AGAIN** in the menu resets the current puzzle without deleting chapter completion. Nothing is timed, and there is no minimum session length.
+
+## First visit
+
+The first time the game opens, a small card in the lobby shows a content note, then teaches the two things you need by having you do them once:
+
+1. **Before you begin**: After Hours is about losing a job: the shame, the worry, and what is still true. It is a gentle experience, not a substitute for professional support, and you can take a break whenever you like.
+2. **Point and pinch**: select the card's button.
+3. **Your menu**: open the menu (left palm pinch, or the controller's menu button). The card moves on by itself once the menu opens.
+4. **Begin anywhere**: choose a door, or CONTINUE.
+
+SKIP closes the card at any step, and walking through a door counts as finishing it. It doesn't appear again.
 
 ## The menu
 
@@ -41,7 +52,14 @@ Movement is set up so you never have to twist in the chair:
 - **FACE FORWARD** turns the room so its main view is straight ahead again, wherever your chair points.
 - **Comfort vignette.** The edges of your view soften while you walk with the stick, and clear when you stop. **COMFORT VIGNETTE** switches it off. The setting is saved.
 
-Objects can be picked up from a distance, the boat has a ROW button, and floor teleport avoids physical walking. The experience supports sitting, but reach and comfort still need checking on a physical headset.
+**Every chapter can be finished from the seat you arrive in, within arm's reach.** Nothing has to be walked across a room:
+
+- **Pick things up from where you sit.** Point at an object up to 10 m away and pinch (or grip). It glides to your hand. The pointer leans toward the nearest object within a few degrees, so a shaky hand ray still finds it.
+- **Send things where they belong.** While holding something, point at its destination and let go. The destination lights up while you point at it (the truck's bay, the spout, each archive tray), and the object glides there in a short arc. A note sent to the wrong tray drifts back to the desk.
+- **The boat rows with a button**: ROW does the same as a paddle stroke.
+- **The kitchen crowd stays in front of you.** Watchers gather on both sides of the coffee machine, within 60 degrees of it, so a seated player sees them without turning round.
+
+The **airplane-seat test** (below) checks this: it completes every chapter from its arrival point without moving the player once. Comfort and readability still need checking on a physical headset.
 
 For a short visit, row a few strokes, deliver one box, sort one note, or make one coffee step, then select LOBBY in the menu or close the app. Resume later without repeating those completed steps.
 
@@ -50,8 +68,8 @@ For a short visit, row a few strokes, deliver one box, sort one note, or make on
 | Action | Quest controllers | Tracked hands |
 |---|---|---|
 | Point and select | Aim and press index trigger | Aim the hand ray and pinch index + thumb |
-| Carry objects | Grip near an object, or aim and grip within 3.5 m | Pinch near an object, or aim and pinch within 3.5 m |
-| Place | Release grip | Release pinch |
+| Pick up | Grip near an object, or aim and grip within 10 m | Pinch near an object, or aim and pinch within 10 m |
+| Send or place | Point at the lit destination and release grip; or carry it there and release | Point at the lit destination and release pinch; or carry it there and release |
 | Teleport | Point at clear floor, hold trigger, release | Point at clear floor, pinch, release |
 | Walk | Left joystick; MOVEMENT in the menu turns it off | Use teleport |
 | Turn | Right joystick, 30-degree snap turns; pull back to turn around. Left joystick too when walking is off | Turn buttons in the menu, or turn physically |
@@ -63,12 +81,24 @@ Desktop preview: WASD movement, right mouse drag to look, Q/E to turn, left clic
 
 For desktop preview without an XR runtime, turn off **Initialize XR on Startup** in the Standalone XR Plug-in Management settings. Keep it enabled for Android. The scene builder restores XR startup for both platforms. When using the Meta XR Simulator, activate it through its Window menu before Play Mode.
 
+## Sound
+
+Every room has its own sound, all synthesised for this project by `Tools/make_audio.py` (numpy and scipy, no samples, no third-party audio). Run `python make_audio.py <folder>` to regenerate the 19 WAV files in `Assets/AfterHours/Audio`.
+
+- **Ambience**: a low room tone in the lobby with a slow pad-and-bell theme, swells and foam on the ocean, a deep rumble with distant metal clanks in the warehouse, room tone and a fridge hum in the kitchen, a hush with occasional paper rustles in the archive, and gusting wind over a distant city on the rooftop, where the theme returns. Ambience and music loop seamlessly.
+- **The kitchen murmur** rises with each watcher and falls silent when you ask for help.
+- **Feedback**: select, grab, send, land, menu open and close, teleport, snap turn, paddle stroke, coffee spill and pour.
+- Changing rooms fades the sound out and back in with the picture.
+
+The builder imports loops as compressed Vorbis kept in memory and short effects decompressed on load, all mono. All of it adds 1.6 MB to the APK.
+
 ## Validation
 
-**After Hours → Tests** runs each suite in desktop Play Mode, using real mouse and keyboard input, raycasts and collision triggers. Keep the mouse pointer off the Game view while a suite runs: the editor's own mouse would otherwise take over from the test's. All three suites passed on October 5, after the menu change:
+**After Hours → Tests** runs each suite in desktop Play Mode, using real mouse and keyboard input, raycasts and collision triggers. Keep the mouse pointer off the Game view while a suite runs: the editor's own mouse would otherwise take over from the test's. All four suites passed on October 6, after the seated-reach, sound and first-visit changes:
 
+- **Airplane-seat checks**, 58 checks: the first-visit guide step by step, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves. It checks every pickup and send from the seat, that each destination lights up when pointed at, that a wrong-tray note returns, that the cup lands upright under the spout, and that the kitchen crowd and murmur behave. Results are in `Documentation/Seated-reach-validation.txt`.
 - **Gameplay journey**, 53 checks: every chapter from start to finish, with returns to the lobby through the menu. Results are in `Documentation/Gameplay-validation.txt`.
-- **Menu and seated checks**, 42 checks, including an actual scene reload: every menu button by pointer, seated height cycling, snap turns and turning around with the stick, FACE FORWARD, the walking vignette, the menu fitting in front of a nearby wall, saved preferences, partial progress in every chapter, CONTINUE, and TRY AGAIN. Results are in `Documentation/Seated-session-validation.txt`.
+- **Menu and seated checks**, 43 checks, including an actual scene reload: every menu button by pointer, seated height cycling, snap turns and turning around with the stick, FACE FORWARD, the walking vignette, the menu fitting in front of a nearby wall, saved preferences, partial progress in every chapter, CONTINUE, and TRY AGAIN. Results are in `Documentation/Seated-session-validation.txt`.
 - **Navigation**, 94 checks: every chapter and its menu return, walking and teleporting through doorways, safe spawns, fade cleanup, a button press that can't turn into a teleport, carrying an object during travel, held input, invalid destinations, competing requests, and leaving the ocean during its final stroke. Results are in `Documentation/Navigation-validation.txt`.
 
 Earlier Meta XR Simulator checks verified controller teleport, joystick movement, trigger selection, hand pinch selection, and hand grabbing, carrying, and release. See `Documentation/XR-validation.md` for their scope. They predate the menu.
@@ -84,11 +114,19 @@ There are two build commands in the **After Hours** menu:
 
 To play on your own headset, connect the Quest with a USB data cable, turn on Developer Mode, and accept **Allow USB debugging** in the headset. Then use **After Hours → Install release APK on connected Quest** (or the development equivalent). It installs the APK with Unity's bundled `adb`, starts the game, and reports each step in the Console. If the headset hasn't been authorized, more than one device is connected, or the APK doesn't exist yet, the Console says so.
 
+## Release signing
+
+The Meta Developer Dashboard only accepts APKs signed with your own key. **After Hours → Create release signing key** makes one, once, with the JDK that ships with Unity: `UserSettings/AfterHours-release.keystore` and a random password in `UserSettings/AfterHours-release-key.txt`. `UserSettings` is never committed. The release build signs with this key and puts the project back on the debug key afterwards, so no keystore path or password stays in the project settings. The development build stays debug-signed.
+
+**Back up both files somewhere private.** An app on the Meta store can only ever be updated with the key it was first uploaded with.
+
+Every build gets a new version code: the number of minutes since January 1, 2026, and always higher than the last build's. The version name is 0.2.0. The dashboard rejects an upload whose version code it has seen before.
+
 **After Hours → Commit and push to GitHub…** commits everything git doesn't ignore and pushes the current branch to `origin`. The shareable release APK is committed too, through Git LFS, so playtesters can download `Builds/Quest/AfterHours-release.apk` from GitHub. Development APKs, `Library`, removed packages and the Immersive Debugger's per-computer settings (`Assets/Resources/DevAgentSettings.asset`, which holds this computer's network address and an access token) stay out of the repository. The push stops if GitHub has commits this computer doesn't, and the first push may open Git Credential Manager's GitHub sign-in window. Commits use the name and email under **Commit as**. Your GitHub account keeps its email private, so use your GitHub noreply address there; GitHub refuses pushes that show the private one.
 
 Both build commands build from the Android platform settings. If a custom build profile such as Unity's **Meta Quest** profile is active, they switch back to the platform profile first, because a custom profile carries its own player, quality and XR settings.
 
-Both commands apply the Quest settings first: OpenXR with Meta XR, controllers and hands, ARM64, IL2CPP, Vulkan, linear color, 4x MSAA, render scale 1.0, 28 m shadow distance, and Android API 32 minimum. Mixed-reality features stay off, so the APK requests no scene, anchor, passthrough or headset-camera permissions. Both APKs are signed with Unity's debug key, which is fine for sideloading; a store submission would need a release keystore. The game is a prototype, not a store submission. The project doesn't include the Meta Voice SDK, Meta XR Audio or Unity IAP packages. The game doesn't use them, and the Voice SDK's build step crashed the Android build. Only the current room is active. Static geometry is combined by material. Anything the player can pick up, or that moves or switches on and off, keeps its own mesh, and the scene builder logs an error if a movable object is ever merged.
+Both commands apply the Quest settings first: OpenXR with Meta XR, controllers and hands, ARM64, IL2CPP, Vulkan, linear color, 4x MSAA, render scale 1.0, 28 m shadow distance, and Android API 32 minimum. Mixed-reality features stay off, so the APK requests no scene, anchor, passthrough or headset-camera permissions. The release APK is signed with your release key (see above); the development APK with Unity's debug key. The project doesn't include the Meta Voice SDK, Meta XR Audio or Unity IAP packages. The game doesn't use them, and the Voice SDK's build step crashed the Android build. Only the current room is active. Static geometry is combined by material. Anything the player can pick up, or that moves or switches on and off, keeps its own mesh, and the scene builder logs an error if a movable object is ever merged.
 
 ## Art style
 
@@ -102,7 +140,7 @@ The game uses a refined low-poly look:
 
 Tiles and panels don't cast their own shadows. One invisible, square-edged slab per surface casts the shadow instead, so no light leaks through the seams. Floors cast no shadows.
 
-**After Hours → Capture room previews** renders a still from each room's arrival point into `Documentation/Previews/`, plus the menu in the lobby and the kitchen and the walking vignette, so art and comfort changes can be checked without a headset.
+**After Hours → Capture room previews** renders a still from each room's arrival point into `Documentation/Previews/`, plus the menu in the lobby and the kitchen, the walking vignette, the first-visit card, and each chapter's destinations lit up as a seated player sees them. Art and comfort changes can be checked without a headset.
 
 ## More rooms to add
 
@@ -115,6 +153,6 @@ Tiles and panels don't cast their own shadows. One invisible, square-edged slab 
 
 ## Editing and asset provenance
 
-All game geometry, wording, and musical acknowledgement tones were created for this project. The rig and hand rendering use the installed Meta XR Core SDK. Text uses the project's existing Liberation Sans TMP asset. Third-party packages retain their own licenses.
+All game geometry, wording, music and sound were created for this project. The audio is synthesised by `Tools/make_audio.py`. The rig and hand rendering use the installed Meta XR Core SDK. Text uses the project's existing Liberation Sans TMP asset. Third-party packages retain their own licenses.
 
 Game scripts are in `Assets/AfterHours/Scripts`; the deterministic scene builder is in `Assets/AfterHours/Editor`. The embedded Unity OpenXR Meta package contains a narrow compatibility fix for the editor's EntityId API. See `Documentation/Compatibility.md`.

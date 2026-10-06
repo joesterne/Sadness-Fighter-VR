@@ -13,7 +13,11 @@ namespace AfterHours
         public bool IsOpen => gameObject.activeSelf;
         const float Distance=.65f, Drop=.2f;
 
-        public void Toggle(){if(IsOpen)Close();else Open();}
+        public void Toggle()
+        {
+            if(IsOpen){Close();director.PlayUi(director.menuClose,.45f);}
+            else{Open();director.PlayUi(director.menuOpen,.45f);}
+        }
         public void Open()
         {
             var head=director.player.Head;
@@ -39,7 +43,7 @@ namespace AfterHours
         }
         public void Close(){if(IsOpen)gameObject.SetActive(false);}
         // The panel's centre and corners, relative to its pivot.
-        static readonly Vector3[] Corners={Vector3.zero,new Vector3(-.4f,.21f,0),new Vector3(.4f,.21f,0),new Vector3(-.4f,-.23f,0),new Vector3(.4f,-.23f,0)};
+        static readonly Vector3[] Corners={Vector3.zero,new Vector3(-.27f,.25f,0),new Vector3(.27f,.25f,0),new Vector3(-.27f,-.27f,0),new Vector3(.27f,-.27f,0)};
         float Clearance(Vector3 eye,Vector3 offset)
         {
             float length=offset.magnitude,fit=1;

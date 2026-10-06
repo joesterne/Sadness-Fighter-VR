@@ -15,7 +15,7 @@ namespace AfterHours.Editor
     {
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;static Keyboard keyboard;
         static readonly List<string> lines=new List<string>();
-        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette"};
+        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key};
         static bool[] existed;static string checkpoint;static int[] values;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
@@ -23,7 +23,7 @@ namespace AfterHours.Editor
         {
             if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);values=keys.Select(k=>PlayerPrefs.GetInt(k)).ToArray();
-            foreach(var key in keys)PlayerPrefs.DeleteKey(key);D.saveEnabled=false;
+            foreach(var key in keys)PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
             mouse=InputSystem.AddDevice<Mouse>("SeatedValidationMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedValidationKeyboard");lines.Clear();Status="Running";run=Checks();deadline=0;
             EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=OnPlay;
         }
@@ -51,11 +51,12 @@ namespace AfterHours.Editor
             SceneManager.LoadScene("AfterHours");yield return .8f;
             Check(!P.seatedMode,"Fresh profile starts with tracked standing height");
             Check(!D.menu.IsOpen,"The menu starts closed");
+            Check(!D.intro.IsShowing,"A returning player sees no first-visit guide");
             foreach(var t in MenuKey(true))yield return t;
             float reach=Vector3.Distance(P.Head.position,D.menu.transform.position);
             Check(D.menu.IsOpen&&reach>.6f&&reach<.75f,"Menu key opens the menu at arm's length ("+reach.ToString("0.00")+" m)");
             Check(!D.menu.lobby.activeSelf&&!D.menu.tryAgain.activeSelf,"The lobby menu hides LOBBY and TRY AGAIN");
-            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume),"Only doors and CONTINUE remain as lobby signs");
+            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip),"Only doors, CONTINUE and the first-visit guide remain as lobby signs");
             foreach(var t in Click(ActionKind.SeatedMode))yield return t;
             Check(P.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Menu SEATED VIEW enables seated view at 1.65 m");
             foreach(var t in Click(ActionKind.SeatedHeight))yield return t;

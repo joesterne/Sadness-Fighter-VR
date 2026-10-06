@@ -1,11 +1,12 @@
-2026-10-05 23:21:46Z
+2026-10-06 17:33:57Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
 PASS: The menu starts closed
+PASS: A returning player sees no first-visit guide
 PASS: Menu key opens the menu at arm's length (0.68 m)
 PASS: The lobby menu hides LOBBY and TRY AGAIN
-PASS: Only doors and CONTINUE remain as lobby signs
+PASS: Only doors, CONTINUE and the first-visit guide remain as lobby signs
 PASS: Menu SEATED VIEW enables seated view at 1.65 m
 PASS: Menu SEATED HEIGHT changes eye height to 1.85 m
 PASS: The open menu moves up with the new eye height
@@ -24,7 +25,7 @@ PASS: Seated teleports face the pointed direction, unless the point is underfoot
 PASS: Menu MOVEMENT switches walking back on
 PASS: No vignette while standing still
 PASS: The comfort vignette shows while walking and clears after stopping
-PASS: The menu opens near the entrance wall (fitted at 0.51 scale); the next press must reach it
+PASS: The menu opens near the entrance wall (fitted at 0.50 scale); the next press must reach it
 PASS: Menu COMFORT VIGNETTE switches the vignette off
 PASS: Travel closes the menu
 PASS: Chapter menus offer LOBBY and TRY AGAIN and name the room

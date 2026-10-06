@@ -29,6 +29,7 @@ namespace AfterHours
         float vignetteLevel; MaterialPropertyBlock vignetteBlock; static readonly int VignetteStrength=Shader.PropertyToID("_Strength");
         CharacterController body; Transform desktopGrip;
         readonly Grabbable[] held=new Grabbable[2];
+        readonly SendTarget[] aimedTarget=new SendTarget[2];
         readonly bool[] wasSelect=new bool[2], wasGrip=new bool[2];
         readonly LineRenderer[] rays=new LineRenderer[2];
         readonly Transform[] cursors=new Transform[2];
@@ -68,11 +69,12 @@ namespace AfterHours
             // The left controller's menu button. With tracked hands, Quest reports the left palm pinch as the same button.
             bool menuHeld=IsXR?OVRInput.Get(OVRInput.Button.Start):Keyboard.current!=null&&Keyboard.current.tabKey.isPressed;
             bool menuPressed=menuHeld&&!wasMenu;wasMenu=menuHeld;
-            if(busy){HideRays();SetVignette(0,true);return;}
+            if(busy){HideRays();SetVignette(0,true);UpdateHighlights();return;}
             if(menuPressed&&menu)menu.Toggle();
             Move();
             if(returnPressed)GameDirector.Instance.Travel(0);
             for(int i=0;i<2&&!busy;i++)Interact(i);
+            UpdateHighlights();
         }
         void DesktopPose()
         {
@@ -116,7 +118,7 @@ namespace AfterHours
             if(show){if(vignetteBlock==null)vignetteBlock=new MaterialPropertyBlock();vignetteBlock.SetFloat(VignetteStrength,vignetteLevel);vignette.SetPropertyBlock(vignetteBlock);}
         }
         void RotateAroundHead(float degrees){transform.RotateAround(Head.position,Vector3.up,degrees);}
-        public void SnapTurn(float degrees){RotateAroundHead(degrees);}
+        public void SnapTurn(float degrees){RotateAroundHead(degrees);var d=GameDirector.Instance;if(d)d.PlayUi(d.turn,.3f);}
         // Turns the player so the room's main view is straight ahead again, wherever the chair points.
         public void FaceForward()
         {
@@ -169,32 +171,43 @@ namespace AfterHours
             bool select=valid&&(desktop?(Mouse.current!=null&&Mouse.current.leftButton.isPressed):trackedHand?!hand.IsSystemGestureInProgress&&hand.GetFingerIsPinching(OVRHand.HandFinger.Index):OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger,controller)>.65f);
             bool grab=valid&&(trackedHand?select:desktop?select:OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger,controller)>.65f);
             controllerModels[index].SetActive(trackedController&&!trackedHand);
-            if(!valid){if(held[index])held[index].Release();held[index]=null;wasGrip[index]=wasSelect[index]=false;teleportReady[index]=teleportGesture[index]=false;inputBlocked[index]=true;rays[index].enabled=false;cursors[index].gameObject.SetActive(false);return;}
+            if(!valid){if(held[index])held[index].Release();held[index]=null;aimedTarget[index]=null;wasGrip[index]=wasSelect[index]=false;teleportReady[index]=teleportGesture[index]=false;inputBlocked[index]=true;rays[index].enabled=false;cursors[index].gameObject.SetActive(false);return;}
             Vector3 origin=aim.position, direction=aim.forward;
             bool hit=Physics.Raycast(origin,direction,out RaycastHit info,14,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
-            rays[index].enabled=!held[index];rays[index].SetPosition(0,origin);rays[index].SetPosition(1,hit?info.point:origin+direction*5);
-            cursors[index].gameObject.SetActive(hit&&!held[index]);if(hit)cursors[index].position=info.point;
+            var target=hit?info.collider.GetComponentInParent<Interactable>():null;
+            var item=hit?info.collider.GetComponentInParent<Grabbable>():null;
+            // Aim assist: a thin hand ray rarely lands exactly on a box across the room, so a near miss still counts.
+            if(!held[index]&&!target&&(!item||item.held||item.processed))item=Assist(origin,direction);
+            // While holding something, find where pointing would send it.
+            aimedTarget[index]=held[index]?FindTarget(origin,direction,held[index]):null;
+            var sendTo=aimedTarget[index];
+            Vector3 end=held[index]?(sendTo?sendTo.LandingPoint:origin+direction*2.5f):item&&!hit?item.transform.position:hit?info.point:origin+direction*5;
+            rays[index].enabled=true;rays[index].SetPosition(0,origin);rays[index].SetPosition(1,end);
+            bool showCursor=held[index]?sendTo:(hit||item);
+            cursors[index].gameObject.SetActive(showCursor);if(showCursor)cursors[index].position=end;
             // A held trigger or pinch must be released after travel or tracking recovery before it can act again.
             if(inputBlocked[index])
             {wasSelect[index]=select;wasGrip[index]=grab;if(!select&&!grab)inputBlocked[index]=false;return;}
-            var target=hit?info.collider.GetComponentInParent<Interactable>():null;
-            var item=hit?info.collider.GetComponentInParent<Grabbable>():null;
             if(!held[index] && grab&&!wasGrip[index])
             {
                 Grabbable nearby=null;float closest=.23f;
                 foreach(var col in Physics.OverlapSphere(grip.position,.23f,~0,QueryTriggerInteraction.Ignore))
                 {var candidate=col.GetComponentInParent<Grabbable>();if(candidate&&!candidate.held&&!candidate.processed){float d=Vector3.Distance(grip.position,col.ClosestPoint(grip.position));if(d<closest){nearby=candidate;closest=d;}}}
                 var pick=nearby?nearby:item;
-                // Close grabs hold the object where the hand closed on it. Distance grabs bring it along the pointer, just clear of the hand.
+                // Close grabs hold the object where the hand closed on it. Distance grabs draw it along the pointer, just clear of the hand.
                 Vector3? offset=desktop?grip.forward*.13f:nearby?(Vector3?)null:pick?direction*(.06f+Extent(pick,direction)):Vector3.zero;
-                if(pick&&(nearby||info.distance<(desktop?5:3.5f))&&pick.Take(grip,offset)){held[index]=pick;ShowHint(pick.paddle?"Pull the paddle toward you, then reach forward.":pick.label+"  /  Release to place",3);}
+                if(pick&&(nearby||Vector3.Distance(origin,pick.transform.position)<GrabRange)&&pick.Take(grip,offset,!nearby))
+                {
+                    held[index]=pick;ShowHint(HoldHint(pick),4);
+                    var d=GameDirector.Instance;d.PlayAt(d.grab,pick.transform.position,.6f);Pulse(controller);
+                }
             }
             bool floorTarget=hit&&info.collider.GetComponent<TeleportSurface>()&&info.normal.y>.85f&&GameDirector.Instance.currentRoom!=1;
             if(select&&!wasSelect[index])
             {
                 // Lock the purpose of this press. A button that moves the view must never become a floor teleport.
                 teleportGesture[index]=!held[index]&&!target&&floorTarget;
-                if(!held[index]&&target){target.Activate();Pulse(controller);}
+                if(!held[index]&&target){var d=GameDirector.Instance;d.PlayUi(d.select,.5f);target.Activate();Pulse(controller);}
                 else if(teleportGesture[index])ShowHint("Release to teleport",2);
             }
             if(teleportGesture[index]&&!busy)
@@ -204,15 +217,73 @@ namespace AfterHours
                 if(!select&&wasSelect[index]&&teleportReady[index])StartCoroutine(Teleport(teleportPoint[index],seatedMode?LandingYaw(Head.position,teleportPoint[index],Head.eulerAngles.y):Head.eulerAngles.y));
             }
             if(!select){teleportReady[index]=false;teleportGesture[index]=false;}
-            if(held[index]&&!grab){held[index].Release();held[index]=null;}
+            if(held[index]&&!grab)
+            {
+                var letGo=held[index];held[index]=null;aimedTarget[index]=null;
+                // Pointing at where it belongs sends it there; otherwise it simply drops.
+                if(sendTo){letGo.SendTo(sendTo.LandingPoint,Quaternion.Euler(0,letGo.transform.eulerAngles.y,0));var d=GameDirector.Instance;d.PlayAt(d.send,letGo.transform.position,.7f);Pulse(controller);}
+                else letGo.Release();
+            }
             wasSelect[index]=select;wasGrip[index]=grab;
+        }
+        const float GrabRange=10f,AssistAngle=4f;
+        string HoldHint(Grabbable item)
+        {
+            if(item.paddle)return "Pull the paddle toward you, then reach forward.";
+            foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt;
+            return item.label.Replace("\n"," ")+"  /  Let go to place it.";
+        }
+        Grabbable Assist(Vector3 origin,Vector3 direction)
+        {
+            Grabbable best=null;float bestAngle=AssistAngle;
+            foreach(var g in GameDirector.Instance.Grabbables)
+            {
+                if(!g||g.held||g.processed||g.sending||!g.gameObject.activeInHierarchy)continue;
+                var to=g.transform.position-origin;float distance=to.magnitude;if(distance>GrabRange||distance<.05f)continue;
+                float angle=Vector3.Angle(direction,to);if(angle>=bestAngle)continue;
+                if(Blocked(origin,g.transform.position,g.transform,null))continue;
+                best=g;bestAngle=angle;
+            }
+            return best;
+        }
+        SendTarget FindTarget(Vector3 origin,Vector3 direction,Grabbable item)
+        {
+            SendTarget best=null;float bestAngle=float.MaxValue;
+            foreach(var t in GameDirector.Instance.Targets)
+            {
+                if(!t||!t.isActiveAndEnabled||!t.Accepts(item))continue;
+                var to=t.LandingPoint-origin;float distance=to.magnitude;if(distance<.25f)continue;
+                // The cone widens for large targets nearby and never shrinks below a few degrees far away.
+                float angle=Vector3.Angle(direction,to),allowed=Mathf.Max(5f,Mathf.Atan2(t.radius,distance)*Mathf.Rad2Deg);
+                if(angle>allowed||angle>=bestAngle)continue;
+                if(Blocked(origin,t.LandingPoint,item.transform,t.transform))continue;
+                best=t;bestAngle=angle;
+            }
+            return best;
+        }
+        // True when solid scenery stands between the pointer and a point, ignoring the player, the object and the target.
+        bool Blocked(Vector3 from,Vector3 to,Transform item,Transform target)
+        {
+            var path=to-from;float distance=path.magnitude;if(distance<.01f)return false;
+            foreach(var hit in Physics.RaycastAll(from,path/distance,distance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+            {
+                var t=hit.collider.transform;
+                if(t.IsChildOf(transform)||(item&&t.IsChildOf(item))||(target&&t.IsChildOf(target)))continue;
+                if(hit.distance<distance-.25f)return true;
+            }
+            return false;
+        }
+        void UpdateHighlights()
+        {
+            var d=GameDirector.Instance;if(!d)return;
+            foreach(var t in d.Targets)if(t)t.Show(!busy&&(t==aimedTarget[0]||t==aimedTarget[1]));
         }
         static float Extent(Grabbable item,Vector3 direction)
         {
             var bounds=new Bounds(item.transform.position,Vector3.zero);foreach(var c in item.GetComponentsInChildren<Collider>())bounds.Encapsulate(c.bounds);
             var e=bounds.extents;return Mathf.Abs(direction.x)*e.x+Mathf.Abs(direction.y)*e.y+Mathf.Abs(direction.z)*e.z;
         }
-        public void ReleaseAll(){for(int i=0;i<2;i++){if(held[i])held[i].Release();held[i]=null;teleportReady[i]=teleportGesture[i]=false;inputBlocked[i]=true;}}
+        public void ReleaseAll(){for(int i=0;i<2;i++){if(held[i])held[i].Release();held[i]=null;aimedTarget[i]=null;teleportReady[i]=teleportGesture[i]=false;inputBlocked[i]=true;}}
         void HideRays(){for(int i=0;i<2;i++){rays[i].enabled=false;cursors[i].gameObject.SetActive(false);}}
         public void Place(Vector3 floor,float yaw)
         {
@@ -227,13 +298,15 @@ namespace AfterHours
             Vector3 feet=point+Vector3.up*.04f;
             foreach(var obstacle in Physics.OverlapCapsule(feet+Vector3.up*.24f,feet+Vector3.up*(Mathf.Max(body.height,1.1f)-.24f),.24f,~0,QueryTriggerInteraction.Ignore))
                 if(!obstacle.transform.IsChildOf(transform))yield break;
-            busy=true;yield return Fade(1,.12f);Place(point+Vector3.up*.025f,yaw);yield return Fade(0,.18f);busy=false;
+            busy=true;var d=GameDirector.Instance;if(d)d.PlayUi(d.teleport,.45f);
+            yield return Fade(1,.12f);Place(point+Vector3.up*.025f,yaw);yield return Fade(0,.18f);busy=false;
         }
-        public IEnumerator Fade(float target,float duration)
+        // Room changes also dim the sound, so ambience and music never cut off abruptly.
+        public IEnumerator Fade(float target,float duration,bool dimAudio=false)
         {
             if(!fade)yield break;float from=fade.color.a;float t=0;
-            while(t<duration){t+=Time.unscaledDeltaTime;fade.color=new Color(.025f,.04f,.07f,Mathf.Lerp(from,target,t/duration));yield return null;}
-            fade.color=new Color(.025f,.04f,.07f,target);
+            while(t<duration){t+=Time.unscaledDeltaTime;float a=Mathf.Lerp(from,target,t/duration);fade.color=new Color(.025f,.04f,.07f,a);if(dimAudio)AudioListener.volume=1-a*.9f;yield return null;}
+            fade.color=new Color(.025f,.04f,.07f,target);if(dimAudio)AudioListener.volume=1-target*.9f;
         }
         void Pulse(OVRInput.Controller controller){StartCoroutine(Haptic(controller));}
         IEnumerator Haptic(OVRInput.Controller controller){if(IsXR)OVRInput.SetControllerVibration(.25f,.3f,controller);yield return new WaitForSeconds(.06f);if(IsXR)OVRInput.SetControllerVibration(0,0,controller);}

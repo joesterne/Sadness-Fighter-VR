@@ -13,12 +13,18 @@ namespace AfterHours
             d=director;d.rooms=new MindRoom[6];
             NewRoom(0,"The lobby",Vector3.zero,new Vector3(0,.05f,-4));Hub();
             NewRoom(1,"Ocean of shame",new Vector3(80,0,0),new Vector3(0,.3f,-1));Ocean();
-            NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-4.2f));Warehouse();
-            NewRoom(3,"A small spill",new Vector3(240,0,0),new Vector3(0,.04f,-3.2f));Kitchen();
-            NewRoom(4,"The infinite archive",new Vector3(320,0,0),new Vector3(0,.04f,-4));Archive();
+            NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-2.4f));Warehouse();
+            NewRoom(3,"A small spill",new Vector3(240,0,0),new Vector3(0,.04f,1.4f));Kitchen();
+            NewRoom(4,"The infinite archive",new Vector3(320,0,0),new Vector3(0,.04f,-1.2f));Archive();
             NewRoom(5,"Room for tomorrow",new Vector3(400,0,0),new Vector3(0,.04f,-4));Rooftop();
             Menu();
             for(int i=0;i<6;i++)d.rooms[i].root.SetActive(i==0);
+        }
+        // Each room has its own soundscape. Sources play when their room is switched on.
+        static void Sound(string clip,float volume,Transform parent=null)
+        {
+            var source=(parent?parent:Art.Root).gameObject.AddComponent<AudioSource>();
+            source.clip=SoundBank.Get(clip);source.loop=true;source.playOnAwake=true;source.spatialBlend=0;source.volume=volume;source.priority=64;
         }
         static void NewRoom(int i,string title,Vector3 at,Vector3 spawn)
         {
@@ -55,33 +61,69 @@ namespace AfterHours
         {
             var root=Art.Group("Comfort menu",Vector3.zero,d.player.transform);
             var menu=root.gameObject.AddComponent<ComfortMenu>();menu.director=d;d.menu=menu;d.player.menu=menu;
-            Art.Box("Menu panel",new Vector3(0,-.005f,.014f),new Vector3(.8f,.44f,.012f),Art.Ink,true,root,.006f);
-            Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(0,.192f,-.002f),.022f,muted,.7f,root);
-            menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(0,.163f,-.002f),.03f,ivory,.7f,root);
-            float[] x={-.26f,0,.26f};
-            MenuButton(root,"Menu turn left","< TURN",x[0],.105f,Art.Teal,ActionKind.TurnLeft);
-            MenuButton(root,"Menu turn around","TURN AROUND",x[1],.105f,Art.Teal,ActionKind.TurnAround);
-            MenuButton(root,"Menu turn right","TURN >",x[2],.105f,Art.Teal,ActionKind.TurnRight);
-            menu.seated=MenuButton(root,"Menu seated view","SEATED VIEW",x[0],.02f,Art.Navy,ActionKind.SeatedMode);
-            menu.height=MenuButton(root,"Menu seated height","SEATED HEIGHT",x[1],.02f,Art.Navy,ActionKind.SeatedHeight);
-            menu.walking=MenuButton(root,"Menu movement","MOVEMENT",x[2],.02f,Art.Navy,ActionKind.SmoothMotion);
-            menu.vignette=MenuButton(root,"Menu comfort vignette","COMFORT VIGNETTE",x[0],-.065f,Art.Navy,ActionKind.Vignette);
-            menu.crowd=MenuButton(root,"Menu kitchen crowd","KITCHEN CROWD",x[1],-.065f,Art.Navy,ActionKind.GentleAudience);
-            MenuButton(root,"Menu face forward","FACE FORWARD",x[2],-.065f,Art.Teal,ActionKind.FaceForward);
-            MenuButton(root,"Menu try again","TRY AGAIN",x[0],-.15f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
-            MenuButton(root,"Menu close","CLOSE",x[1],-.15f,Art.Coral,ActionKind.CloseMenu);
-            MenuButton(root,"Menu lobby","LOBBY",x[2],-.15f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
-            Art.Text("Menu tip","Right stick turns. Pull it back to turn around.   B / Y: lobby.",new Vector3(0,-.203f,-.002f),.02f,muted,.76f,root);
+            // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view.
+            Art.Box("Menu panel",new Vector3(0,-.01f,.014f),new Vector3(.53f,.52f,.012f),Art.Ink,true,root,.006f);
+            Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.222f,-.002f),.019f,muted,.36f,root);
+            menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.19f,-.002f),.027f,ivory,.36f,root);
+            MenuButton(root,"Menu close","CLOSE",.19f,.205f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
+            MenuButton(root,"Menu turn left","< TURN",-.17f,.125f,Art.Teal,ActionKind.TurnLeft,.12f);
+            MenuButton(root,"Menu turn around","TURN AROUND",0,.125f,Art.Teal,ActionKind.TurnAround,.2f);
+            MenuButton(root,"Menu turn right","TURN >",.17f,.125f,Art.Teal,ActionKind.TurnRight,.12f);
+            menu.seated=MenuButton(root,"Menu seated view","SEATED VIEW",-.12f,.04f,Art.Navy,ActionKind.SeatedMode);
+            menu.height=MenuButton(root,"Menu seated height","SEATED HEIGHT",.12f,.04f,Art.Navy,ActionKind.SeatedHeight);
+            menu.walking=MenuButton(root,"Menu movement","MOVEMENT",-.12f,-.045f,Art.Navy,ActionKind.SmoothMotion);
+            menu.vignette=MenuButton(root,"Menu comfort vignette","COMFORT VIGNETTE",.12f,-.045f,Art.Navy,ActionKind.Vignette);
+            menu.crowd=MenuButton(root,"Menu kitchen crowd","KITCHEN CROWD",-.12f,-.13f,Art.Navy,ActionKind.GentleAudience);
+            MenuButton(root,"Menu face forward","FACE FORWARD",.12f,-.13f,Art.Teal,ActionKind.FaceForward);
+            MenuButton(root,"Menu try again","TRY AGAIN",-.12f,-.215f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
+            MenuButton(root,"Menu lobby","LOBBY",.12f,-.215f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
+            Art.Text("Menu tip","Right stick turns; pull it back to turn around.  B / Y: lobby.",new Vector3(0,-.258f,-.002f),.016f,muted,.5f,root);
             // A panel floating at arm's length should not throw a shadow onto the room.
             foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
             menu.Refresh();root.gameObject.SetActive(false);
         }
-        static TextMeshPro MenuButton(Transform menu,string name,string label,float x,float y,Material color,ActionKind kind)
+        static TextMeshPro MenuButton(Transform menu,string name,string label,float x,float y,Material color,ActionKind kind,float width=.225f,float height=.072f)
         {
             var group=Art.Group(name,new Vector3(x,y,0),menu);
-            Art.Button(name,label,Vector3.zero,new Vector3(.235f,.074f,.018f),color,kind,d,0,group);
-            var text=group.Find(name+" label").GetComponent<TextMeshPro>();text.fontSizeMin=.12f;text.fontSizeMax=.2f;
+            Art.Button(name,label,Vector3.zero,new Vector3(width,height,.018f),color,kind,d,0,group);
+            var text=group.Find(name+" label").GetComponent<TextMeshPro>();text.fontSizeMin=.1f;text.fontSizeMax=.19f;
             return text;
+        }
+        // The first-visit guide: a content note, then pinch and the menu, taught by doing rather than by reading.
+        static void Guide()
+        {
+            var root=Art.Group("First visit guide",new Vector3(0,1.42f,-2.65f));
+            var guide=root.gameObject.AddComponent<IntroGuide>();guide.director=d;d.intro=guide;
+            Art.Box("Guide panel",new Vector3(0,0,.014f),new Vector3(.98f,.58f,.02f),Art.Ink,true,root,.008f);
+            Art.Box("Guide accent",new Vector3(0,.29f,.0f),new Vector3(.98f,.012f,.022f),Art.Gold,false,root,.002f);
+            guide.title=Art.Text("Guide title","Before you begin",new Vector3(0,.2f,-.004f),.06f,ivory,.88f,root);guide.title.rectTransform.sizeDelta=new Vector2(.88f,.1f);
+            guide.body=Art.Text("Guide text","",new Vector3(0,.025f,-.004f),.05f,muted,.9f,root);guide.body.rectTransform.sizeDelta=new Vector2(.9f,.27f);guide.body.enableAutoSizing=true;guide.body.fontSizeMin=.24f;guide.body.fontSizeMax=.35f;
+            guide.next=GuideButton(root,"Guide next","CONTINUE",new Vector3(.2f,-.205f,0),new Vector3(.38f,.1f,.03f),Art.Teal,ActionKind.IntroNext,out guide.nextLabel);
+            guide.skip=GuideButton(root,"Guide skip","SKIP",new Vector3(-.27f,-.205f,0),new Vector3(.2f,.08f,.03f),Art.Navy,ActionKind.IntroSkip,out _);
+            foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
+            root.gameObject.SetActive(false);
+        }
+        static GameObject GuideButton(Transform parent,string name,string label,Vector3 at,Vector3 size,Material color,ActionKind kind,out TextMeshPro text)
+        {
+            var group=Art.Group(name,at,parent);
+            Art.Button(name,label,Vector3.zero,size,color,kind,d,0,group);
+            text=group.Find(name+" label").GetComponent<TextMeshPro>();text.fontSizeMin=.15f;text.fontSizeMax=.32f;
+            return group.gameObject;
+        }
+        // A thin glowing outline that lights up when a held object is pointed at its destination.
+        static GameObject Outline(string name,Vector3 centre,Vector2 size,bool vertical,Transform parent=null)
+        {
+            var root=Art.Group(name,centre,parent);float w=.028f;
+            Vector3 along=vertical?new Vector3(size.x,w,w):new Vector3(size.x,w,w),across=vertical?new Vector3(w,size.y,w):new Vector3(w,w,size.y);
+            Vector3 edgeA=vertical?new Vector3(0,size.y/2,0):new Vector3(0,0,size.y/2),edgeB=new Vector3(size.x/2,0,0);
+            Art.Box("Edge",edgeA,along,d.player.rayMaterial,false,root,.004f);Art.Box("Edge",-edgeA,along,d.player.rayMaterial,false,root,.004f);
+            Art.Box("Edge",edgeB,across,d.player.rayMaterial,false,root,.004f);Art.Box("Edge",-edgeB,across,d.player.rayMaterial,false,root,.004f);
+            foreach(var r in root.GetComponentsInChildren<Renderer>(true))r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            root.gameObject.SetActive(false);return root.gameObject;
+        }
+        static SendTarget Target(GameObject host,int room,Vector3 landing,float radius,string prompt,GameObject highlight,Grabbable only=null)
+        {
+            var t=host.AddComponent<SendTarget>();t.room=room;t.landing=landing;t.radius=radius;t.prompt=prompt;t.highlight=highlight;t.only=only;return t;
         }
         static void Door(string number,string title,string description,Vector3 position,float yaw,Material accent,int destination)
         {
@@ -117,7 +159,7 @@ namespace AfterHours
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.01f,-.64f),.18f,ivory,2.2f);
             d.lobbyProgress=Art.Text("Journey progress","0 / 4   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.65f,-.645f),.145f,muted,2.15f);
             Art.Box("Getting started board",new Vector3(3.5f,1.9f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy);
-            Art.Text("Move instructions","POINT + TRIGGER / PINCH TO SELECT\nPoint at the floor and release to teleport.\nLeft stick walks. Right stick turns; pull it back to turn around.\nGrip / pinch to hold. Release to place.\nMenu button or left palm pinch: comfort and rooms.",new Vector3(3.5f,1.9f,2.8f),.13f,ivory,2.7f);
+            Art.Text("Move instructions","POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch or menu button: the menu.",new Vector3(3.5f,1.9f,2.8f),.14f,ivory,2.7f);
             var resume=Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(0,2.16f,-.3f),new Vector3(2.75f,.4f,.12f),Art.Teal,ActionKind.Resume,d);
             d.resumeLabel=Art.Root.Find("Continue last room label").GetComponent<TextMeshPro>();
             Art.Text("Small sessions","A FEW MINUTES IS ENOUGH\nEach small step saves. Return to the lobby to take a break.",new Vector3(0,2.65f,-.3f),.13f,muted,3.8f);
@@ -125,6 +167,8 @@ namespace AfterHours
             Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,1.1f,13.5f),new Vector3(4.2f,.65f,.16f),Art.Teal,ActionKind.Travel,d,5);
             for(int side=-1;side<=1;side+=2){Art.Plant(new Vector3(side*5.6f,0,-3));Art.Plant(new Vector3(side*2.8f,0,10));}
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
+            Guide();
+            Sound("Ambience - Lobby",.5f);Sound("Music - After hours theme",.22f);
         }
         static void MemoryOffice(Vector3 position)
         {
@@ -178,6 +222,7 @@ namespace AfterHours
             ocean.distance=Art.Text("Distance","14   SMALL STROKES TO SHORE",new Vector3(0,1.2f,1.8f),.13f,ivory,2.6f);
             Art.Button("Accessible rowing","ROW",new Vector3(0,.85f,1.6f),new Vector3(.8f,.32f,.1f),Art.Teal,ActionKind.Row,d);
             Art.Text("Rowing instruction","Hold a paddle. Pull toward you.\nOr point at ROW and select.\nBlink steps keep the boat steady.",new Vector3(0,2.2f,3.3f),.11f,muted,2.6f);
+            Sound("Ambience - Ocean",.6f);
         }
         static void WaterMesh(Transform parent)
         {
@@ -206,7 +251,7 @@ namespace AfterHours
         static void Warehouse()
         {
             Shell(16,21,Art.Cream);d.rooms[2].total=5;
-            Header(2,"02 / HEAVY THINGS","Processing, not erasing.","Carry each feeling to the truck. Release it inside the marked bay.",new Vector3(0,3.25f,11));
+            Header(2,"02 / HEAVY THINGS","Processing, not erasing.","Pick up each feeling, point at the truck, and let it go.",new Vector3(0,3.25f,11));
             for(int side=-1;side<=1;side+=2)
             {
                 for(int z=0;z<3;z++)
@@ -230,15 +275,18 @@ namespace AfterHours
             for(int s=-1;s<=1;s+=2){Art.Box("Truck side",new Vector3(s*1.6f,1.5f,.2f),new Vector3(.15f,2.2f,3.6f),Art.Teal,true,truck);for(int z=-1;z<=1;z+=2){var wheel=Art.Shape("Wheel",PrimitiveType.Cylinder,new Vector3(s*1.6f,.36f,z*1.2f),new Vector3(.73f,.17f,.73f),Art.Ink,true,truck);wheel.transform.localRotation=Quaternion.Euler(0,0,90);}}
             Art.Box("Truck cabin",new Vector3(0,1.4f,2.25f),new Vector3(3.2f,2.2f,1),Art.Teal,true,truck);
             Art.Box("Loading ramp",new Vector3(0,.17f,-2.55f),new Vector3(3.2f,.25f,1.5f),Art.Gold,true,truck);
-            Zone("Processing bay",new Vector3(0,1.25f,6.1f),new Vector3(2.8f,1.7f,2.8f),2,"",5);
+            var bay=Zone("Processing bay",new Vector3(0,1.25f,6.1f),new Vector3(2.8f,1.7f,2.8f),2,"",5);
+            Target(bay.gameObject,2,new Vector3(0,.2f,0),1.3f,"Point at the truck and let go.",Outline("Truck bay highlight",new Vector3(0,1.42f,4.62f),new Vector2(2.95f,1.85f),true));
             Art.Text("Truck message","ROOM TO CARRY ON",new Vector3(0,2.7f,8.23f),.25f,ivory,3);
-            Art.Text("Bay sign","RELEASE BOXES HERE",new Vector3(0,.65f,4.53f),.16f,dark,3);
+            Art.Text("Bay sign","SEND BOXES HERE",new Vector3(0,.65f,4.53f),.16f,dark,3);
             for(int i=0;i<5;i++)Art.Box("Loading floor line",new Vector3(0,.015f,1.3f+i*.6f),new Vector3(.45f,.02f,.15f),Art.Gold,false);
+            Sound("Ambience - Warehouse",.55f);
         }
         static void Kitchen()
         {
             Shell(13,15,Art.Cream);var k=d.rooms[3].root.AddComponent<KitchenRoom>();d.kitchen=k;k.director=d;
             Header(3,"03 / A SMALL SPILL","Everyone is watching.","At least, that is how it feels. Make a cup of coffee at your own pace.",new Vector3(0,3.5f,8.7f));
+            var seat=d.rooms[3].spawn.localPosition;
             Art.Box("Kitchen cabinets",new Vector3(0,.48f,5),new Vector3(8,.96f,1.1f),Art.Teal);
             Art.Box("Detailed stone worktop",new Vector3(0,1,5),new Vector3(8.2f,.08f,1.22f),Art.Cream);
             for(int i=0;i<6;i++) {Art.Box("Cupboard seam",new Vector3(-3.5f+i*1.4f,.5f,4.443f),new Vector3(.015f,.82f,.01f),Art.Navy,false);Art.Box("Cupboard pull",new Vector3(-3+i*1.35f,.81f,4.40f),new Vector3(.3f,.035f,.05f),Art.Gold,false);}
@@ -251,7 +299,7 @@ namespace AfterHours
             var spray=Art.Group("Coffee spray",new Vector3(0,1.38f,4.28f));spray.localRotation=Quaternion.Euler(20,180,0);k.spillSpray=spray.gameObject.AddComponent<ParticleSystem>();k.spillSpray.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
             var main=k.spillSpray.main;main.playOnAwake=false;main.loop=false;main.duration=.6f;main.startLifetime=.7f;main.startSpeed=1.6f;main.startSize=.045f;main.startColor=new Color(.24f,.12f,.07f);main.gravityModifier=1;main.maxParticles=60;main.simulationSpace=ParticleSystemSimulationSpace.World;
             var emission=k.spillSpray.emission;emission.rateOverTime=0;emission.SetBursts(new[]{new ParticleSystem.Burst(0,28)});var shape=k.spillSpray.shape;shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=24;shape.radius=.025f;var renderer=k.spillSpray.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Sphere);renderer.sharedMaterial=Art.Wood;
-            Art.Shape("Cup placement mark",PrimitiveType.Cylinder,new Vector3(0,1.107f,4.28f),new Vector3(.42f,.005f,.42f),Art.Teal,false);
+            var mark=Art.Shape("Cup placement mark",PrimitiveType.Cylinder,new Vector3(0,1.107f,4.28f),new Vector3(.42f,.005f,.42f),Art.Teal,false);
             Art.Button("Brew coffee","BREW",new Vector3(.56f,1.65f,4.52f),new Vector3(.42f,.3f,.08f),Art.Coral,ActionKind.Brew,d);
             k.display=Art.Text("Machine display","READY?\nOne ordinary task.",new Vector3(-.24f,1.82f,4.549f),.078f,ivory,.82f);
             Art.Button("Ask for support","ASK FOR HELP",new Vector3(2.12f,1.42f,4.48f),new Vector3(1.7f,.5f,.14f),Art.Teal,ActionKind.Help,d);
@@ -262,17 +310,25 @@ namespace AfterHours
             Art.Shape("Cup interior",PrimitiveType.Cylinder,new Vector3(0,1.001f,0),new Vector3(.88f,.012f,.88f),Art.Ink,false,cup.transform);
             Art.Box("Cup handle",new Vector3(.63f,.1f,0),new Vector3(.45f,.6f,.22f),Art.White,false,cup.transform);
             k.coffee=Art.Shape("Coffee",PrimitiveType.Cylinder,new Vector3(0,.98f,0),new Vector3(.85f,.03f,.85f),Art.Wood,false,cup.transform).transform;k.coffee.gameObject.SetActive(false);
+            // Send the cup under the spout from your seat: point at the drip tray while holding it and let go.
+            var glow=Art.Shape("Spout highlight",PrimitiveType.Cylinder,new Vector3(0,1.112f,4.28f),new Vector3(.52f,.004f,.52f),d.player.rayMaterial,false);glow.SetActive(false);
+            Target(mark,3,new Vector3(0,.18f,0),.45f,"Point under the spout and let go.",glow,k.cup);
             // A table in the audience area echoes the detailed before-world.
             Art.Box("Shared table",new Vector3(3,.76f,.3f),new Vector3(3,.12f,1.7f),Art.Wood);
             for(int s=-1;s<=1;s+=2)Art.Box("Table leg",new Vector3(3+s*1.2f,.37f,.3f),new Vector3(.08f,.74f,1.2f),Art.Metal);
-            var watchers=new List<GameObject>();for(int i=0;i<8;i++){var group=Art.Group("Audience "+(i+1),new Vector3(-4.8f+(i%4)*2.8f,0,-1.2f-(i/4)*1.5f));Art.Person(Vector3.zero,group);group.localRotation=Quaternion.Euler(0,180,0);group.gameObject.SetActive(false);watchers.Add(group.gameObject);}k.crowd=watchers.ToArray();
+            // The crowd gathers at both sides of the machine, facing the seat, within 60 degrees of it: a seated player
+            // facing the coffee sees it grow from the corner of the eye without turning round, and it never blocks the cup or HELP.
+            Vector3[] places={new Vector3(-2.7f,0,3.6f),new Vector3(2.9f,0,3.5f),new Vector3(-3.6f,0,4),new Vector3(3.8f,0,4),new Vector3(-2.2f,0,2.9f),new Vector3(2.3f,0,2.8f),new Vector3(-4.4f,0,4),new Vector3(4.2f,0,4)};
+            var watchers=new List<GameObject>();for(int i=0;i<8;i++){var group=Art.Group("Audience "+(i+1),places[i]);Art.Person(Vector3.zero,group);var away=places[i]-new Vector3(seat.x,0,seat.z);group.localRotation=Quaternion.LookRotation(new Vector3(away.x,0,away.z));group.gameObject.SetActive(false);watchers.Add(group.gameObject);}k.crowd=watchers.ToArray();
             var spills=new List<GameObject>();for(int i=0;i<8;i++){var s=Art.Shape("Coffee spill "+i,PrimitiveType.Cylinder,new Vector3(-.75f+(i%4)*.55f,.012f,3.8f-(i/4)*.6f),new Vector3(.5f+i*.055f,.006f,.38f),Art.Wood,false);s.SetActive(false);spills.Add(s);}k.spills=spills.ToArray();
             Art.Plant(new Vector3(-4.8f,0,5));
+            Sound("Ambience - Kitchen",.5f);
+            var murmur=Art.Group("Crowd murmur",new Vector3(0,1.6f,2.5f));Sound("Ambience - Kitchen murmur",0,murmur);k.murmur=murmur.GetComponent<AudioSource>();
         }
         static void Archive()
         {
             Shell(18,53,Art.Navy,false);d.rooms[4].total=6;
-            Header(4,"04 / THE INFINITE ARCHIVE","Not every thought is a fact.","Pick up a note. Give it a place. You do not need to sort the whole room.",new Vector3(0,3.55f,7.4f),9);
+            Header(4,"04 / THE INFINITE ARCHIVE","Not every thought is a fact.","Pick up a note, point at its tray, and let go. You do not need to sort the whole room.",new Vector3(0,3.55f,7.4f),9);
             for(int x=-3;x<=3;x++)for(int z=0;z<13;z++)
             {
                 if(x==0||Mathf.Abs(x)==1&&z<3)continue;
@@ -284,18 +340,24 @@ namespace AfterHours
             Art.Box("Sorting desk",new Vector3(0,.72f,1.25f),new Vector3(6.9f,.15f,1.2f),Art.Wood);
             for(int x=-1;x<=1;x+=2)Art.Box("Desk support",new Vector3(x*2.8f,.36f,1.25f),new Vector3(.12f,.72f,1),Art.Metal);
             string[] labels={"My job ended.","I lost my routine.","I will never\nwork again.","Everyone must\nthink I failed.","My skills\nstill exist.","I can ask\nfor support."};string[] cats={"FACT","FACT","FEAR","FEAR","STILL TRUE","STILL TRUE"};
-            for(int i=0;i<6;i++){var item=Item(labels[i],cats[i],4,new Vector3(-2.8f+i*1.1f,1.05f,1.05f),new Vector3(.9f,.48f,.06f),Art.Paper);var txt=item.GetComponentInChildren<TextMeshPro>();txt.color=dark;txt.fontSize=2.35f;txt.rectTransform.sizeDelta=new Vector2(.96f,1.7f);}
+            for(int i=0;i<6;i++){var item=Item(labels[i],cats[i],4,new Vector3(-2.8f+i*1.1f,1.05f,1.05f),new Vector3(.9f,.48f,.06f),Art.Paper);var txt=item.GetComponentInChildren<TextMeshPro>();txt.color=dark;
+                // Undo the card's flat proportions so letters keep their shape, and keep the words on the card.
+                txt.transform.localScale=new Vector3(.48f/.9f,1,1);txt.rectTransform.sizeDelta=new Vector2(1.7f,.84f);
+                txt.enableAutoSizing=true;txt.fontSizeMin=1.1f;txt.fontSizeMax=2.35f;txt.fontSize=2.35f;}
             for(int i=0;i<3;i++)
             {
                 string name=new[]{"FACT","FEAR","STILL TRUE"}[i];Vector3 p=new Vector3(-2.3f+i*2.3f,0,4.45f);
                 Art.Box(name+" plinth",p+Vector3.up*.45f,new Vector3(1.8f,.9f,1.15f),i==1?Art.Coral:Art.Teal);
                 Art.Text(name+" sign",name,p+new Vector3(0,1.5f,-.2f),.25f,ivory,2.1f);
                 Art.Text(name+" description",new[]{"What happened","What my mind predicts","What I still carry"}[i],p+new Vector3(0,1.13f,-.59f),.13f,muted,2);
-                Zone(name+" tray",p+new Vector3(0,1.13f,0),new Vector3(1.65f,.6f,1.04f),4,name,2);
+                var tray=Zone(name+" tray",p+new Vector3(0,1.13f,0),new Vector3(1.65f,.6f,1.04f),4,name,2);
+                Target(tray.gameObject,4,new Vector3(0,.12f,0),.75f,"Point at a tray and let go.",Outline(name+" tray highlight",p+new Vector3(0,.93f,0),new Vector2(1.84f,1.19f),false));
             }
+            Sound("Ambience - Archive",.6f);
         }
         static void Rooftop()
         {
+            Sound("Ambience - Rooftop",.55f);Sound("Music - After hours theme",.2f);
             Floor(new Vector3(0,-.15f,3),new Vector3(17,.3f,19),Art.Cream);
             for(int s=-1;s<=1;s+=2)Art.Box("Rooftop parapet",new Vector3(s*8.5f,.6f,3),new Vector3(.3f,1.2f,19),Art.Teal);
             Art.Box("Rooftop edge",new Vector3(0,.6f,12.5f),new Vector3(17,1.2f,.3f),Art.Teal);

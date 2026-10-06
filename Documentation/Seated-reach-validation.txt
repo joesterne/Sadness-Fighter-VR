@@ -1,0 +1,61 @@
+2026-10-06 17:52:05Z
+Passed
+The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
+PASS: A first visit opens the guide with its content note
+PASS: Pinching CONTINUE moves the guide on
+PASS: The menu step waits for the menu itself
+PASS: Opening the menu completes that step
+PASS: START closes the guide and it stays closed next time
+PASS: Seated view is on
+PASS: Ocean: fourteen strokes from the bench complete the crossing
+PASS: Ocean: done without leaving the seat
+PASS: Pinch picks up ANGER from the seat (3.6 m away)
+PASS: Pointing at the destination lights it up
+PASS: Heavy things: ANGER goes to the truck from the seat
+PASS: Pinch picks up FEAR from the seat (2.9 m away)
+PASS: Pointing at the destination lights it up
+PASS: Heavy things: FEAR goes to the truck from the seat
+PASS: Pinch picks up RELIEF from the seat (2.3 m away)
+PASS: Pointing at the destination lights it up
+PASS: Heavy things: RELIEF goes to the truck from the seat
+PASS: Pinch picks up GRIEF from the seat (2.9 m away)
+PASS: Pointing at the destination lights it up
+PASS: Heavy things: GRIEF goes to the truck from the seat
+PASS: Pinch picks up UNCERTAINTY from the seat (3.6 m away)
+PASS: Pointing at the destination lights it up
+PASS: Heavy things: UNCERTAINTY goes to the truck from the seat
+PASS: Heavy things: all five boxes accepted once each
+PASS: Heavy things: done without leaving the seat
+PASS: A small spill: the crowd appears where a seated player can see it
+PASS: A small spill: all eight watchers stand within 59 degrees of the machine, never behind the seat
+PASS: A small spill: the murmur grows with the crowd
+PASS: A small spill: asking for help quiets the room
+PASS: Pinch picks up Your cup from the seat (3.7 m away)
+PASS: Pointing at the destination lights it up
+PASS: A small spill: the cup lands upright under the spout
+PASS: A small spill: three pours complete the kitchen from the seat
+PASS: A small spill: done without leaving the seat
+PASS: Pinch picks up My job ended. from the seat (3.6 m away)
+PASS: Pointing at the destination lights it up
+PASS: The infinite archive: a note sent to the wrong tray drifts back to the desk
+PASS: Pinch picks up My job ended. from the seat (3.6 m away)
+PASS: Pointing at the destination lights it up
+PASS: The infinite archive: "My job ended." filed under FACT from the seat
+PASS: Pinch picks up I lost my routine. from the seat (2.9 m away)
+PASS: Pointing at the destination lights it up
+PASS: The infinite archive: "I lost my routine." filed under FACT from the seat
+PASS: Pinch picks up I will never work again. from the seat (2.4 m away)
+PASS: Pointing at the destination lights it up
+PASS: The infinite archive: "I will never work again." filed under FEAR from the seat
+PASS: Pinch picks up Everyone must think I failed. from the seat (2.4 m away)
+PASS: Pointing at the destination lights it up
+PASS: The infinite archive: "Everyone must think I failed." filed under FEAR from the seat
+PASS: Pinch picks up My skills still exist. from the seat (2.8 m away)
+PASS: Pointing at the destination lights it up
+PASS: The infinite archive: "My skills still exist." filed under STILL TRUE from the seat
+PASS: Pinch picks up I can ask for support. from the seat (3.6 m away)
+PASS: Pointing at the destination lights it up
+PASS: The infinite archive: "I can ask for support." filed under STILL TRUE from the seat
+PASS: The infinite archive: all six notes filed
+PASS: The infinite archive: done without leaving the seat
+PASS: All four chapters completed seated, without moving

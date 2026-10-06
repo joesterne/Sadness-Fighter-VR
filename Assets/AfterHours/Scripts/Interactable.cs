@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AfterHours
 {
-    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu }
+    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip }
     public class Interactable : MonoBehaviour
     {
         public ActionKind kind;
@@ -30,6 +30,8 @@ namespace AfterHours
                 case ActionKind.FaceForward: director.player.FaceForward();break;
                 case ActionKind.Vignette: director.player.ToggleVignette();break;
                 case ActionKind.CloseMenu: if(director.menu)director.menu.Close();break;
+                case ActionKind.IntroNext: if(director.intro)director.intro.Next();break;
+                case ActionKind.IntroSkip: if(director.intro)director.intro.Skip();break;
             }
             if(kind==ActionKind.SmoothMotion||kind==ActionKind.GentleAudience)director.SaveCheckpoint();
             if(director.menu&&director.menu.IsOpen)director.menu.Refresh();
