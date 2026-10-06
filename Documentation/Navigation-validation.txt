@@ -1,0 +1,97 @@
+2026-10-05 23:32:25Z
+Passed
+Production mouse/keyboard input and physics, with direct placement for test setup and API calls for race conditions.
+PASS: Menu key opens the menu in room 0
+PASS: The lobby menu has no LOBBY or TRY AGAIN
+PASS: Menu key closes the menu in room 0
+PASS: Room 1 arrives with movement unlocked
+PASS: Room 1 is the only active environment
+PASS: Room 1 fade clears
+PASS: Room 1 places the head over its safe spawn
+PASS: Menu key opens the menu in room 1
+PASS: Room 1 menu offers LOBBY
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Returning to the lobby closes the menu
+PASS: Room 2 arrives with movement unlocked
+PASS: Room 2 is the only active environment
+PASS: Room 2 fade clears
+PASS: Room 2 places the head over its safe spawn
+PASS: Menu key opens the menu in room 2
+PASS: Room 2 menu offers LOBBY
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Returning to the lobby closes the menu
+PASS: Room 3 arrives with movement unlocked
+PASS: Room 3 is the only active environment
+PASS: Room 3 fade clears
+PASS: Room 3 places the head over its safe spawn
+PASS: Menu key opens the menu in room 3
+PASS: Room 3 menu offers LOBBY
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Returning to the lobby closes the menu
+PASS: Room 4 arrives with movement unlocked
+PASS: Room 4 is the only active environment
+PASS: Room 4 fade clears
+PASS: Room 4 places the head over its safe spawn
+PASS: Menu key opens the menu in room 4
+PASS: Room 4 menu offers LOBBY
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Returning to the lobby closes the menu
+PASS: Room 5 arrives with movement unlocked
+PASS: Room 5 is the only active environment
+PASS: Room 5 fade clears
+PASS: Room 5 places the head over its safe spawn
+PASS: Menu key opens the menu in room 5
+PASS: Room 5 menu offers LOBBY
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Returning to the lobby closes the menu
+PASS: Held floor gesture teleports to the updated release target
+PASS: Invalid release target cancels teleport
+PASS: Menu key opens the menu in room 0
+PASS: Menu CLOSE acts on press
+PASS: Button hold cannot become a teleport gesture
+PASS: Room 2 arrives with movement unlocked
+PASS: Room 2 is the only active environment
+PASS: Room 2 fade clears
+PASS: Room 2 places the head over its safe spawn
+PASS: Input picks up an object before travel
+PASS: Travel releases carried objects in their original room
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: A trigger held across rooms cannot teleport on release
+PASS: Room 4 arrives with movement unlocked
+PASS: Room 4 is the only active environment
+PASS: Room 4 fade clears
+PASS: Room 4 places the head over its safe spawn
+PASS: Invalid destinations leave the current room intact
+PASS: Room 1 arrives with movement unlocked
+PASS: Room 1 is the only active environment
+PASS: Room 1 fade clears
+PASS: Room 1 places the head over its safe spawn
+PASS: Rapid competing travel requests keep the accepted destination
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Leaving during the final paddle stroke preserves completion
+PASS: Returning after an interrupted row restores the horizon
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn

@@ -1,0 +1,58 @@
+2026-10-02 11:50:27Z
+Failed: Room 4 arrives with movement unlocked
+Production mouse/keyboard input and physics, with direct placement for test setup and API calls for race conditions.
+PASS: Room 1 arrives with movement unlocked
+PASS: Room 1 is the only active environment
+PASS: Room 1 fade clears
+PASS: Room 1 places the head over its safe spawn
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Room 2 arrives with movement unlocked
+PASS: Room 2 is the only active environment
+PASS: Room 2 fade clears
+PASS: Room 2 places the head over its safe spawn
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Room 3 arrives with movement unlocked
+PASS: Room 3 is the only active environment
+PASS: Room 3 fade clears
+PASS: Room 3 places the head over its safe spawn
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Room 4 arrives with movement unlocked
+PASS: Room 4 is the only active environment
+PASS: Room 4 fade clears
+PASS: Room 4 places the head over its safe spawn
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Room 5 arrives with movement unlocked
+PASS: Room 5 is the only active environment
+PASS: Room 5 fade clears
+PASS: Room 5 places the head over its safe spawn
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Held floor gesture teleports to the updated release target
+PASS: Invalid release target cancels teleport
+PASS: Button hold cannot become a teleport gesture
+PASS: Room 2 arrives with movement unlocked
+PASS: Room 2 is the only active environment
+PASS: Room 2 fade clears
+PASS: Room 2 places the head over its safe spawn
+PASS: Input picks up an object before travel
+PASS: Travel releases carried objects in their original room
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: A trigger held across rooms cannot teleport on release
+FAIL: Room 4 arrives with movement unlocked

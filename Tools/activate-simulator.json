@@ -1,0 +1,3 @@
+{
+  "code": "UnityEditor.EditorApplication.ExecuteMenuItem(\"Window/Meta/Meta XR Simulator/Activate\"); UnityEditor.EditorApplication.ExecuteMenuItem(\"Window/Meta/Meta XR Operator/Activate\"); return \"Simulator and operator activated\";"
+}

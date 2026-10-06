@@ -1,0 +1,3 @@
+{
+  "code": "UnityEditor.AssetDatabase.Refresh(); return \"refresh\";"
+}

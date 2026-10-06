@@ -18,7 +18,7 @@
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
-/[Bb]uilds/
+/[Bb]uilds/*
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
@@ -112,3 +112,19 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# After Hours
+# Local-only: removed packages kept for reference, files saved from Claude, Visual Studio upgrade logs.
+/_RemovedPackages/
+/Claude outputs/
+UpgradeLog*.htm
+# Meta's Immersive Debugger rewrites this before every build with this computer's LAN address and an access token.
+/[Aa]ssets/[Rr]esources/DevAgentSettings.asset
+/[Aa]ssets/[Rr]esources/DevAgentSettings.asset.meta
+# Meta XR SDK's per-session id.
+/[Aa]ssets/#Meta/session_id.id
+/[Aa]ssets/#Meta/session_id.id.meta
+# Share the playtest build through Git LFS. Only the release APK: development builds carry Meta's test tooling.
+!/[Bb]uilds/Quest/
+/[Bb]uilds/Quest/*
+!/[Bb]uilds/Quest/AfterHours-release.apk

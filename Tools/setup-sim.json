@@ -1,0 +1,4 @@
+{
+  "code": "var t=typeof(UnityEditor.Editor).Assembly.GetType(\"UnityEditor.GameView\");UnityEditor.EditorWindow.GetWindow(t).Show(); UnityEditor.EditorWindow.GetWindow(t).Focus(); UnityEditor.EditorApplication.ExecuteMenuItem(\"Window/Meta/Meta XR Operator/Deactivate\"); var ok=UnityEditor.EditorApplication.ExecuteMenuItem(\"Window/Meta/Meta XR Operator/Activate\");foreach(var group in new[]{UnityEditor.BuildTargetGroup.Standalone,UnityEditor.BuildTargetGroup.Android}){var settings=UnityEngine.XR.OpenXR.OpenXRSettings.GetSettingsForBuildTargetGroup(group);foreach(var f in settings.GetFeatures<UnityEngine.XR.OpenXR.Features.OpenXRFeature>()){if(f.GetType().Name==\"OculusTouchControllerProximityProfile\")f.enabled=false;}UnityEditor.EditorUtility.SetDirty(settings);}UnityEditor.AssetDatabase.SaveAssets();return new {ok,paused=UnityEditor.EditorApplication.isPaused};",
+  "timeout": 30000
+}

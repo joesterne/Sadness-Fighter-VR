@@ -1,0 +1,4 @@
+{
+  "timeout": 30000,
+  "code": "var s=UnityEditor.XR.Management.XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(UnityEditor.BuildTargetGroup.Standalone);s.InitManagerOnStart=false;UnityEditor.EditorUtility.SetDirty(s);UnityEditor.AssetDatabase.SaveAssets();return \"Desktop preview mode\";"
+}

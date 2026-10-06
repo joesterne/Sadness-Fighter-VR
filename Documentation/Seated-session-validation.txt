@@ -1,0 +1,45 @@
+2026-10-05 23:21:46Z
+Passed
+Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
+PASS: Fresh profile starts with tracked standing height
+PASS: The menu starts closed
+PASS: Menu key opens the menu at arm's length (0.68 m)
+PASS: The lobby menu hides LOBBY and TRY AGAIN
+PASS: Only doors and CONTINUE remain as lobby signs
+PASS: Menu SEATED VIEW enables seated view at 1.65 m
+PASS: Menu SEATED HEIGHT changes eye height to 1.85 m
+PASS: The open menu moves up with the new eye height
+PASS: Height cycles to 1.45 m
+PASS: Height cycles back to 1.65 m
+PASS: The height button shows the current eye height
+PASS: Menu TURN > rotates 30 degrees without physical turning
+PASS: Menu TURN AROUND rotates 180 degrees
+PASS: The menu turns with the player and stays in front
+PASS: FACE FORWARD turns the room's main view back in front of the head
+PASS: Menu MOVEMENT switches to teleport only
+PASS: Menu CLOSE closes the menu
+PASS: With walking off, the left stick snap turns instead of walking
+PASS: Pulling the stick back turns around once
+PASS: Seated teleports face the pointed direction, unless the point is underfoot
+PASS: Menu MOVEMENT switches walking back on
+PASS: No vignette while standing still
+PASS: The comfort vignette shows while walking and clears after stopping
+PASS: The menu opens near the entrance wall (fitted at 0.51 scale); the next press must reach it
+PASS: Menu COMFORT VIGNETTE switches the vignette off
+PASS: Travel closes the menu
+PASS: Chapter menus offer LOBBY and TRY AGAIN and name the room
+PASS: Short ocean session records four strokes
+PASS: Short kitchen session records one pour and help
+PASS: Checkpoint stores partial progress in all four rooms
+PASS: Seated mode and eye-height preference survive reload
+PASS: Vignette preference survives reload
+PASS: Ocean count and horizon restore before first entry
+PASS: Delivered box restores exactly once
+PASS: Sorted note restores exactly once
+PASS: Kitchen help and partial coffee restore
+PASS: Continue button names the last room
+PASS: Continue input returns to the saved room
+PASS: First room activation preserves restored ocean position
+PASS: Menu TRY AGAIN saves the reset and closes the menu
+PASS: Menu LOBBY returns to the lobby
+PASS: Standing view removes the seated offset

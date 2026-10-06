@@ -1,0 +1,56 @@
+2026-10-05 23:30:33Z
+Passed
+Desktop input + Unity physics, with editor frames advanced explicitly.
+PASS: Desktop fallback is active
+PASS: Desktop camera remains at eye height
+PASS: Movement input moves player
+PASS: Floor ray press/release teleports player
+PASS: Portal input reaches room 1
+PASS: Fourteen rowing actions complete ocean
+PASS: Menu key opens the comfort menu in room 1
+PASS: Menu LOBBY returns to the lobby
+PASS: Portal input reaches room 2
+PASS: Input grabs ANGER
+PASS: Truck accepts released ANGER
+PASS: Input grabs FEAR
+PASS: Truck accepts released FEAR
+PASS: Input grabs RELIEF
+PASS: Truck accepts released RELIEF
+PASS: Input grabs GRIEF
+PASS: Truck accepts released GRIEF
+PASS: Input grabs UNCERTAINTY
+PASS: Truck accepts released UNCERTAINTY
+PASS: Warehouse counts each box exactly once
+PASS: Menu key opens the comfort menu in room 2
+PASS: Menu LOBBY returns to the lobby
+PASS: Portal input reaches room 3
+PASS: Coffee mistakes grow the crowd
+PASS: Menu key opens the comfort menu in room 3
+PASS: Menu KITCHEN CROWD hides the crowd
+PASS: Menu key opens the comfort menu in room 3
+PASS: Menu CLOSE closes the menu
+PASS: Help input releases machine pressure
+PASS: Input grabs the coffee cup
+PASS: Cup placement and three pours complete kitchen
+PASS: Menu key opens the comfort menu in room 3
+PASS: Menu LOBBY returns to the lobby
+PASS: Portal input reaches room 4
+PASS: Input grabs archive note
+PASS: Matching tray accepts FACT
+PASS: Input grabs archive note
+PASS: Matching tray accepts FACT
+PASS: Input grabs archive note
+PASS: Matching tray accepts FEAR
+PASS: Input grabs archive note
+PASS: Matching tray accepts FEAR
+PASS: Input grabs archive note
+PASS: Matching tray accepts STILL TRUE
+PASS: Input grabs archive note
+PASS: Matching tray accepts STILL TRUE
+PASS: Archive completes after six correct placements
+PASS: All four chapters complete
+PASS: Completion saved as all four chapter flags
+PASS: Menu key opens the comfort menu in room 4
+PASS: Menu LOBBY returns to the lobby
+PASS: Portal input reaches room 5
+PASS: Completed journey changes rooftop ending
