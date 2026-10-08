@@ -12,6 +12,8 @@ namespace AfterHours
         public bool paddle;
         // Held level, turning only with the hand's heading. A cup of coffee stays upright and lands standing.
         public bool upright;
+        // A tool (the bat) is held in a fixed grip, stays in the hand when the pinch opens, and goes back to its rack when put down.
+        public bool tool;
         public Transform Holder { get; private set; }
         // Gliding to a send target (or back home after a wrong tray). Drop zones wait until it lands.
         public bool sending { get; private set; }
@@ -26,12 +28,14 @@ namespace AfterHours
         public void Initialize(){if(Body)return;Body=GetComponent<Rigidbody>();homePosition=transform.position;homeRotation=transform.rotation;}
         // With no offset the object stays exactly where the hand closed on it. A distance grab passes the world offset
         // from the hand at which to hold it. Either way it keeps its orientation relative to the hand.
-        public bool Take(Transform holder,Vector3? worldOffset=null,bool pull=false)
+        public bool Take(Transform holder,Vector3? worldOffset=null,bool pull=false,Quaternion? worldRotation=null)
         {
             if(held || processed) return false;
             if(sending){StopAllCoroutines();sending=false;}
             Holder=holder;held=true;if(!Body.isKinematic)Body.linearVelocity=Vector3.zero;Body.isKinematic=true;IgnorePlayer(true);
-            var inverse=Quaternion.Inverse(holder.rotation);holdRotation=inverse*transform.rotation;holdPosition=inverse*(worldOffset??transform.position-holder.position);
+            var inverse=Quaternion.Inverse(holder.rotation);holdRotation=inverse*(worldRotation??transform.rotation);holdPosition=inverse*(worldOffset??transform.position-holder.position);
+            // A held tool must never catch the hand's own pointer ray.
+            if(tool)SetLayer(2);
             holdYaw=Mathf.DeltaAngle(holder.eulerAngles.y,transform.eulerAngles.y);
             lastHand=holder.position;strokeTravel=0;
             // A distance grab draws the object to the hand over a moment instead of snapping it there.
@@ -41,6 +45,7 @@ namespace AfterHours
         public void Release()
         {
             held=false;Holder=null;IgnorePlayer(false);
+            if(tool){SetLayer(0);ReturnHome();return;}
             if(paddle) { transform.SetPositionAndRotation(homePosition,homeRotation);Body.isKinematic=true; }
             else if(!processed) Body.isKinematic=false;
         }
@@ -88,7 +93,8 @@ namespace AfterHours
         void Land()
         {
             sending=false;if(processed)return;
-            Body.isKinematic=false;Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;
+            // A tool rests on its rack; everything else lands and settles under physics.
+            if(tool){Body.isKinematic=true;}else{Body.isKinematic=false;Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}
             var d=GameDirector.Instance;if(d&&isActiveAndEnabled)d.PlayAt(d.place,transform.position,.45f);
         }
         // Leaving the room mid-glide: finish the move at once so the object never stays frozen in the air.
@@ -109,8 +115,9 @@ namespace AfterHours
             Initialize();
             StopAllCoroutines();sending=false;pullStart=-1;
             held=false;processed=false;Holder=null;IgnorePlayer(false);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.isKinematic=true;transform.SetPositionAndRotation(homePosition,homeRotation);
-            if(!paddle)Body.isKinematic=false;
+            if(tool)SetLayer(0);else if(!paddle)Body.isKinematic=false;
         }
+        void SetLayer(int layer){foreach(var t in GetComponentsInChildren<Transform>(true))t.gameObject.layer=layer;}
     }
 }
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AfterHours
 {
-    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine }
+    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer }
     public class Interactable : MonoBehaviour
     {
         public ActionKind kind;
@@ -36,6 +36,8 @@ namespace AfterHours
                 case ActionKind.WardrobePrev: if(director.wardrobe)director.wardrobe.Cycle(value,-1);break;
                 case ActionKind.WardrobeNext: if(director.wardrobe)director.wardrobe.Cycle(value,1);break;
                 case ActionKind.ChooseLine: if(director.shredder)director.shredder.Choose(value);break;
+                case ActionKind.PutBatBack: if(director.rage)director.rage.PutBatBack();break;
+                case ActionKind.NewComputer: if(director.rage)director.rage.NewComputer();break;
             }
             if(kind==ActionKind.SmoothMotion||kind==ActionKind.GentleAudience)director.SaveCheckpoint();
             if(director.menu&&director.menu.IsOpen)director.menu.Refresh();

@@ -56,7 +56,7 @@ namespace AfterHours.Editor
             // Reopen from disk so the editor shows exactly what ships. Meshes rewritten in place during the build can otherwise draw stale data in the editor.
             EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);var saved=Object.FindAnyObjectByType<GameDirector>();if(saved)Selection.activeGameObject=saved.gameObject;
             if(SceneView.lastActiveSceneView)SceneView.lastActiveSceneView.LookAt(new Vector3(0,1.8f,3),Quaternion.Euler(12,0,0),13);
-            Debug.Log("After Hours: scene authored, six rooms, hands/controllers, Quest build settings ready.");
+            Debug.Log("After Hours: scene authored, eight rooms (the lobby, six chapters and the rooftop), hands/controllers, Quest build settings ready.");
         }
         static Material Mat(string name,Color color,float metallic=0,float smoothness=.15f,Texture texture=null)
         {
@@ -161,7 +161,7 @@ namespace AfterHours.Editor
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.3.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.4.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
@@ -209,7 +209,7 @@ namespace AfterHours.Editor
         // is inactive while the scene is built, so these checks must include inactive objects.
         static bool Dynamic(Transform t,Transform room,GameDirector d)
         {
-            if(t.GetComponentInParent<Grabbable>(true)||t.GetComponentInParent<MirrorAvatar>(true))return true;
+            if(t.GetComponentInParent<Grabbable>(true)||t.GetComponentInParent<MirrorAvatar>(true)||t.GetComponentInParent<Breakable>(true))return true;
             for(var p=t;p&&p!=room;p=p.parent)if(!p.gameObject.activeSelf)return true;
             if(t.IsChildOf(d.ocean.horizon))return true;
             foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;

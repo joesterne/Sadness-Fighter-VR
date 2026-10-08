@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 namespace AfterHours
@@ -10,7 +11,7 @@ namespace AfterHours
         static Color ivory=new Color(.92f,.91f,.85f), muted=new Color(.61f,.76f,.77f), dark=new Color(.08f,.15f,.2f);
         public static void Build(GameDirector director)
         {
-            d=director;d.rooms=new MindRoom[7];
+            d=director;d.rooms=new MindRoom[8];
             NewRoom(0,"The lobby",Vector3.zero,new Vector3(0,.05f,-4));Hub();
             NewRoom(1,"Ocean of shame",new Vector3(80,0,0),new Vector3(0,.3f,-1));Ocean();
             NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-2.4f));Warehouse();
@@ -18,6 +19,7 @@ namespace AfterHours
             NewRoom(4,"The infinite archive",new Vector3(320,0,0),new Vector3(0,.04f,-1.2f));Archive();
             NewRoom(5,"Room for tomorrow",new Vector3(400,0,0),new Vector3(0,.04f,-4));Rooftop();
             NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
+            NewRoom(7,"The rage room",new Vector3(560,0,0),new Vector3(0,.04f,-1.25f));Rage();
             Menu();
             for(int i=0;i<d.rooms.Length;i++)d.rooms[i].root.SetActive(i==0);
         }
@@ -161,12 +163,13 @@ namespace AfterHours
             Door("03","A small\nspill","The machine is broken.\nYou are allowed help.",new Vector3(-6.82f,0,7),-90,Art.Gold,3);
             Door("04","The infinite\narchive","A fact, a fear,\nand what is still true.",new Vector3(6.82f,0,7),90,Art.Teal,4);
             Door("05","The old\nrésumé","Let go of who you\nwere for them.",new Vector3(6.82f,0,-2.6f),90,Art.Gold,6);
+            Door("06","The rage\nroom","Break the old work\ncomputer. Let it out.",new Vector3(-6.82f,0,4.05f),-90,Art.Coral,RageRoom.Room);
             // A detailed, polished memory occupies the end of each side of the lobby.
             MemoryOffice(new Vector3(-4.6f,0,12));MemoryOffice(new Vector3(4.6f,0,12));
             Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(2.35f,1.24f,.65f),Art.Navy);
             Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(2.45f,.06f,.72f),Art.Gold);
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.01f,-.64f),.18f,ivory,2.2f);
-            d.lobbyProgress=Art.Text("Journey progress","0 / 5   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.65f,-.645f),.145f,muted,2.15f);
+            d.lobbyProgress=Art.Text("Journey progress","0 / 6   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.65f,-.645f),.145f,muted,2.15f);
             Art.Box("Getting started board",new Vector3(3.5f,1.9f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy);
             Art.Text("Move instructions","POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch or menu button: the menu.",new Vector3(3.5f,1.9f,2.8f),.14f,ivory,2.7f);
             var resume=Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(0,2.16f,-.3f),new Vector3(2.75f,.4f,.12f),Art.Teal,ActionKind.Resume,d);
@@ -176,7 +179,9 @@ namespace AfterHours
             Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,1.1f,13.5f),new Vector3(4.2f,.65f,.16f),Art.Teal,ActionKind.Travel,d,5);
             Art.Button("Mirror and wardrobe","MIRROR  /  YOUR WARDROBE",new Vector3(0,1.62f,-.3f),new Vector3(2f,.26f,.1f),Art.Coral,ActionKind.GoToMirror,d);
             d.mirrorLabel=Art.Root.Find("Mirror and wardrobe label").GetComponent<TextMeshPro>();
-            for(int side=-1;side<=1;side+=2){Art.Plant(new Vector3(side*5.9f,0,4));Art.Plant(new Vector3(side*2.8f,0,10));}
+            // Door 06 stands between doors 01 and 03, so the left wall's plant moves on toward the memory office.
+            Art.Plant(new Vector3(5.9f,0,4));Art.Plant(new Vector3(-6.2f,0,9.3f));
+            for(int side=-1;side<=1;side+=2)Art.Plant(new Vector3(side*2.8f,0,10));
             Mirror();
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
             Guide();
@@ -339,6 +344,10 @@ namespace AfterHours
             var truePin=Look("true-pin",m.torso).group.transform;
             Art.Facet("Pin gem",new Vector3(-.095f,.15f,.11f),new Vector3(.045f,.06f,.022f),Art.Teal,4,truePin);
             Art.Shape("Pin spark",PrimitiveType.Sphere,new Vector3(-.095f,.158f,.118f),Vector3.one*.012f,Art.Gold,false,truePin);
+            // The rage room's pin: a burst of coral with a gold centre.
+            var letItOut=Look("letitout-pin",m.torso).group.transform;
+            for(int k=0;k<4;k++)Art.Box("Pin burst",new Vector3(-.095f,.15f,.108f),new Vector3(.052f,.014f,.006f),Art.Coral,false,letItOut,.002f).transform.localRotation=Quaternion.Euler(0,0,k*45);
+            Art.Shape("Pin centre",PrimitiveType.Sphere,new Vector3(-.095f,.15f,.113f),Vector3.one*.018f,Art.Gold,false,letItOut);
             // Arms are two fixed-length segments each, bent by the pose; hands follow tracked hands or controllers.
             for(int i=0;i<2;i++)
             {
@@ -430,6 +439,221 @@ namespace AfterHours
             for(int i=0;i<2;i++)Art.Box("Archive box",new Vector3(4.5f,.2f+i*.4f,2.6f),new Vector3(.8f,.38f,.55f),Art.Paper);
             Art.Plant(new Vector3(-4.9f,0,8.4f));Art.Plant(new Vector3(4.9f,0,8.4f));
             Sound("Ambience - Print room",.55f);
+        }
+        // The rage room: the old work computer on a desk, a bat on its rack, and a quiet moment once it is all broken.
+        // Every part that breaks is within a short bat swing of the arrival point, so the room plays from an airplane seat.
+        static void Rage()
+        {
+            var room=d.rooms[RageRoom.Room].root.AddComponent<RageRoom>();room.director=d;d.rage=room;d.rooms[RageRoom.Room].total=4;
+            var coral=new Color(.78f,.47f,.39f);
+            Shell(10,12,Art.Ink);
+            Header(RageRoom.Room,"06 / THE RAGE ROOM","Let it out.","Break the old work computer. Short swings count. Nothing here can be hurt.",new Vector3(0,3.75f,6.75f));
+            // Plywood over the back wall, sprayed with what was said on the way out.
+            // It stops below the room title, so the title and its progress line stay clear.
+            Art.Tiled("Plywood",new Vector3(0,1.4f,6.86f),new Vector3(7.2f,2f,.05f),Art.Wood,new Vector3(1.2f,1,0),false);
+            var ink=new Color(.07f,.12f,.19f);
+            Art.Text("Spray paint","<b>LAST DAY</b>",new Vector3(-2.5f,1.9f,6.82f),.38f,ink,2.1f).transform.localRotation=Quaternion.Euler(0,0,6);
+            Art.Text("Spray paint","<b>\"IT'S NOT PERSONAL\"</b>",new Vector3(2.2f,.95f,6.82f),.3f,ink,2.6f);
+            Art.Box("Spray strike",new Vector3(2.2f,.96f,6.81f),new Vector3(2.5f,.035f,.01f),Art.Coral,false).transform.localRotation=Quaternion.Euler(0,0,-3);
+            // A taped safety line marks where things break.
+            for(float x=-1.2f;x<=1.21f;x+=.3f)foreach(float z in new[]{-.82f,.82f})Art.Box("Safety tape",new Vector3(x,.012f,z),new Vector3(.18f,.012f,.07f),Art.Gold,false,null,.003f);
+            for(float z=-.6f;z<=.61f;z+=.3f)foreach(float x in new[]{-1.35f,1.35f})Art.Box("Safety tape",new Vector3(x,.012f,z),new Vector3(.07f,.012f,.18f),Art.Gold,false,null,.003f);
+            // The desk. Its top is at .745 m, just in front of the seat.
+            Art.Box("Desk top",new Vector3(0,.72f,-.25f),new Vector3(1.6f,.05f,.7f),Art.Wood);
+            foreach(float x in new[]{-.74f,.74f})foreach(float z in new[]{-.55f,.05f})Art.Box("Desk leg",new Vector3(x,.35f,z),new Vector3(.05f,.7f,.05f),Art.Metal);
+            Art.Box("Desk modesty panel",new Vector3(0,.42f,-.57f),new Vector3(1.5f,.42f,.02f),Art.Navy,false);
+            Art.Text("Desk note","SHORT SWINGS COUNT\n<size=70%>Nothing here can be hurt.</size>",new Vector3(0,.45f,-.59f),.075f,ivory,1.4f);
+            Art.Box("Monitor foot",new Vector3(0,.755f,-.18f),new Vector3(.24f,.02f,.17f),Art.Metal);
+            Art.Box("Monitor neck",new Vector3(0,.86f,-.16f),new Vector3(.05f,.22f,.03f),Art.Metal,false);
+
+            // The monitor: four hits. It cracks, argues, goes dark, then falls.
+            const string inbox="<b>INBOX</b>   <color=#5B6F7A>1,284 unread</color>\n<size=78%>Re: Re: Re: quick sync?\nMandatory fun, 4:30 pm\n<color=#C87863>Your access has been revoked</color>\nPlease return your laptop by Friday\nPer my last email</size>";
+            var monitor=Part("Monitor",new Vector3(0,1.13f,-.2f),"the monitor",BreakSound.Glass,"That screen saw every late night. It is dark now.",new Vector3(.66f,.44f,.1f),Vector3.zero);
+            var mv=monitor.visual;
+            Art.Box("Monitor body",Vector3.zero,new Vector3(.62f,.4f,.05f),Art.Ink,false,mv,.01f);
+            Art.Box("Monitor back",new Vector3(0,0,.045f),new Vector3(.38f,.26f,.05f),Art.Ink,false,mv,.01f);
+            var screen=Art.Box("Screen",new Vector3(0,.005f,-.027f),new Vector3(.57f,.345f,.006f),Art.White,false,mv,.002f);
+            var screenText=Art.Text("Screen text",inbox,new Vector3(0,.005f,-.032f),.03f,dark,.52f,mv);
+            screenText.rectTransform.sizeDelta=new Vector2(.52f,.31f);screenText.enableAutoSizing=true;screenText.fontSizeMin=.08f;screenText.fontSizeMax=.3f;screenText.alignment=TextAlignmentOptions.Left;
+            monitor.screenText=screenText;monitor.screenStart=inbox;
+            var crackA=Crack(mv,new Vector3(.1f,.06f,-.035f),5,.15f,Art.Navy,1);
+            var crackB=Crack(mv,new Vector3(-.13f,-.05f,-.035f),6,.19f,Art.Navy,2);
+            var crackDark=Crack(mv,new Vector3(.02f,.01f,-.03f),9,.3f,Art.Mint,3);
+            Rigidbody Shard(Vector3 at)=>Piece("Glass shard",at,new Vector3(.035f,.026f,.004f),Art.Mint,mv,.02f);
+            var fallen=Body("Fallen monitor",Vector3.zero,new Vector3(.62f,.4f,.08f),mv,3);
+            Art.Box("Monitor body",Vector3.zero,new Vector3(.62f,.4f,.05f),Art.Ink,false,fallen.transform,.01f);
+            Art.Box("Monitor back",new Vector3(0,0,.045f),new Vector3(.38f,.26f,.05f),Art.Ink,false,fallen.transform,.01f);
+            Crack(fallen.transform,new Vector3(.02f,.01f,-.03f),9,.3f,Art.Mint,3).SetActive(true);
+            monitor.stages=new[]{
+                new BreakStage{show=new[]{crackA},debris=new[]{Shard(new Vector3(.1f,.06f,-.03f)),Shard(new Vector3(.12f,.03f,-.03f))},
+                    screen="<b>ARE YOU SURE?</b>\nUnsaved feelings will be lost.\n\n<size=85%>[ OK ]        [ OK ]</size>"},
+                new BreakStage{show=new[]{crackB},tilt=new Vector3(6,0,-7),debris=new[]{Piece("Bezel chip",new Vector3(.3f,-.19f,-.01f),new Vector3(.05f,.04f,.05f),Art.Ink,mv,.05f),Shard(new Vector3(-.13f,-.05f,-.03f)),Shard(new Vector3(-.1f,-.08f,-.03f))},
+                    screen="<b>SYSTEM ERROR</b>\nThe role you held is no longer available.\n\n<size=80%>Please contact HR.\nHR has been contacted.</size>"},
+                new BreakStage{show=new[]{crackDark},hide=new[]{screen,screenText.gameObject,crackA,crackB},tilt=new Vector3(14,0,-12),shift=new Vector3(0,-.02f,.02f),debris=new[]{Shard(new Vector3(0,0,-.03f)),Shard(new Vector3(.05f,.04f,-.03f)),Shard(new Vector3(-.06f,.02f,-.03f))}},
+                new BreakStage{hide=new[]{mv.gameObject},debris=new[]{fallen,Shard(new Vector3(.08f,-.06f,-.03f)),Shard(new Vector3(-.1f,.08f,-.03f)),Shard(new Vector3(.15f,.1f,-.03f)),Shard(new Vector3(-.2f,-.1f,-.03f))}},
+            };
+
+            // The keyboard: three hits. Keys fly, then it snaps in two.
+            var keyboard=Part("Keyboard",new Vector3(-.02f,.765f,-.42f),"the keyboard",BreakSound.Plastic,"All the words you held back. Some of them are out now.",new Vector3(.5f,.07f,.19f),new Vector3(0,.01f,0));
+            var kv=keyboard.visual;var whole=Art.Group("Keyboard whole",Vector3.zero,kv);
+            Art.Box("Keyboard base",new Vector3(0,-.004f,0),new Vector3(.46f,.018f,.15f),Art.Ink,false,whole,.004f);
+            var flying=new List<Rigidbody>();
+            for(int row=0;row<3;row++)for(int col=0;col<10;col++)
+            {
+                var at=new Vector3(-.19f+col*.042f,.011f,-.042f+row*.042f);var size=new Vector3(.034f,.012f,.034f);
+                // Every third key is loose: those fly on the first two hits.
+                if((row*10+col)%3==1&&flying.Count<11)flying.Add(Piece("Key",at,size,Art.Cream,kv,.01f,true));
+                else Art.Box("Key",at,size,Art.Cream,false,whole,.003f);
+            }
+            Rigidbody Half(string name,float x)
+            {
+                var half=Body(name,new Vector3(x,-.004f,0),new Vector3(.23f,.03f,.15f),kv,.35f);
+                Art.Box("Keyboard half",Vector3.zero,new Vector3(.225f,.018f,.15f),Art.Ink,false,half.transform,.004f);
+                for(int k=0;k<6;k++)Art.Box("Key",new Vector3(-.08f+(k%3)*.08f,.015f,-.035f+(k/3)*.07f),new Vector3(.034f,.012f,.034f),Art.Cream,false,half.transform,.003f);
+                return half;
+            }
+            keyboard.stages=new[]{
+                new BreakStage{tilt=new Vector3(0,-6,0),shift=new Vector3(0,0,.01f),debris=flying.Take(5).ToArray()},
+                new BreakStage{tilt=new Vector3(0,-10,4),shift=new Vector3(.01f,0,.02f),debris=flying.Skip(5).ToArray()},
+                new BreakStage{hide=new[]{whole.gameObject},debris=new[]{Half("Keyboard left half",-.115f),Half("Keyboard right half",.115f)}},
+            };
+
+            // The tower: four hits. A dent, the side panel, sparks and a fan, then it topples.
+            var tower=Part("Tower",new Vector3(.56f,.97f,-.3f),"the tower",BreakSound.Metal,"You carried their systems for years. You can set that down.",new Vector3(.24f,.46f,.44f),Vector3.zero);
+            var tv=tower.visual;
+            Art.Box("Tower case",Vector3.zero,new Vector3(.2f,.42f,.4f),Art.Navy,false,tv,.008f);
+            Art.Box("Front panel",new Vector3(0,0,-.2f),new Vector3(.18f,.4f,.008f),Art.Metal,false,tv,.002f);
+            Art.Shape("Power button",PrimitiveType.Sphere,new Vector3(0,.15f,-.205f),Vector3.one*.028f,Art.Gold,false,tv);
+            var light=Art.Shape("Power light",PrimitiveType.Sphere,new Vector3(.05f,.15f,-.206f),Vector3.one*.013f,Art.Mint,false,tv);
+            Art.Box("Drive bay",new Vector3(0,.07f,-.205f),new Vector3(.14f,.025f,.004f),Art.Ink,false,tv,.001f);
+            for(int k=0;k<3;k++)Art.Box("Vent",new Vector3(0,-.1f-k*.03f,-.205f),new Vector3(.12f,.008f,.004f),Art.Ink,false,tv,.001f);
+            Art.Box("Motherboard",new Vector3(.09f,0,0),new Vector3(.006f,.36f,.34f),Art.Teal,false,tv,.002f);
+            foreach(float y in new[]{-.04f,-.07f})Art.Box("Memory",new Vector3(.095f,y,-.05f),new Vector3(.01f,.012f,.12f),Art.Gold,false,tv,.002f);
+            var dent=Art.Box("Dent",new Vector3(0,-.02f,-.206f),new Vector3(.15f,.012f,.004f),Art.Ink,false,tv,.001f);dent.transform.localRotation=Quaternion.Euler(0,0,32);dent.SetActive(false);
+            var side=Piece("Side panel",new Vector3(.104f,0,0),new Vector3(.006f,.4f,.38f),Art.Metal,tv,.6f,true);
+            var fan=Piece("Fan",new Vector3(.085f,.1f,.06f),new Vector3(.1f,.012f,.1f),Art.Ink,tv,.15f,true,PrimitiveType.Cylinder);fan.transform.localRotation=Quaternion.Euler(0,0,90);
+            var toppled=Body("Fallen tower",Vector3.zero,new Vector3(.2f,.42f,.4f),tv,4);
+            Art.Box("Tower case",Vector3.zero,new Vector3(.2f,.42f,.4f),Art.Navy,false,toppled.transform,.008f);
+            Art.Box("Front panel",new Vector3(0,0,-.2f),new Vector3(.18f,.4f,.008f),Art.Metal,false,toppled.transform,.002f);
+            Art.Box("Motherboard",new Vector3(.098f,0,0),new Vector3(.006f,.36f,.34f),Art.Teal,false,toppled.transform,.002f);
+            tower.stages=new[]{
+                new BreakStage{show=new[]{dent},tilt=new Vector3(0,-5,4)},
+                new BreakStage{tilt=new Vector3(0,-9,7),debris=new[]{side}},
+                new BreakStage{hide=new[]{light},tilt=new Vector3(0,-12,10),shift=new Vector3(.01f,0,.02f),debris=new[]{fan}},
+                new BreakStage{hide=new[]{tv.gameObject},debris=new[]{toppled}},
+            };
+
+            // The mouse: two hits. Flattened, then in pieces.
+            var mouse=Part("Mouse",new Vector3(.33f,.762f,-.46f),"the mouse",BreakSound.Plastic,"Click. Done.",new Vector3(.11f,.07f,.15f),new Vector3(0,.015f,0));
+            var ov=mouse.visual;
+            Art.Shape("Mouse",PrimitiveType.Sphere,new Vector3(0,.014f,0),new Vector3(.06f,.032f,.1f),Art.White,false,ov);
+            Art.Box("Mouse buttons",new Vector3(0,.029f,.025f),new Vector3(.003f,.004f,.04f),Art.Ink,false,ov,.001f);
+            Art.Line("Mouse cable",new Vector3(0,.008f,.05f),new Vector3(-.06f,.002f,.2f),.006f,Art.Ink,ov);
+            var mouseCrack=Art.Box("Mouse crack",new Vector3(.005f,.026f,-.01f),new Vector3(.003f,.005f,.06f),Art.Ink,false,ov,.001f);mouseCrack.transform.localRotation=Quaternion.Euler(0,25,0);mouseCrack.SetActive(false);
+            mouse.stages=new[]{
+                new BreakStage{show=new[]{mouseCrack},tilt=new Vector3(0,20,0),shift=new Vector3(0,-.006f,0),scale=new Vector3(1.15f,.55f,1)},
+                new BreakStage{hide=new[]{ov.gameObject},debris=new[]{Piece("Mouse half",new Vector3(-.015f,.014f,0),new Vector3(.03f,.03f,.1f),Art.White,ov,.03f,false,PrimitiveType.Sphere),Piece("Mouse half",new Vector3(.015f,.014f,0),new Vector3(.03f,.03f,.1f),Art.White,ov,.03f,false,PrimitiveType.Sphere),Piece("Mouse wheel",new Vector3(0,.03f,.03f),new Vector3(.012f,.004f,.012f),Art.Ink,ov,.01f,false,PrimitiveType.Cylinder)}},
+            };
+            room.parts=new[]{monitor,keyboard,tower,mouse};
+
+            // The bat stands on its rack to the left of the desk. Pointing at it and pinching puts it in your hand.
+            var bat=Art.Group("Bat",new Vector3(-.62f,.11f,-.78f));bat.localRotation=Quaternion.Euler(-84,8,0);
+            void Segment(string name,float z,float length,float diameter,Material material)
+            {Art.Shape(name,PrimitiveType.Cylinder,new Vector3(0,0,z),new Vector3(diameter,length/2,diameter),material,false,bat).transform.localRotation=Quaternion.Euler(90,0,0);}
+            Segment("Bat knob",-.075f,.02f,.052f,Art.Ink);Segment("Bat grip",.075f,.28f,.033f,Art.Ink);Segment("Bat taper",.31f,.2f,.046f,Art.Wood);
+            Segment("Bat barrel",.62f,.44f,.066f,Art.Wood);Segment("Bat band",.47f,.025f,.07f,Art.Coral);
+            Art.Shape("Bat end",PrimitiveType.Sphere,new Vector3(0,0,.84f),new Vector3(.066f,.066f,.03f),Art.Wood,false,bat);
+            var batCollider=bat.gameObject.AddComponent<BoxCollider>();batCollider.center=new Vector3(0,0,.38f);batCollider.size=new Vector3(.09f,.09f,.96f);
+            var batBody=bat.gameObject.AddComponent<Rigidbody>();batBody.isKinematic=true;batBody.interpolation=RigidbodyInterpolation.Interpolate;
+            var grab=bat.gameObject.AddComponent<Grabbable>();grab.label="The bat";grab.room=RageRoom.Room;grab.tool=true;room.bat=grab;
+            var swing=bat.gameObject.AddComponent<Bat>();swing.room=room;swing.grabbable=grab;
+            Art.Shape("Bat stand",PrimitiveType.Cylinder,new Vector3(-.62f,.015f,-.78f),new Vector3(.22f,.015f,.22f),Art.Navy);
+            Art.Box("Rack post",new Vector3(-.72f,.33f,-.78f),new Vector3(.03f,.64f,.03f),Art.Metal);
+            Art.Box("Rack hook",new Vector3(-.67f,.56f,-.76f),new Vector3(.1f,.02f,.02f),Art.Gold,false);
+            var rack=Art.Group("Bat rack sign",new Vector3(-1.02f,.9f,-.5f));rack.localRotation=Quaternion.Euler(0,-40,0);
+            Art.Button("Bat rack","PUT THE BAT BACK",Vector3.zero,new Vector3(.3f,.085f,.03f),Art.Navy,ActionKind.PutBatBack,d,0,rack);
+
+            // When it is all broken: the quiet, a soft light panel at reading distance beyond the desk, and a way to wheel in a new one.
+            var calm=Art.Group("The quiet",new Vector3(0,1.62f,1.35f));
+            Art.Box("Calm light",Vector3.zero,new Vector3(1.6f,.56f,.02f),Art.White,false,calm,.004f);
+            Art.Box("Calm edge",new Vector3(0,-.29f,0),new Vector3(1.6f,.02f,.03f),Art.Gold,false,calm,.002f);
+            Art.Text("Calm words","IT IS ALLOWED TO BE ANGRY",new Vector3(0,.13f,-.02f),.085f,dark,1.5f,calm);
+            Art.Text("Calm words","about losing something that mattered.",new Vector3(0,-.01f,-.02f),.06f,dark,1.5f,calm);
+            Art.Text("Calm breath","Breathe in.   And out.",new Vector3(0,-.15f,-.02f),.055f,coral,1.5f,calm);
+            foreach(var r in calm.GetComponentsInChildren<Renderer>(true))r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            calm.gameObject.SetActive(false);room.calm=calm.gameObject;
+            var fresh=Art.Group("New computer",new Vector3(0,1.13f,-.29f));
+            Art.Button("Wheel in a new computer","WHEEL IN A NEW ONE",Vector3.zero,new Vector3(.62f,.16f,.05f),Art.Teal,ActionKind.NewComputer,d,0,fresh);
+            fresh.gameObject.SetActive(false);room.newComputer=fresh.gameObject;
+
+            // The room around it: a hanging lamp, a box of desk things, a knocked-over chair, the rules and a clock at five.
+            Art.Line("Lamp cord",new Vector3(0,4.58f,-.2f),new Vector3(0,2.75f,-.2f),.012f,Art.Ink);
+            Art.Shape("Lamp shade",PrimitiveType.Cylinder,new Vector3(0,2.72f,-.2f),new Vector3(.38f,.08f,.38f),Art.Gold,false);
+            Art.Shape("Lamp bulb",PrimitiveType.Sphere,new Vector3(0,2.62f,-.2f),Vector3.one*.11f,Art.White,false);
+            Art.Box("Box of your things",new Vector3(1.15f,.17f,-1.05f),new Vector3(.45f,.32f,.35f),Art.Paper);
+            foreach(float s in new[]{-1f,1f})Art.Box("Box flap",new Vector3(1.15f+s*.24f,.36f,-1.05f),new Vector3(.02f,.12f,.33f),Art.Paper,false).transform.localRotation=Quaternion.Euler(0,0,s*-30);
+            Art.Text("Box label","MY THINGS",new Vector3(1.15f,.2f,-1.235f),.06f,dark,.4f);
+            Art.Shape("Mug",PrimitiveType.Cylinder,new Vector3(1.05f,.37f,-1.02f),new Vector3(.08f,.05f,.08f),Art.White,false);
+            Art.Facet("Desk plant",new Vector3(1.25f,.42f,-1.02f),new Vector3(.12f,.2f,.12f),Art.Teal,5);
+            var chair=Art.Group("Knocked-over chair",new Vector3(-1.9f,0,1.3f));chair.localRotation=Quaternion.Euler(0,35,0);
+            Art.Box("Chair seat",new Vector3(0,.3f,0),new Vector3(.55f,.1f,.5f),Art.Navy,true,chair).transform.localRotation=Quaternion.Euler(0,0,78);
+            Art.Shape("Chair back",PrimitiveType.Capsule,new Vector3(-.32f,.3f,.35f),new Vector3(.55f,.38f,.14f),Art.Navy,false,chair).transform.localRotation=Quaternion.Euler(90,0,0);
+            Art.Box("Rules board",new Vector3(-4.88f,2,1),new Vector3(.04f,1.1f,1.7f),Art.Navy,false);
+            Art.Text("Rules","RAGE ROOM RULES\n<size=70%>1. Break things, never people.\n2. Short swings count.\n3. Rest whenever you like.</size>",new Vector3(-4.85f,2,1),.13f,ivory,1.55f).transform.localRotation=Quaternion.Euler(0,-90,0);
+            Art.Shape("Clock",PrimitiveType.Cylinder,new Vector3(4.88f,2.6f,1.5f),new Vector3(.5f,.02f,.5f),Art.Cream,false).transform.localRotation=Quaternion.Euler(0,0,90);
+            Art.Line("Clock hand",new Vector3(4.85f,2.6f,1.5f),new Vector3(4.85f,2.6f+.866f*.12f,1.5f+.5f*.12f),.014f,Art.Ink);
+            Art.Line("Clock hand",new Vector3(4.85f,2.6f,1.5f),new Vector3(4.85f,2.78f,1.5f),.01f,Art.Ink);
+            room.shards=Burst("Shards",Art.Mint,.026f,1);room.sparks=Burst("Sparks",d.player.rayMaterial,.013f,.5f);
+            Sound("Ambience - Rage room",.5f);room.ambience=d.rooms[RageRoom.Room].root.GetComponent<AudioSource>();room.ambienceVolume=.5f;
+            room.hitPlastic=SoundBank.Get("SFX - Hit plastic");room.hitGlass=SoundBank.Get("SFX - Hit glass");room.hitMetal=SoundBank.Get("SFX - Hit metal");
+            room.smash=SoundBank.Get("SFX - Smash");room.swing=SoundBank.Get("SFX - Swing");room.cart=SoundBank.Get("SFX - Cart");room.calmSound=SoundBank.Get("SFX - Calm");
+        }
+        // A part of the computer: a solid volume the bat can hit, and a group of pieces that breaks.
+        static Breakable Part(string name,Vector3 at,string label,BreakSound sound,string line,Vector3 volume,Vector3 centre)
+        {
+            var root=Art.Group(name,at);var part=root.gameObject.AddComponent<Breakable>();part.label=label;part.sound=sound;part.brokenLine=line;
+            var box=root.gameObject.AddComponent<BoxCollider>();box.center=centre;box.size=volume;part.hitVolumes=new Collider[]{box};
+            part.visual=Art.Group(name+" - pieces",Vector3.zero,root);return part;
+        }
+        // A loose piece: parked inside its part until a hit throws it.
+        static Rigidbody Piece(string name,Vector3 at,Vector3 size,Material material,Transform parent,float mass,bool visible=false,PrimitiveType type=PrimitiveType.Cube)
+        {
+            var go=Art.Shape(name,type,at,size,material,true,parent,.004f);
+            var body=go.AddComponent<Rigidbody>();body.mass=mass;body.isKinematic=true;body.interpolation=RigidbodyInterpolation.Interpolate;body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;
+            go.SetActive(visible);return body;
+        }
+        // A larger loose piece built from several shapes, with one box to collide.
+        static Rigidbody Body(string name,Vector3 at,Vector3 size,Transform parent,float mass)
+        {
+            var group=Art.Group(name,at,parent);group.gameObject.AddComponent<BoxCollider>().size=size;
+            var body=group.gameObject.AddComponent<Rigidbody>();body.mass=mass;body.isKinematic=true;body.interpolation=RigidbodyInterpolation.Interpolate;body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;
+            group.gameObject.SetActive(false);return body;
+        }
+        // Cracks radiating across a screen from a point of impact. Hidden until a hit shows them.
+        static GameObject Crack(Transform parent,Vector3 at,int lines,float reach,Material material,int seed)
+        {
+            var group=Art.Group("Crack",Vector3.zero,parent);var random=new System.Random(seed);float R()=>(float)random.NextDouble();
+            Vector3 Clamp(Vector3 p)=>new Vector3(Mathf.Clamp(p.x,-.28f,.28f),Mathf.Clamp(p.y,-.165f,.17f),p.z);
+            for(int i=0;i<lines;i++)
+            {
+                float a=(i+R()*.6f)*Mathf.PI*2/lines,length=reach*(.5f+R()*.6f);
+                var end=Clamp(at+new Vector3(Mathf.Cos(a),Mathf.Sin(a),0)*length);Art.Line("Crack line",at,end,.0035f,material,group);
+                var mid=Vector3.Lerp(at,end,.6f);float b=a+(R()-.5f)*1.3f;
+                Art.Line("Crack line",mid,Clamp(mid+new Vector3(Mathf.Cos(b),Mathf.Sin(b),0)*length*.4f),.0025f,material,group);
+            }
+            group.gameObject.SetActive(false);return group.gameObject;
+        }
+        // Shards and sparks thrown by a hit. Emitted from code, so the system plays continuously with no emission of its own.
+        static ParticleSystem Burst(string name,Material material,float size,float gravity)
+        {
+            var go=Art.Group(name,Vector3.zero).gameObject;var ps=go.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main=ps.main;main.playOnAwake=true;main.loop=true;main.duration=1;main.startLifetime=new ParticleSystem.MinMaxCurve(.6f,1.2f);main.startSpeed=0;main.gravityModifier=gravity;main.maxParticles=160;
+            main.simulationSpace=ParticleSystemSimulationSpace.World;main.startSize=new ParticleSystem.MinMaxCurve(size*.5f,size);
+            main.startRotation3D=true;main.startRotationX=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);main.startRotationY=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);main.startRotationZ=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);
+            var emission=ps.emission;emission.enabled=false;var shape=ps.shape;shape.enabled=false;
+            var collision=ps.collision;collision.enabled=true;collision.type=ParticleSystemCollisionType.World;collision.mode=ParticleSystemCollisionMode.Collision3D;collision.dampen=.5f;collision.bounce=.25f;collision.quality=ParticleSystemCollisionQuality.Medium;
+            var renderer=go.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Cube);renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            return ps;
         }
         static Grabbable Page(string text,Vector3 p)
         {

@@ -16,9 +16,10 @@ Sit in an upright chair with no table in front of you. Keep your elbows near you
 6. **The infinite archive.** Send one note to the wrong tray: it should drift back to the desk. Then file all six.
 7. **The old résumé.** Send each page into the shredder: point at a page, pinch, point at the shredder (its slot lights up) and open your fingers. Check the page sinks into the slot, the paper in the bin grows, and a line answers each one. When the blank page appears, pinch one of the four true lines.
 8. **The mirror.** Open the menu, select LOBBY, and pinch MIRROR on the desk. Check you land facing the glass and your reflection follows your head and both hands, mirrored. Try every row of the wardrobe from where you sit, and put on the pieces you have earned. The line you chose should be above the glass.
-9. **Rooftop.** Pinch the rooftop door and stay for 20 seconds: an evening beanie should be announced.
+9. **The rage room.** Point at the bat beside the desk and pinch: it should come to your hand and stay there when you open your fingers. Keeping your elbow near your side, flick your forearm at the monitor: a short, quick flick should land a full hit, with a sound, a jolt and pieces. A slow push through it should do nothing. Break the monitor, keyboard, tower and mouse. Check every part can be reached with the bat without leaning, that the screen's messages change as the monitor cracks, and that the room goes quiet with the calm panel once everything is broken. Pinch WHEEL IN A NEW ONE, then PUT THE BAT BACK.
+10. **Rooftop.** Pinch the rooftop door and stay for 20 seconds: an evening beanie should be announced.
 
-Pass 1 passes if you finished everything without standing, leaning out of the imagined seat, reaching beyond the 60 cm, or picking up a controller. Note anything that needed a second try.
+Pass 1 passes if you finished everything without standing, leaning out of the imagined seat, reaching beyond the 60 cm, or picking up a controller. The bat may reach further than your hand; your arm should not. Note anything that needed a second try.
 
 ## Pass 2: controllers, standing, saving
 
@@ -26,7 +27,8 @@ Pass 1 passes if you finished everything without standing, leaning out of the im
 2. Walk with the left stick and check the comfort vignette softens the edges gently and clears when you stop. Try COMFORT VIGNETTE off.
 3. Stand up, switch SEATED VIEW off, and check the tracked height returns.
 4. In the warehouse, grab a box up close and carry it into the bay by hand instead of sending it.
-5. Stop midway through each chapter, close the app, reopen it and select CONTINUE. Paddle strokes, delivered boxes, sorted notes, shredded pages, help and coffee pours should all be kept. Loose objects may return to their starting places. Completed chapters stay marked, the first-visit card should not return, and the mirror should show what you were wearing.
+5. In the rage room, take the bat with the grip button and swing it with full, standing swings. Check hits still count once each, the controller buzzes on each hit (stronger for harder hits), and the bat stays in your hand through fast swings.
+6. Stop midway through each chapter, close the app, reopen it and select CONTINUE. Paddle strokes, delivered boxes, sorted notes, shredded pages, broken computer parts, help and coffee pours should all be kept. Loose objects may return to their starting places. Completed chapters stay marked, the first-visit card should not return, and the mirror should show what you were wearing.
 
 ## What to record
 

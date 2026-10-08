@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.SceneManagement;
 
 namespace AfterHours.Editor
 {
@@ -53,6 +54,9 @@ namespace AfterHours.Editor
         }
         static IEnumerator<float> Run()
         {
+            // Start from a fresh scene with no saved progress, so suites run earlier in the same Play Mode session leave nothing behind.
+            PlayerPrefs.DeleteKey(CheckpointStore.Key);PlayerPrefs.DeleteKey("AfterHours.Progress.v1");
+            SceneManager.LoadScene("AfterHours");yield return 1f;D.saveEnabled=false;if(D.intro)D.intro.Hide();
             // Let the test's input devices settle before the first key press.
             yield return .5f;
             if(D.currentRoom!=0){D.Travel(0);yield return .8f;}P.smoothMotion=true;
@@ -60,7 +64,7 @@ namespace AfterHours.Editor
             Check(!D.menu.lobby.activeSelf&&!D.menu.tryAgain.activeSelf,"The lobby menu has no LOBBY or TRY AGAIN");
             key=MenuKey(false);while(key.MoveNext())yield return key.Current;
             // Every ENTER sign and menu return route, including the rooftop (last, returning with the lobby key).
-            foreach(int room in new[]{1,2,3,4,6,5})
+            foreach(int room in new[]{1,2,3,4,6,RageRoom.Room,5})
             {
                 var entry=Button(ActionKind.Travel,room);Approach(entry);yield return .2f;Aim(entry.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;Arrived(room);
                 key=MenuKey(true);while(key.MoveNext())yield return key.Current;
@@ -90,6 +94,12 @@ namespace AfterHours.Editor
             Check(!box.held&&box.Holder==null,"Travel releases carried objects in their original room");Arrived(0);
             before=P.transform.position;Aim(new Vector3(3,.01f,-3));yield return .2f;Press(false);yield return .5f;
             Check(Vector3.Distance(before,P.transform.position)<.1f,"A trigger held across rooms cannot teleport on release");
+            // The bat stays in hand after the press ends, and goes back to its rack when you leave the room.
+            var rageEntry=Button(ActionKind.Travel,RageRoom.Room);Approach(rageEntry);yield return .2f;Aim(rageEntry.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;Arrived(RageRoom.Room);
+            var bat=D.rage.bat;var rack=bat.transform.position;Aim(RageTesting.BatMiddle);Press(true);yield return .25f;Press(false);yield return .3f;
+            Check(bat.held&&P.IsHolding(bat),"The bat stays in hand after the press ends");
+            Queue(keyboard,new KeyboardState(Key.Escape));yield return .12f;Queue(keyboard,new KeyboardState());yield return .8f;Arrived(0);
+            Check(!bat.held&&!P.IsHolding(bat)&&Vector3.Distance(bat.transform.position,rack)<.05f,"Leaving the rage room puts the bat back on its rack");
             var remaining=Remaining();while(remaining.MoveNext())yield return remaining.Current;
         }
         static IEnumerator<float> Remaining()

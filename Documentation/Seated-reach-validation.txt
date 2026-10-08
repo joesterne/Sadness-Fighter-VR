@@ -1,4 +1,4 @@
-2026-10-06 18:59:50Z
+2026-10-08 19:56:23Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note
@@ -76,7 +76,17 @@ PASS: The old résumé: "Reason for leaving: __________" shredded from the seat
 PASS: The old résumé: a blank page offers four true lines
 PASS: The old résumé: choosing a line from the seat completes the chapter
 PASS: The old résumé: done without leaving the seat
-PASS: All five chapters completed seated, without moving
+PASS: The rage room: every part is within 0.65 m of a seated hand, inside the bat's 0.85 m
+PASS: The rage room: pinch picks up the bat from the seat (1.0 m away), and it stays in hand
+PASS: The rage room: short swings from the seat break the monitor
+PASS: The rage room: short swings from the seat break the keyboard
+PASS: The rage room: short swings from the seat break the tower
+PASS: The rage room: short swings from the seat break the mouse
+PASS: The rage room: the quiet comes, and the chapter completes
+PASS: The rage room: WHEEL IN A NEW ONE can be chosen from the seat
+PASS: The rage room: PUT THE BAT BACK can be chosen from the seat
+PASS: The rage room: done without leaving the seat
+PASS: All six chapters completed seated, without moving
 PASS: Mirror: MIRROR on the desk brings you to the glass, facing it
 PASS: Mirror: your reflection appears
 PASS: Mirror: all 16 wardrobe buttons can be pointed at from the mirror spot

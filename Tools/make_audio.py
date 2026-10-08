@@ -375,6 +375,81 @@ def sfx_unlock():
     return chime([hz('D', 5), hz('F#', 5), hz('A', 5), hz('D', 6)], gap=0.11, seconds=1.6)
 
 
+# ---------- the rage room ----------
+def amb_rageroom(seconds=30, fade=4):
+    n = int((seconds + fade) * SR); tt = np.arange(n) / SR
+    # A bare storage room after hours: concrete room tone, a buzzing tube light and a ventilation duct.
+    room = lowpass(brown(n), 160, 2) * 0.7
+    buzz = (np.sin(2 * np.pi * 120 * tt) * 0.5 + np.sin(2 * np.pi * 240 * tt) * 0.3 + np.sin(2 * np.pi * 360 * tt) * 0.12) * 0.02
+    buzz *= 0.8 + 0.2 * smooth_noise(n, 0.4)
+    duct = bandpass(pink(n), 200, 900, 2) * 0.12 * (0.6 + 0.4 * smooth_noise(n, 0.08))
+    x = room + buzz + duct
+    return normalise(make_loop(x, fade), -12, rms_db=-33)
+
+def sfx_swing():
+    n = int(0.34 * SR)
+    x = sweep_noise(0.34, 260, 1500, 380, 0.9) * np.sin(np.linspace(0, np.pi, n)) ** 2
+    return fade_edges(normalise(x, -8))
+
+def clicks(seconds, count, lo=1500, hi=6000, spread=1.0):
+    n = int(seconds * SR); x = np.zeros(n)
+    for _ in range(count):
+        m = int(rng.uniform(0.003, 0.01) * SR); i = int(rng.uniform(0, seconds * spread) * SR)
+        c = bandpass(white(m), lo, hi, 1) * decay(m, 0.002) * rng.uniform(0.2, 1.0)
+        x[i:i + m] += c[:max(0, n - i)]
+    return x
+
+def thump(n, freq, seconds):
+    tt = np.arange(n) / SR
+    return np.sin(2 * np.pi * freq * tt * (1 + 0.6 * np.exp(-tt * 40))) * decay(n, seconds)
+
+def sfx_hit_plastic():
+    n = int(0.5 * SR)
+    crack = bandpass(white(n), 700, 4500, 2) * decay(n, 0.018)
+    x = thump(n, 150, 0.05) * 0.9 + crack * 0.8 + clicks(0.5, 9, 1800, 7000, 0.6) * 0.5 * np.linspace(1, 0.3, n)
+    return fade_edges(normalise(reverb(x, 0.5, 0.12), -4))
+
+def sfx_hit_glass():
+    n = int(0.9 * SR); x = thump(n, 95, 0.06) * 0.8 + highpass(white(n), 2500, 2) * decay(n, 0.03) * 0.9
+    for _ in range(9):
+        f = rng.uniform(2600, 6200); i = int(rng.uniform(0.02, 0.5) * SR); b = bell(f, 0.3) * rng.uniform(0.08, 0.25)
+        x[i:i + len(b)] += b[:n - i]
+    x += clicks(0.9, 14, 3000, 9000, 0.6) * 0.35
+    return fade_edges(normalise(reverb(x, 0.7, 0.15), -4))
+
+def sfx_hit_metal():
+    n = int(1.2 * SR); clang = metal_hit(1.2, base=rng.uniform(240, 320))
+    clang *= decay(n, 0.35)
+    x = clang * 0.55 + thump(n, 110, 0.07) * 0.9 + lowpass(white(n), 3500, 1) * decay(n, 0.015) * 0.6
+    return fade_edges(normalise(reverb(x, 0.6, 0.12), -4))
+
+def sfx_smash():
+    n = int(1.6 * SR)
+    boom = thump(n, 60, 0.22) * 1.0
+    burst = lowpass(white(n), 3500, 2) * decay(n, 0.12) * 0.9
+    debris = clicks(1.6, 60, 1200, 8000, 0.85) * np.exp(-np.arange(n) / (0.5 * SR)) * 0.8
+    x = boom + burst + debris
+    for _ in range(6):
+        f = rng.uniform(2400, 5600); i = int(rng.uniform(0.05, 0.7) * SR); b = bell(f, 0.35) * rng.uniform(0.05, 0.15)
+        x[i:i + len(b)] += b[:n - i]
+    return fade_edges(normalise(reverb(x, 0.9, 0.18), -3))
+
+def sfx_cart():
+    n = int(1.8 * SR); tt = np.arange(n) / SR
+    rumble = lowpass(brown(n), 140, 2) * 0.8
+    bumps = (np.sin(2 * np.pi * 6.5 * tt) > 0.92).astype(float)
+    tick = bandpass(white(n), 600, 2400, 1) * lowpass(bumps, 60, 1) * 2.5
+    squeak = np.sin(2 * np.pi * (1900 + 120 * np.sin(2 * np.pi * 3 * tt)) * tt) * 0.03 * (np.sin(2 * np.pi * 1.1 * tt) > 0.6)
+    x = (rumble + tick + squeak) * env_adsr(n, 0.35, 0.6, 2)
+    return fade_edges(normalise(reverb(x, 0.6, 0.15), -8))
+
+def sfx_calm():
+    n = int(4.0 * SR)
+    x = (pad_note(hz('D', 3), n) * 0.6 + pad_note(hz('A', 3), n) * 0.5 + pad_note(hz('F#', 4), n) * 0.25) * env_adsr(n, 1.2, 2.2, 2)
+    x = lowpass(x, 2200, 1)
+    return fade_edges(normalise(reverb(x, 2.2, 0.35), -10))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -386,6 +461,8 @@ def main(folder):
         'SFX - Teleport': sfx_teleport, 'SFX - Turn': sfx_turn, 'SFX - Row': sfx_row, 'SFX - Spill': sfx_spill, 'SFX - Pour': sfx_pour,
         # Added later: new sounds go last, so the random sequence, and every earlier file, stays the same.
         'Ambience - Print room': amb_printroom, 'SFX - Shred': sfx_shred, 'SFX - Unlock': sfx_unlock,
+        'Ambience - Rage room': amb_rageroom, 'SFX - Swing': sfx_swing, 'SFX - Hit plastic': sfx_hit_plastic, 'SFX - Hit glass': sfx_hit_glass,
+        'SFX - Hit metal': sfx_hit_metal, 'SFX - Smash': sfx_smash, 'SFX - Cart': sfx_cart, 'SFX - Calm': sfx_calm,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

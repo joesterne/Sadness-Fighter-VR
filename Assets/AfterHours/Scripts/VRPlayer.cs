@@ -27,7 +27,7 @@ namespace AfterHours
         public bool comfortVignette { get; private set; } = true;
         Vector3 rigHome, hintHome; bool comfortReady, wasMenu, turnedAround;
         float vignetteLevel; MaterialPropertyBlock vignetteBlock; static readonly int VignetteStrength=Shader.PropertyToID("_Strength");
-        CharacterController body; Transform desktopGrip;
+        CharacterController body; Transform desktopGrip, desktopToolGrip;
         readonly Grabbable[] held=new Grabbable[2];
         readonly SendTarget[] aimedTarget=new SendTarget[2];
         readonly bool[] wasSelect=new bool[2], wasGrip=new bool[2];
@@ -49,6 +49,8 @@ namespace AfterHours
             comfortVignette=PlayerPrefs.GetInt("AfterHours.Vignette",1)==1;
             if(hint)hintHome=hint.transform.localPosition;if(vignette)vignette.enabled=false;
             body=GetComponent<CharacterController>(); desktopGrip=new GameObject("Desktop carry point").transform; desktopGrip.SetParent(Head,false);desktopGrip.localPosition=new Vector3(0,-.25f,1.35f);
+            // On desktop a tool is held low and to the right of the view, like a first-person bat: looking down swings it.
+            desktopToolGrip=new GameObject("Desktop tool grip").transform;desktopToolGrip.SetParent(Head,false);desktopToolGrip.localPosition=new Vector3(.14f,-.32f,.6f);
             for(int i=0;i<2;i++)
             {
                 var go=new GameObject(i==0?"Left pointer":"Right pointer");go.transform.SetParent(transform,false);
@@ -171,19 +173,22 @@ namespace AfterHours
             bool select=valid&&(desktop?(Mouse.current!=null&&Mouse.current.leftButton.isPressed):trackedHand?!hand.IsSystemGestureInProgress&&hand.GetFingerIsPinching(OVRHand.HandFinger.Index):OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger,controller)>.65f);
             bool grab=valid&&(trackedHand?select:desktop?select:OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger,controller)>.65f);
             controllerModels[index].SetActive(trackedController&&!trackedHand);
-            if(!valid){if(held[index])held[index].Release();held[index]=null;aimedTarget[index]=null;wasGrip[index]=wasSelect[index]=false;teleportReady[index]=teleportGesture[index]=false;inputBlocked[index]=true;rays[index].enabled=false;cursors[index].gameObject.SetActive(false);return;}
+            // A tool stays in the hand through a moment of lost tracking, which fast swings often cause.
+            if(!valid){if(held[index]&&!held[index].tool){held[index].Release();held[index]=null;}aimedTarget[index]=null;wasGrip[index]=wasSelect[index]=false;teleportReady[index]=teleportGesture[index]=false;inputBlocked[index]=true;rays[index].enabled=false;cursors[index].gameObject.SetActive(false);return;}
             Vector3 origin=aim.position, direction=aim.forward;
+            // Holding a tool leaves the pointer free: it still chooses buttons and picks nothing else up.
+            bool carrying=held[index]&&!held[index].tool;
             bool hit=Physics.Raycast(origin,direction,out RaycastHit info,14,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
             var target=hit?info.collider.GetComponentInParent<Interactable>():null;
             var item=hit?info.collider.GetComponentInParent<Grabbable>():null;
             // Aim assist: a thin hand ray rarely lands exactly on a box across the room, so a near miss still counts.
-            if(!held[index]&&!target&&(!item||item.held||item.processed))item=Assist(origin,direction);
+            if(!carrying&&!target&&(!item||item.held||item.processed))item=Assist(origin,direction);
             // While holding something, find where pointing would send it.
-            aimedTarget[index]=held[index]?FindTarget(origin,direction,held[index]):null;
+            aimedTarget[index]=carrying?FindTarget(origin,direction,held[index]):null;
             var sendTo=aimedTarget[index];
-            Vector3 end=held[index]?(sendTo?sendTo.LandingPoint:origin+direction*2.5f):item&&!hit?item.transform.position:hit?info.point:origin+direction*5;
+            Vector3 end=carrying?(sendTo?sendTo.LandingPoint:origin+direction*2.5f):item&&!hit?item.transform.position:hit?info.point:origin+direction*5;
             rays[index].enabled=true;rays[index].SetPosition(0,origin);rays[index].SetPosition(1,end);
-            bool showCursor=held[index]?sendTo:(hit||item);
+            bool showCursor=carrying?sendTo:(hit||item);
             cursors[index].gameObject.SetActive(showCursor);if(showCursor)cursors[index].position=end;
             // A held trigger or pinch must be released after travel or tracking recovery before it can act again.
             if(inputBlocked[index])
@@ -196,7 +201,10 @@ namespace AfterHours
                 var pick=nearby?nearby:item;
                 // Close grabs hold the object where the hand closed on it. Distance grabs draw it along the pointer, just clear of the hand.
                 Vector3? offset=desktop?grip.forward*.13f:nearby?(Vector3?)null:pick?direction*(.06f+Extent(pick,direction)):Vector3.zero;
-                if(pick&&(nearby||Vector3.Distance(origin,pick.transform.position)<GrabRange)&&pick.Take(grip,offset,!nearby))
+                // A tool goes straight into a fixed grip: the handle in the palm, the bat pointing forward and up.
+                bool takeTool=pick&&pick.tool;var holder=takeTool&&desktop?desktopToolGrip:grip;Quaternion? toolRotation=null;
+                if(takeTool){offset=desktop?Vector3.zero:direction*.07f;toolRotation=ToolRotation(desktop,direction);}
+                if(pick&&(nearby||Vector3.Distance(origin,pick.transform.position)<GrabRange)&&pick.Take(holder,offset,!nearby,toolRotation))
                 {
                     held[index]=pick;ShowHint(HoldHint(pick),4);
                     var d=GameDirector.Instance;d.PlayAt(d.grab,pick.transform.position,.6f);Pulse(controller);
@@ -207,7 +215,7 @@ namespace AfterHours
             {
                 // Lock the purpose of this press. A button that moves the view must never become a floor teleport.
                 teleportGesture[index]=!held[index]&&!target&&floorTarget;
-                if(!held[index]&&target){var d=GameDirector.Instance;d.PlayUi(d.select,.5f);target.Activate();Pulse(controller);}
+                if(!carrying&&target){var d=GameDirector.Instance;d.PlayUi(d.select,.5f);target.Activate();Pulse(controller);}
                 else if(teleportGesture[index])ShowHint("Release to teleport",2);
             }
             if(teleportGesture[index]&&!busy)
@@ -217,7 +225,7 @@ namespace AfterHours
                 if(!select&&wasSelect[index]&&teleportReady[index])StartCoroutine(Teleport(teleportPoint[index],seatedMode?LandingYaw(Head.position,teleportPoint[index],Head.eulerAngles.y):Head.eulerAngles.y));
             }
             if(!select){teleportReady[index]=false;teleportGesture[index]=false;}
-            if(held[index]&&!grab)
+            if(carrying&&held[index]&&!grab)
             {
                 var letGo=held[index];held[index]=null;aimedTarget[index]=null;
                 // Pointing at where it belongs sends it there; otherwise it simply drops.
@@ -227,9 +235,17 @@ namespace AfterHours
             wasSelect[index]=select;wasGrip[index]=grab;
         }
         const float GrabRange=10f,AssistAngle=4f;
+        // How a tool sits in the hand when picked up: pointing the way the player points, raised 45 degrees.
+        Quaternion ToolRotation(bool desktop,Vector3 direction)
+        {
+            if(desktop)return Head.rotation*Quaternion.Euler(-40,0,0);
+            var flat=Vector3.ProjectOnPlane(direction,Vector3.up);if(flat.sqrMagnitude<.01f)flat=Vector3.ProjectOnPlane(Head.forward,Vector3.up);
+            return Quaternion.LookRotation((flat.normalized+Vector3.up).normalized,Vector3.up);
+        }
         string HoldHint(Grabbable item)
         {
             if(item.paddle)return "Pull the paddle toward you, then reach forward.";
+            if(item.tool)return "The bat stays in your hand. Swing at the old computer: short swings count. Point at the rack and pinch to put it back.";
             foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt;
             return item.label.Replace("\n"," ")+"  /  Let go to place it.";
         }
@@ -283,6 +299,14 @@ namespace AfterHours
             var bounds=new Bounds(item.transform.position,Vector3.zero);foreach(var c in item.GetComponentsInChildren<Collider>())bounds.Encapsulate(c.bounds);
             var e=bounds.extents;return Mathf.Abs(direction.x)*e.x+Mathf.Abs(direction.y)*e.y+Mathf.Abs(direction.z)*e.z;
         }
+        // Puts a held object down (a tool goes back to its rack).
+        public void Drop(Grabbable item){for(int i=0;i<2;i++)if(item&&held[i]==item){item.Release();held[i]=null;aimedTarget[i]=null;}}
+        public bool IsHolding(Grabbable item)=>item&&(held[0]==item||held[1]==item);
+        // A short buzz in the controller holding this object, stronger for a harder hit. Tracked hands have no haptics.
+        public void PulseFor(Grabbable item,float strength)
+        {
+            for(int i=0;i<2;i++)if(item&&held[i]==item)StartCoroutine(Haptic(i==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch,Mathf.Clamp01(strength),.09f));
+        }
         public void ReleaseAll(){for(int i=0;i<2;i++){if(held[i])held[i].Release();held[i]=null;aimedTarget[i]=null;teleportReady[i]=teleportGesture[i]=false;inputBlocked[i]=true;}}
         void HideRays(){for(int i=0;i<2;i++){rays[i].enabled=false;cursors[i].gameObject.SetActive(false);}}
         public void Place(Vector3 floor,float yaw)
@@ -319,8 +343,8 @@ namespace AfterHours
             while(t<duration){t+=Time.unscaledDeltaTime;float a=Mathf.Lerp(from,target,t/duration);fade.color=new Color(.025f,.04f,.07f,a);if(dimAudio)AudioListener.volume=1-a*.9f;yield return null;}
             fade.color=new Color(.025f,.04f,.07f,target);if(dimAudio)AudioListener.volume=1-target*.9f;
         }
-        void Pulse(OVRInput.Controller controller){StartCoroutine(Haptic(controller));}
-        IEnumerator Haptic(OVRInput.Controller controller){if(IsXR)OVRInput.SetControllerVibration(.25f,.3f,controller);yield return new WaitForSeconds(.06f);if(IsXR)OVRInput.SetControllerVibration(0,0,controller);}
+        void Pulse(OVRInput.Controller controller){StartCoroutine(Haptic(controller,.3f,.06f));}
+        IEnumerator Haptic(OVRInput.Controller controller,float amplitude,float seconds){if(IsXR)OVRInput.SetControllerVibration(.25f,amplitude,controller);yield return new WaitForSeconds(seconds);if(IsXR)OVRInput.SetControllerVibration(0,0,controller);}
         void OnGUI()
         {
             if(IsXR)return;

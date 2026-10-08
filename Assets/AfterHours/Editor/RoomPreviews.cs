@@ -47,10 +47,21 @@ namespace AfterHours.Editor
                 saved+=TargetShot(d,cam,3,"A small spill - send the cup")?1:0;
                 saved+=TargetShot(d,cam,4,"The infinite archive - send to a tray")?1:0;
                 saved+=TargetShot(d,cam,6,"The old résumé - send to the shredder")?1:0;
+                // The rage room's computer and bat as a seated player sees them on arrival.
+                var rage=d.rooms[RageRoom.Room];
+                saved+=Shot(d,RageRoom.Room,cam,"The rage room - the computer",rage.spawn.position+Vector3.up*1.6f,rage.root.transform.TransformPoint(new Vector3(-.15f,.95f,-.2f)),"Seated - ")?1:0;
+                // The quiet panel that appears once everything is broken, as the seated player sees it.
+                if(d.rage&&d.rage.calm)
+                {
+                    d.rage.calm.SetActive(true);
+                    try{saved+=Shot(d,RageRoom.Room,cam,"The rage room - the quiet",rage.spawn.position+Vector3.up*1.6f,rage.root.transform.TransformPoint(new Vector3(0,1.45f,1.35f)),"Seated - ")?1:0;}
+                    finally{d.rage.calm.SetActive(false);}
+                }
                 // The mirror from where MIRROR on the desk puts you: the starter look, then a look made of earned pieces.
                 saved+=MirrorShot(d,cam,"Starter look",new WardrobeState())?1:0;
                 saved+=MirrorShot(d,cam,"Earned look",new WardrobeState{skin=4,hair=2,hairColour=2,build=1,top="jumper",head="beanie",neck="scarf",pin="step-pin"})?1:0;
                 saved+=MirrorShot(d,cam,"Lanyard and cap",new WardrobeState{skin=0,hair=1,hairColour=3,build=2,top="cardigan",head="cap",neck="lanyard",pin="true-pin"})?1:0;
+                saved+=MirrorShot(d,cam,"Let it out pin",new WardrobeState{skin=5,hair=4,hairColour=0,build=1,top="jacket",head="no-hat",neck="no-neck",pin="letitout-pin"})?1:0;
             }
             finally
             {

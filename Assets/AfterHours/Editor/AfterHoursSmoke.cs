@@ -46,6 +46,8 @@ namespace AfterHours.Editor
         static void Queue<T>(InputDevice device,T state) where T:struct,IInputStateTypeInfo{device.MakeCurrent();InputSystem.QueueStateEvent(device,state);}
         static void Check(bool ok,string name){results.Add((ok?"PASS: ":"FAIL: ")+name);if(!ok)throw new Exception(name);}
         static IEnumerator Delay(float seconds=.2f){yield return new WaitForSeconds(seconds);}
+        // The swing helpers yield game-time waits; zero means the next frame.
+        static object Wait(float seconds)=>seconds>0?new WaitForSeconds(seconds):null;
         static void Aim(Vector3 point){d.player.Head.rotation=Quaternion.LookRotation(point-d.player.Head.position);}
         static void Press(bool down){Queue(mouse,new MouseState().WithButton(MouseButton.Left,down));}
         static IEnumerator Click(Interactable button)
@@ -114,8 +116,36 @@ namespace AfterHours.Editor
             yield return Delay(3.8f);Check(d.shredder.Offering,"A blank page offers four true lines");Capture("Old resume-Choice");
             yield return Click(d.rooms[6].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.ChooseLine&&x.value==2));
             Check(d.rooms[6].complete&&d.shredder.line=="I keep going."&&d.wardrobe.State.line=="I keep going.","Choosing a line completes the chapter and keeps the line for the wardrobe");
-            Check(d.CompletedCount==5,"All five chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==94,"Completion saved as all five chapter flags");
-            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","jacket","step-pin","scarf"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the small step pin and the kind scarf");
+            Check(d.CompletedCount==5,"Five chapters complete before the rage room");
+            yield return Visit(RageRoom.Room);Capture("Rage room");
+            var rage=d.rage;var bat=rage.bat;var batHome=bat.transform.position;
+            Aim(RageTesting.BatMiddle);yield return Delay(.06f);Press(true);yield return Delay(.3f);Press(false);yield return Delay(.3f);
+            Check(bat.held&&d.player.IsHolding(bat),"Input picks up the bat, and it stays in hand after the press ends");
+            Capture("Rage room-Bat in hand");
+            foreach(var w in RageTesting.Swing(rage.parts[0],50,4))yield return Wait(w);
+            Check(rage.parts[0].damage==0,"Moving the bat slowly through the monitor does not count as a hit");
+            var swings=new List<int>();
+            for(int i=0;i<rage.parts.Length;i++)
+            {
+                var part=rage.parts[i];
+                foreach(var w in RageTesting.BreakPart(part,swings))yield return Wait(w);
+                Check(part.Broken,"Short swings break "+part.label+" ("+part.HitsToBreak+" hits"+(swings.Last()>0?" in "+swings.Last()+" swings aimed at it)":", all landed by swings aimed at its neighbour)"));
+                Check(d.rooms[RageRoom.Room].accepted==rage.BrokenCount&&rage.BrokenCount>=i+1,"The room counts "+rage.BrokenCount+" of 4 broken");
+            }
+            Check(!d.rooms[RageRoom.Room].complete&&rage.Quieting,"The last part starts the quiet; the chapter waits for it");
+            var desk=d.rooms[RageRoom.Room].root.transform.TransformPoint(new Vector3(.1f,.85f,-.3f));
+            yield return Delay(1);Aim(desk);yield return Delay(.2f);Capture("Rage room-Broken");
+            yield return Delay(10.5f);
+            Check(d.rooms[RageRoom.Room].complete&&rage.Calm&&rage.newComputer.activeSelf,"When it is all broken the room goes quiet, then the chapter completes");
+            Check(rage.ambience.volume<.01f,"The room's hum fades to silence");
+            Aim(d.rooms[RageRoom.Room].root.transform.TransformPoint(new Vector3(0,1.5f,3)));yield return Delay(.2f);Capture("Rage room-Quiet");
+            yield return Click(rage.newComputer.GetComponentInChildren<Interactable>());yield return Delay(1.8f);
+            Check(rage.parts.All(x=>x.damage==0&&!x.Broken)&&d.rooms[RageRoom.Room].accepted==0&&!rage.Calm&&d.rooms[RageRoom.Room].complete,"WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete");
+            Check(Mathf.Abs(rage.ambience.volume-rage.ambienceVolume)<.01f,"The hum returns with the new computer");
+            yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
+            Check(!bat.held&&!d.player.IsHolding(bat)&&Vector3.Distance(bat.transform.position,batHome)<.05f,"PUT THE BAT BACK returns the bat to its rack");
+            Check(d.CompletedCount==6,"All six chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==222,"Completion saved as all six chapter flags");
+            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","jacket","step-pin","scarf"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
             Status="Passed";
         }

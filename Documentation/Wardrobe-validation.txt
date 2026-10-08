@@ -1,4 +1,4 @@
-2026-10-06 18:55:51Z
+2026-10-08 19:58:34Z
 Passed
 The mirror, the avatar and the wardrobe: pointer input at the mirror, the real unlock events, and a scene reload.
 PASS: A new player owns only the starter pieces: two tops and no hat
@@ -23,12 +23,14 @@ PASS: Asking for help earns the kind scarf
 PASS: The ocean's piece waits until the ocean is finished
 PASS: Reaching the shore earns the harbour jumper
 PASS: Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin
-PASS: The jacket waits for all five chapters
+PASS: The jacket waits for all six chapters
 PASS: The lanyard waits for a true line
-PASS: Choosing a line earns the lanyard, and finishing all five chapters the sunrise jacket
+PASS: Choosing a line earns the lanyard; the jacket still waits for the rage room
+PASS: The let it out pin waits for the quiet after the last break
+PASS: The quiet after the whole computer earns the let it out pin, and finishing all six chapters the sunrise jacket
 PASS: Ten seconds on the rooftop is not yet a rest
 PASS: Resting on the rooftop earns the evening beanie: every piece found
-PASS: The desk's MIRROR sign counts the new pieces (9)
+PASS: The desk's MIRROR sign counts the new pieces (10)
 PASS: The mirror's nameplate shows the line you kept
 PASS: TOP > reaches the harbour jumper, and it is no longer new
 PASS: The jumper has long sleeves
@@ -36,6 +38,7 @@ PASS: HAT > puts on the mover's cap
 PASS: Curls tuck under the cap
 PASS: NECK > twice: past the scarf to your own lanyard
 PASS: PIN > pins on the small step pin
+PASS: PIN > twice more reaches the let it out pin
 PASS: TRY AGAIN in a chapter keeps every piece
 PASS: After a reload: every piece, everything you wore and how you look
 PASS: After a reload the reflection is dressed the same and the nameplate keeps your line

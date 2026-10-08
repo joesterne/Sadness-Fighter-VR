@@ -135,7 +135,32 @@ namespace AfterHours.Editor
             foreach(var t in Click(Button(ActionKind.ChooseLine)))yield return t;
             Check(D.rooms[Shredder.Room].complete&&D.shredder.line=="I learn fast.","The old résumé: choosing a line from the seat completes the chapter");
             Check(Moved(seat)<.05f,"The old résumé: done without leaving the seat");
-            Check(D.CompletedCount==5,"All five chapters completed seated, without moving");
+
+            D.Travel(RageRoom.Room);yield return 1f;seat=P.transform.position;var rage=D.rage;
+            // Every part is within a short bat swing of the right hand, and the monitor and keyboard of either hand.
+            var forward=D.rooms[RageRoom.Room].spawn.forward;
+            float widestRight=rage.parts.Max(x=>RageTesting.SeatedReach(P.Head.position,forward,.2f,x));
+            float widestLeft=rage.parts.Take(2).Max(x=>RageTesting.SeatedReach(P.Head.position,forward,-.2f,x));
+            Check(widestRight<.7f&&widestLeft<.7f,"The rage room: every part is within "+Mathf.Max(widestRight,widestLeft).ToString("0.00")+" m of a seated hand, inside the bat's 0.85 m");
+            Look(RageTesting.BatMiddle);
+            if(!Physics.Raycast(P.Head.position,P.Head.forward,out var batHit,14,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)||!batHit.collider.transform.IsChildOf(rage.bat.transform))
+                throw new Exception("Pointer target obstructed from the seat: the bat by "+(batHit.collider?batHit.collider.name:"nothing"));
+            Press(true);yield return .3f;Press(false);yield return .3f;
+            Check(rage.bat.held,"The rage room: pinch picks up the bat from the seat ("+Vector3.Distance(P.Head.position,RageTesting.BatMiddle).ToString("0.0")+" m away), and it stays in hand");
+            var swings=new List<int>();
+            foreach(var part in rage.parts)
+            {
+                foreach(var t in RageTesting.BreakPart(part,swings))yield return t;
+                Check(part.Broken,"The rage room: short swings from the seat break "+part.label);
+            }
+            yield return 11.5f;
+            Check(D.rooms[RageRoom.Room].complete&&rage.Calm,"The rage room: the quiet comes, and the chapter completes");
+            foreach(var t in Click(rage.newComputer.GetComponentInChildren<Interactable>()))yield return t;yield return 1.8f;
+            Check(rage.parts.All(x=>x.damage==0),"The rage room: WHEEL IN A NEW ONE can be chosen from the seat");
+            foreach(var t in Click(Button(ActionKind.PutBatBack)))yield return t;yield return 1f;
+            Check(!rage.bat.held,"The rage room: PUT THE BAT BACK can be chosen from the seat");
+            Check(Moved(seat)<.05f,"The rage room: done without leaving the seat");
+            Check(D.CompletedCount==6,"All six chapters completed seated, without moving");
 
             // The mirror: MIRROR on the desk brings a seated player to it, and every wardrobe button is in reach from there.
             D.Travel(0);yield return 1f;

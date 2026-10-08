@@ -109,11 +109,13 @@ namespace AfterHours.Editor
             D.rooms[2].root.GetComponentInChildren<DropZone>().RestoreItem(box);D.AcceptItem(2,box.label);
             D.Travel(3);yield return .8f;D.kitchen.AskForHelp();D.kitchen.cup.transform.position=D.kitchen.nozzle.position;D.kitchen.Brew();yield return .2f;
             Check(D.kitchen.fills==1,"Short kitchen session records one pour and help");
+            D.Travel(RageRoom.Room);yield return .8f;var mouse=D.rage.parts[3];D.rage.HitNow(mouse);D.rage.HitNow(mouse);
+            Check(mouse.Broken&&D.rooms[RageRoom.Room].accepted==1&&!D.rooms[RageRoom.Room].complete,"Short rage room session breaks the mouse");
             D.Travel(4);yield return .8f;
             var note=D.rooms[4].root.GetComponentsInChildren<Grabbable>().First();var tray=D.rooms[4].root.GetComponentsInChildren<DropZone>().First(x=>x.category==note.category);
             tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.SaveCheckpoint();
             var saved=JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
-            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped,"Checkpoint stores partial progress in all five chapters");
+            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==4&&saved.rage.Sum()==2&&saved.rage[3]==2,"Checkpoint stores partial progress in all six chapters");
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return .8f;
             Check(D.player.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Seated mode and eye-height preference survive reload");
             Check(!P.comfortVignette,"Vignette preference survives reload");
@@ -122,6 +124,7 @@ namespace AfterHours.Editor
             Check(D.rooms[4].accepted==1&&D.rooms[4].root.GetComponentsInChildren<Grabbable>(true).Count(x=>x.processed)==1,"Sorted note restores exactly once");
             Check(D.kitchen.helped&&D.kitchen.fills==1,"Kitchen help and partial coffee restore");
             Check(D.rooms[6].accepted==1&&D.shredder.pages.Count(x=>x.processed)==1&&!D.shredder.pages[0].gameObject.activeSelf&&D.shredder.piles[0].activeSelf,"A shredded résumé restores exactly once, and the paper stays in the bin");
+            Check(D.rooms[RageRoom.Room].accepted==1&&D.rage.parts[3].Broken&&D.rage.parts.Take(3).All(x=>x.damage==0)&&!D.rage.parts[3].visual.gameObject.activeSelf,"A broken mouse restores exactly once, still in pieces");
             Check(D.lastRoom==4&&D.resumeLabel.text.Contains("ARCHIVE"),"Continue button names the last room");
             Aim(Button(ActionKind.Resume));Press(true);yield return .12f;Press(false);yield return .85f;
             Check(D.currentRoom==4,"Continue input returns to the saved room");

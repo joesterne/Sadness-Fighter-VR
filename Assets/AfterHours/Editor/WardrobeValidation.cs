@@ -107,12 +107,17 @@ namespace AfterHours.Editor
             Check(D.rooms[1].complete&&W.Has("jumper"),"Reaching the shore earns the harbour jumper");
             foreach(int room in new[]{2,3,4})D.CompleteRoom(room);
             Check(W.Has("cap")&&W.Has("cardigan")&&W.Has("true-pin"),"Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin");
-            Check(!W.Has("jacket"),"The jacket waits for all five chapters");
+            Check(!W.Has("jacket"),"The jacket waits for all six chapters");
             D.Travel(Shredder.Room);yield return 1f;
             foreach(var page in D.shredder.pages)D.shredder.ShredNow(page);
             Check(D.shredder.Offering&&!W.Has("lanyard"),"The lanyard waits for a true line");
             D.shredder.Choose(1);
-            Check(W.Has("lanyard")&&W.State.line=="I care about people."&&W.Has("jacket"),"Choosing a line earns the lanyard, and finishing all five chapters the sunrise jacket");
+            Check(W.Has("lanyard")&&W.State.line=="I care about people."&&!W.Has("jacket"),"Choosing a line earns the lanyard; the jacket still waits for the rage room");
+            D.Travel(RageRoom.Room);yield return 1f;
+            foreach(var part in D.rage.parts)while(!part.Broken){D.rage.HitNow(part);yield return .05f;}
+            Check(!W.Has("letitout-pin"),"The let it out pin waits for the quiet after the last break");
+            yield return 11.5f;
+            Check(W.Has("letitout-pin")&&W.Has("jacket"),"The quiet after the whole computer earns the let it out pin, and finishing all six chapters the sunrise jacket");
             D.Travel(5);yield return 10f;
             Check(!W.Has("beanie"),"Ten seconds on the rooftop is not yet a rest");
             yield return 12f;
@@ -133,13 +138,15 @@ namespace AfterHours.Editor
             Check(W.State.neck=="lanyard"&&avatar.Wearing("lanyard")&&!avatar.Wearing("scarf"),"NECK > twice: past the scarf to your own lanyard");
             foreach(var t in Step(7))yield return t;
             Check(W.State.pin=="step-pin"&&avatar.Wearing("step-pin"),"PIN > pins on the small step pin");
+            foreach(var t in Step(7,2))yield return t;
+            Check(W.State.pin=="letitout-pin"&&avatar.Wearing("letitout-pin")&&!avatar.Wearing("step-pin"),"PIN > twice more reaches the let it out pin");
 
             // Nothing is lost: TRY AGAIN keeps pieces, and a reload keeps everything.
             D.Travel(2);yield return 1f;D.RestartCurrentRoom();
             Check(W.Has("cap")&&W.FoundCount==Outfits.Earnable,"TRY AGAIN in a chapter keeps every piece");
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return 1f;
             var s=D.wardrobe.State;
-            Check(D.wardrobe.FoundCount==Outfits.Earnable&&s.top=="jumper"&&s.head=="cap"&&s.neck=="lanyard"&&s.pin=="step-pin"&&s.skin==3&&s.hair==1&&s.hairColour==2,"After a reload: every piece, everything you wore and how you look");
+            Check(D.wardrobe.FoundCount==Outfits.Earnable&&s.top=="jumper"&&s.head=="cap"&&s.neck=="lanyard"&&s.pin=="letitout-pin"&&s.skin==3&&s.hair==1&&s.hairColour==2,"After a reload: every piece, everything you wore and how you look");
             Check(D.wardrobe.avatar.Wearing("jumper")&&D.wardrobe.avatar.Wearing("cap")&&D.wardrobe.nameplate.text.Contains("I care about people."),"After a reload the reflection is dressed the same and the nameplate keeps your line");
         }
         static void Tick()

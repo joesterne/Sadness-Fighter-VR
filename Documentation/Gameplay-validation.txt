@@ -1,4 +1,4 @@
-2026-10-06 21:15:00Z
+2026-10-08 20:07:21Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -69,10 +69,30 @@ PASS: The shredder takes "Reason for leaving: __________"
 PASS: Five pages shredded once each; the chapter waits for a true line
 PASS: A blank page offers four true lines
 PASS: Choosing a line completes the chapter and keeps the line for the wardrobe
-PASS: All five chapters complete
-PASS: Completion saved as all five chapter flags
-PASS: Playing through earns every chapter piece, the small step pin and the kind scarf
+PASS: Five chapters complete before the rage room
 PASS: Menu key opens the comfort menu in room 6
+PASS: Menu LOBBY returns to the lobby
+PASS: Portal input reaches room 7
+PASS: Input picks up the bat, and it stays in hand after the press ends
+PASS: Moving the bat slowly through the monitor does not count as a hit
+PASS: Short swings break the monitor (4 hits in 4 swings aimed at it)
+PASS: The room counts 2 of 4 broken
+PASS: Short swings break the keyboard (3 hits, all landed by swings aimed at its neighbour)
+PASS: The room counts 2 of 4 broken
+PASS: Short swings break the tower (4 hits in 4 swings aimed at it)
+PASS: The room counts 4 of 4 broken
+PASS: Short swings break the mouse (2 hits, all landed by swings aimed at its neighbour)
+PASS: The room counts 4 of 4 broken
+PASS: The last part starts the quiet; the chapter waits for it
+PASS: When it is all broken the room goes quiet, then the chapter completes
+PASS: The room's hum fades to silence
+PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
+PASS: The hum returns with the new computer
+PASS: PUT THE BAT BACK returns the bat to its rack
+PASS: All six chapters complete
+PASS: Completion saved as all six chapter flags
+PASS: Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf
+PASS: Menu key opens the comfort menu in room 7
 PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 5
 PASS: Completed journey changes rooftop ending

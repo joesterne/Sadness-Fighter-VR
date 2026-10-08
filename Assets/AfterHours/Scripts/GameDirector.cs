@@ -28,12 +28,13 @@ namespace AfterHours
         public ComfortMenu menu;
         public IntroGuide intro;
         public Shredder shredder;
+        public RageRoom rage;
         public Wardrobe wardrobe;
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
         public AudioClip select, grab, send, place, menuOpen, menuClose, teleport, turn, row, spill, pour, shred, unlock;
-        // The five chapters. The lobby is 0 and the rooftop, open from the start, is 5.
-        public static readonly int[] Chapters={1,2,3,4,6};
+        // The six chapters. The lobby is 0 and the rooftop, open from the start, is 5.
+        public static readonly int[] Chapters={1,2,3,4,6,7};
         public static bool IsChapter(int room)=>Array.IndexOf(Chapters,room)>=0;
         const float RestForBeanie=20;
         float restTime, lastSay=-10;
@@ -108,7 +109,7 @@ namespace AfterHours
             player.Place(rooms[room].spawn.position,rooms[room].spawn.eulerAngles.y);
             if(room==1)ocean.OnArrive();
             yield return player.Fade(0,.35f,true);player.busy=false;
-            string[] messages={"Your progress is saved. Continue when you want to, or stop here for today.","Hold either paddle and pull toward you. Or press ROW. The horizon will wait.","These feelings can travel with you. Pinch a box to pick it up, point at the truck and let go. Five boxes.","Pick up the cup, point at the spout and let go. Then try BREW. You can ask for help at any point. The menu can hide the watching crowd.","Sort six notes into FACT, FEAR, and STILL TRUE: pick one up, point at its tray and let go. A thought does not have to become a verdict.","Stay as long as you like. Your next chapter does not need a title yet.","Pick up an old résumé, point at the shredder and let go. When they are gone, keep one true line."};
+            string[] messages={"Your progress is saved. Continue when you want to, or stop here for today.","Hold either paddle and pull toward you. Or press ROW. The horizon will wait.","These feelings can travel with you. Pinch a box to pick it up, point at the truck and let go. Five boxes.","Pick up the cup, point at the spout and let go. Then try BREW. You can ask for help at any point. The menu can hide the watching crowd.","Sort six notes into FACT, FEAR, and STILL TRUE: pick one up, point at its tray and let go. A thought does not have to become a verdict.","Stay as long as you like. Your next chapter does not need a title yet.","Pick up an old résumé, point at the shredder and let go. When they are gone, keep one true line.","Point at the bat and pinch to pick it up. It stays in your hand. Swing at the old computer: short swings count, and nothing here can be hurt."};
             Say(messages[room]);
         }
         public void Say(string text){if(player)player.ShowHint(text,9);lastSay=Time.time;}
@@ -126,7 +127,7 @@ namespace AfterHours
             bool first=!rooms[room].complete;rooms[room].complete=true;
             int mask=0;foreach(int i in Chapters)if(rooms[i].complete)mask|=1<<i;
             PlayerPrefs.SetInt(SaveKey,mask);PlayerPrefs.Save();RefreshProgress();if(first)Play(completeSound);
-            string[] lines={"","You crossed a feeling. It was never the whole ocean.","Processed does not mean erased. You made room to carry on.","A broken machine is not a broken person. Help belongs here.","Losing a role did not erase what is still true about you.","","The old pages are gone. What you bring with you is still yours."};Say(lines[room]+"  The menu takes you back to the lobby whenever you are ready.");
+            string[] lines={"","You crossed a feeling. It was never the whole ocean.","Processed does not mean erased. You made room to carry on.","A broken machine is not a broken person. Help belongs here.","Losing a role did not erase what is still true about you.","","The old pages are gone. What you bring with you is still yours.","You let some of it out. What you lost mattered. So do you."};Say(lines[room]+"  The menu takes you back to the lobby whenever you are ready.");
             Earn(Outfits.ForChapter(room));if(CompletedCount==Chapters.Length)Earn("jacket");
             SaveCheckpoint();
         }
@@ -135,7 +136,7 @@ namespace AfterHours
         {
             if(resumeLabel)resumeLabel.text=lastRoom>0?"CONTINUE / "+rooms[lastRoom].title.ToUpperInvariant():"BEGIN / OCEAN OF SHAME";
             if(lobbyProgress)lobbyProgress.text=CompletedCount+" / "+Chapters.Length+"   ROOMS EXPLORED\n<color=#ABC4C5>Your pace. No score. No deadline.</color>";
-            foreach(int i in Chapters)if(rooms[i].progress)rooms[i].progress.text=rooms[i].complete?"A LITTLE MORE ROOM TO BREATHE":(i==2||i==4)?rooms[i].accepted+" / "+rooms[i].total+"   GIVEN A PLACE":i==Shredder.Room?rooms[i].accepted+" / "+rooms[i].total+"   LET GO":"TAKE YOUR TIME";
+            foreach(int i in Chapters)if(rooms[i].progress)rooms[i].progress.text=rooms[i].complete?"A LITTLE MORE ROOM TO BREATHE":(i==2||i==4)?rooms[i].accepted+" / "+rooms[i].total+"   GIVEN A PLACE":i==Shredder.Room?rooms[i].accepted+" / "+rooms[i].total+"   LET GO":i==RageRoom.Room?rooms[i].accepted+" / "+rooms[i].total+"   BROKEN":"TAKE YOUR TIME";
             if(ending)ending.text=CompletedCount==Chapters.Length?"You are more\nthan your job.":"You can rest\nbefore you are ready.";
         }
         public void RestartCurrentRoom()
@@ -143,7 +144,7 @@ namespace AfterHours
             if(!IsChapter(currentRoom))return;
             player.ReleaseAll();foreach(var g in rooms[currentRoom].root.GetComponentsInChildren<Grabbable>(true))g.ResetObject();
             foreach(var z in rooms[currentRoom].root.GetComponentsInChildren<DropZone>(true))z.ResetZone();
-            rooms[currentRoom].accepted=0;if(currentRoom==1)ocean.ResetRoom();if(currentRoom==3)kitchen.ResetRoom();if(currentRoom==Shredder.Room&&shredder)shredder.ResetRoom();RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
+            rooms[currentRoom].accepted=0;if(currentRoom==1)ocean.ResetRoom();if(currentRoom==3)kitchen.ResetRoom();if(currentRoom==Shredder.Room&&shredder)shredder.ResetRoom();if(currentRoom==RageRoom.Room&&rage)rage.ResetComputer();RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
         }
         public void RefreshComfort(){if(menu)menu.Refresh();}
         public void SaveCheckpoint(){if(!ready||!saveEnabled)return;CheckpointStore.Save(this);RefreshProgress();}

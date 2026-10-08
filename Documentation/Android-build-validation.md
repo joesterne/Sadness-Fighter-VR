@@ -201,6 +201,49 @@ It was not installed: no Quest was connected.
 
 On October 7 the navigation suite passed again (105 of 105) after a fix to the port of Meta's Remote Agent Server, an Editor preference on this computer (see `Debug-validation.md`). The release APK was then rebuilt; it was checked again before it was committed, with the same results as above.
 
+## October 8: The rage room
+
+### New content
+
+- **The rage room** (door 06, the sixth chapter). An old work computer sits on a desk, still showing the old job. The player picks up a bat and swings at it. Short forearm swings count, so the room can be played from a seat. The monitor, keyboard, tower and mouse break in stages (13 hits in all), with glass, plastic and metal sounds, shards, sparks and a haptic pulse on each hit.
+- When everything is broken, the room goes quiet. The ambience fades and a calm panel appears. After a pause the chapter completes, and **WHEEL IN A NEW ONE** brings a new computer to break again.
+- The bat stays in the hand when the pinch opens and through tracking loss. **PUT THE BAT BACK**, or leaving the room, returns it to its rack.
+- Broken parts are saved with the checkpoint. TRY AGAIN mends them.
+- New wardrobe piece: the **Let it out pin** (ten pieces in all). The jacket now needs all six chapters.
+- Eight new sounds (30 in all). Version 0.4.0.
+
+### Tests
+
+The navigation suite now reloads the scene and clears saved progress before it starts, so it no longer depends on what ran before it. The gameplay suite must still run first in a fresh Play Mode session.
+
+### Results
+
+All five suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 95 of 95 |
+| Navigation | 126 of 126 |
+| Airplane-seat checks | 92 of 92 |
+| Menu and seated checks | 46 of 46 |
+| Mirror and wardrobe | 41 of 41 |
+
+The airplane-seat suite checks that every part of the computer is within 0.65 m of a seated player's hand. It then breaks each part with short swings without moving the player.
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 73.0 MB (73,045,601 bytes; 0.5 MB more than 0.3.0) |
+| SHA-256 of the APK | `75af9656e2d16c2507030b27e75cca8f92f142e9adac85e4086d2905558cb299` |
+| Version | 0.4.0, version code 404414 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`). Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | The rage room scripts (`RageRoom`, `Breakable`, `Bat`) and the room's scene text are in the APK. No DevAgent data and no XR Operator layer. |
+
+It was not installed: no Quest was connected.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -216,3 +259,6 @@ These still need a physical headset playtest (see `Playtest.md`):
 - switching between hands and controllers
 - the mirror reflection with real head and hand tracking, and how the avatar's arms look
 - sending pages into the shredder by hand on the headset
+- how swinging the bat feels with real hands and with controllers, including short swings from a seat
+- whether the hit pulse is felt on the controllers, and how loud the rage room's breaking sounds are
+- that a swing never reaches past the desk into the real room around a seated player
