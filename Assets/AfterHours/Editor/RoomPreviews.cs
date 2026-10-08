@@ -46,6 +46,11 @@ namespace AfterHours.Editor
                 saved+=TargetShot(d,cam,2,"Heavy things - send to the truck")?1:0;
                 saved+=TargetShot(d,cam,3,"A small spill - send the cup")?1:0;
                 saved+=TargetShot(d,cam,4,"The infinite archive - send to a tray")?1:0;
+                saved+=TargetShot(d,cam,6,"The old résumé - send to the shredder")?1:0;
+                // The mirror from where MIRROR on the desk puts you: the starter look, then a look made of earned pieces.
+                saved+=MirrorShot(d,cam,"Starter look",new WardrobeState())?1:0;
+                saved+=MirrorShot(d,cam,"Earned look",new WardrobeState{skin=4,hair=2,hairColour=2,build=1,top="jumper",head="beanie",neck="scarf",pin="step-pin"})?1:0;
+                saved+=MirrorShot(d,cam,"Lanyard and cap",new WardrobeState{skin=0,hair=1,hairColour=3,build=2,top="cardigan",head="cap",neck="lanyard",pin="true-pin"})?1:0;
             }
             finally
             {
@@ -82,6 +87,20 @@ namespace AfterHours.Editor
                 return Shot(d,0,cam,"First visit guide",eye,d.intro.transform.position+Vector3.down*.05f,"Seated - ");
             }
             finally{d.intro.Hide();}
+        }
+        static bool MirrorShot(GameDirector d,Camera cam,string name,WardrobeState look)
+        {
+            if(!d.wardrobe||!d.mirrorSpot){Debug.LogError("[RoomPreviews] The lobby has no mirror. Rebuild the scene first.");return false;}
+            var avatar=d.wardrobe.avatar;
+            try
+            {
+                avatar.Apply(look);
+                var eye=d.mirrorSpot.position+Vector3.up*1.61f;var forward=d.mirrorSpot.forward;
+                avatar.PoseFor(eye,Quaternion.LookRotation(forward),0);
+                foreach(var text in d.wardrobe.GetComponentsInChildren<TMPro.TMP_Text>(true))text.ForceMeshUpdate();
+                return Shot(d,0,cam,name,eye,eye+forward*3+Vector3.down*.3f,"Mirror - ");
+            }
+            finally{avatar.Apply(d.wardrobe.State);}
         }
         static bool TargetShot(GameDirector d,Camera cam,int room,string name)
         {

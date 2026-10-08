@@ -1,4 +1,4 @@
-2026-10-06 17:32:50Z
+2026-10-06 21:15:00Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -48,9 +48,31 @@ PASS: Matching tray accepts STILL TRUE
 PASS: Input grabs archive note
 PASS: Matching tray accepts STILL TRUE
 PASS: Archive completes after six correct placements
-PASS: All four chapters complete
-PASS: Completion saved as all four chapter flags
 PASS: Menu key opens the comfort menu in room 4
+PASS: Menu LOBBY returns to the lobby
+PASS: Portal input reaches room 6
+PASS: Input picks up the résumé "SENIOR COORDINATOR since 2016"
+PASS: Pointing at the shredder lights its slot
+PASS: The shredder takes "SENIOR COORDINATOR since 2016"
+PASS: Input picks up the résumé "Always available. Nights and weekends."
+PASS: Pointing at the shredder lights its slot
+PASS: The shredder takes "Always available. Nights and weekends."
+PASS: Input picks up the résumé "Exceeded every target."
+PASS: Pointing at the shredder lights its slot
+PASS: The shredder takes "Exceeded every target."
+PASS: Input picks up the résumé "Ten years. One company."
+PASS: Pointing at the shredder lights its slot
+PASS: The shredder takes "Ten years. One company."
+PASS: Input picks up the résumé "Reason for leaving: __________"
+PASS: Pointing at the shredder lights its slot
+PASS: The shredder takes "Reason for leaving: __________"
+PASS: Five pages shredded once each; the chapter waits for a true line
+PASS: A blank page offers four true lines
+PASS: Choosing a line completes the chapter and keeps the line for the wardrobe
+PASS: All five chapters complete
+PASS: Completion saved as all five chapter flags
+PASS: Playing through earns every chapter piece, the small step pin and the kind scarf
+PASS: Menu key opens the comfort menu in room 6
 PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 5
 PASS: Completed journey changes rooftop ending

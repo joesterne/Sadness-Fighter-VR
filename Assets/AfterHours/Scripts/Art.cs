@@ -8,6 +8,8 @@ namespace AfterHours
     public static class Art
     {
         public static Material Ink, Navy, Teal, Mint, Coral, Gold, Cream, White, Wood, Glass, Metal, Paper, Water;
+        // The avatar's skin tones and hair colours, in wardrobe order.
+        public static Material[] Skins, Hairs;
         public static TMP_FontAsset Font;
         public static Transform Root;
 

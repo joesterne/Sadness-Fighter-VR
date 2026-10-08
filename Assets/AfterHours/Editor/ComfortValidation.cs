@@ -15,14 +15,14 @@ namespace AfterHours.Editor
     {
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;static Keyboard keyboard;
         static readonly List<string> lines=new List<string>();
-        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key};
-        static bool[] existed;static string checkpoint;static int[] values;
+        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key,Wardrobe.Key};
+        static bool[] existed;static string checkpoint,wardrobe;static int[] values;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
         public static void Start()
         {
             if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
-            if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);values=keys.Select(k=>PlayerPrefs.GetInt(k)).ToArray();
+            if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
             mouse=InputSystem.AddDevice<Mouse>("SeatedValidationMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedValidationKeyboard");lines.Clear();Status="Running";run=Checks();deadline=0;
             EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=OnPlay;
@@ -56,7 +56,7 @@ namespace AfterHours.Editor
             float reach=Vector3.Distance(P.Head.position,D.menu.transform.position);
             Check(D.menu.IsOpen&&reach>.6f&&reach<.75f,"Menu key opens the menu at arm's length ("+reach.ToString("0.00")+" m)");
             Check(!D.menu.lobby.activeSelf&&!D.menu.tryAgain.activeSelf,"The lobby menu hides LOBBY and TRY AGAIN");
-            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip),"Only doors, CONTINUE and the first-visit guide remain as lobby signs");
+            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext),"Only doors, CONTINUE, the mirror, its wardrobe and the first-visit guide remain as lobby signs");
             foreach(var t in Click(ActionKind.SeatedMode))yield return t;
             Check(P.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Menu SEATED VIEW enables seated view at 1.65 m");
             foreach(var t in Click(ActionKind.SeatedHeight))yield return t;
@@ -111,9 +111,9 @@ namespace AfterHours.Editor
             Check(D.kitchen.fills==1,"Short kitchen session records one pour and help");
             D.Travel(4);yield return .8f;
             var note=D.rooms[4].root.GetComponentsInChildren<Grabbable>().First();var tray=D.rooms[4].root.GetComponentsInChildren<DropZone>().First(x=>x.category==note.category);
-            tray.RestoreItem(note);D.AcceptItem(4,note.label);D.SaveCheckpoint();
+            tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.SaveCheckpoint();
             var saved=JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
-            Check(saved.strokes==4&&saved.processed.Length==2&&saved.fills==1&&saved.helped,"Checkpoint stores partial progress in all four rooms");
+            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped,"Checkpoint stores partial progress in all five chapters");
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return .8f;
             Check(D.player.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Seated mode and eye-height preference survive reload");
             Check(!P.comfortVignette,"Vignette preference survives reload");
@@ -121,6 +121,7 @@ namespace AfterHours.Editor
             Check(D.rooms[2].accepted==1&&D.rooms[2].root.GetComponentsInChildren<Grabbable>(true).Count(x=>x.processed)==1,"Delivered box restores exactly once");
             Check(D.rooms[4].accepted==1&&D.rooms[4].root.GetComponentsInChildren<Grabbable>(true).Count(x=>x.processed)==1,"Sorted note restores exactly once");
             Check(D.kitchen.helped&&D.kitchen.fills==1,"Kitchen help and partial coffee restore");
+            Check(D.rooms[6].accepted==1&&D.shredder.pages.Count(x=>x.processed)==1&&!D.shredder.pages[0].gameObject.activeSelf&&D.shredder.piles[0].activeSelf,"A shredded résumé restores exactly once, and the paper stays in the bin");
             Check(D.lastRoom==4&&D.resumeLabel.text.Contains("ARCHIVE"),"Continue button names the last room");
             Aim(Button(ActionKind.Resume));Press(true);yield return .12f;Press(false);yield return .85f;
             Check(D.currentRoom==4,"Continue input returns to the saved room");
@@ -145,7 +146,7 @@ namespace AfterHours.Editor
         {
             if(run==null)return;run=null;Status=result;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
             if(D)D.saveEnabled=false;if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
-            for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
+            for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else if(keys[i]==Wardrobe.Key)PlayerPrefs.SetString(keys[i],wardrobe);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
             Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Seated-session-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload."}.Concat(lines));Debug.Log("Seated and session validation: "+Status);
         }
     }

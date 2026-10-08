@@ -1,4 +1,4 @@
-2026-10-06 17:35:28Z
+2026-10-07 14:54:56Z
 Passed
 Production mouse/keyboard input and physics, with direct placement for test setup and API calls for race conditions.
 PASS: Menu key opens the menu in room 0
@@ -43,6 +43,17 @@ PASS: Room 4 fade clears
 PASS: Room 4 places the head over its safe spawn
 PASS: Menu key opens the menu in room 4
 PASS: Room 4 menu offers LOBBY
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Returning to the lobby closes the menu
+PASS: Room 6 arrives with movement unlocked
+PASS: Room 6 is the only active environment
+PASS: Room 6 fade clears
+PASS: Room 6 places the head over its safe spawn
+PASS: Menu key opens the menu in room 6
+PASS: Room 6 menu offers LOBBY
 PASS: Room 0 arrives with movement unlocked
 PASS: Room 0 is the only active environment
 PASS: Room 0 fade clears

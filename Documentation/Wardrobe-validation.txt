@@ -1,0 +1,41 @@
+2026-10-06 18:55:51Z
+Passed
+The mirror, the avatar and the wardrobe: pointer input at the mirror, the real unlock events, and a scene reload.
+PASS: A new player owns only the starter pieces: two tops and no hat
+PASS: The desk's MIRROR sign and the mirror's nameplate start plain
+PASS: MIRROR on the desk brings you to the mirror
+PASS: You arrive facing the glass
+PASS: Your reflection shows in the mirror
+PASS: The reflection's head is exactly where a mirror would show yours (0.000 m)
+PASS: The reflection stands behind the glass
+PASS: Turning your head turns the reflection's head the mirrored way
+PASS: Half a metre closer to the glass brings the reflection a metre closer
+PASS: SKIN TONE > changes the reflection's skin
+PASS: HAIR > changes the hair style
+PASS: HAIR COLOUR > changes the hair colour
+PASS: BUILD > broadens the shoulders
+PASS: BUILD < steps back
+PASS: TOP > swaps the plain tee for the work shirt
+PASS: With no hats earned, HAT stays on no hat
+PASS: One paddle stroke, a first small step, earns the small step pin
+PASS: The new piece is announced
+PASS: Asking for help earns the kind scarf
+PASS: The ocean's piece waits until the ocean is finished
+PASS: Reaching the shore earns the harbour jumper
+PASS: Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin
+PASS: The jacket waits for all five chapters
+PASS: The lanyard waits for a true line
+PASS: Choosing a line earns the lanyard, and finishing all five chapters the sunrise jacket
+PASS: Ten seconds on the rooftop is not yet a rest
+PASS: Resting on the rooftop earns the evening beanie: every piece found
+PASS: The desk's MIRROR sign counts the new pieces (9)
+PASS: The mirror's nameplate shows the line you kept
+PASS: TOP > reaches the harbour jumper, and it is no longer new
+PASS: The jumper has long sleeves
+PASS: HAT > puts on the mover's cap
+PASS: Curls tuck under the cap
+PASS: NECK > twice: past the scarf to your own lanyard
+PASS: PIN > pins on the small step pin
+PASS: TRY AGAIN in a chapter keeps every piece
+PASS: After a reload: every piece, everything you wore and how you look
+PASS: After a reload the reflection is dressed the same and the nameplate keeps your line

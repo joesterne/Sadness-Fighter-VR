@@ -156,6 +156,51 @@ The release APK built with zero errors.
 | Permissions | Hand tracking and internet only, unchanged |
 | Checks | The DevAgent settings in the APK are empty, and the XR Operator layer is excluded. |
 
+## October 6 evening: The old résumé, the mirror and the wardrobe
+
+### New content
+
+- **The old résumé** (door 05, the fifth chapter). Five old résumé pages are sent into a shredder from the seat. Each page is drawn into the slot, shredded with a sound and paper strips, and leaves a short kind line. When all five are gone, a blank page asks for one line that is still true. The choice is saved and shown on the mirror's nameplate.
+- **A full-length mirror** on the lobby's left wall. A faceted, game-style avatar copies the player's head and hands as a reflection would. It uses no second camera: a mirror-image copy of the lobby sits behind the glass. **MIRROR** on the lobby desk brings a seated player to it.
+- **A wardrobe** beside the mirror: skin tone, hair, hair colour, build, top, hat, neck and pin. Nine pieces are earned by playing, one for each chapter, one for all five, and three for kind moments: a first small step, asking for help in the kitchen, and resting on the rooftop. Pieces are saved on their own key, so TRY AGAIN never takes one away. A chime and a spoken line announce each new piece.
+- Three new sounds: print-room rain, the shredder and the unlock chime (22 in all).
+
+### Project Setup Tool
+
+Meta's Project Setup Tool's **Fix All** was applied during the session. The builder now keeps two of its changes: target API 34 (was 36) and dynamic resolution (Quest 2: 0.7–1.3, Quest 3: 0.7–1.6). The Touch controller proximity profile stays off, because the Meta XR Simulator rejects it.
+
+### A crash when entering Play Mode
+
+Unity closed twice when entering Play Mode, inside Meta's XR Operator layer (`XrApiLayer_METAX_operator`), before any game code ran. Turning off **Initialize XR on Startup** for the Standalone platform avoided it, and all suites then ran. The release build turns it back on (`ConfigureQuest`), and the APK does not include the Operator layer, so the headset is not affected.
+
+### Results
+
+All five suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Mirror and wardrobe (new) | 38 of 38 |
+| Airplane-seat checks | 82 of 82 |
+| Gameplay journey | 75 of 75 |
+| Menu and seated checks | 44 of 44 |
+| Navigation | 105 of 105 |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 72.6 MB (72,559,221 bytes) |
+| SHA-256 of the APK | `b2e59c94dd7dcf4371f3cd154687bf20bb7611c0283731ac8d2a6e06492c2d88` |
+| Version | 0.3.0, version code 402665 (first built as 401611 on October 6; rebuilt from the same project on October 7) |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`). Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | The shredder, mirror and wardrobe scripts and the "Still true" scene text are in the APK. No DevAgent data and no XR Operator layer. |
+
+It was not installed: no Quest was connected.
+
+On October 7 the navigation suite passed again (105 of 105) after a fix to the port of Meta's Remote Agent Server, an Editor preference on this computer (see `Debug-validation.md`). The release APK was then rebuilt; it was checked again before it was committed, with the same results as above.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -169,3 +214,5 @@ These still need a physical headset playtest (see `Playtest.md`):
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers
+- the mirror reflection with real head and hand tracking, and how the avatar's arms look
+- sending pages into the shredder by hand on the headset

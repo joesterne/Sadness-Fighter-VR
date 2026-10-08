@@ -128,3 +128,7 @@ UpgradeLog*.htm
 !/[Bb]uilds/Quest/
 /[Bb]uilds/Quest/*
 !/[Bb]uilds/Quest/AfterHours-release.apk
+
+# Unity's crash-recovery copies of open scenes. Local only.
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta

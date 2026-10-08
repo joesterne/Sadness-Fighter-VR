@@ -13,7 +13,8 @@ Open `Assets/AfterHours/Scenes/AfterHours.unity` in Unity 6000.6.3f1 and press P
 - **Heavy things**: five named feelings—anger, fear, relief, grief, uncertainty—wait in front of you. Pinch a box to pick it up, point at the truck, and let go: the box glides into the processing bay. Every feeling is accepted; processing is not disposal.
 - **A small spill**: the coffee machine leaks and additional people watch with each mistake, up to eight. A low murmur grows with the crowd. ASK FOR HELP is available immediately, releases the pressure fault, dismisses the audience and quiets the room. Pick up your cup, point under the spout and let go, then brew three small pours. **KITCHEN CROWD** in the menu hides the crowd without changing the task.
 - **The infinite archive**: sort six notes into FACT, FEAR, and STILL TRUE: pick one up, point at its tray and let go. Repeated filing cabinets fade into the distance. A note sent to the wrong tray drifts back to the desk for another try, without penalties.
-- **Room for tomorrow**: a rooftop for rest, available from the beginning. Completing all four chapters changes the ending to “You are more than your job.”
+- **The old résumé**: five old résumé pages stand on a desk: a job title, "always available", "exceeded every target", ten years at one company, and a reason for leaving left blank. Pick one up, point at the shredder and let it go. Each page is drawn into the slot, the paper in the bin grows, and a line answers it ("Your worth was never a quarterly number."). When the last page is gone, a blank page asks you to keep one line that is still true about you: *I learn fast*, *I care about people*, *I keep going*, or *I make things better*. The line you choose goes on the mirror in the lobby.
+- **Room for tomorrow**: a rooftop for rest, available from the beginning. Completing all five chapters changes the ending to “You are more than your job.”
 
 Completed chapters and partial progress persist locally between launches. Every paddle stroke, delivered box, sorted note, and coffee step saves automatically. Loose objects return to their starting positions when the app reopens; accepted items stay processed. CONTINUE in the lobby returns to the last room. **TRY AGAIN** in the menu resets the current puzzle without deleting chapter completion. Nothing is timed, and there is no minimum session length.
 
@@ -24,9 +25,40 @@ The first time the game opens, a small card in the lobby shows a content note, t
 1. **Before you begin**: After Hours is about losing a job: the shame, the worry, and what is still true. It is a gentle experience, not a substitute for professional support, and you can take a break whenever you like.
 2. **Point and pinch**: select the card's button.
 3. **Your menu**: open the menu (left palm pinch, or the controller's menu button). The card moves on by itself once the menu opens.
-4. **Begin anywhere**: choose a door, or CONTINUE.
+4. **Begin anywhere**: choose a door, or CONTINUE. Small steps also earn things to wear at the mirror.
 
 SKIP closes the card at any step, and walking through a door counts as finishing it. It doesn't appear again.
+
+## The mirror and your wardrobe
+
+A full-length mirror is built into the lobby's left wall. **MIRROR** on the desk (under CONTINUE) brings you to the spot in front of it, facing the glass, so a seated player never has to walk there. The sign also counts any new pieces waiting for you.
+
+Your reflection is a faceted figure in the game's style. It copies your head, and your hands or controllers, mirrored as a real mirror would: lean in and it leans in, raise your right hand and it raises the hand on your right. With no hands tracked, its arms rest at its sides. It is drawn without a second camera: the room behind the glass is a mirror-image copy of this end of the lobby, and the figure's parent is flipped across the glass. Only the lobby is ever active, so it costs nothing in the other rooms.
+
+The wardrobe is on both sides of the glass. Each row has **<** and **>**:
+
+| You | What you wear |
+|---|---|
+| SKIN TONE (six tones) | TOP |
+| HAIR (short, curls, long, bun, shaved) | HAT |
+| HAIR COLOUR (black, brown, auburn, blond, silver) | NECK |
+| BUILD (narrow, medium, broad) | PIN |
+
+The outfit rows only offer pieces you have. Everyone starts with a plain tee, a work shirt, and nothing on their head, neck or chest. Nine more pieces are earned by playing:
+
+| Piece | Where | How to earn it |
+|---|---|---|
+| Harbour jumper | Top | Reach the shore in Ocean of shame |
+| Mover's cap | Hat | Finish Heavy things |
+| Warm cardigan | Top | Finish A small spill |
+| Still true pin | Pin | Finish The infinite archive |
+| Your own lanyard | Neck | Finish The old résumé |
+| Sunrise jacket | Top | Finish all five chapters |
+| Small step pin | Pin | Take one small step anywhere: a paddle stroke, a box, a note, a pour or a page |
+| Kind scarf | Neck | Ask for help in the kitchen |
+| Evening beanie | Hat | Rest on the rooftop for 20 seconds |
+
+Nothing can be missed for good, and nothing is taken away. A new piece is announced with a chime a few seconds after whatever the room has just said. The mirror marks it NEW until you try it on, and the left board lists up to four pieces still to find with how to find them. The wardrobe saves on its own (`AfterHours.Wardrobe.v1`), so TRY AGAIN never removes a piece. Progress from before the wardrobe existed still earns its pieces at the next launch.
 
 ## The menu
 
@@ -58,6 +90,8 @@ Movement is set up so you never have to twist in the chair:
 - **Send things where they belong.** While holding something, point at its destination and let go. The destination lights up while you point at it (the truck's bay, the spout, each archive tray), and the object glides there in a short arc. A note sent to the wrong tray drifts back to the desk.
 - **The boat rows with a button**: ROW does the same as a paddle stroke.
 - **The kitchen crowd stays in front of you.** Watchers gather on both sides of the coffee machine, within 60 degrees of it, so a seated player sees them without turning round.
+- **The shredder is in plain view.** It stands beyond the résumé rack, tall enough that its slot shows over the pages from the seat.
+- **The mirror comes to you.** MIRROR on the desk teleports you to the glass, and every wardrobe button can be pointed at from there.
 
 The **airplane-seat test** (below) checks this: it completes every chapter from its arrival point without moving the player once. Comfort and readability still need checking on a physical headset.
 
@@ -76,6 +110,7 @@ For a short visit, row a few strokes, deliver one box, sort one note, or make on
 | Open or close the menu | Left menu button | Look at your left palm and pinch |
 | Return to lobby | B/Y, or LOBBY in the menu | LOBBY in the menu |
 | Row | Grip paddle and pull, or select ROW | Pinch paddle and pull, or select ROW |
+| Try things on | MIRROR on the desk, then < and > beside the glass | MIRROR on the desk, then < and > beside the glass |
 
 Desktop preview: WASD movement, right mouse drag to look, Q/E to turn, left click to select, hold left mouse to carry, click/release on floor to teleport, Tab for the menu, Escape to lobby. A carry point in front of the camera makes object placement possible without a headset.
 
@@ -83,27 +118,30 @@ For desktop preview without an XR runtime, turn off **Initialize XR on Startup**
 
 ## Sound
 
-Every room has its own sound, all synthesised for this project by `Tools/make_audio.py` (numpy and scipy, no samples, no third-party audio). Run `python make_audio.py <folder>` to regenerate the 19 WAV files in `Assets/AfterHours/Audio`.
+Every room has its own sound, all synthesised for this project by `Tools/make_audio.py` (numpy and scipy, no samples, no third-party audio). Run `python make_audio.py <folder>` to regenerate the 22 WAV files in `Assets/AfterHours/Audio`.
 
-- **Ambience**: a low room tone in the lobby with a slow pad-and-bell theme, swells and foam on the ocean, a deep rumble with distant metal clanks in the warehouse, room tone and a fridge hum in the kitchen, a hush with occasional paper rustles in the archive, and gusting wind over a distant city on the rooftop, where the theme returns. Ambience and music loop seamlessly.
+- **Ambience**: a low room tone in the lobby with a slow pad-and-bell theme, swells and foam on the ocean, a deep rumble with distant metal clanks in the warehouse, room tone and a fridge hum in the kitchen, a hush with occasional paper rustles in the archive, fluorescent hum and rain on the window in the résumé room, and gusting wind over a distant city on the rooftop, where the theme returns. Ambience and music loop seamlessly.
 - **The kitchen murmur** rises with each watcher and falls silent when you ask for help.
-- **Feedback**: select, grab, send, land, menu open and close, teleport, snap turn, paddle stroke, coffee spill and pour.
+- **Feedback**: select, grab, send, land, menu open and close, teleport, snap turn, paddle stroke, coffee spill and pour, the shredder's motor and cut paper, and a short chime for a new piece to wear.
 - Changing rooms fades the sound out and back in with the picture.
 
 The builder imports loops as compressed Vorbis kept in memory and short effects decompressed on load, all mono. All of it adds 1.6 MB to the APK.
 
 ## Validation
 
-**After Hours → Tests** runs each suite in desktop Play Mode, using real mouse and keyboard input, raycasts and collision triggers. Keep the mouse pointer off the Game view while a suite runs: the editor's own mouse would otherwise take over from the test's. All four suites passed on October 6, after the seated-reach, sound and first-visit changes:
+**After Hours → Tests** runs each suite in desktop Play Mode, using real mouse and keyboard input, raycasts and collision triggers. Keep the mouse pointer off the Game view while a suite runs: the editor's own mouse would otherwise take over from the test's. All five suites passed on October 6, after the résumé room, the mirror and the wardrobe were added:
 
-- **Airplane-seat checks**, 58 checks: the first-visit guide step by step, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves. It checks every pickup and send from the seat, that each destination lights up when pointed at, that a wrong-tray note returns, that the cup lands upright under the spout, and that the kitchen crowd and murmur behave. Results are in `Documentation/Seated-reach-validation.txt`.
-- **Gameplay journey**, 53 checks: every chapter from start to finish, with returns to the lobby through the menu. Results are in `Documentation/Gameplay-validation.txt`.
-- **Menu and seated checks**, 43 checks, including an actual scene reload: every menu button by pointer, seated height cycling, snap turns and turning around with the stick, FACE FORWARD, the walking vignette, the menu fitting in front of a nearby wall, saved preferences, partial progress in every chapter, CONTINUE, and TRY AGAIN. Results are in `Documentation/Seated-session-validation.txt`.
-- **Navigation**, 94 checks: every chapter and its menu return, walking and teleporting through doorways, safe spawns, fade cleanup, a button press that can't turn into a teleport, carrying an object during travel, held input, invalid destinations, competing requests, and leaving the ocean during its final stroke. Results are in `Documentation/Navigation-validation.txt`.
+- **Airplane-seat checks**, 82 checks: the first-visit guide step by step, then all five chapters completed from their arrival points using only pointer presses and the menu key, then the mirror. The player never moves. It checks every pickup and send from the seat, that each destination lights up when pointed at, that a wrong-tray note returns, that the cup lands upright under the spout, the kitchen crowd and murmur, every résumé shredded and a true line chosen, MIRROR on the desk, and that all 16 wardrobe buttons can be reached from the mirror. Results are in `Documentation/Seated-reach-validation.txt`.
+- **Mirror and wardrobe checks**, 38 checks: the reflection's head lands exactly where a mirror would show yours, turns the mirrored way and comes a metre closer when you step half a metre closer; every wardrobe row by pointer; each piece earned by the real event that earns it (a first paddle stroke, asking for help, each chapter, choosing a true line, all five chapters, 20 seconds on the rooftop) and announced; trying pieces on; and everything surviving TRY AGAIN and a scene reload. Results are in `Documentation/Wardrobe-validation.txt`.
+- **Gameplay journey**, 75 checks: every chapter from start to finish, including all five résumés sent into the shredder and a true line chosen, with returns to the lobby through the menu. Results are in `Documentation/Gameplay-validation.txt`.
+- **Menu and seated checks**, 44 checks, including an actual scene reload: every menu button by pointer, seated height cycling, snap turns and turning around with the stick, FACE FORWARD, the walking vignette, the menu fitting in front of a nearby wall, saved preferences, partial progress in all five chapters, CONTINUE, and TRY AGAIN. Results are in `Documentation/Seated-session-validation.txt`.
+- **Navigation**, 105 checks: every chapter and its menu return, walking and teleporting through doorways, safe spawns, fade cleanup, a button press that can't turn into a teleport, carrying an object during travel, held input, invalid destinations, competing requests, and leaving the ocean during its final stroke. Results are in `Documentation/Navigation-validation.txt`.
+
+**If Unity crashes when you press Play** without a headset: Meta's XR Operator layer (`XrApiLayer_METAX_operator`, part of Meta's agent test tooling) crashed the editor twice on October 6 as OpenXR started. Turning off **Initialize XR on Startup** on the Windows, Mac, Linux tab of **Project Settings → XR Plug-in Management** stops OpenXR from starting in desktop Play Mode, which the tests don't need. Turn it back on to play through Quest Link or the Meta XR Simulator; the scene builder and both build commands also turn it back on.
 
 Earlier Meta XR Simulator checks verified controller teleport, joystick movement, trigger selection, hand pinch selection, and hand grabbing, carrying, and release. See `Documentation/XR-validation.md` for their scope. They predate the menu.
 
-A physical Quest playtest is still needed for comfort, frame rate, seated reach, the left-palm menu gesture, and hand/controller switching. The simulator does not measure headset performance.
+A physical Quest playtest is still needed for comfort, frame rate, seated reach, the left-palm menu gesture, hand/controller switching, and how the reflection's arms follow real hands. The simulator does not measure headset performance.
 
 ## Quest build
 
@@ -120,13 +158,13 @@ The Meta Developer Dashboard only accepts APKs signed with your own key. **After
 
 **Back up both files somewhere private.** An app on the Meta store can only ever be updated with the key it was first uploaded with.
 
-Every build gets a new version code: the number of minutes since January 1, 2026, and always higher than the last build's. The version name is 0.2.0. The dashboard rejects an upload whose version code it has seen before.
+Every build gets a new version code: the number of minutes since January 1, 2026, and always higher than the last build's. The version name is 0.3.0. The dashboard rejects an upload whose version code it has seen before.
 
 **After Hours → Commit and push to GitHub…** commits everything git doesn't ignore and pushes the current branch to `origin`. The shareable release APK is committed too, through Git LFS, so playtesters can download `Builds/Quest/AfterHours-release.apk` from GitHub. Development APKs, `Library`, removed packages and the Immersive Debugger's per-computer settings (`Assets/Resources/DevAgentSettings.asset`, which holds this computer's network address and an access token) stay out of the repository. The push stops if GitHub has commits this computer doesn't, and the first push may open Git Credential Manager's GitHub sign-in window. Commits use the name and email under **Commit as**. Your GitHub account keeps its email private, so use your GitHub noreply address there; GitHub refuses pushes that show the private one.
 
 Both build commands build from the Android platform settings. If a custom build profile such as Unity's **Meta Quest** profile is active, they switch back to the platform profile first, because a custom profile carries its own player, quality and XR settings.
 
-Both commands apply the Quest settings first: OpenXR with Meta XR, controllers and hands, ARM64, IL2CPP, Vulkan, linear color, 4x MSAA, render scale 1.0, 28 m shadow distance, and Android API 32 minimum. Mixed-reality features stay off, so the APK requests no scene, anchor, passthrough or headset-camera permissions. The release APK is signed with your release key (see above); the development APK with Unity's debug key. The project doesn't include the Meta Voice SDK, Meta XR Audio or Unity IAP packages. The game doesn't use them, and the Voice SDK's build step crashed the Android build. Only the current room is active. Static geometry is combined by material. Anything the player can pick up, or that moves or switches on and off, keeps its own mesh, and the scene builder logs an error if a movable object is ever merged.
+Both commands apply the Quest settings first: OpenXR with Meta XR, controllers and hands, ARM64, IL2CPP, Vulkan, linear color, 4x MSAA, render scale 1.0, 28 m shadow distance, and Android API 32 minimum. Mixed-reality features stay off, so the APK requests no scene, anchor, passthrough or headset-camera permissions. The target API is Android 34, which the Meta Quest Store and its release channels expect, and dynamic resolution is on, as Meta's Project Setup Tool recommends. The release APK is signed with your release key (see above); the development APK with Unity's debug key. The project doesn't include the Meta Voice SDK, Meta XR Audio or Unity IAP packages. The game doesn't use them, and the Voice SDK's build step crashed the Android build. Only the current room is active. Static geometry is combined by material. Anything the player can pick up, or that moves or switches on and off, keeps its own mesh, and the scene builder logs an error if a movable object is ever merged.
 
 ## Art style
 
@@ -140,7 +178,7 @@ The game uses a refined low-poly look:
 
 Tiles and panels don't cast their own shadows. One invisible, square-edged slab per surface casts the shadow instead, so no light leaks through the seams. Floors cast no shadows.
 
-**After Hours → Capture room previews** renders a still from each room's arrival point into `Documentation/Previews/`, plus the menu in the lobby and the kitchen, the walking vignette, the first-visit card, and each chapter's destinations lit up as a seated player sees them. Art and comfort changes can be checked without a headset.
+**After Hours → Capture room previews** renders a still from each room's arrival point into `Documentation/Previews/`, plus the menu in the lobby and the kitchen, the walking vignette, the first-visit card, each chapter's destinations lit up as a seated player sees them, and the mirror with three different looks. Art and comfort changes can be checked without a headset.
 
 ## More rooms to add
 

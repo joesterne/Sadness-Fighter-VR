@@ -291,6 +291,17 @@ namespace AfterHours
             Vector3 offset=Head.position-transform.position;offset.y=0;transform.position=floor-offset;body.enabled=true;
         }
         public void Shift(Vector3 delta){body.enabled=false;transform.position+=delta;body.enabled=true;}
+        public void TeleportTo(Vector3 point,float yaw){StartCoroutine(Teleport(point,yaw));}
+        // Where a tracked hand or controller is, for the mirror. False when neither is tracked, and on desktop.
+        public bool TryGetHand(int index,out Vector3 position,out Quaternion rotation)
+        {
+            position=default;rotation=Quaternion.identity;if(!IsXR)return false;
+            OVRHand hand=index==0?leftHand:rightHand;var controller=index==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch;
+            Transform source=null;
+            if(hand&&hand.IsTracked&&hand.HandConfidence==OVRHand.TrackingConfidence.High)source=hand.transform;
+            else if(OVRInput.IsControllerConnected(controller)&&OVRInput.GetControllerPositionTracked(controller))source=index==0?rig.leftControllerAnchor:rig.rightControllerAnchor;
+            if(!source)return false;position=source.position;rotation=source.rotation;return true;
+        }
         IEnumerator Teleport(Vector3 point,float yaw)
         {
             if(busy)yield break;

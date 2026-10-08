@@ -55,7 +55,7 @@ namespace AfterHours
         {
             var p=director.player;int room=director.currentRoom;
             if(lobby)lobby.SetActive(room!=0);
-            if(tryAgain)tryAgain.SetActive(room>=1&&room<=4);
+            if(tryAgain)tryAgain.SetActive(GameDirector.IsChapter(room));
             if(status&&director.rooms!=null&&room<director.rooms.Length)status.text=director.rooms[room].title.ToUpperInvariant();
             string eye=p.SeatedEyeHeight.ToString("0.00",CultureInfo.InvariantCulture)+" m";
             Set(seated,"SEATED VIEW\n"+(p.seatedMode?"ON":"OFF"));

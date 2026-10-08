@@ -30,7 +30,7 @@ namespace AfterHours
                 director.SaveCheckpoint();
                 return;
             }
-            fills++;coffee.gameObject.SetActive(true);director.PlayAt(director.pour,nozzle.position,.8f);coffee.localScale=new Vector3(.76f+fills*.045f,.015f,.76f+fills*.045f);coffee.localPosition=new Vector3(0,1.018f,0);
+            fills++;director.SmallStep();coffee.gameObject.SetActive(true);director.PlayAt(director.pour,nozzle.position,.8f);coffee.localScale=new Vector3(.76f+fills*.045f,.015f,.76f+fills*.045f);coffee.localPosition=new Vector3(0,1.018f,0);
             display.text=fills<3?"A LITTLE AT A TIME\n"+fills+" / 3":"ENOUGH\n<color=#ABC4C5>Take a breath.</color>";
             director.Say("A little warmth. Press BREW again when you want more.");if(fills>=3)director.CompleteRoom(3);
             director.SaveCheckpoint();
@@ -39,6 +39,7 @@ namespace AfterHours
         {
             helped=true;RefreshAudience();display.text="PRESSURE RELEASED\n<color=#ABC4C5>You do not have to do this alone.</color>";
             director.Say("Someone says: 'That machine does this to everyone.' Put the cup below the spout and brew three small pours.");
+            director.Earn("scarf");
             director.SaveCheckpoint();
         }
         public void RestoreProgress(bool help,int errors,int pours)

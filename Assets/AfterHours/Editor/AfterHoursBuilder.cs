@@ -43,6 +43,7 @@ namespace AfterHours.Editor
             director.select=SoundBank.Get("SFX - Select");director.grab=SoundBank.Get("SFX - Grab");director.send=SoundBank.Get("SFX - Send");director.place=SoundBank.Get("SFX - Place");
             director.menuOpen=SoundBank.Get("SFX - Menu open");director.menuClose=SoundBank.Get("SFX - Menu close");director.teleport=SoundBank.Get("SFX - Teleport");director.turn=SoundBank.Get("SFX - Turn");
             director.row=SoundBank.Get("SFX - Row");director.spill=SoundBank.Get("SFX - Spill");director.pour=SoundBank.Get("SFX - Pour");
+            director.shred=SoundBank.Get("SFX - Shred");director.unlock=SoundBank.Get("SFX - Unlock");
             Lighting();ConfigureQuest();
             foreach(var room in director.rooms)CombineRoom(room.root,director);
             CheckMovableObjects(director);
@@ -81,6 +82,8 @@ namespace AfterHours.Editor
             Art.Glass.SetFloat("_Surface",1);Art.Glass.SetFloat("_SrcBlend",(float)BlendMode.SrcAlpha);Art.Glass.SetFloat("_DstBlend",(float)BlendMode.OneMinusSrcAlpha);Art.Glass.SetFloat("_ZWrite",0);Art.Glass.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");Art.Glass.renderQueue=3000;
             // Bright surfaces use emission rather than extra real-time lights on Quest.
             Art.White.EnableKeyword("_EMISSION");Art.White.SetColor("_EmissionColor",Hex("#C8C1AA")*.24f);
+            Art.Skins=new[]{"#F2D6C2","#E3B48C","#C98F63","#A66C45","#7A4B2E","#4F3121"}.Select((c,i)=>Mat("17 Skin tone "+(i+1),Hex(c),0,.32f)).ToArray();
+            Art.Hairs=new[]{"#1F1B1B","#563823","#8B4126","#D2AC6B","#B9BDC2"}.Select((c,i)=>Mat("18 Hair "+Wardrobe.HairColours[i].ToLowerInvariant(),Hex(c),0,.28f)).ToArray();
             Art.Font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             if(!Art.Font)Art.Font=TMP_Settings.defaultFontAsset;
         }
@@ -117,6 +120,8 @@ namespace AfterHours.Editor
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.meta.xr.sdk.core/Prefabs/OVRCameraRig.prefab");
             var rig=(GameObject)PrefabUtility.InstantiatePrefab(prefab);rig.transform.SetParent(root.transform,false);player.rig=rig.GetComponent<OVRCameraRig>();
             var manager=rig.GetComponent<OVRManager>();if(!manager)manager=rig.AddComponent<OVRManager>();manager.trackingOriginType=OVRManager.TrackingOrigin.FloorLevel;
+            // Meta's Project Setup Tool recommendation: dynamic resolution, which also unlocks the highest GPU level on Quest.
+            manager.enableDynamicResolution=true;manager.quest2MinDynamicResolutionScale=.7f;manager.quest2MaxDynamicResolutionScale=1.3f;manager.quest3MinDynamicResolutionScale=.7f;manager.quest3MaxDynamicResolutionScale=1.6f;
             player.leftHand=Hand(player.rig.leftHandAnchor,player.rig.trackingSpace,false);player.rightHand=Hand(player.rig.rightHandAnchor,player.rig.trackingSpace,true);
             foreach(var camera in rig.GetComponentsInChildren<Camera>(true)){camera.nearClipPlane=.05f;camera.farClipPlane=85;camera.allowHDR=false;camera.backgroundColor=Hex("#9AB5B7");camera.clearFlags=CameraClearFlags.Skybox;}
             var cam=player.rig.centerEyeAnchor.GetComponent<Camera>();cam.tag="MainCamera";if(!cam.GetComponent<AudioListener>())cam.gameObject.AddComponent<AudioListener>();
@@ -156,8 +161,9 @@ namespace AfterHours.Editor
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.2.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
-            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevelAuto;
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.3.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
+            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
             var config=OVRProjectConfig.CachedProjectConfig;config.handTrackingSupport=OVRProjectConfig.HandTrackingSupport.ControllersAndHands;config.handTrackingFrequency=OVRProjectConfig.HandTrackingFrequency.HIGH;
             // The game uses no mixed-reality features. Each one adds Android permissions (scene data, anchors, headset cameras).
@@ -203,7 +209,7 @@ namespace AfterHours.Editor
         // is inactive while the scene is built, so these checks must include inactive objects.
         static bool Dynamic(Transform t,Transform room,GameDirector d)
         {
-            if(t.GetComponentInParent<Grabbable>(true))return true;
+            if(t.GetComponentInParent<Grabbable>(true)||t.GetComponentInParent<MirrorAvatar>(true))return true;
             for(var p=t;p&&p!=room;p=p.parent)if(!p.gameObject.activeSelf)return true;
             if(t.IsChildOf(d.ocean.horizon))return true;
             foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;

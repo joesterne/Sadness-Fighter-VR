@@ -22,7 +22,7 @@ namespace AfterHours
                 case 0: return "After Hours is about losing a job: the shame, the worry, and what is still true.\nTake a break whenever you like. It is a gentle experience, not a substitute for professional support.";
                 case 1: return desktop?"Point with the mouse and click to choose.\nTry it on the button below.":"Point with your hand, then touch your thumb and index finger together to choose.\nTry it on the button below.";
                 case 2: return desktop?"Press Tab to open the menu.\nIt has seated view, turning, comfort options and the lobby.":"Look at your left palm and pinch to open the menu.\nWith controllers, press the menu button.\nIt has seated view, turning, comfort options and the lobby.";
-                default: return "Point at a door and choose ENTER, or CONTINUE at the desk.\nEvery small step saves. Stop whenever you like.";
+                default: return "Point at a door and choose ENTER, or CONTINUE at the desk.\nEvery small step saves, and earns things to wear at the MIRROR. Stop whenever you like.";
             }
         }
         public void Begin(){Step=0;Show();gameObject.SetActive(true);}

@@ -14,7 +14,7 @@ namespace AfterHours.Editor
     {
         static GameDirector d;static Mouse mouse;static Keyboard keyboard;static List<string> results;
         static bool running;static double next;static int oldSave;static bool hadSave;static string failure;
-        static string oldCheckpoint;static bool hadCheckpoint;
+        static string oldCheckpoint,oldWardrobe;static bool hadCheckpoint,hadWardrobe;
         public static string Status="Not run";
         public static void Start()
         {
@@ -22,6 +22,7 @@ namespace AfterHours.Editor
             if(running)return;d=GameDirector.Instance;results=new List<string>();failure=null;
             hadSave=PlayerPrefs.HasKey("AfterHours.Progress.v1");oldSave=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);
             hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);oldCheckpoint=PlayerPrefs.GetString(CheckpointStore.Key);
+            hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);oldWardrobe=PlayerPrefs.GetString(Wardrobe.Key);
             foreach(var room in d.rooms){room.complete=false;room.accepted=0;}d.RefreshProgress();if(d.intro)d.intro.Hide();
             mouse=InputSystem.AddDevice<Mouse>("AfterHoursTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("AfterHoursTestKeyboard");
             running=true;Status="Running";EditorApplication.playModeStateChanged+=OnPlayState;EditorApplication.update+=Pump;Application.logMessageReceived+=OnLog;
@@ -99,7 +100,22 @@ namespace AfterHours.Editor
                 var zone=zones.First(x=>x.category==note.category);d.player.Shift(new Vector3(zone.transform.position.x,.04f,zone.transform.position.z-1.35f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay();Press(false);yield return Delay(.8f);Check(note.processed,"Matching tray accepts "+note.category);
             }
             Check(d.rooms[4].complete&&d.rooms[4].accepted==6,"Archive completes after six correct placements");
-            Check(d.CompletedCount==4,"All four chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==30,"Completion saved as all four chapter flags");
+            yield return Visit(6);Capture("Old resume");
+            var slot=d.Targets.First(x=>x.GetComponent<Shredder>());
+            foreach(var page in d.shredder.pages)
+            {
+                d.player.Place(d.rooms[6].spawn.position,0);yield return Delay();Aim(page.transform.position);yield return Delay(.06f);Press(true);yield return Delay(.3f);
+                Check(page.held,"Input picks up the résumé \""+page.label+"\"");
+                Aim(slot.LandingPoint);yield return Delay(.25f);Check(slot.highlight.activeSelf,"Pointing at the shredder lights its slot");
+                Press(false);yield return Delay(2.6f);
+                Check(page.processed&&!page.gameObject.activeSelf,"The shredder takes \""+page.label+"\"");
+            }
+            Check(d.rooms[6].accepted==5&&!d.rooms[6].complete,"Five pages shredded once each; the chapter waits for a true line");
+            yield return Delay(3.8f);Check(d.shredder.Offering,"A blank page offers four true lines");Capture("Old resume-Choice");
+            yield return Click(d.rooms[6].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.ChooseLine&&x.value==2));
+            Check(d.rooms[6].complete&&d.shredder.line=="I keep going."&&d.wardrobe.State.line=="I keep going.","Choosing a line completes the chapter and keeps the line for the wardrobe");
+            Check(d.CompletedCount==5,"All five chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==94,"Completion saved as all five chapter flags");
+            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","jacket","step-pin","scarf"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the small step pin and the kind scarf");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
             Status="Passed";
         }
@@ -113,7 +129,8 @@ namespace AfterHours.Editor
             if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
             if(d)d.saveEnabled=false;
             if(hadCheckpoint)PlayerPrefs.SetString(CheckpointStore.Key,oldCheckpoint);else PlayerPrefs.DeleteKey(CheckpointStore.Key);
-            if(hadSave)PlayerPrefs.SetInt("AfterHours.Progress.v1",oldSave);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");PlayerPrefs.Save();
+            if(hadSave)PlayerPrefs.SetInt("AfterHours.Progress.v1",oldSave);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");
+            if(hadWardrobe)PlayerPrefs.SetString(Wardrobe.Key,oldWardrobe);else PlayerPrefs.DeleteKey(Wardrobe.Key);PlayerPrefs.Save();
             if(failure!=null){results.Add("FAILURE: "+failure);Status="Failed: "+failure;}
             else if(Status!="Passed")Status="Stopped";
             Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Gameplay-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"Desktop input + Unity physics, with editor frames advanced explicitly."}.Concat(results));

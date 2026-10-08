@@ -1,4 +1,4 @@
-2026-10-06 17:33:57Z
+2026-10-06 21:21:06Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -6,7 +6,7 @@ PASS: The menu starts closed
 PASS: A returning player sees no first-visit guide
 PASS: Menu key opens the menu at arm's length (0.68 m)
 PASS: The lobby menu hides LOBBY and TRY AGAIN
-PASS: Only doors, CONTINUE and the first-visit guide remain as lobby signs
+PASS: Only doors, CONTINUE, the mirror, its wardrobe and the first-visit guide remain as lobby signs
 PASS: Menu SEATED VIEW enables seated view at 1.65 m
 PASS: Menu SEATED HEIGHT changes eye height to 1.85 m
 PASS: The open menu moves up with the new eye height
@@ -31,13 +31,14 @@ PASS: Travel closes the menu
 PASS: Chapter menus offer LOBBY and TRY AGAIN and name the room
 PASS: Short ocean session records four strokes
 PASS: Short kitchen session records one pour and help
-PASS: Checkpoint stores partial progress in all four rooms
+PASS: Checkpoint stores partial progress in all five chapters
 PASS: Seated mode and eye-height preference survive reload
 PASS: Vignette preference survives reload
 PASS: Ocean count and horizon restore before first entry
 PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
+PASS: A shredded résumé restores exactly once, and the paper stays in the bin
 PASS: Continue button names the last room
 PASS: Continue input returns to the saved room
 PASS: First room activation preserves restored ocean position

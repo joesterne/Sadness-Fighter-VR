@@ -95,6 +95,7 @@ namespace AfterHours.Editor
                 // Never overwrite work on GitHub that isn't on this computer.
                 if(remoteBranch&&Code(root,"merge-base --is-ancestor origin/"+branch+" HEAD")!=0)
                     throw new Exception("GitHub has commits on "+branch+" that this computer doesn't. Pull them first, then push again.");
+                RemoveStaleIndexLock(root);
                 // A commit made under an earlier identity that never reached GitHub takes the current one.
                 if(remoteBranch)
                 {
@@ -131,6 +132,20 @@ namespace AfterHours.Editor
             }
             catch(Exception e){Finish(e.Message,true);}
             finally{running=false;}
+        }
+
+        // A git command closed part-way (for example when Unity or Visual Studio crashes) can leave .git/index.lock behind,
+        // and then every later commit fails with "File exists". Git holds the lock only while it writes the index, so a
+        // lock nobody has written to for ten minutes is left over and is removed.
+        static void RemoveStaleIndexLock(string root)
+        {
+            string lockPath=Path.Combine(root,".git","index.lock");
+            if(!File.Exists(lockPath))return;
+            var age=DateTime.UtcNow-File.GetLastWriteTimeUtc(lockPath);
+            if(age<TimeSpan.FromMinutes(10))
+                throw new Exception("Another git command is using this repository (.git/index.lock). Wait for it to finish, then push again.");
+            File.Delete(lockPath);
+            Note("Removed .git/index.lock, left "+Math.Round(age.TotalHours,1)+" hours ago by a git command that didn't finish.");
         }
 
         static void Step(string text){status=text+"…";Append("== "+text);Debug.Log("[GitHubPush] "+text);}

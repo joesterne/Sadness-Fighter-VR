@@ -1,4 +1,4 @@
-2026-10-06 17:52:05Z
+2026-10-06 18:59:50Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note
@@ -58,4 +58,28 @@ PASS: Pointing at the destination lights it up
 PASS: The infinite archive: "I can ask for support." filed under STILL TRUE from the seat
 PASS: The infinite archive: all six notes filed
 PASS: The infinite archive: done without leaving the seat
-PASS: All four chapters completed seated, without moving
+PASS: Pinch picks up SENIOR COORDINATOR since 2016 from the seat (2.4 m away)
+PASS: Pointing at the destination lights it up
+PASS: The old résumé: "SENIOR COORDINATOR since 2016" shredded from the seat
+PASS: Pinch picks up Always available. Nights and weekends. from the seat (2.1 m away)
+PASS: Pointing at the destination lights it up
+PASS: The old résumé: "Always available. Nights and weekends." shredded from the seat
+PASS: Pinch picks up Exceeded every target. from the seat (2.2 m away)
+PASS: Pointing at the destination lights it up
+PASS: The old résumé: "Exceeded every target." shredded from the seat
+PASS: Pinch picks up Ten years. One company. from the seat (2.1 m away)
+PASS: Pointing at the destination lights it up
+PASS: The old résumé: "Ten years. One company." shredded from the seat
+PASS: Pinch picks up Reason for leaving: __________ from the seat (2.4 m away)
+PASS: Pointing at the destination lights it up
+PASS: The old résumé: "Reason for leaving: __________" shredded from the seat
+PASS: The old résumé: a blank page offers four true lines
+PASS: The old résumé: choosing a line from the seat completes the chapter
+PASS: The old résumé: done without leaving the seat
+PASS: All five chapters completed seated, without moving
+PASS: Mirror: MIRROR on the desk brings you to the glass, facing it
+PASS: Mirror: your reflection appears
+PASS: Mirror: all 16 wardrobe buttons can be pointed at from the mirror spot
+PASS: Mirror: your reflection's face is straight ahead (within 25 degrees)
+PASS: Mirror: TOP > puts on the next top, and the reflection wears it
+PASS: Mirror: trying things on needs no movement

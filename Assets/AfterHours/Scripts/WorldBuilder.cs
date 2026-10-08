@@ -10,15 +10,16 @@ namespace AfterHours
         static Color ivory=new Color(.92f,.91f,.85f), muted=new Color(.61f,.76f,.77f), dark=new Color(.08f,.15f,.2f);
         public static void Build(GameDirector director)
         {
-            d=director;d.rooms=new MindRoom[6];
+            d=director;d.rooms=new MindRoom[7];
             NewRoom(0,"The lobby",Vector3.zero,new Vector3(0,.05f,-4));Hub();
             NewRoom(1,"Ocean of shame",new Vector3(80,0,0),new Vector3(0,.3f,-1));Ocean();
             NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-2.4f));Warehouse();
             NewRoom(3,"A small spill",new Vector3(240,0,0),new Vector3(0,.04f,1.4f));Kitchen();
             NewRoom(4,"The infinite archive",new Vector3(320,0,0),new Vector3(0,.04f,-1.2f));Archive();
             NewRoom(5,"Room for tomorrow",new Vector3(400,0,0),new Vector3(0,.04f,-4));Rooftop();
+            NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
             Menu();
-            for(int i=0;i<6;i++)d.rooms[i].root.SetActive(i==0);
+            for(int i=0;i<d.rooms.Length;i++)d.rooms[i].root.SetActive(i==0);
         }
         // Each room has its own soundscape. Sources play when their room is switched on.
         static void Sound(string clip,float volume,Transform parent=null)
@@ -33,11 +34,18 @@ namespace AfterHours
         }
         static void Floor(Vector3 p,Vector3 size,Material material)
         {Art.Tiled("Walkable floor",p,size,material,new Vector3(1.6f,0,1.6f),castShadows:false).AddComponent<TeleportSurface>();}
-        static void Shell(float width,float depth,Material floor, bool ceiling=true)
+        // An opening in the left wall from z=gapFrom to z=gapTo leaves room for something built into it (the lobby mirror).
+        static void Shell(float width,float depth,Material floor, bool ceiling=true,float gapFrom=0,float gapTo=0)
         {
             Floor(new Vector3(0,-.15f,depth*.5f-5),new Vector3(width,.3f,depth),floor);
             // Walls are panelled and the ceiling is coffered: the bevelled seams give large surfaces scale and catch the light.
-            Art.Tiled("Left wall",new Vector3(-width/2,2.3f,depth*.5f-5),new Vector3(.2f,4.6f,depth),Art.Navy,new Vector3(0,0,2.4f));
+            bool gap=gapTo>gapFrom;
+            if(!gap)Art.Tiled("Left wall",new Vector3(-width/2,2.3f,depth*.5f-5),new Vector3(.2f,4.6f,depth),Art.Navy,new Vector3(0,0,2.4f));
+            else
+            {
+                if(gapFrom>-5)Art.Tiled("Left wall",new Vector3(-width/2,2.3f,(gapFrom-5)*.5f),new Vector3(.2f,4.6f,gapFrom+5),Art.Navy,new Vector3(0,0,2.4f));
+                Art.Tiled("Left wall",new Vector3(-width/2,2.3f,(gapTo+depth-5)*.5f),new Vector3(.2f,4.6f,depth-5-gapTo),Art.Navy,new Vector3(0,0,2.4f));
+            }
             Art.Tiled("Right wall",new Vector3(width/2,2.3f,depth*.5f-5),new Vector3(.2f,4.6f,depth),Art.Navy,new Vector3(0,0,2.4f));
             Art.Tiled("Back wall",new Vector3(0,2.3f,depth-5),new Vector3(width,4.6f,.2f),Art.Navy,new Vector3(2.4f,0,0));
             Art.Tiled("Entrance wall",new Vector3(0,2.3f,-5.1f),new Vector3(width,4.6f,.2f),Art.Navy,new Vector3(2.4f,0,0));
@@ -45,7 +53,7 @@ namespace AfterHours
             for(float z=-2;z<depth-5;z+=4)
             {
                 Art.Box("Ceiling luminous strip",new Vector3(0,4.5f,z),new Vector3(width*.7f,.035f,.08f),Art.White,false);
-                Art.Box("Skirting left",new Vector3(-width/2+.13f,.14f,z),new Vector3(.06f,.1f,3.8f),Art.Gold,false);
+                if(!gap||z-1.9f>gapTo||z+1.9f<gapFrom)Art.Box("Skirting left",new Vector3(-width/2+.13f,.14f,z),new Vector3(.06f,.1f,3.8f),Art.Gold,false);
                 Art.Box("Skirting right",new Vector3(width/2-.13f,.14f,z),new Vector3(.06f,.1f,3.8f),Art.Gold,false);
             }
         }
@@ -142,7 +150,7 @@ namespace AfterHours
         }
         static void Hub()
         {
-            Shell(14,21,Art.Cream);
+            Shell(14,21,Art.Cream,true,-5,-.4f);
             Art.Box("Midnight runner",new Vector3(0,.012f,4.5f),new Vector3(3.5f,.025f,18),Art.Teal,false);
             for(int side=-1;side<=1;side+=2)Art.Box("Runner piping",new Vector3(side*1.74f,.032f,4.5f),new Vector3(.025f,.015f,18),Art.Gold,false);
             Art.Text("Brand eyebrow","A WALK THROUGH THE OFFICE OF YOUR MIND",new Vector3(0,4.02f,13.8f),.2f,muted,11);
@@ -152,12 +160,13 @@ namespace AfterHours
             Door("02","Heavy\nthings","Give your feelings\na place to go.",new Vector3(6.82f,0,1.1f),90,Art.Coral,2);
             Door("03","A small\nspill","The machine is broken.\nYou are allowed help.",new Vector3(-6.82f,0,7),-90,Art.Gold,3);
             Door("04","The infinite\narchive","A fact, a fear,\nand what is still true.",new Vector3(6.82f,0,7),90,Art.Teal,4);
+            Door("05","The old\nrésumé","Let go of who you\nwere for them.",new Vector3(6.82f,0,-2.6f),90,Art.Gold,6);
             // A detailed, polished memory occupies the end of each side of the lobby.
             MemoryOffice(new Vector3(-4.6f,0,12));MemoryOffice(new Vector3(4.6f,0,12));
             Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(2.35f,1.24f,.65f),Art.Navy);
             Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(2.45f,.06f,.72f),Art.Gold);
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.01f,-.64f),.18f,ivory,2.2f);
-            d.lobbyProgress=Art.Text("Journey progress","0 / 4   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.65f,-.645f),.145f,muted,2.15f);
+            d.lobbyProgress=Art.Text("Journey progress","0 / 5   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.65f,-.645f),.145f,muted,2.15f);
             Art.Box("Getting started board",new Vector3(3.5f,1.9f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy);
             Art.Text("Move instructions","POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch or menu button: the menu.",new Vector3(3.5f,1.9f,2.8f),.14f,ivory,2.7f);
             var resume=Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(0,2.16f,-.3f),new Vector3(2.75f,.4f,.12f),Art.Teal,ActionKind.Resume,d);
@@ -165,10 +174,276 @@ namespace AfterHours
             Art.Text("Small sessions","A FEW MINUTES IS ENOUGH\nEach small step saves. Return to the lobby to take a break.",new Vector3(0,2.65f,-.3f),.13f,muted,3.8f);
             Art.Text("Comfort note","SITTING DOWN? OPEN THE MENU\nMenu button or left palm pinch, then SEATED VIEW.\nB / Y returns here from any room.",new Vector3(0,.24f,-.65f),.1f,muted,2.2f);
             Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,1.1f,13.5f),new Vector3(4.2f,.65f,.16f),Art.Teal,ActionKind.Travel,d,5);
-            for(int side=-1;side<=1;side+=2){Art.Plant(new Vector3(side*5.6f,0,-3));Art.Plant(new Vector3(side*2.8f,0,10));}
+            Art.Button("Mirror and wardrobe","MIRROR  /  YOUR WARDROBE",new Vector3(0,1.62f,-.3f),new Vector3(2f,.26f,.1f),Art.Coral,ActionKind.GoToMirror,d);
+            d.mirrorLabel=Art.Root.Find("Mirror and wardrobe label").GetComponent<TextMeshPro>();
+            for(int side=-1;side<=1;side+=2){Art.Plant(new Vector3(side*5.9f,0,4));Art.Plant(new Vector3(side*2.8f,0,10));}
+            Mirror();
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
             Guide();
             Sound("Ambience - Lobby",.5f);Sound("Music - After hours theme",.22f);
+        }
+        // A full-length mirror built into the lobby's left wall, with the wardrobe on either side of it. Behind the glass
+        // is a mirror-image copy of this end of the lobby, and the player's reflection stands in it (see MirrorAvatar).
+        static void Mirror()
+        {
+            // Group axes: +x runs along the wall toward door 01, -z faces into the lobby, +z goes behind the glass.
+            var old=Art.Root;var wall=Art.Group("Mirror wall",new Vector3(-7,0,-2.85f));wall.localRotation=Quaternion.Euler(0,-90,0);Art.Root=wall;
+            Art.Tiled("Mirror wall",new Vector3(-1.475f,2.3f,0),new Vector3(1.35f,4.6f,.2f),Art.Navy,new Vector3(2.4f,0,0));
+            Art.Tiled("Mirror wall",new Vector3(1.625f,2.3f,0),new Vector3(1.65f,4.6f,.2f),Art.Navy,new Vector3(2.4f,0,0));
+            Art.Tiled("Mirror wall",new Vector3(0,3.5f,0),new Vector3(1.6f,2.2f,.2f),Art.Navy,new Vector3(2.4f,0,0));
+            // The glass is solid: it stops walking, teleporting and pointing through it.
+            Art.Box("Mirror glass",new Vector3(0,1.21f,-.03f),new Vector3(1.6f,2.38f,.04f),Art.Glass,true,null,.002f);
+            for(int s=-1;s<=1;s+=2)Art.Box("Mirror frame",new Vector3(s*.83f,1.22f,-.11f),new Vector3(.06f,2.44f,.06f),Art.Gold,false);
+            Art.Box("Mirror frame",new Vector3(0,2.42f,-.11f),new Vector3(1.72f,.06f,.06f),Art.Gold,false);
+            var wardrobe=wall.gameObject.AddComponent<Wardrobe>();wardrobe.director=d;d.wardrobe=wardrobe;
+            wardrobe.nameplate=Art.Text("Mirror nameplate","YOUR WARDROBE",new Vector3(0,2.66f,-.13f),.11f,ivory,2.4f);
+            // The wardrobe: how you look on the left, what you wear on the right. Each row steps back or forward.
+            wardrobe.values=new TextMeshPro[Wardrobe.Rows.Length];
+            for(int column=0;column<2;column++)
+            {
+                float x=column==0?-1.475f:1.55f;
+                Art.Box("Wardrobe board",new Vector3(x,1.5f,-.13f),new Vector3(1.18f,1.5f,.04f),Art.Ink,false);
+                Art.Text("Wardrobe heading",column==0?"YOU":"WHAT YOU WEAR",new Vector3(x,2.13f,-.16f),.085f,muted,1.1f);
+                for(int k=0;k<4;k++)
+                {
+                    int row=column*4+k;float y=1.86f-k*.28f;
+                    Art.Text("Wardrobe row",Wardrobe.Rows[row],new Vector3(x,y+.08f,-.16f),.06f,muted,1f);
+                    Art.Button("Wardrobe back "+row,"<",new Vector3(x-.42f,y-.04f,-.17f),new Vector3(.22f,.15f,.06f),Art.Teal,ActionKind.WardrobePrev,d,row);
+                    Art.Button("Wardrobe next "+row,">",new Vector3(x+.42f,y-.04f,-.17f),new Vector3(.22f,.15f,.06f),Art.Teal,ActionKind.WardrobeNext,d,row);
+                    var value=Art.Text("Wardrobe value "+row,"",new Vector3(x,y-.04f,-.16f),.07f,ivory,.58f);
+                    value.rectTransform.sizeDelta=new Vector2(.58f,.2f);value.enableAutoSizing=true;value.fontSizeMin=.25f;value.fontSizeMax=.5f;
+                    wardrobe.values[row]=value;
+                }
+                Art.Box("Wardrobe note board",new Vector3(x,.47f,-.13f),new Vector3(1.18f,.5f,.04f),Art.Navy,false);
+                var note=Art.Text(column==0?"Still to find":"Wardrobe status","",new Vector3(x,.47f,-.16f),.05f,column==0?muted:ivory,1.08f);
+                note.rectTransform.sizeDelta=new Vector2(1.1f,.46f);note.enableAutoSizing=true;note.fontSizeMin=.22f;note.fontSizeMax=.52f;
+                if(column==0)wardrobe.toFind=note;else wardrobe.status=note;
+            }
+            // Where to stand: MIRROR on the desk brings the player here, facing the glass.
+            d.mirrorSpot=Art.Group("Mirror spot",new Vector3(0,.04f,-1.7f));
+            for(int s=-1;s<=1;s+=2)
+            {
+                Art.Box("Mirror spot marker",new Vector3(0,.02f,-1.7f+s*.35f),new Vector3(.8f,.012f,.05f),Art.Gold,false);
+                Art.Box("Mirror spot marker",new Vector3(s*.4f,.02f,-1.7f),new Vector3(.05f,.012f,.7f),Art.Gold,false);
+            }
+            // The lobby seen in the mirror: a mirror-image copy of this end of the hall, only visible through the glass.
+            Art.Tiled("Reflected floor",new Vector3(3.375f,-.15f,7.05f),new Vector3(11.25f,.3f,13.9f),Art.Cream,new Vector3(1.6f,0,1.6f),false,null,.035f,false);
+            Art.Tiled("Reflected wall",new Vector3(-2.35f,2.3f,7.05f),new Vector3(.2f,4.6f,13.9f),Art.Navy,new Vector3(0,0,2.4f),false,null,.035f,false);
+            Art.Tiled("Reflected wall",new Vector3(9.1f,2.3f,7.05f),new Vector3(.2f,4.6f,13.9f),Art.Navy,new Vector3(0,0,2.4f),false,null,.035f,false);
+            Art.Tiled("Reflected wall",new Vector3(3.375f,2.3f,14.1f),new Vector3(11.25f,4.6f,.2f),Art.Navy,new Vector3(2.4f,0,0),false,null,.035f,false);
+            Art.Tiled("Reflected ceiling",new Vector3(3.375f,4.65f,7.05f),new Vector3(11.25f,.15f,13.9f),Art.Ink,new Vector3(3,0,3),false,null,.035f,false);
+            foreach(float z in new[]{-2f,2f,6f})Art.Box("Reflected light",new Vector3(z+2.85f,4.5f,7),new Vector3(.08f,.035f,9.8f),Art.White,false);
+            Art.Box("Reflected runner",new Vector3(3.675f,.012f,7),new Vector3(10.65f,.025f,3.5f),Art.Teal,false);
+            Art.Box("Reflected console",new Vector3(2.55f,.62f,7),new Vector3(.65f,1.24f,2.35f),Art.Navy,false);
+            Art.Box("Reflected console cap",new Vector3(2.55f,1.25f,7),new Vector3(.72f,.06f,2.45f),Art.Gold,false);
+            Art.Box("Reflected sign",new Vector3(2.55f,2.16f,7),new Vector3(.12f,.4f,2.75f),Art.Teal,false);
+            Art.Box("Reflected sign",new Vector3(2.55f,1.62f,7),new Vector3(.1f,.26f,2f),Art.Coral,false);
+            Art.Box("Reflected board",new Vector3(5.7f,1.9f,10.5f),new Vector3(.08f,1.35f,2.9f),Art.Navy,false);
+            foreach(var (x,accent) in new[]{(.25f,Art.Gold),(3.95f,Art.Coral)})
+            {
+                Art.Box("Reflected door",new Vector3(x,1.4f,13.92f),new Vector3(2.3f,2.8f,.15f),Art.Ink,false);
+                for(int s=-1;s<=1;s+=2)Art.Box("Reflected glow",new Vector3(x+s*1.18f,1.5f,13.8f),new Vector3(.075f,3,.1f),accent,false);
+                Art.Box("Reflected lintel",new Vector3(x,3,13.8f),new Vector3(2.44f,.08f,.1f),accent,false);
+                Art.Box("Reflected button",new Vector3(x,.95f,13.76f),new Vector3(1.45f,.4f,.15f),accent,false);
+            }
+            // The reflection itself: posed every frame in mirror space, then flipped across the glass by a negative scale.
+            var plane=Art.Group("Reflection",Vector3.zero);plane.localRotation=Quaternion.Euler(0,180,0);
+            var avatar=plane.gameObject.AddComponent<MirrorAvatar>();avatar.director=d;wardrobe.avatar=avatar;
+            avatar.reflection=Art.Group("Reflected you",Vector3.zero,plane);
+            Avatar(avatar);
+            avatar.reflection.localScale=new Vector3(1,1,-1);
+            Art.Root=old;
+            wardrobe.Refresh();
+            avatar.PoseFor(d.mirrorSpot.position+Vector3.up*1.61f,Quaternion.LookRotation(Vector3.left),0);
+        }
+        // A faceted figure in the game's style, with every hair style and outfit piece built on and switched off.
+        static void Avatar(MirrorAvatar m)
+        {
+            var root=m.reflection;var skin=new List<Renderer>();var looks=new List<OutfitLook>();
+            Material tone=Art.Skins[2],hair=Art.Hairs[1];
+            void Skin(GameObject g){skin.Add(g.GetComponent<Renderer>());}
+            m.head=Art.Group("Avatar head",Vector3.zero,root);m.neck=Art.Group("Avatar neck",Vector3.zero,root);
+            m.torso=Art.Group("Avatar torso",Vector3.zero,root);m.legs=Art.Group("Avatar legs",Vector3.zero,root);
+            Skin(Art.Shape("Face",PrimitiveType.Sphere,Vector3.zero,new Vector3(.19f,.235f,.215f),tone,false,m.head));
+            for(int s=-1;s<=1;s+=2)
+            {
+                Skin(Art.Shape("Ear",PrimitiveType.Sphere,new Vector3(s*.096f,-.005f,-.005f),new Vector3(.035f,.06f,.04f),tone,false,m.head));
+                Art.Shape("Eye",PrimitiveType.Sphere,new Vector3(s*.042f,.015f,.099f),new Vector3(.026f,.03f,.018f),Art.Ink,false,m.head);
+                Art.Box("Brow",new Vector3(s*.045f,.05f,.1f),new Vector3(.045f,.01f,.012f),Art.Ink,false,m.head,.003f);
+            }
+            Skin(Art.Box("Nose",new Vector3(0,-.015f,.108f),new Vector3(.03f,.05f,.03f),tone,false,m.head,.006f));
+            Art.Box("Smile",new Vector3(0,-.062f,.098f),new Vector3(.05f,.008f,.01f),Art.Coral,false,m.head,.002f);
+            // Hair styles, in Wardrobe.HairStyles order. Parts named Crown hide under a hat.
+            var styles=new GameObject[Wardrobe.HairStyles.Length];
+            for(int i=0;i<styles.Length;i++)styles[i]=Art.Group("Hair - "+Wardrobe.HairStyles[i],Vector3.zero,m.head).gameObject;
+            Transform H(int i)=>styles[i].transform;
+            foreach(int i in new[]{0,1,2,3})Art.Shape("Hair",PrimitiveType.Sphere,new Vector3(0,.045f,-.03f),new Vector3(.205f,.17f,.22f),hair,false,H(i));
+            Art.Box("Hair fringe",new Vector3(0,.095f,.075f),new Vector3(.16f,.04f,.05f),hair,false,H(0),.01f);
+            for(int k=0;k<8;k++){float a=k*Mathf.PI/4;Art.Shape("Crown curl",PrimitiveType.Sphere,new Vector3(Mathf.Cos(a)*.075f,.105f,Mathf.Sin(a)*.08f-.03f),Vector3.one*.075f,hair,false,H(1));}
+            Art.Box("Hair back",new Vector3(0,-.1f,-.08f),new Vector3(.2f,.3f,.08f),hair,false,H(2),.02f);
+            for(int s=-1;s<=1;s+=2)Art.Box("Hair side",new Vector3(s*.095f,-.07f,-.015f),new Vector3(.035f,.22f,.12f),hair,false,H(2),.01f);
+            Art.Shape("Crown bun",PrimitiveType.Sphere,new Vector3(0,.115f,-.1f),Vector3.one*.09f,hair,false,H(3));
+            m.hairStyles=styles;
+            OutfitLook Look(string id,Transform parent,Material sleeve=null,bool longSleeves=false)
+            {var group=Art.Group("Wear - "+id,Vector3.zero,parent);var look=new OutfitLook{id=id,group=group.gameObject,sleeve=sleeve,longSleeves=longSleeves};looks.Add(look);return look;}
+            // Hats
+            var cap=Look("cap",m.head).group.transform;
+            Art.Shape("Cap crown",PrimitiveType.Sphere,new Vector3(0,.07f,-.02f),new Vector3(.225f,.16f,.235f),Art.Coral,false,cap);
+            Art.Box("Cap brim",new Vector3(0,.075f,.1f),new Vector3(.19f,.018f,.13f),Art.Coral,false,cap,.006f).transform.localRotation=Quaternion.Euler(10,0,0);
+            Art.Shape("Cap button",PrimitiveType.Sphere,new Vector3(0,.15f,-.02f),Vector3.one*.025f,Art.Gold,false,cap);
+            var beanie=Look("beanie",m.head).group.transform;
+            Art.Shape("Beanie",PrimitiveType.Sphere,new Vector3(0,.075f,-.025f),new Vector3(.23f,.19f,.24f),Art.Teal,false,beanie);
+            Art.Shape("Beanie band",PrimitiveType.Cylinder,new Vector3(0,.07f,-.022f),new Vector3(.225f,.025f,.232f),Art.Navy,false,beanie);
+            Art.Shape("Pompom",PrimitiveType.Sphere,new Vector3(0,.18f,-.03f),Vector3.one*.065f,Art.Gold,false,beanie);
+            Skin(Art.Shape("Neck",PrimitiveType.Cylinder,new Vector3(0,.07f,-.01f),new Vector3(.085f,.075f,.085f),tone,false,m.neck));
+            // The torso's pivot is mid-spine, so its top (+.305) is the base of the neck and its bottom (-.305) the hips.
+            Art.Box("Belt",new Vector3(0,-.29f,0),new Vector3(.34f,.07f,.19f),Art.Ink,false,m.torso,.015f);
+            Art.Box("Hips",new Vector3(0,-.36f,0),new Vector3(.33f,.14f,.18f),Art.Ink,false,m.torso,.02f);
+            Transform Top(string id,Material body,bool longSleeves)
+            {
+                var t=Look(id,m.torso,body,longSleeves).group.transform;
+                Art.Box("Top",Vector3.zero,new Vector3(.36f,.58f,.2f),body,false,t,.035f);
+                for(int s=-1;s<=1;s+=2)Art.Shape("Top shoulder",PrimitiveType.Sphere,new Vector3(s*.165f,.235f,0),new Vector3(.14f,.12f,.19f),body,false,t);
+                return t;
+            }
+            Top("tee",Art.Teal,false);
+            var shirt=Top("shirt",Art.White,true);
+            for(int s=-1;s<=1;s+=2)Art.Box("Collar",new Vector3(s*.045f,.27f,.085f),new Vector3(.075f,.05f,.02f),Art.White,false,shirt,.005f).transform.localRotation=Quaternion.Euler(0,0,-s*25);
+            Art.Box("Tie knot",new Vector3(0,.245f,.104f),new Vector3(.04f,.035f,.02f),Art.Navy,false,shirt,.005f);
+            Art.Box("Tie",new Vector3(0,.09f,.103f),new Vector3(.055f,.28f,.012f),Art.Navy,false,shirt,.004f);
+            var jumper=Top("jumper",Art.Navy,true);
+            foreach(float y in new[]{.11f,0f})Art.Box("Jumper stripe",new Vector3(0,y,0),new Vector3(.366f,.045f,.206f),Art.Cream,false,jumper,.01f);
+            Art.Shape("Jumper collar",PrimitiveType.Cylinder,new Vector3(0,.29f,0),new Vector3(.15f,.02f,.13f),Art.Cream,false,jumper);
+            var cardigan=Top("cardigan",Art.Wood,true);
+            Art.Box("Shirt beneath",new Vector3(0,.04f,.1f),new Vector3(.09f,.5f,.012f),Art.Teal,false,cardigan,.003f);
+            foreach(float y in new[]{.13f,.03f,-.07f})Art.Shape("Cardigan button",PrimitiveType.Sphere,new Vector3(.06f,y,.104f),Vector3.one*.02f,Art.Gold,false,cardigan);
+            for(int s=-1;s<=1;s+=2)Art.Box("Cardigan pocket",new Vector3(s*.11f,-.17f,.102f),new Vector3(.08f,.065f,.01f),Art.Paper,false,cardigan,.004f);
+            var jacket=Top("jacket",Art.Coral,true);
+            Art.Box("Jacket zip",new Vector3(0,-.01f,.103f),new Vector3(.014f,.54f,.01f),Art.Gold,false,jacket,.002f);
+            for(int s=-1;s<=1;s+=2)Art.Box("Jacket collar",new Vector3(s*.06f,.285f,.06f),new Vector3(.09f,.08f,.06f),Art.Coral,false,jacket,.01f).transform.localRotation=Quaternion.Euler(-15,0,-s*15);
+            Art.Box("Jacket band",new Vector3(0,-.27f,0),new Vector3(.37f,.05f,.21f),Art.Gold,false,jacket,.01f);
+            // Around the neck
+            var scarf=Look("scarf",m.torso).group.transform;
+            Art.Shape("Scarf",PrimitiveType.Cylinder,new Vector3(0,.31f,0),new Vector3(.21f,.045f,.2f),Art.Coral,false,scarf);
+            Art.Box("Scarf end",new Vector3(.07f,.15f,.11f),new Vector3(.075f,.26f,.025f),Art.Coral,false,scarf,.008f).transform.localRotation=Quaternion.Euler(0,0,8);
+            foreach(float y in new[]{.04f,.06f})Art.Box("Scarf fringe",new Vector3(.085f,y,.125f),new Vector3(.07f,.008f,.006f),Art.Gold,false,scarf,.001f);
+            var lanyard=Look("lanyard",m.torso).group.transform;
+            for(int s=-1;s<=1;s+=2)Art.Line("Lanyard strap",new Vector3(s*.065f,.3f,.08f),new Vector3(0,.04f,.11f),.014f,Art.Navy,lanyard);
+            Art.Box("Lanyard badge",new Vector3(0,-.02f,.112f),new Vector3(.09f,.12f,.008f),Art.Cream,false,lanyard,.004f);
+            Art.Box("Badge clip",new Vector3(0,.045f,.114f),new Vector3(.025f,.02f,.01f),Art.Gold,false,lanyard,.002f);
+            foreach(float y in new[]{0f,-.025f,-.05f})Art.Box("Badge line",new Vector3(0,y,.117f),new Vector3(y==0?.06f:.045f,.007f,.003f),Art.Teal,false,lanyard,.001f);
+            // Pins
+            var stepPin=Look("step-pin",m.torso).group.transform;
+            Art.Shape("Pin",PrimitiveType.Cylinder,new Vector3(-.095f,.15f,.106f),new Vector3(.045f,.005f,.045f),Art.Gold,false,stepPin).transform.localRotation=Quaternion.Euler(90,0,0);
+            Art.Shape("Pin centre",PrimitiveType.Sphere,new Vector3(-.095f,.15f,.11f),Vector3.one*.016f,Art.Coral,false,stepPin);
+            var truePin=Look("true-pin",m.torso).group.transform;
+            Art.Facet("Pin gem",new Vector3(-.095f,.15f,.11f),new Vector3(.045f,.06f,.022f),Art.Teal,4,truePin);
+            Art.Shape("Pin spark",PrimitiveType.Sphere,new Vector3(-.095f,.158f,.118f),Vector3.one*.012f,Art.Gold,false,truePin);
+            // Arms are two fixed-length segments each, bent by the pose; hands follow tracked hands or controllers.
+            for(int i=0;i<2;i++)
+            {
+                string side=i==0?"Left":"Right";
+                m.upperArm[i]=Art.Group(side+" upper arm",Vector3.zero,root);
+                m.sleeveUpper[i]=Art.Box("Upper sleeve",new Vector3(0,0,.145f),new Vector3(.1f,.1f,.32f),Art.Teal,false,m.upperArm[i],.03f).GetComponent<Renderer>();
+                m.foreArm[i]=Art.Group(side+" forearm",Vector3.zero,root);
+                m.sleeveFore[i]=Art.Box("Forearm",new Vector3(0,0,.135f),new Vector3(.085f,.085f,.29f),tone,false,m.foreArm[i],.025f).GetComponent<Renderer>();
+                m.hand[i]=Art.Group(side+" hand",Vector3.zero,root);
+                Skin(Art.Box("Hand",new Vector3(0,0,.055f),new Vector3(.08f,.035f,.1f),tone,false,m.hand[i],.012f));
+                Skin(Art.Box("Thumb",new Vector3((i==0?1:-1)*.045f,0,.03f),new Vector3(.025f,.025f,.055f),tone,false,m.hand[i],.008f));
+                float x=i==0?-.1f:.1f;
+                m.leg[i]=Art.Group(side+" leg",new Vector3(x,0,0),m.legs);
+                Art.Box("Trouser leg",new Vector3(0,.47f,0),new Vector3(.14f,.86f,.16f),Art.Ink,false,m.leg[i],.03f);
+                Art.Box("Shoe",new Vector3(x,.045f,.045f),new Vector3(.12f,.09f,.25f),Art.Navy,false,m.legs,.02f);
+            }
+            m.skin=skin.ToArray();m.looks=looks.ToArray();m.skins=Art.Skins;m.hairs=Art.Hairs;
+            foreach(var look in looks)look.group.SetActive(false);
+            foreach(var r in root.GetComponentsInChildren<Renderer>(true))r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        // The old résumé: five pages on a rack, a shredder, and a blank page at the end.
+        static void Shredding()
+        {
+            Shell(12,15,Art.Cream);d.rooms[6].total=5;
+            Header(6,"05 / THE OLD RÉSUMÉ","You are more than a page.","Let each old résumé go, one at a time. Then keep one true line.",new Vector3(0,3.45f,9.6f));
+            // A night window: the office after hours, the city still lit.
+            Art.Box("Night window",new Vector3(0,1.55f,9.86f),new Vector3(6,1.5f,.05f),Art.Ink,false);
+            for(int i=0;i<4;i++)Art.Box("Window mullion",new Vector3(-3+i*2f,1.55f,9.82f),new Vector3(.06f,1.56f,.04f),Art.Navy,false);
+            Art.Box("Window sill",new Vector3(0,.78f,9.78f),new Vector3(6.2f,.05f,.18f),Art.Gold,false);
+            Art.Box("Window head",new Vector3(0,2.32f,9.82f),new Vector3(6.1f,.05f,.04f),Art.Navy,false);
+            var random=new System.Random(6);float R()=>(float)random.NextDouble();
+            for(int i=0;i<46;i++)Art.Box("City light",new Vector3(R()*5.6f-2.8f,.9f+R()*1.2f,9.83f),new Vector3(.05f,.04f,.01f),i%3==0?Art.White:Art.Gold,false);
+            Art.Box("Desk",new Vector3(0,.74f,.45f),new Vector3(4.4f,.08f,.9f),Art.Wood);
+            for(int s=-1;s<=1;s+=2)Art.Box("Desk leg",new Vector3(s*2.05f,.36f,.45f),new Vector3(.08f,.72f,.8f),Art.Metal);
+            Art.Box("Page rack",new Vector3(0,.795f,.45f),new Vector3(4.1f,.03f,.2f),Art.Navy);
+            for(int s=-1;s<=1;s+=2)Art.Box("Rack lip",new Vector3(0,.835f,.45f+s*.06f),new Vector3(4.1f,.05f,.02f),Art.Navy);
+            string[] resumes={"SENIOR COORDINATOR\nsince 2016","Always available.\nNights and weekends.","Exceeded every\ntarget.","Ten years.\nOne company.","Reason for leaving:\n__________"};
+            string[] farewells={"A title described a role. It was never the whole of you.","You were never meant to be reachable all the time.","Your worth was never a quarterly number.","Your loyalty is still yours. It goes with you.","You do not owe anyone a perfect explanation."};
+            var pages=new Grabbable[resumes.Length];for(int i=0;i<pages.Length;i++)pages[i]=Page(resumes[i],new Vector3(-1.44f+i*.72f,1.087f,.45f));
+            // The shredder: a bin with a window onto the paper, the cutting head and its slot. Big enough to read from the seat.
+            const float z=3.3f,top=1.4f;
+            Art.Box("Bin back",new Vector3(0,.39f,z+.297f),new Vector3(.875f,.775f,.03f),Art.Ink);
+            for(int s=-1;s<=1;s+=2)Art.Box("Bin side",new Vector3(s*.42f,.39f,z),new Vector3(.035f,.775f,.625f),Art.Ink);
+            Art.Box("Bin floor",new Vector3(0,.015f,z),new Vector3(.875f,.03f,.625f),Art.Ink);
+            Art.Box("Bin rail",new Vector3(0,.06f,z-.297f),new Vector3(.875f,.12f,.03f),Art.Ink);
+            Art.Box("Bin window",new Vector3(0,.42f,z-.3f),new Vector3(.8f,.58f,.01f),Art.Glass,true,null,.002f);
+            Art.Box("Shredder head",new Vector3(0,top-.3125f,z),new Vector3(1f,.625f,.775f),Art.Metal);
+            Art.Box("Shredder top",new Vector3(0,top+.015f,z),new Vector3(1.02f,.03f,.8f),Art.Navy);
+            Art.Box("Feed slot",new Vector3(0,top+.032f,z),new Vector3(.7f,.006f,.05f),Art.Ink,false,null,.001f);
+            for(int s=-1;s<=1;s+=2)Art.Box("Slot rim",new Vector3(0,top+.033f,z+s*.037f),new Vector3(.75f,.008f,.014f),Art.Gold,false,null,.002f);
+            Art.Text("Shredder label","LET IT GO",new Vector3(0,top-.28f,z-.4f),.11f,ivory,.9f);
+            Art.Shape("Ready light",PrimitiveType.Sphere,new Vector3(.38f,top-.1f,z-.39f),Vector3.one*.035f,Art.Mint,false);
+            var piles=new GameObject[pages.Length];
+            for(int i=0;i<piles.Length;i++)
+            {
+                var pile=Art.Group("Paper pile "+(i+1),new Vector3(0,.05f+i*.095f,z));
+                for(int k=0;k<10;k++)Art.Box("Paper strip",new Vector3(R()*.4f-.2f,R()*.05f,R()*.24f-.12f),new Vector3(.022f,.013f,.3f),k%2==0?Art.White:Art.Paper,false,pile,.002f).transform.localRotation=Quaternion.Euler(0,R()*360,R()*20-10);
+                pile.gameObject.SetActive(false);piles[i]=pile.gameObject;
+            }
+            var fall=Art.Group("Paper strips falling",new Vector3(0,.74f,z));fall.localRotation=Quaternion.Euler(90,0,0);
+            var strips=fall.gameObject.AddComponent<ParticleSystem>();strips.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main=strips.main;main.playOnAwake=false;main.loop=false;main.duration=1.3f;main.startLifetime=.6f;main.startSpeed=.25f;main.gravityModifier=.4f;main.maxParticles=60;main.simulationSpace=ParticleSystemSimulationSpace.World;
+            main.startSize3D=true;main.startSizeX=.018f;main.startSizeY=.013f;main.startSizeZ=.14f;main.startRotation3D=true;main.startRotationY=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);
+            var emission=strips.emission;emission.rateOverTime=26;var shape=strips.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(.6f,.08f,.01f);
+            var stripRenderer=strips.GetComponent<ParticleSystemRenderer>();stripRenderer.renderMode=ParticleSystemRenderMode.Mesh;stripRenderer.mesh=Geometry.Get(PrimitiveType.Cube);stripRenderer.sharedMaterial=Art.Paper;
+            // The slot's trigger runs the shredder. Pointing at the slot while holding a page lights its outline.
+            var slot=Art.Box("Shredder slot",new Vector3(0,top+.23f,z),new Vector3(.9f,.4f,.45f),Art.Teal,false);
+            Object.DestroyImmediate(slot.GetComponent<Renderer>());slot.AddComponent<BoxCollider>().isTrigger=true;
+            var shredder=slot.AddComponent<Shredder>();d.shredder=shredder;shredder.director=d;shredder.pages=pages;shredder.farewells=farewells;shredder.piles=piles;shredder.strips=strips;
+            // A page stands in the slot, then sinks out of sight into the head.
+            shredder.feed=Art.Group("Feed point",new Vector3(0,top+.305f,z));
+            Target(slot,6,new Vector3(0,.09f,0),.55f,"Point at the shredder and let go.",Outline("Shredder highlight",new Vector3(0,top+.045f,z),new Vector2(1.15f,.88f),false));
+            // After the last page: a blank page and four true lines to choose from.
+            var blank=Art.Group("Blank page",Vector3.zero);
+            Art.Box("Page stand",new Vector3(0,.88f,.62f),new Vector3(.5f,.16f,.12f),Art.Navy,false,blank);
+            Art.Box("Blank page",new Vector3(0,1.27f,.6f),new Vector3(.5f,.64f,.02f),Art.White,false,blank,.005f);
+            var blankText=Art.Text("Blank page text",Shredder.Blank,new Vector3(0,1.27f,.585f),.07f,dark,.44f,blank);
+            blankText.rectTransform.sizeDelta=new Vector2(.44f,.58f);blankText.enableAutoSizing=true;blankText.fontSizeMin=.2f;blankText.fontSizeMax=.5f;
+            shredder.blankText=blankText;blank.gameObject.SetActive(false);shredder.blankPage=blank.gameObject;
+            var choices=Art.Group("Still true choices",Vector3.zero);
+            shredder.lines=new[]{"I learn fast.","I care about people.","I keep going.","I make things better."};
+            for(int i=0;i<shredder.lines.Length;i++)Art.Button("Choose line "+(i+1),shredder.lines[i],new Vector3(-1.5f+i,.9f,.12f),new Vector3(.92f,.2f,.06f),Art.Teal,ActionKind.ChooseLine,d,i,choices);
+            choices.gameObject.SetActive(false);shredder.choices=choices.gameObject;
+            // A desk lamp, archive boxes and plants.
+            Art.Shape("Lamp base",PrimitiveType.Cylinder,new Vector3(1.9f,.79f,.78f),new Vector3(.16f,.015f,.16f),Art.Metal,false);
+            Art.Line("Lamp arm",new Vector3(1.9f,.8f,.78f),new Vector3(1.75f,1.24f,.68f),.025f,Art.Metal);
+            Art.Shape("Lamp shade",PrimitiveType.Cylinder,new Vector3(1.72f,1.24f,.66f),new Vector3(.18f,.07f,.18f),Art.Gold,false);
+            for(int i=0;i<3;i++)Art.Box("Archive box",new Vector3(-4.6f,.2f+i*.4f,3+i*.05f),new Vector3(.8f,.38f,.55f),i==1?Art.Paper:Art.Cream);
+            for(int i=0;i<2;i++)Art.Box("Archive box",new Vector3(4.5f,.2f+i*.4f,2.6f),new Vector3(.8f,.38f,.55f),Art.Paper);
+            Art.Plant(new Vector3(-4.9f,0,8.4f));Art.Plant(new Vector3(4.9f,0,8.4f));
+            Sound("Ambience - Print room",.55f);
+        }
+        static Grabbable Page(string text,Vector3 p)
+        {
+            var page=Art.Box("Old résumé",p,new Vector3(.42f,.55f,.03f),Art.White,true,null,.006f);
+            var rb=page.AddComponent<Rigidbody>();rb.mass=.15f;rb.interpolation=RigidbodyInterpolation.Interpolate;rb.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;
+            var g=page.AddComponent<Grabbable>();g.label=text.Replace("\n"," ");g.room=6;g.upright=true;
+            // The face is laid out in metres: its group cancels the page's own scale.
+            var face=Art.Group("Page face",new Vector3(0,0,-.52f),page.transform);face.localScale=new Vector3(1/.42f,1/.55f,1/.03f);
+            Art.Text("Page heading","RÉSUMÉ",new Vector3(0,.215f,0),.034f,dark,.36f,face);
+            Art.Box("Page rule",new Vector3(0,.18f,0),new Vector3(.34f,.004f,.002f),Art.Coral,false,face,.001f);
+            var line=Art.Text("Page line",text,new Vector3(0,.05f,0),.06f,dark,.36f,face);
+            line.rectTransform.sizeDelta=new Vector2(.36f,.2f);line.enableAutoSizing=true;line.fontSizeMin=.2f;line.fontSizeMax=.42f;
+            for(int k=0;k<4;k++)Art.Box("Page text",new Vector3(-.03f+(k%2)*.02f,-.1f-k*.035f,0),new Vector3(.3f-(k%3)*.05f,.008f,.002f),Art.Mint,false,face,.001f);
+            return g;
         }
         static void MemoryOffice(Vector3 position)
         {

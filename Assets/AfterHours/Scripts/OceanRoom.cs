@@ -28,7 +28,7 @@ namespace AfterHours
         }
         IEnumerator Row()
         {
-            rowing=true;strokes++;UpdateSign();director.SaveCheckpoint();director.PlayUi(director.row,.7f);
+            rowing=true;strokes++;UpdateSign();director.SaveCheckpoint();director.PlayUi(director.row,.7f);director.SmallStep();
             Vector3 target=start+Vector3.back*(strokes*.9f);
             if(blinkRowing)
             {

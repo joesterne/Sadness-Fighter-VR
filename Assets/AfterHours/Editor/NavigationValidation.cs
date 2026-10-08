@@ -12,14 +12,14 @@ namespace AfterHours.Editor
     public static class NavigationValidation
     {
         static IEnumerator<float> sequence;static Mouse mouse;static Keyboard keyboard;static double next;static float waitUntil;
-        static readonly List<string> results=new List<string>();static string checkpoint;static bool hadCheckpoint,hadProgress;static int progress;
+        static readonly List<string> results=new List<string>();static string checkpoint,wardrobe;static bool hadCheckpoint,hadProgress,hadWardrobe;static int progress;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
         static VRPlayer P=>D.player;
         public static void Start(bool remainingOnly=false)
         {
             if(sequence!=null)return;if(!EditorApplication.isPlaying||P.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
-            checkpoint=PlayerPrefs.GetString(CheckpointStore.Key);hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);hadProgress=PlayerPrefs.HasKey("AfterHours.Progress.v1");progress=PlayerPrefs.GetInt("AfterHours.Progress.v1");
+            checkpoint=PlayerPrefs.GetString(CheckpointStore.Key);hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);hadProgress=PlayerPrefs.HasKey("AfterHours.Progress.v1");progress=PlayerPrefs.GetInt("AfterHours.Progress.v1");
             D.saveEnabled=false;if(D.intro)D.intro.Hide();mouse=InputSystem.AddDevice<Mouse>("NavigationTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("NavigationTestKeyboard");
             results.Clear();
             if(remainingOnly&&File.Exists("Documentation/Navigation-validation.txt"))
@@ -40,7 +40,7 @@ namespace AfterHours.Editor
         static IEnumerator<float> MenuKey(bool open)
         {
             if(D.menu.IsOpen!=open){Queue(keyboard,new KeyboardState(Key.Tab));yield return .1f;Queue(keyboard,new KeyboardState());yield return .15f;}
-            Check(D.menu.IsOpen==open,"Menu key "+(open?"opens":"closes")+" the menu in room "+D.currentRoom);
+            Check(D.menu.IsOpen==open,"Menu key "+(open?"opens":"closes")+" the menu in room "+D.currentRoom+(D.menu.IsOpen==open?"":" (player busy: "+P.busy+", current keyboard: "+(Keyboard.current!=null?Keyboard.current.name:"none")+")"));
         }
         static void Approach(Interactable button)
         {var pos=button.transform.position-button.transform.forward*1.6f;pos.y=.04f;P.Place(pos,button.transform.eulerAngles.y);Aim(button.transform.position);}
@@ -53,17 +53,19 @@ namespace AfterHours.Editor
         }
         static IEnumerator<float> Run()
         {
+            // Let the test's input devices settle before the first key press.
+            yield return .5f;
             if(D.currentRoom!=0){D.Travel(0);yield return .8f;}P.smoothMotion=true;
             var key=MenuKey(true);while(key.MoveNext())yield return key.Current;
             Check(!D.menu.lobby.activeSelf&&!D.menu.tryAgain.activeSelf,"The lobby menu has no LOBBY or TRY AGAIN");
             key=MenuKey(false);while(key.MoveNext())yield return key.Current;
-            // Every ENTER sign and menu return route, including the rooftop.
-            for(int room=1;room<=5;room++)
+            // Every ENTER sign and menu return route, including the rooftop (last, returning with the lobby key).
+            foreach(int room in new[]{1,2,3,4,6,5})
             {
                 var entry=Button(ActionKind.Travel,room);Approach(entry);yield return .2f;Aim(entry.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;Arrived(room);
                 key=MenuKey(true);while(key.MoveNext())yield return key.Current;
                 var back=D.menu.Button(ActionKind.Rest);Check(back.gameObject.activeInHierarchy,"Room "+room+" menu offers LOBBY");
-                if(room<5){Aim(back.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;}
+                if(room!=5){Aim(back.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;}
                 else {Queue(keyboard,new KeyboardState(Key.Escape));yield return .1f;Queue(keyboard,new KeyboardState());yield return .8f;}
                 Arrived(0);Check(!D.menu.IsOpen,"Returning to the lobby closes the menu");
             }
@@ -115,7 +117,8 @@ namespace AfterHours.Editor
             if(sequence==null)return;sequence=null;Status=status;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
             if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);if(D)D.saveEnabled=false;
             if(hadCheckpoint)PlayerPrefs.SetString(CheckpointStore.Key,checkpoint);else PlayerPrefs.DeleteKey(CheckpointStore.Key);
-            if(hadProgress)PlayerPrefs.SetInt("AfterHours.Progress.v1",progress);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");PlayerPrefs.Save();
+            if(hadProgress)PlayerPrefs.SetInt("AfterHours.Progress.v1",progress);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");
+            if(hadWardrobe)PlayerPrefs.SetString(Wardrobe.Key,wardrobe);else PlayerPrefs.DeleteKey(Wardrobe.Key);PlayerPrefs.Save();
             File.WriteAllLines("Documentation/Navigation-validation.txt",new[]{DateTime.UtcNow.ToString("u"),status,"Production mouse/keyboard input and physics, with direct placement for test setup and API calls for race conditions."}.Concat(results));Debug.Log("Navigation validation: "+status);
         }
     }

@@ -346,6 +346,35 @@ def sfx_pour():
     return fade_edges(normalise(reverb(x, 0.6, 0.15), -6))
 
 
+# ---------- the old résumé ----------
+def amb_printroom(seconds=30, fade=4):
+    n = int((seconds + fade) * SR); tt = np.arange(n) / SR
+    room = lowpass(brown(n), 200, 2) * 0.6 + lowpass(pink(n), 1500, 1) * 0.08
+    tubes = (np.sin(2 * np.pi * 100 * tt) * 0.4 + np.sin(2 * np.pi * 200 * tt) * 0.2) * 0.012
+    # Rain on the window: a soft wash and scattered drops.
+    wash = bandpass(white(n), 1500, 6000, 2) * 0.05 * (0.7 + 0.3 * smooth_noise(n, 0.1))
+    drops = np.zeros(n)
+    for _ in range(int(seconds * 18)):
+        m = int(rng.uniform(0.004, 0.012) * SR); i = int(rng.uniform(0, seconds + fade - 0.02) * SR)
+        d = highpass(white(m), 2500, 1) * decay(m, 0.003) * rng.uniform(0.2, 1.0)
+        drops[i:i + m] += d[:max(0, n - i)]
+    drops = lowpass(drops, 7000, 1) * 0.25
+    x = room + tubes + wash + drops
+    return normalise(make_loop(x, fade), -10, rms_db=-32)
+
+def sfx_shred():
+    n = int(1.5 * SR); tt = np.arange(n) / SR
+    motor = lowpass(signal.sawtooth(2 * np.pi * 95 * tt) * 0.3 + np.sin(2 * np.pi * 190 * tt) * 0.2, 900, 2) * env_adsr(n, 0.05, 0.25)
+    # Paper being cut: dense crackle at the rhythm of the cutters.
+    crackle = bandpass(white(n), 1200, 6000, 2) * (rng.random(n) < 0.35)
+    rhythm = 0.55 + 0.45 * np.sin(2 * np.pi * 22 * tt) ** 2
+    paper = crackle * rhythm * env_adsr(n, 0.12, 0.35) * 0.6
+    return fade_edges(normalise(reverb(motor + paper, 0.5, 0.12), -6))
+
+def sfx_unlock():
+    return chime([hz('D', 5), hz('F#', 5), hz('A', 5), hz('D', 6)], gap=0.11, seconds=1.6)
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -355,6 +384,8 @@ def main(folder):
         'SFX - Select': sfx_select, 'SFX - Grab': sfx_grab, 'SFX - Send': sfx_send, 'SFX - Place': sfx_place,
         'SFX - Menu open': lambda: chime([hz('A', 5), hz('E', 6)]), 'SFX - Menu close': lambda: chime([hz('E', 6), hz('A', 5)]),
         'SFX - Teleport': sfx_teleport, 'SFX - Turn': sfx_turn, 'SFX - Row': sfx_row, 'SFX - Spill': sfx_spill, 'SFX - Pour': sfx_pour,
+        # Added later: new sounds go last, so the random sequence, and every earlier file, stays the same.
+        'Ambience - Print room': amb_printroom, 'SFX - Shred': sfx_shred, 'SFX - Unlock': sfx_unlock,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

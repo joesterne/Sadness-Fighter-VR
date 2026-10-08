@@ -16,15 +16,15 @@ namespace AfterHours.Editor
     {
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;static Keyboard keyboard;
         static readonly List<string> lines=new List<string>();
-        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key};
-        static bool[] existed;static string checkpoint;static int[] values;
+        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key,Wardrobe.Key};
+        static bool[] existed;static string checkpoint,wardrobe;static int[] values;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
         static VRPlayer P=>D.player;
         public static void Start()
         {
             if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
-            if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);values=keys.Select(k=>PlayerPrefs.GetInt(k)).ToArray();
+            if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);D.saveEnabled=false;
             mouse=InputSystem.AddDevice<Mouse>("SeatedReachMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedReachKeyboard");
             lines.Clear();Status="Running";run=Checks();deadline=0;
@@ -122,7 +122,36 @@ namespace AfterHours.Editor
             }
             Check(D.rooms[4].complete,"The infinite archive: all six notes filed");
             Check(Moved(seat)<.05f,"The infinite archive: done without leaving the seat");
-            Check(D.CompletedCount==4,"All four chapters completed seated, without moving");
+
+            D.Travel(Shredder.Room);yield return 1f;seat=P.transform.position;
+            var slot=Target(x=>x.GetComponent<Shredder>());
+            foreach(var page in D.shredder.pages)
+            {
+                foreach(var t in Send(page,slot))yield return t;yield return 1.5f;
+                Check(page.processed&&!page.gameObject.activeSelf,"The old résumé: \""+page.label+"\" shredded from the seat");
+            }
+            yield return 3.8f;
+            Check(D.shredder.Offering,"The old résumé: a blank page offers four true lines");
+            foreach(var t in Click(Button(ActionKind.ChooseLine)))yield return t;
+            Check(D.rooms[Shredder.Room].complete&&D.shredder.line=="I learn fast.","The old résumé: choosing a line from the seat completes the chapter");
+            Check(Moved(seat)<.05f,"The old résumé: done without leaving the seat");
+            Check(D.CompletedCount==5,"All five chapters completed seated, without moving");
+
+            // The mirror: MIRROR on the desk brings a seated player to it, and every wardrobe button is in reach from there.
+            D.Travel(0);yield return 1f;
+            foreach(var t in Click(Button(ActionKind.GoToMirror)))yield return t;yield return .8f;
+            Check(Vector2.Distance(new Vector2(P.Head.position.x,P.Head.position.z),new Vector2(D.mirrorSpot.position.x,D.mirrorSpot.position.z))<.15f&&Mathf.Abs(Mathf.DeltaAngle(P.Head.eulerAngles.y,D.mirrorSpot.eulerAngles.y))<1,"Mirror: MIRROR on the desk brings you to the glass, facing it");
+            seat=P.transform.position;
+            Check(D.wardrobe.avatar.reflection.gameObject.activeInHierarchy,"Mirror: your reflection appears");
+            var wardrobeButtons=D.rooms[0].root.GetComponentsInChildren<Interactable>().Where(x=>x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext).ToArray();
+            foreach(var b in wardrobeButtons)AimAt(b);
+            Check(wardrobeButtons.Length==16,"Mirror: all 16 wardrobe buttons can be pointed at from the mirror spot");
+            Look(D.wardrobe.avatar.head.position);
+            Check(Vector3.Angle(P.Head.forward,D.mirrorSpot.forward)<25,"Mirror: your reflection's face is straight ahead (within 25 degrees)");
+            var top=wardrobeButtons.First(x=>x.kind==ActionKind.WardrobeNext&&x.value==4);
+            foreach(var t in Click(top))yield return t;
+            Check(D.wardrobe.State.top=="shirt"&&D.wardrobe.avatar.Wearing("shirt"),"Mirror: TOP > puts on the next top, and the reflection wears it");
+            Check(Moved(seat)<.05f,"Mirror: trying things on needs no movement");
         }
         static void Tick()
         {
@@ -135,7 +164,7 @@ namespace AfterHours.Editor
         {
             if(run==null)return;run=null;Status=result;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
             if(D)D.saveEnabled=false;if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
-            for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
+            for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else if(keys[i]==Wardrobe.Key)PlayerPrefs.SetString(keys[i],wardrobe);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
             Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Seated-reach-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves."}.Concat(lines));
             Debug.Log("Seated reach validation: "+Status);
         }
