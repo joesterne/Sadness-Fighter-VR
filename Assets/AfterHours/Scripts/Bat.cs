@@ -2,7 +2,7 @@ using UnityEngine;
 namespace AfterHours
 {
     // The bat. While it is held, any swing of the tip faster than a slow wave counts as a hit on the part the barrel
-    // touches, so short swings from a seat count as fully as big ones.
+    // touches, so short swings from a seat count as fully as big ones. Pieces that have already flown are knocked along.
     [DefaultExecutionOrder(100)]
     public class Bat : MonoBehaviour
     {
@@ -30,13 +30,16 @@ namespace AfterHours
             }
             lastTip=tip;lastBase=start;tracking=true;
         }
+        static readonly Collider[] touched=new Collider[96];
         void Touch(Vector3 from,Vector3 to)
         {
-            foreach(var c in Physics.OverlapCapsule(from,to,radius,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+            int count=Physics.OverlapCapsuleNonAlloc(from,to,radius,touched,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
+            for(int i=0;i<count;i++)
             {
-                // A piece already knocked loose belongs to the room, not the part, and is skipped.
-                var part=c.GetComponentInParent<Breakable>();if(!part||part.Broken)continue;
-                room.Hit(part,Speed,c.ClosestPoint(to),Velocity);
+                var c=touched[i];var part=c.GetComponentInParent<Breakable>();
+                if(part){if(!part.Broken)room.Hit(part,Speed,c.ClosestPoint(to),Velocity);continue;}
+                // A piece already knocked loose belongs to the room, not the part: the swing knocks it along.
+                var body=c.attachedRigidbody;if(body&&!body.isKinematic)room.Knock(body,Speed,c.ClosestPoint(to),Velocity);
             }
         }
     }

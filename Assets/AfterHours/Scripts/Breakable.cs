@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 namespace AfterHours
 {
-    public enum BreakSound { Plastic, Glass, Metal }
+    public enum BreakSound { Plastic, Glass, Metal, Paper }
 
     // What one hit does to a part of the computer: pieces shown or hidden, the part knocked askew, and debris thrown.
     [Serializable] public class BreakStage
@@ -55,35 +55,41 @@ namespace AfterHours
             for(int k=stages.Length-1;k>=0;k--){foreach(var g in stages[k].hide)if(g)g.SetActive(true);foreach(var g in stages[k].show)if(g)g.SetActive(false);}
             Pose(-1);Refresh();
         }
-        // One more hit. Its debris flies away from the bat; returns false if the part was already broken.
-        public bool Strike(Vector3 push)
+        // One more hit. Its debris flies with the bat and away from the player (away is level, pointing from the player
+        // to the part). Returns how many pieces flew, or -1 if the part was already broken.
+        public int Strike(Vector3 push,Vector3 away)
         {
-            Ready();if(Broken)return false;
+            Ready();if(Broken)return -1;
             var stage=stages[damage];damage++;
-            Throw(stage,push,true);Show(stage);Pose(damage-1);Refresh();
+            int thrown=Throw(stage,push,away,true);Show(stage);Pose(damage-1);Refresh();
             if(isActiveAndEnabled)StartCoroutine(Shake(push));
-            return true;
+            return thrown;
         }
         // Brings back saved damage without the drama: debris settles where it broke off.
         public void Restore(int saved)
         {
             Mend();damage=Mathf.Clamp(saved,0,stages.Length);
-            for(int k=0;k<damage;k++){Throw(stages[k],Vector3.zero,false);Show(stages[k]);}
+            for(int k=0;k<damage;k++){Throw(stages[k],Vector3.zero,Vector3.zero,false);Show(stages[k]);}
             Pose(damage-1);Refresh();
         }
-        void Throw(BreakStage stage,Vector3 push,bool fly)
+        int Throw(BreakStage stage,Vector3 push,Vector3 away,bool fly)
         {
-            var room=transform.root;
+            var room=transform.root;int count=0;
             foreach(var p in stage.debris)
             {
-                if(!p)continue;
+                if(!p)continue;count++;
                 // Leave the part first, so hiding the broken part never hides its pieces.
                 p.transform.SetParent(room,true);p.gameObject.SetActive(true);p.isKinematic=false;
                 // A piece starts inside the part's own hit volume: it must fall away from it, not be pushed out of it.
                 foreach(var c in p.GetComponentsInChildren<Collider>())foreach(var v in hitVolumes)if(v)Physics.IgnoreCollision(c,v,true);
-                p.linearVelocity=fly?push+UnityEngine.Random.insideUnitSphere*.9f+Vector3.up*UnityEngine.Random.Range(.6f,1.6f):Vector3.zero;
-                p.angularVelocity=fly?UnityEngine.Random.insideUnitSphere*9:Vector3.zero;
+                if(!fly){p.linearVelocity=Vector3.zero;p.angularVelocity=Vector3.zero;continue;}
+                // Small bits scatter wider and spin faster than big pieces. Nothing flies back toward the player.
+                bool small=p.mass<.05f;
+                var velocity=push+UnityEngine.Random.insideUnitSphere*(small?1.5f:.85f)+Vector3.up*UnityEngine.Random.Range(.6f,1.6f)+away*UnityEngine.Random.Range(.2f,.8f);
+                float toward=Vector3.Dot(velocity,away);if(toward<0)velocity-=away*toward;
+                p.linearVelocity=velocity;p.angularVelocity=UnityEngine.Random.insideUnitSphere*(small?14:9);
             }
+            return count;
         }
         static void Show(BreakStage stage){foreach(var g in stage.show)if(g)g.SetActive(true);foreach(var g in stage.hide)if(g)g.SetActive(false);}
         void Pose(int stage)

@@ -1,4 +1,4 @@
-2026-10-08 20:07:21Z
+2026-10-11 16:32:30Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -75,19 +75,32 @@ PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 7
 PASS: Input picks up the bat, and it stays in hand after the press ends
 PASS: Moving the bat slowly through the monitor does not count as a hit
-PASS: Short swings break the monitor (4 hits in 4 swings aimed at it)
+PASS: The computer holds 152 pieces that can fly off (32 before), and the five desk things 58 more
+PASS: Short swings break the mug (1 hit)
+PASS: Short swings break the desk phone (2 hits)
+PASS: Short swings break the stapler (1 hit)
+PASS: Short swings break the pen cup (1 hit)
+PASS: Short swings break the name plate (1 hit)
+PASS: The desk things are extras: breaking them does not count toward the chapter
+PASS: Short swings break the monitor (4 hits in 2 swings aimed at it)
 PASS: The room counts 2 of 4 broken
 PASS: Short swings break the keyboard (3 hits, all landed by swings aimed at its neighbour)
 PASS: The room counts 2 of 4 broken
-PASS: Short swings break the tower (4 hits in 4 swings aimed at it)
+PASS: Short swings break the tower (4 hits in 2 swings aimed at it)
 PASS: The room counts 4 of 4 broken
 PASS: Short swings break the mouse (2 hits, all landed by swings aimed at its neighbour)
 PASS: The room counts 4 of 4 broken
 PASS: The last part starts the quiet; the chapter waits for it
+PASS: Every hit throws pieces: 19 hits threw all 210, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
+PASS: All 210 pieces stay inside the room, above the floor
+PASS: 193 of 210 pieces have come to rest by the end of the quiet
+PASS: Pieces lie on the desk after the quiet
+PASS: A swing knocks a loose key along the desk (157 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
+PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place
 PASS: PUT THE BAT BACK returns the bat to its rack
 PASS: All six chapters complete
 PASS: Completion saved as all six chapter flags

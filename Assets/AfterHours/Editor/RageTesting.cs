@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 namespace AfterHours.Editor
 {
@@ -23,11 +24,17 @@ namespace AfterHours.Editor
             var local=grip+axis*best;
             return Quaternion.LookRotation(point-head.position,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(local,Vector3.up));
         }
-        // One swing: the view first looks well away (so moving into position cannot brush the part), settles clear above it,
-        // then sweeps down through it. A 50 degree sweep starts and ends about 40 cm from the part. Yields game-time waits.
-        public static IEnumerable<float> Swing(Breakable part,float degrees=50,float seconds=.15f)
+        // Every piece that can break off the computer and the desk things, flown or not.
+        public static IEnumerable<Rigidbody> Pieces=>D.rooms[RageRoom.Room].root.GetComponentsInChildren<Loose>(true).Select(l=>l.GetComponent<Rigidbody>());
+        // The pieces that have flown and are lying about the room.
+        public static IEnumerable<Rigidbody> Landed=>Pieces.Where(b=>!b.isKinematic&&b.gameObject.activeInHierarchy);
+        // One swing at a part. See SwingAt.
+        public static IEnumerable<float> Swing(Breakable part,float degrees=50,float seconds=.15f)=>SwingAt(Centre(part),degrees,seconds);
+        // One swing: the view first looks well away (so moving into position cannot brush the point), settles clear above it,
+        // then sweeps down through it. A 50 degree sweep starts and ends about 40 cm from the point. Yields game-time waits.
+        public static IEnumerable<float> SwingAt(Vector3 point,float degrees=50,float seconds=.15f)
         {
-            var head=D.player.Head;var through=Through(Centre(part));
+            var head=D.player.Head;var through=Through(point);
             head.rotation=through*Quaternion.Euler(-85,0,0);yield return .3f;
             head.rotation=through*Quaternion.Euler(-degrees/2,0,0);yield return .35f;
             float start=Time.time;

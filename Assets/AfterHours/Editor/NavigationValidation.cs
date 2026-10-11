@@ -21,7 +21,7 @@ namespace AfterHours.Editor
         {
             if(sequence!=null)return;if(!EditorApplication.isPlaying||P.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             checkpoint=PlayerPrefs.GetString(CheckpointStore.Key);hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);hadProgress=PlayerPrefs.HasKey("AfterHours.Progress.v1");progress=PlayerPrefs.GetInt("AfterHours.Progress.v1");
-            D.saveEnabled=false;if(D.intro)D.intro.Hide();mouse=InputSystem.AddDevice<Mouse>("NavigationTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("NavigationTestKeyboard");
+            D.saveEnabled=false;if(D.intro)D.intro.Hide();mouse=InputSystem.AddDevice<Mouse>("NavigationTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("NavigationTestKeyboard");TestInput.Claim(mouse,keyboard);
             results.Clear();
             if(remainingOnly&&File.Exists("Documentation/Navigation-validation.txt"))
             {
@@ -125,7 +125,7 @@ namespace AfterHours.Editor
         static void Finish(string status)
         {
             if(sequence==null)return;sequence=null;Status=status;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
-            if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);if(D)D.saveEnabled=false;
+            TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);if(D)D.saveEnabled=false;
             if(hadCheckpoint)PlayerPrefs.SetString(CheckpointStore.Key,checkpoint);else PlayerPrefs.DeleteKey(CheckpointStore.Key);
             if(hadProgress)PlayerPrefs.SetInt("AfterHours.Progress.v1",progress);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");
             if(hadWardrobe)PlayerPrefs.SetString(Wardrobe.Key,wardrobe);else PlayerPrefs.DeleteKey(Wardrobe.Key);PlayerPrefs.Save();

@@ -449,6 +449,20 @@ def sfx_calm():
     x = lowpass(x, 2200, 1)
     return fade_edges(normalise(reverb(x, 2.2, 0.35), -10))
 
+def sfx_clatter():
+    # A loose piece knocked along by the bat: a light tap and a short rattle.
+    n = int(0.3 * SR)
+    tap = bandpass(white(n), 1200, 6000, 2) * decay(n, 0.006)
+    x = tap * 0.9 + thump(n, 320, 0.02) * 0.35 + clicks(0.3, 5, 2000, 8000, 0.7) * 0.5
+    return fade_edges(normalise(reverb(x, 0.3, 0.08), -9))
+
+def sfx_hit_paper():
+    # A stack of paper struck: a soft thud, then sheets riffling apart.
+    n = int(0.9 * SR)
+    riffle = bandpass(white(n), 1500, 7000, 2) * decay(n, 0.25) * (0.6 + 0.4 * smooth_noise(n, 25))
+    x = thump(n, 110, 0.04) * 0.6 + riffle * 0.7 + clicks(0.9, 12, 2500, 9000, 0.7) * 0.25
+    return fade_edges(normalise(reverb(x, 0.4, 0.1), -6))
+
 
 def main(folder):
     os.makedirs(folder, exist_ok=True)
@@ -463,6 +477,7 @@ def main(folder):
         'Ambience - Print room': amb_printroom, 'SFX - Shred': sfx_shred, 'SFX - Unlock': sfx_unlock,
         'Ambience - Rage room': amb_rageroom, 'SFX - Swing': sfx_swing, 'SFX - Hit plastic': sfx_hit_plastic, 'SFX - Hit glass': sfx_hit_glass,
         'SFX - Hit metal': sfx_hit_metal, 'SFX - Smash': sfx_smash, 'SFX - Cart': sfx_cart, 'SFX - Calm': sfx_calm,
+        'SFX - Clatter': sfx_clatter, 'SFX - Hit paper': sfx_hit_paper,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

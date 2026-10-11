@@ -30,7 +30,7 @@ namespace AfterHours.Editor
             intExisted=intKeys.Select(PlayerPrefs.HasKey).ToArray();intValues=intKeys.Select(k=>PlayerPrefs.GetInt(k)).ToArray();
             stringExisted=stringKeys.Select(PlayerPrefs.HasKey).ToArray();stringValues=stringKeys.Select(k=>PlayerPrefs.GetString(k)).ToArray();
             foreach(var key in intKeys.Concat(stringKeys))PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
-            mouse=InputSystem.AddDevice<Mouse>("WardrobeValidationMouse");
+            mouse=InputSystem.AddDevice<Mouse>("WardrobeValidationMouse");TestInput.Claim(mouse);
             lines.Clear();Status="Running";run=Checks();deadline=0;
             EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=OnPlay;
         }
@@ -159,7 +159,7 @@ namespace AfterHours.Editor
         static void Finish(string result)
         {
             if(run==null)return;run=null;Status=result;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
-            if(D)D.saveEnabled=false;if(mouse!=null)InputSystem.RemoveDevice(mouse);
+            if(D)D.saveEnabled=false;TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);
             for(int i=0;i<intKeys.Length;i++){if(intExisted[i])PlayerPrefs.SetInt(intKeys[i],intValues[i]);else PlayerPrefs.DeleteKey(intKeys[i]);}
             for(int i=0;i<stringKeys.Length;i++){if(stringExisted[i])PlayerPrefs.SetString(stringKeys[i],stringValues[i]);else PlayerPrefs.DeleteKey(stringKeys[i]);}
             PlayerPrefs.Save();

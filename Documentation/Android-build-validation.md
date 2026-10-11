@@ -244,6 +244,45 @@ The release APK built with zero errors.
 
 It was not installed: no Quest was connected.
 
+## October 11: more flying parts
+
+### What changed
+
+- **Many more pieces fly off.** The old computer now breaks into 152 pieces (it was 94): extra circuit boards, fans, drive parts, key caps, cable ends and plastic shards. Each stage of damage throws a handful.
+- **Desk clutter breaks too.** A mug, a phone, a stapler, a pen cup and a name plate sit within 80 cm of the player's hand. They scatter when hit. They are not needed for the chapter (58 pieces more, 210 in all).
+- **Loose pieces can be knocked around.** Once a piece lands it can be batted again (`Loose`). Every hit throws something, and WHEEL IN A NEW ONE (or TRY AGAIN) mends everything.
+- Two new sounds, a clatter and a paper hit (32 in all). Version 0.4.1.
+
+### Tests
+
+The tests now switch the editor's real mouse and keyboard off while a suite runs and use the test devices only (`TestInput`). A real mouse left in a pressed state had been taking over as the current mouse and blocking the gameplay test's floor click. This was a test-setup fault, not a game fault.
+
+### Results
+
+All five suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 129 of 129 |
+| Navigation | 126 of 126 |
+| Airplane-seat checks | 98 of 98 |
+| Menu and seated checks | 46 of 46 |
+| Mirror and wardrobe | 41 of 41 |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 74.5 MB (74,471,727 bytes; 1.4 MB more than 0.4.0) |
+| SHA-256 of the APK | `620875cebe081db1075b7821221ef3eeb20379f376b81bffea422fa8d4eb548e` |
+| Version | 0.4.1, version code 408526 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`). Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | The rage room scripts (`Loose`, `RageRoom`, `Breakable`, `Bat`) are in the APK. No DevAgent data, no LAN address and no XR Operator layer (the only match for its name is Unity's list of OpenXR extension names). |
+
+It was not installed: no Quest was connected.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -262,3 +301,5 @@ These still need a physical headset playtest (see `Playtest.md`):
 - how swinging the bat feels with real hands and with controllers, including short swings from a seat
 - whether the hit pulse is felt on the controllers, and how loud the rage room's breaking sounds are
 - that a swing never reaches past the desk into the real room around a seated player
+- frame rate with about 210 loose rigid bodies in the rage room at once
+- how knocked pieces feel to bat around

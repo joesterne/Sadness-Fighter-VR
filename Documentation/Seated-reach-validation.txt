@@ -1,4 +1,4 @@
-2026-10-08 19:56:23Z
+2026-10-11 16:37:31Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note
@@ -77,7 +77,13 @@ PASS: The old résumé: a blank page offers four true lines
 PASS: The old résumé: choosing a line from the seat completes the chapter
 PASS: The old résumé: done without leaving the seat
 PASS: The rage room: every part is within 0.65 m of a seated hand, inside the bat's 0.85 m
+PASS: The rage room: every desk thing is within 0.67 m of a seated hand, inside the bat's 0.85 m
 PASS: The rage room: pinch picks up the bat from the seat (1.0 m away), and it stays in hand
+PASS: The rage room: short swings from the seat break the mug
+PASS: The rage room: short swings from the seat break the desk phone
+PASS: The rage room: short swings from the seat break the stapler
+PASS: The rage room: short swings from the seat break the pen cup
+PASS: The rage room: short swings from the seat break the name plate
 PASS: The rage room: short swings from the seat break the monitor
 PASS: The rage room: short swings from the seat break the keyboard
 PASS: The rage room: short swings from the seat break the tower

@@ -24,7 +24,7 @@ namespace AfterHours.Editor
             if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
-            mouse=InputSystem.AddDevice<Mouse>("SeatedValidationMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedValidationKeyboard");lines.Clear();Status="Running";run=Checks();deadline=0;
+            mouse=InputSystem.AddDevice<Mouse>("SeatedValidationMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedValidationKeyboard");TestInput.Claim(mouse,keyboard);lines.Clear();Status="Running";run=Checks();deadline=0;
             EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=OnPlay;
         }
         static void OnPlay(PlayModeStateChange state){if(state==PlayModeStateChange.ExitingPlayMode)Finish("Stopped");}
@@ -115,7 +115,7 @@ namespace AfterHours.Editor
             var note=D.rooms[4].root.GetComponentsInChildren<Grabbable>().First();var tray=D.rooms[4].root.GetComponentsInChildren<DropZone>().First(x=>x.category==note.category);
             tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.SaveCheckpoint();
             var saved=JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
-            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==4&&saved.rage.Sum()==2&&saved.rage[3]==2,"Checkpoint stores partial progress in all six chapters");
+            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2,"Checkpoint stores partial progress in all six chapters");
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return .8f;
             Check(D.player.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Seated mode and eye-height preference survive reload");
             Check(!P.comfortVignette,"Vignette preference survives reload");
@@ -148,7 +148,7 @@ namespace AfterHours.Editor
         static void Finish(string result)
         {
             if(run==null)return;run=null;Status=result;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
-            if(D)D.saveEnabled=false;if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
+            if(D)D.saveEnabled=false;TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
             for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else if(keys[i]==Wardrobe.Key)PlayerPrefs.SetString(keys[i],wardrobe);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
             Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Seated-session-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload."}.Concat(lines));Debug.Log("Seated and session validation: "+Status);
         }

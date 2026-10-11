@@ -9,6 +9,20 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 namespace AfterHours.Editor
 {
+    // The editor's own mouse and keyboard keep reporting while a test runs, and a button an earlier click left pressed stays
+    // pressed in them. A test uses only its own devices, so the others are switched off until it finishes.
+    public static class TestInput
+    {
+        static readonly List<InputDevice> off=new List<InputDevice>();
+        public static void Claim(params InputDevice[] mine)
+        {
+            Release();
+            foreach(var device in InputSystem.devices.Where(x=>x.enabled&&!mine.Contains(x)&&mine.Any(m=>(m is Mouse&&x is Mouse)||(m is Keyboard&&x is Keyboard))).ToList())
+            {InputSystem.DisableDevice(device);off.Add(device);}
+            foreach(var device in mine)device.MakeCurrent();
+        }
+        public static void Release(){foreach(var device in off)if(device!=null&&device.added)InputSystem.EnableDevice(device);off.Clear();}
+    }
     // Exercises production input and physics. Editor stepping is used because this editor stalls its background player loop.
     public static class AfterHoursSmoke
     {
@@ -24,7 +38,7 @@ namespace AfterHours.Editor
             hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);oldCheckpoint=PlayerPrefs.GetString(CheckpointStore.Key);
             hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);oldWardrobe=PlayerPrefs.GetString(Wardrobe.Key);
             foreach(var room in d.rooms){room.complete=false;room.accepted=0;}d.RefreshProgress();if(d.intro)d.intro.Hide();
-            mouse=InputSystem.AddDevice<Mouse>("AfterHoursTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("AfterHoursTestKeyboard");
+            mouse=InputSystem.AddDevice<Mouse>("AfterHoursTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("AfterHoursTestKeyboard");TestInput.Claim(mouse,keyboard);
             running=true;Status="Running";EditorApplication.playModeStateChanged+=OnPlayState;EditorApplication.update+=Pump;Application.logMessageReceived+=OnLog;
             d.StartCoroutine(Guard(Run()));
         }
@@ -118,13 +132,22 @@ namespace AfterHours.Editor
             Check(d.rooms[6].complete&&d.shredder.line=="I keep going."&&d.wardrobe.State.line=="I keep going.","Choosing a line completes the chapter and keeps the line for the wardrobe");
             Check(d.CompletedCount==5,"Five chapters complete before the rage room");
             yield return Visit(RageRoom.Room);Capture("Rage room");
-            var rage=d.rage;var bat=rage.bat;var batHome=bat.transform.position;
+            var rage=d.rage;var bat=rage.bat;var batHome=bat.transform.position;var roomRoot=d.rooms[RageRoom.Room].root.transform;
             Aim(RageTesting.BatMiddle);yield return Delay(.06f);Press(true);yield return Delay(.3f);Press(false);yield return Delay(.3f);
             Check(bat.held&&d.player.IsHolding(bat),"Input picks up the bat, and it stays in hand after the press ends");
             Capture("Rage room-Bat in hand");
             foreach(var w in RageTesting.Swing(rage.parts[0],50,4))yield return Wait(w);
             Check(rage.parts[0].damage==0,"Moving the bat slowly through the monitor does not count as a hit");
+            int pieceCount=RageTesting.Pieces.Count();
+            int computerPieces=rage.parts.Sum(x=>x.stages.Sum(t=>t.debris.Length));
+            Check(computerPieces>=4*32&&pieceCount>=200&&rage.extras.Length==5,"The computer holds "+computerPieces+" pieces that can fly off (32 before), and the five desk things "+(pieceCount-computerPieces)+" more");
             var swings=new List<int>();
+            foreach(var extra in rage.extras)
+            {
+                foreach(var w in RageTesting.BreakPart(extra,swings))yield return Wait(w);
+                Check(extra.Broken,"Short swings break "+extra.label+" ("+extra.HitsToBreak+(extra.HitsToBreak==1?" hit)":" hits)"));
+            }
+            Check(!d.rooms[RageRoom.Room].complete&&d.rooms[RageRoom.Room].accepted==rage.BrokenCount&&rage.BrokenCount<4,"The desk things are extras: breaking them does not count toward the chapter");
             for(int i=0;i<rage.parts.Length;i++)
             {
                 var part=rage.parts[i];
@@ -133,15 +156,32 @@ namespace AfterHours.Editor
                 Check(d.rooms[RageRoom.Room].accepted==rage.BrokenCount&&rage.BrokenCount>=i+1,"The room counts "+rage.BrokenCount+" of 4 broken");
             }
             Check(!d.rooms[RageRoom.Room].complete&&rage.Quieting,"The last part starts the quiet; the chapter waits for it");
-            var desk=d.rooms[RageRoom.Room].root.transform.TransformPoint(new Vector3(.1f,.85f,-.3f));
+            Check(rage.Hits==rage.Everything.Sum(x=>x.HitsToBreak)&&rage.FewestThrown>=3&&rage.Thrown==pieceCount,"Every hit throws pieces: "+rage.Hits+" hits threw all "+rage.Thrown+", at least "+rage.FewestThrown+" at a time");
+            var desk=roomRoot.TransformPoint(new Vector3(.1f,.85f,-.3f));
             yield return Delay(1);Aim(desk);yield return Delay(.2f);Capture("Rage room-Broken");
+            Aim(roomRoot.TransformPoint(new Vector3(0,.2f,.9f)));yield return Delay(.2f);Capture("Rage room-Mess");
             yield return Delay(10.5f);
             Check(d.rooms[RageRoom.Room].complete&&rage.Calm&&rage.newComputer.activeSelf,"When it is all broken the room goes quiet, then the chapter completes");
             Check(rage.ambience.volume<.01f,"The room's hum fades to silence");
+            var landed=RageTesting.Landed.ToList();
+            Check(landed.Count==pieceCount&&landed.All(b=>{var p=roomRoot.InverseTransformPoint(b.position);return Mathf.Abs(p.x)<4.9f&&p.z>-4.9f&&p.z<6.9f&&p.y>-.02f&&p.y<4.6f;}),"All "+landed.Count+" pieces stay inside the room, above the floor");
+            int resting=landed.Count(b=>b.IsSleeping()||b.linearVelocity.magnitude<.05f);
+            Check(resting>=landed.Count*.9f,resting+" of "+landed.Count+" pieces have come to rest by the end of the quiet");
+            var onDesk=landed.Where(b=>{var p=roomRoot.InverseTransformPoint(b.position);return b.mass<.3f&&Mathf.Abs(p.x)<.7f&&p.z>-.55f&&p.z<0&&p.y>.74f&&p.y<.9f;})
+                .OrderBy(b=>Vector3.Distance(roomRoot.InverseTransformPoint(b.position),new Vector3(0,.76f,-.4f))).FirstOrDefault();
+            Check(onDesk,"Pieces lie on the desk after the quiet");
+            if(onDesk)
+            {
+                var knockedFrom=onDesk.position;int knocks=rage.Knocks;
+                foreach(var w in RageTesting.SwingAt(onDesk.position))yield return Wait(w);
+                float moved=Vector3.Distance(onDesk.position,knockedFrom);
+                Check(rage.Knocks>knocks&&moved>.03f,"A swing knocks a loose "+onDesk.name.ToLower()+" along the desk ("+(moved*100).ToString("0")+" cm)");
+            }
             Aim(d.rooms[RageRoom.Room].root.transform.TransformPoint(new Vector3(0,1.5f,3)));yield return Delay(.2f);Capture("Rage room-Quiet");
             yield return Click(rage.newComputer.GetComponentInChildren<Interactable>());yield return Delay(1.8f);
             Check(rage.parts.All(x=>x.damage==0&&!x.Broken)&&d.rooms[RageRoom.Room].accepted==0&&!rage.Calm&&d.rooms[RageRoom.Room].complete,"WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete");
             Check(Mathf.Abs(rage.ambience.volume-rage.ambienceVolume)<.01f,"The hum returns with the new computer");
+            Check(rage.Everything.All(x=>x.damage==0)&&RageTesting.Pieces.All(b=>b.isKinematic&&b.transform.parent!=roomRoot),"WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place");
             yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
             Check(!bat.held&&!d.player.IsHolding(bat)&&Vector3.Distance(bat.transform.position,batHome)<.05f,"PUT THE BAT BACK returns the bat to its rack");
             Check(d.CompletedCount==6,"All six chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==222,"Completion saved as all six chapter flags");
@@ -156,7 +196,7 @@ namespace AfterHours.Editor
         static void Finish()
         {
             if(!running)return;running=false;EditorApplication.playModeStateChanged-=OnPlayState;EditorApplication.update-=Pump;Application.logMessageReceived-=OnLog;
-            if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
+            TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
             if(d)d.saveEnabled=false;
             if(hadCheckpoint)PlayerPrefs.SetString(CheckpointStore.Key,oldCheckpoint);else PlayerPrefs.DeleteKey(CheckpointStore.Key);
             if(hadSave)PlayerPrefs.SetInt("AfterHours.Progress.v1",oldSave);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");

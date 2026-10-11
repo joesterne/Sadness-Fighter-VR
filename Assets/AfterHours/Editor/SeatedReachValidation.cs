@@ -26,7 +26,7 @@ namespace AfterHours.Editor
             if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);D.saveEnabled=false;
-            mouse=InputSystem.AddDevice<Mouse>("SeatedReachMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedReachKeyboard");
+            mouse=InputSystem.AddDevice<Mouse>("SeatedReachMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedReachKeyboard");TestInput.Claim(mouse,keyboard);
             lines.Clear();Status="Running";run=Checks();deadline=0;
             EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=OnPlay;
         }
@@ -142,13 +142,15 @@ namespace AfterHours.Editor
             float widestRight=rage.parts.Max(x=>RageTesting.SeatedReach(P.Head.position,forward,.2f,x));
             float widestLeft=rage.parts.Take(2).Max(x=>RageTesting.SeatedReach(P.Head.position,forward,-.2f,x));
             Check(widestRight<.7f&&widestLeft<.7f,"The rage room: every part is within "+Mathf.Max(widestRight,widestLeft).ToString("0.00")+" m of a seated hand, inside the bat's 0.85 m");
+            float widestExtra=rage.extras.Max(x=>Mathf.Min(RageTesting.SeatedReach(P.Head.position,forward,.2f,x),RageTesting.SeatedReach(P.Head.position,forward,-.2f,x)));
+            Check(widestExtra<.8f,"The rage room: every desk thing is within "+widestExtra.ToString("0.00")+" m of a seated hand, inside the bat's 0.85 m");
             Look(RageTesting.BatMiddle);
             if(!Physics.Raycast(P.Head.position,P.Head.forward,out var batHit,14,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)||!batHit.collider.transform.IsChildOf(rage.bat.transform))
                 throw new Exception("Pointer target obstructed from the seat: the bat by "+(batHit.collider?batHit.collider.name:"nothing"));
             Press(true);yield return .3f;Press(false);yield return .3f;
             Check(rage.bat.held,"The rage room: pinch picks up the bat from the seat ("+Vector3.Distance(P.Head.position,RageTesting.BatMiddle).ToString("0.0")+" m away), and it stays in hand");
             var swings=new List<int>();
-            foreach(var part in rage.parts)
+            foreach(var part in rage.extras.Concat(rage.parts))
             {
                 foreach(var t in RageTesting.BreakPart(part,swings))yield return t;
                 Check(part.Broken,"The rage room: short swings from the seat break "+part.label);
@@ -156,7 +158,7 @@ namespace AfterHours.Editor
             yield return 11.5f;
             Check(D.rooms[RageRoom.Room].complete&&rage.Calm,"The rage room: the quiet comes, and the chapter completes");
             foreach(var t in Click(rage.newComputer.GetComponentInChildren<Interactable>()))yield return t;yield return 1.8f;
-            Check(rage.parts.All(x=>x.damage==0),"The rage room: WHEEL IN A NEW ONE can be chosen from the seat");
+            Check(rage.Everything.All(x=>x.damage==0),"The rage room: WHEEL IN A NEW ONE can be chosen from the seat");
             foreach(var t in Click(Button(ActionKind.PutBatBack)))yield return t;yield return 1f;
             Check(!rage.bat.held,"The rage room: PUT THE BAT BACK can be chosen from the seat");
             Check(Moved(seat)<.05f,"The rage room: done without leaving the seat");
@@ -188,7 +190,7 @@ namespace AfterHours.Editor
         static void Finish(string result)
         {
             if(run==null)return;run=null;Status=result;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
-            if(D)D.saveEnabled=false;if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
+            if(D)D.saveEnabled=false;TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
             for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else if(keys[i]==Wardrobe.Key)PlayerPrefs.SetString(keys[i],wardrobe);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
             Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Seated-reach-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves."}.Concat(lines));
             Debug.Log("Seated reach validation: "+Status);
