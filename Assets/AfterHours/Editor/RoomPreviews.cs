@@ -47,6 +47,8 @@ namespace AfterHours.Editor
                 saved+=TargetShot(d,cam,3,"A small spill - send the cup")?1:0;
                 saved+=TargetShot(d,cam,4,"The infinite archive - send to a tray")?1:0;
                 saved+=TargetShot(d,cam,6,"The old résumé - send to the shredder")?1:0;
+                // The boat's oars in their locks, the turning lighthouse light, and the same view at night.
+                saved+=OceanShots(d,cam);
                 // The rage room's computer and bat as a seated player sees them on arrival.
                 var rage=d.rooms[RageRoom.Room];
                 saved+=Shot(d,RageRoom.Room,cam,"The rage room - the computer",rage.spawn.position+Vector3.up*1.6f,rage.root.transform.TransformPoint(new Vector3(-.15f,.95f,-.2f)),"Seated - ")?1:0;
@@ -74,6 +76,25 @@ namespace AfterHours.Editor
             Debug.Log("[RoomPreviews] Saved "+saved+" previews to "+Path.GetFullPath(Folder));
         }
 
+        static int OceanShots(GameDirector d,Camera cam)
+        {
+            var ocean=d.ocean;if(!ocean){Debug.LogError("[RoomPreviews] The scene has no ocean room.");return 0;}
+            int n=0;var root=d.rooms[1].root.transform.position;var spin=ocean.beacon;var home=spin?spin.transform.localRotation:Quaternion.identity;
+            try
+            {
+                // Turn the light so a beam crosses the view.
+                if(spin)spin.transform.localRotation=Quaternion.Euler(0,55,0);
+                var eye=root+new Vector3(0,1.6f,-1f);
+                n+=Shot(d,1,cam,"Ocean - oars and light",eye,root+new Vector3(.6f,1.6f,6),"Day - ")?1:0;
+                n+=Shot(d,1,cam,"Ocean - the right oar",root+new Vector3(.25f,1.65f,-1.25f),root+new Vector3(1.8f,.5f,.6f),"Day - ")?1:0;
+                ocean.Preview(true);
+                n+=Shot(d,1,cam,"Ocean at night - oars and light",eye,root+new Vector3(.6f,1.6f,6),"Night - ")?1:0;
+                n+=Shot(d,1,cam,"Ocean at night - the sky",eye,root+new Vector3(-3,9,14),"Night - ")?1:0;
+                n+=Shot(d,1,cam,"Ocean at night - the right oar",root+new Vector3(.25f,1.65f,-1.25f),root+new Vector3(1.8f,.5f,.6f),"Night - ")?1:0;
+            }
+            finally{ocean.Preview(false);if(spin)spin.transform.localRotation=home;}
+            return n;
+        }
         static bool MenuShot(GameDirector d,Camera cam,int room,string name)
         {
             if(!d.menu){Debug.LogError("[RoomPreviews] The scene has no comfort menu. Rebuild it first.");return false;}

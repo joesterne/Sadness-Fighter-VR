@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AfterHours
 {
-    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer }
+    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap }
     public class Interactable : MonoBehaviour
     {
         public ActionKind kind;
@@ -38,6 +38,9 @@ namespace AfterHours
                 case ActionKind.ChooseLine: if(director.shredder)director.shredder.Choose(value);break;
                 case ActionKind.PutBatBack: if(director.rage)director.rage.PutBatBack();break;
                 case ActionKind.NewComputer: if(director.rage)director.rage.NewComputer();break;
+                case ActionKind.CleanMode: director.player.ToggleClean();break;
+                case ActionKind.NightOcean: if(director.ocean)director.ocean.ToggleNight();break;
+                case ActionKind.MirrorTap: if(director.wardrobe&&director.wardrobe.avatar)director.wardrobe.avatar.Tap();break;
             }
             if(kind==ActionKind.SmoothMotion||kind==ActionKind.GentleAudience)director.SaveCheckpoint();
             if(director.menu&&director.menu.IsOpen)director.menu.Refresh();

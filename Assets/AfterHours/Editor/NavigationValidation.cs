@@ -40,7 +40,8 @@ namespace AfterHours.Editor
         static Interactable Button(ActionKind action,int destination=-1)=>D.rooms[D.currentRoom].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==action&&(destination<0||x.value==destination));
         static IEnumerator<float> MenuKey(bool open)
         {
-            if(D.menu.IsOpen!=open){Queue(keyboard,new KeyboardState(Key.Tab));yield return .1f;Queue(keyboard,new KeyboardState());yield return .15f;}
+            // With a message showing, the first press only clears it, so opening may take a second press.
+            for(int attempt=0;attempt<2&&D.menu.IsOpen!=open;attempt++){Queue(keyboard,new KeyboardState(Key.Tab));yield return .1f;Queue(keyboard,new KeyboardState());yield return .15f;}
             Check(D.menu.IsOpen==open,"Menu key "+(open?"opens":"closes")+" the menu in room "+D.currentRoom+(D.menu.IsOpen==open?"":" (player busy: "+P.busy+", current keyboard: "+(Keyboard.current!=null?Keyboard.current.name:"none")+")"));
         }
         static void Approach(Interactable button)

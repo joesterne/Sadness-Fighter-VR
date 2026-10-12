@@ -1,4 +1,4 @@
-2026-10-11 16:39:17Z
+2026-10-12 00:12:42Z
 Passed
 The mirror, the avatar and the wardrobe: pointer input at the mirror, the real unlock events, and a scene reload.
 PASS: A new player owns only the starter pieces: two tops and no hat
@@ -10,6 +10,21 @@ PASS: The reflection's head is exactly where a mirror would show yours (0.000 m)
 PASS: The reflection stands behind the glass
 PASS: Turning your head turns the reflection's head the mirrored way
 PASS: Half a metre closer to the glass brings the reflection a metre closer
+PASS: A skeleton is built into the reflection and starts switched off (12 parts, 53 glows)
+PASS: The X-ray has its two sounds
+PASS: Two taps on the glass change nothing
+PASS: Three taps on the glass turn the X-ray on
+PASS: The skeleton shows over a dark backdrop and the body is hidden
+PASS: Every part of the skeleton is drawn with the X-ray's own glow materials
+PASS: The backdrop draws first, then the glow, then the bones, then the dark hollows
+PASS: The first X-ray says how to leave it
+PASS: The skeleton is as tall as you are and stands on the floor (1.89 m)
+PASS: Slow taps do not add up to three
+PASS: Three more taps bring the body back and clear the backdrop
+PASS: The glow returns to its saved material
+PASS: Three taps turn it on again
+PASS: Leaving the lobby ends the X-ray
+PASS: Coming back, the reflection is ordinary again
 PASS: SKIN TONE > changes the reflection's skin
 PASS: HAIR > changes the hair style
 PASS: HAIR COLOUR > changes the hair colour
@@ -17,7 +32,7 @@ PASS: BUILD > broadens the shoulders
 PASS: BUILD < steps back
 PASS: TOP > swaps the plain tee for the work shirt
 PASS: With no hats earned, HAT stays on no hat
-PASS: One paddle stroke, a first small step, earns the small step pin
+PASS: One oar stroke, a first small step, earns the small step pin
 PASS: The new piece is announced
 PASS: Asking for help earns the kind scarf
 PASS: The ocean's piece waits until the ocean is finished

@@ -263,7 +263,7 @@ All five suites pass in desktop Play Mode:
 
 | Suite | Checks |
 |---|---|
-| Gameplay journey | 129 of 129 |
+| Gameplay journey | 108 of 108 |
 | Navigation | 126 of 126 |
 | Airplane-seat checks | 98 of 98 |
 | Menu and seated checks | 46 of 46 |
@@ -282,6 +282,50 @@ The release APK built with zero errors.
 | Checks | The rage room scripts (`Loose`, `RageRoom`, `Breakable`, `Bat`) are in the APK. No DevAgent data, no LAN address and no XR Operator layer (the only match for its name is Unity's list of OpenXR extension names). |
 
 It was not installed: no Quest was connected.
+
+## October 11 (evening): oars, clean mode, night ocean and sea sounds
+
+### What changed
+
+- **The oars turn on oarlocks.** Each oar is held in a lock on the side of the boat and can only turn about it, never slide through it. Pushing the handle forward swings the blade back through the water (the drive) and drawing it back lifts it out (the recovery), so the blade always moves opposite the hand. A stroke counts once, when a forward push is followed by a pull back. A push alone counts nothing, and ROW sweeps both oars by itself. Letting go eases the oar back to rest with the blade above the water.
+- **Messages and the menu can be dismissed.** The menu button now closes everything: one press clears a message, the hint under it and the menu, and never opens the menu on that press. The first-visit card keeps its own behaviour while it waits for the menu.
+- **Clean mode** (a menu button, saved) hides every sign, caption, counter, hint and the first-visit card, in every room. Buttons keep their labels. The comfort menu stays reachable.
+- **The lighthouse has a light** that turns clockwise (40 degrees a second) with a second, fainter beam behind it. The beams are soft crossed fins with vertex fades, drawn with additive glow, with no real-time lights.
+- **Ocean at night** (a menu button, saved) changes only the ocean of shame: night sky, a faceted moon, a starfield (260 small stars in one mesh), dim moonlight, dark water, glowing lanterns and a stronger beam. Leaving the room puts the day light back for every other room.
+- **Sea sounds.** Six new sounds (38 in all): water lapping at the hull and a wind-and-night-sea bed that crossfade between day and night, two gull cries by day, a bell buoy at night and an oarlock creak with each stroke.
+- **A mirror secret.** Three taps on the lobby mirror's glass turn the reflection into an X-ray: a skeleton of glowing white bones (a soft halo around each, in one shared material that pulses gently) over a dark backdrop just behind the glass, with a rising hum. Three more taps, or leaving the lobby, switch it back. The skeleton hangs from the same joints as the body, so it follows the head, hands and height. Nothing is saved.
+- Version 0.5.0.
+
+### Tests
+
+The mirror suite gained the X-ray checks (skeleton built and hidden at first; two taps do nothing; three turn it on with the body hidden and a dark backdrop; slow taps do not add up; three more turn it off; leaving the lobby ends it). A new suite (ocean, clean mode and night checks) covers the oars, the light, night, the menu button, the menu's reach and clean mode. The menu-opening steps in the other suites press the menu key up to twice, since a message can now take the first press. `Logs/AfterHours-console.txt` now holds every console warning and error from an editor session (`ConsoleCapture`).
+
+### Results
+
+All six suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 108 |
+| Navigation | 126 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 46 |
+| Mirror and wardrobe | 53 |
+| Ocean, clean mode and night | 72 |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 73.7 MB (73,692,101 bytes; 0.8 MB less than 0.4.1) |
+| SHA-256 of the APK | `ab7a2ad4ea45a30d2b8113ef5cd46340bc9f910d2a993f97612aa325f63d50da` |
+| Version | 0.5.0, version code 408996 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`). Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | The new scripts (`Oar`, `Spin`, `Guidance`, `SeaSounds`, `MirrorAvatar`) and the X-ray's two sounds and backdrop are in the APK. No DevAgent data, no LAN address and no XR Operator layer. |
+
+It was installed on the connected Quest with **After Hours → Install release APK on connected Quest**. The copy already on the headset was signed with a different key, so it was uninstalled first (its saved progress went with it); Unity then reported "Installed AfterHours-release.apk … and started com.afterhours.mindoffice". Nothing has been played on the headset yet.
 
 ## Still unverified
 
@@ -303,3 +347,9 @@ These still need a physical headset playtest (see `Playtest.md`):
 - that a swing never reaches past the desk into the real room around a seated player
 - frame rate with about 210 loose rigid bodies in the rage room at once
 - how knocked pieces feel to bat around
+- how the mirror's X-ray looks on the headset: the glow of the bones, how dark the backdrop reads, and whether the skeleton keeps up with real hands
+- how rowing with the oars feels with real hands and controllers, including the direction of the push stroke and whether the grip zone is easy to find
+- whether the taller menu (two more buttons) reads well and is reachable from a seat
+- how the lighthouse beam looks on the headset (soft edges, no banding) and what it costs in frame rate
+- the level of the new sea sounds, gulls and bell buoy on the headset's speakers
+- that clean mode really is calm for someone who wants nothing on screen, and that nothing needed was hidden by it

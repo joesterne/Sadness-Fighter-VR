@@ -8,6 +8,10 @@ namespace AfterHours
     public static class Art
     {
         public static Material Ink, Navy, Teal, Mint, Coral, Gold, Cream, White, Wood, Glass, Metal, Paper, Water;
+        // The ocean at night: glowing lantern glass and moon, dark water, and soft additive light for the lighthouse beam and the stars.
+        public static Material Lantern, Moon, NightWater, BeamGlow, BeamGlowNight, Star;
+        // The mirror's X-ray: glowing white bones with a soft halo, dark hollows, and a dark veil behind the glass.
+        public static Material XrayBone, XrayHalo, XrayHollow, XrayVeil;
         // The avatar's skin tones and hair colours, in wardrobe order.
         public static Material[] Skins, Hairs;
         public static TMP_FontAsset Font;
@@ -56,10 +60,11 @@ namespace AfterHours
             t.rectTransform.sizeDelta = new Vector2(width, 3); t.richText = true;
             return t;
         }
-        public static void Line(string name, Vector3 a, Vector3 b, float width, Material mat, Transform parent = null)
+        public static GameObject Line(string name, Vector3 a, Vector3 b, float width, Material mat, Transform parent = null)
         {
             var go = Box(name, (a + b) / 2, new Vector3(width,width,Vector3.Distance(a,b)), mat, false, parent);
             go.transform.localRotation = Quaternion.LookRotation(b-a);
+            return go;
         }
         public static GameObject Facet(string name, Vector3 p, Vector3 s, Material mat, int segments = 7, Transform parent = null)
         {
@@ -74,6 +79,50 @@ namespace AfterHours
             var mesh=new Mesh { name=name+" "+segments+" mesh" }; mesh.SetVertices(vs); mesh.SetTriangles(ts,0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
             var go=new GameObject(name,typeof(MeshFilter),typeof(MeshRenderer)); go.GetComponent<MeshFilter>().sharedMesh=mesh;
             go.GetComponent<Renderer>().sharedMaterial=mat; go.transform.SetParent(parent?parent:Root,false);go.transform.localPosition=p;go.transform.localScale=s;return go;
+        }
+        // A long soft shaft of light along local +Z, made of two crossed fins. Each fin is brightest along the axis and fades to nothing
+        // at its edges and toward the far end (vertex alpha), so the shaft has no hard edge from any side. The glow material draws both faces.
+        public static GameObject Beam(string name, Vector3 p, float length, float width, Material mat, Transform parent = null)
+        {
+            var vs = new List<Vector3>(); var cs = new List<Color>(); var ts = new List<int>();
+            float near = .5f, e0 = .2f, e1 = width / 2;
+            var clear = new Color(1, 1, 1, 0); var bright = Color.white;
+            foreach (float degrees in new[] { 45f, 135f })
+            {
+                var u = new Vector3(Mathf.Cos(degrees * Mathf.Deg2Rad), Mathf.Sin(degrees * Mathf.Deg2Rad), 0); int n = vs.Count;
+                vs.Add(new Vector3(0, 0, near) - u * e0); cs.Add(clear);
+                vs.Add(new Vector3(0, 0, near)); cs.Add(bright);
+                vs.Add(new Vector3(0, 0, near) + u * e0); cs.Add(clear);
+                vs.Add(new Vector3(0, 0, length) - u * e1); cs.Add(clear);
+                vs.Add(new Vector3(0, 0, length)); cs.Add(clear);
+                vs.Add(new Vector3(0, 0, length) + u * e1); cs.Add(clear);
+                ts.AddRange(new[] { n, n + 1, n + 4, n, n + 4, n + 3, n + 1, n + 2, n + 5, n + 1, n + 5, n + 4 });
+            }
+            var mesh = new Mesh { name = name + " mesh" }; mesh.SetVertices(vs); mesh.SetColors(cs); mesh.SetTriangles(ts, 0); mesh.RecalculateBounds();
+            var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer)); go.GetComponent<MeshFilter>().sharedMesh = mesh;
+            var r = go.GetComponent<MeshRenderer>(); r.sharedMaterial = mat; r.shadowCastingMode = ShadowCastingMode.Off; r.receiveShadows = false;
+            go.transform.SetParent(parent ? parent : Root, false); go.transform.localPosition = p; return go;
+        }
+        // A dome of small stars, one mesh and one draw call. Each is a small diamond facing the middle of the dome; the glow material draws both faces.
+        public static GameObject Stars(string name, int count, float radius, Material mat, Transform parent = null)
+        {
+            var rnd = new System.Random(20261011);
+            var vs = new List<Vector3>(); var cs = new List<Color>(); var ts = new List<int>();
+            for (int i = 0; i < count; i++)
+            {
+                float az = (float)rnd.NextDouble() * Mathf.PI * 2, el = Mathf.Lerp(.1f, 1.45f, Mathf.Sqrt((float)rnd.NextDouble()));
+                var u = new Vector3(Mathf.Cos(el) * Mathf.Sin(az), Mathf.Sin(el), Mathf.Cos(el) * Mathf.Cos(az));
+                var t1 = Vector3.Cross(u, Vector3.up).normalized; var t2 = Vector3.Cross(u, t1).normalized;
+                float size = Mathf.Lerp(.14f, .42f, (float)rnd.NextDouble()), shine = Mathf.Lerp(.35f, 1f, (float)rnd.NextDouble());
+                int n = vs.Count; var c = new Color(1, 1, 1, shine); var centre = u * radius;
+                vs.Add(centre + t1 * size); vs.Add(centre + t2 * size); vs.Add(centre - t1 * size); vs.Add(centre - t2 * size);
+                for (int k = 0; k < 4; k++) cs.Add(c);
+                ts.AddRange(new[] { n, n+1, n+2, n, n+2, n+3 });
+            }
+            var mesh = new Mesh { name = name + " mesh", indexFormat = IndexFormat.UInt16 }; mesh.SetVertices(vs); mesh.SetColors(cs); mesh.SetTriangles(ts, 0); mesh.RecalculateBounds();
+            var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer)); go.GetComponent<MeshFilter>().sharedMesh = mesh;
+            var r = go.GetComponent<MeshRenderer>(); r.sharedMaterial = mat; r.shadowCastingMode = ShadowCastingMode.Off; r.receiveShadows = false;
+            go.transform.SetParent(parent ? parent : Root, false); return go;
         }
         public static void Plant(Vector3 p, bool polished = false)
         {

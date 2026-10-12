@@ -71,7 +71,8 @@ namespace AfterHours.Editor
         // Opens the comfort menu with its key, then selects one of its buttons with the pointer.
         static IEnumerator Menu(ActionKind kind)
         {
-            if(!d.menu.IsOpen){Queue(keyboard,new KeyboardState(Key.Tab));yield return Delay(.1f);Queue(keyboard,new KeyboardState());yield return Delay(.15f);}
+            // With a message showing, the first press only clears it.
+            for(int attempt=0;attempt<2&&!d.menu.IsOpen;attempt++){Queue(keyboard,new KeyboardState(Key.Tab));yield return Delay(.1f);Queue(keyboard,new KeyboardState());yield return Delay(.15f);}
             Check(d.menu.IsOpen,"Menu key opens the comfort menu in room "+d.currentRoom);
             yield return Click(d.menu.Button(kind));
         }
@@ -164,7 +165,10 @@ namespace AfterHours.Editor
             Check(d.rooms[RageRoom.Room].complete&&rage.Calm&&rage.newComputer.activeSelf,"When it is all broken the room goes quiet, then the chapter completes");
             Check(rage.ambience.volume<.01f,"The room's hum fades to silence");
             var landed=RageTesting.Landed.ToList();
-            Check(landed.Count==pieceCount&&landed.All(b=>{var p=roomRoot.InverseTransformPoint(b.position);return Mathf.Abs(p.x)<4.9f&&p.z>-4.9f&&p.z<6.9f&&p.y>-.02f&&p.y<4.6f;}),"All "+landed.Count+" pieces stay inside the room, above the floor");
+            // The side and back walls' inner faces are at 4.9 and 6.9; the entrance wall's is at -5, so a piece may rest against it.
+            bool Inside(Rigidbody b){var p=roomRoot.InverseTransformPoint(b.position);return Mathf.Abs(p.x)<4.9f&&p.z>-5.02f&&p.z<6.9f&&p.y>-.02f&&p.y<4.6f;}
+            var strays=landed.Where(b=>!Inside(b)).Take(3).Select(b=>b.name+" at "+roomRoot.InverseTransformPoint(b.position).ToString("0.00")+" (mass "+b.mass.ToString("0.00")+")").ToArray();
+            Check(landed.Count==pieceCount&&strays.Length==0,"All "+landed.Count+" pieces stay inside the room, above the floor"+(strays.Length>0?": "+string.Join("; ",strays):""));
             int resting=landed.Count(b=>b.IsSleeping()||b.linearVelocity.magnitude<.05f);
             Check(resting>=landed.Count*.9f,resting+" of "+landed.Count+" pieces have come to rest by the end of the quiet");
             var onDesk=landed.Where(b=>{var p=roomRoot.InverseTransformPoint(b.position);return b.mass<.3f&&Mathf.Abs(p.x)<.7f&&p.z>-.55f&&p.z<0&&p.y>.74f&&p.y<.9f;})

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 namespace AfterHours
 {
@@ -19,12 +20,27 @@ namespace AfterHours
         public OutfitLook[] looks;
         public Material[] skins, hairs;
         public float maxDistance=14;
+        // The X-ray: three taps on the glass swap the avatar for a glowing skeleton in front of a dark backdrop, and three more swap it back.
+        // The skeleton is built from the same joints as the body, so it follows the head and hands exactly as the body does.
+        public GameObject[] xray;
+        public Renderer[] body, halos;
+        // The mirror glass reflects the sky so strongly that it would wash the dark backdrop out, so its surface is drawn only while the X-ray is off (its collider stays for the taps).
+        public Renderer glass;
+        public Material haloMaterial;
+        public GameObject backdrop;
+        public AudioClip scanOn, scanOff;
+        public const int TapsNeeded=3;
+        public const float TapWindow=2.5f;
+        public bool Xray { get; private set; }
+        float lastTap=-100;int taps;Material pulse;
         float bodyYaw, width=1; bool hasYaw;
         const float Upper=.29f, Fore=.27f, NominalSpine=.61f, NominalHips=.9f;
         static readonly float[] Widths={.88f,1f,1.14f};
 
         void LateUpdate()
         {
+            // The glow breathes a little.
+            if(Xray&&pulse)pulse.SetColor("_BaseColor",new Color(.56f,.83f,1f,.15f+.06f*Mathf.Sin(Time.unscaledTime*2.4f)));
             if(!director||!director.player)return;var p=director.player;
             var eye=transform.InverseTransformPoint(p.Head.position);
             bool show=eye.z>.12f&&eye.z<maxDistance;
@@ -114,6 +130,49 @@ namespace AfterHours
                 if(sleeveFore[i])sleeveFore[i].sharedMaterial=top!=null&&top.longSleeves?top.sleeve:skinMaterial;
             }
             if(torso)torso.localScale=new Vector3(width,torso.localScale.y==0?1:torso.localScale.y,1);
+            // A new hat or hair style built while the X-ray shows must not appear over the bones.
+            if(Xray)ShowBody(false);
+        }
+        // One tap on the glass. Three in a row, each within TapWindow of the last, switch the X-ray on or off.
+        public void Tap()
+        {
+            float now=Time.time;
+            taps=now-lastTap<=TapWindow?taps+1:1;lastTap=now;
+            if(taps<TapsNeeded)return;
+            taps=0;SetXray(!Xray);
+            if(!director)return;
+            director.PlayUi(Xray?scanOn:scanOff,.8f);
+            if(Xray)director.Say("X-RAY.  Look at that: strong bones, every one of them yours. Tap the glass three times to look ordinary again.");
+        }
+        public void SetXray(bool on)
+        {
+            if(Xray==on)return;
+            Xray=on;taps=0;
+            ShowBody(!on);
+            if(!glass&&backdrop&&backdrop.transform.parent){var found=backdrop.transform.parent.Find("Mirror glass");if(found)glass=found.GetComponent<Renderer>();}
+            if(glass)glass.enabled=!on;
+            if(xray!=null)foreach(var g in xray)if(g)g.SetActive(on);
+            if(backdrop)backdrop.SetActive(on);
+            // The halos share one material copy while it is on, so the glow can pulse without touching the saved material.
+            if(halos!=null&&haloMaterial)
+            {
+                if(on&&!pulse)pulse=new Material(haloMaterial);
+                foreach(var h in halos)if(h)h.sharedMaterial=on?pulse:haloMaterial;
+                if(!on&&pulse){if(Application.isPlaying)Destroy(pulse);else DestroyImmediate(pulse);pulse=null;}
+            }
+        }
+        // Shows or hides everything on the figure except the skeleton. The pieces are found afresh each time, so outfits built since the last call are included.
+        void ShowBody(bool show)
+        {
+            var found=new List<Renderer>();
+            if(reflection)foreach(var r in reflection.GetComponentsInChildren<Renderer>(true))
+            {
+                bool bone=false;
+                if(xray!=null)foreach(var g in xray)if(g&&r.transform.IsChildOf(g.transform)){bone=true;break;}
+                if(bone)continue;
+                r.enabled=show;found.Add(r);
+            }
+            body=found.ToArray();
         }
         // True when a piece with this id is built onto the avatar and showing.
         public bool Wearing(string id){if(looks!=null)foreach(var l in looks)if(l.id==id)return l.group&&l.group.activeSelf;return false;}

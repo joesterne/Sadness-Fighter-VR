@@ -25,6 +25,8 @@ namespace AfterHours
         public int seatedHeightIndex { get; private set; } = 1;
         public float SeatedEyeHeight => new[]{1.45f,1.65f,1.85f}[seatedHeightIndex];
         public bool comfortVignette { get; private set; } = true;
+        // Clean mode: no signs, messages or guide, only the world and the menu. The menu button still opens the menu.
+        public bool cleanMode { get; private set; }
         Vector3 rigHome, hintHome; bool comfortReady, wasMenu, turnedAround;
         float vignetteLevel; MaterialPropertyBlock vignetteBlock; static readonly int VignetteStrength=Shader.PropertyToID("_Strength");
         CharacterController body; Transform desktopGrip, desktopToolGrip;
@@ -38,7 +40,9 @@ namespace AfterHours
         readonly bool[] teleportGesture=new bool[2], inputBlocked=new bool[2];
         readonly GameObject[] controllerModels=new GameObject[2];
         float turnReady, hintUntil; float pitch; bool wasHome;
-        public void ShowHint(string text,float duration=6){hint.text=text;hintUntil=Time.time+duration;}
+        public void ShowHint(string text,float duration=6){if(cleanMode){HideHint();return;}hint.text=text;hintUntil=Time.time+duration;}
+        public void HideHint(){hintUntil=0;if(hint)hint.gameObject.SetActive(false);}
+        public bool HintVisible=>hint&&!cleanMode&&Time.time<hintUntil;
         void Awake()
         {
             // Interaction rays must never target the player's own capsule after a height change.
@@ -46,7 +50,7 @@ namespace AfterHours
             rigHome=rig.transform.localPosition;
             seatedMode=PlayerPrefs.GetInt("AfterHours.Seated",0)==1;
             seatedHeightIndex=Mathf.Clamp(PlayerPrefs.GetInt("AfterHours.SeatedHeight",1),0,2);
-            comfortVignette=PlayerPrefs.GetInt("AfterHours.Vignette",1)==1;
+            comfortVignette=PlayerPrefs.GetInt("AfterHours.Vignette",1)==1;cleanMode=PlayerPrefs.GetInt("AfterHours.Clean",0)==1;
             if(hint)hintHome=hint.transform.localPosition;if(vignette)vignette.enabled=false;
             body=GetComponent<CharacterController>(); desktopGrip=new GameObject("Desktop carry point").transform; desktopGrip.SetParent(Head,false);desktopGrip.localPosition=new Vector3(0,-.25f,1.35f);
             // On desktop a tool is held low and to the right of the view, like a first-person bat: looking down swings it.
@@ -72,7 +76,13 @@ namespace AfterHours
             bool menuHeld=IsXR?OVRInput.Get(OVRInput.Button.Start):Keyboard.current!=null&&Keyboard.current.tabKey.isPressed;
             bool menuPressed=menuHeld&&!wasMenu;wasMenu=menuHeld;
             if(busy){HideRays();SetVignette(0,true);UpdateHighlights();return;}
-            if(menuPressed&&menu)menu.Toggle();
+            if(menuPressed&&menu)
+            {
+                // With the menu open or a message showing, the button clears everything at once; otherwise it opens the menu.
+                // The first-visit guide's own menu step still opens it, and while the guide shows its messages are the guide's.
+                var d=GameDirector.Instance;bool guiding=d&&d.intro&&d.intro.IsShowing;
+                if(menu.IsOpen||(HintVisible&&!guiding))CloseEverything();else menu.Toggle();
+            }
             Move();
             if(returnPressed)GameDirector.Instance.Travel(0);
             for(int i=0;i<2&&!busy;i++)Interact(i);
@@ -147,6 +157,20 @@ namespace AfterHours
             comfortVignette=!comfortVignette;SaveComfort();
             ShowHint(comfortVignette?"Comfort vignette on. The edges of your view soften while you walk with the stick.":"Comfort vignette off.",5);
         }
+        // The menu, any message and any announcement still waiting its turn, all at once.
+        void CloseEverything()
+        {
+            bool wasOpen=menu.IsOpen;var d=GameDirector.Instance;
+            if(d)d.ClearMessages();else HideHint();
+            if(wasOpen)menu.Close();
+            if(d)d.PlayUi(d.menuClose,wasOpen?.45f:.3f);
+        }
+        public void ToggleClean()
+        {
+            cleanMode=!cleanMode;SaveComfort();
+            var d=GameDirector.Instance;if(d)d.ApplyClean(cleanMode);
+            if(!cleanMode)ShowHint("Clean mode off. Signs and messages are back.",5);
+        }
         string EyeText=>SeatedEyeHeight.ToString("0.00",System.Globalization.CultureInfo.InvariantCulture)+" m";
         void ApplyHeight()
         {
@@ -159,7 +183,7 @@ namespace AfterHours
             // Keep an open menu at the same reach from the new eye height.
             if(menu&&menu.IsOpen)menu.Open();
         }
-        void SaveComfort(){PlayerPrefs.SetInt("AfterHours.Seated",seatedMode?1:0);PlayerPrefs.SetInt("AfterHours.SeatedHeight",seatedHeightIndex);PlayerPrefs.SetInt("AfterHours.Vignette",comfortVignette?1:0);PlayerPrefs.Save();}
+        void SaveComfort(){PlayerPrefs.SetInt("AfterHours.Seated",seatedMode?1:0);PlayerPrefs.SetInt("AfterHours.SeatedHeight",seatedHeightIndex);PlayerPrefs.SetInt("AfterHours.Vignette",comfortVignette?1:0);PlayerPrefs.SetInt("AfterHours.Clean",cleanMode?1:0);PlayerPrefs.Save();}
         void Interact(int index)
         {
             bool desktop=!IsXR;
@@ -244,7 +268,7 @@ namespace AfterHours
         }
         string HoldHint(Grabbable item)
         {
-            if(item.paddle)return "Pull the paddle toward you, then reach forward.";
+            if(item.paddle)return "The oar turns at its lock. Push the handle forward to drive the blade back through the water, then draw it toward you. Or press ROW.";
             if(item.tool)return "The bat stays in your hand. Swing at the old computer: short swings count. Point at the rack and pinch to put it back.";
             foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt;
             return item.label.Replace("\n"," ")+"  /  Let go to place it.";
@@ -348,9 +372,12 @@ namespace AfterHours
         void OnGUI()
         {
             if(IsXR)return;
-            GUI.color=new Color(.07f,.12f,.18f,.94f);GUI.DrawTexture(new Rect(0,Screen.height-46,Screen.width,46),Texture2D.whiteTexture);GUI.color=Color.white;
-            GUI.Label(new Rect(20,Screen.height-36,Screen.width-30,30),"AFTER HOURS    |    WASD walk   •   Right mouse look / Q E turn   •   Click interact / hold to carry   •   Click floor to teleport   •   Tab menu   •   Esc lobby");
-            GUI.Label(new Rect(Screen.width/2-4,Screen.height/2-10,20,20),"+");
+            if(!cleanMode)
+            {
+                GUI.color=new Color(.07f,.12f,.18f,.94f);GUI.DrawTexture(new Rect(0,Screen.height-46,Screen.width,46),Texture2D.whiteTexture);GUI.color=Color.white;
+                GUI.Label(new Rect(20,Screen.height-36,Screen.width-30,30),"AFTER HOURS    |    WASD walk   •   Right mouse look / Q E turn   •   Click interact / hold to carry   •   Click floor to teleport   •   Tab menu (again: close everything)   •   Esc lobby");
+            }
+            GUI.color=Color.white;GUI.Label(new Rect(Screen.width/2-4,Screen.height/2-10,20,20),"+");
         }
     }
 }

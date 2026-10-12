@@ -66,6 +66,34 @@ namespace AfterHours.Editor
             // Refined low poly: flat matte colour, no photographic textures. Bevelled edges and gradient light give the form.
             m.SetTexture("_BaseMap",texture);EditorUtility.SetDirty(m);return m;
         }
+        // Soft additive light (the lighthouse beam, the stars). Vertex alpha fades the far end of a beam.
+        static Material Glow(string name,Color color,float alpha,int queue=3000)
+        {
+            string path=Folder+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
+            var shader=Shader.Find("Universal Render Pipeline/Particles/Unlit");if(!shader)shader=Shader.Find("Universal Render Pipeline/Unlit");
+            if(!m){m=new Material(shader);AssetDatabase.CreateAsset(m,path);}
+            m.shader=shader;m.SetColor("_BaseColor",new Color(color.r,color.g,color.b,alpha));
+            m.SetFloat("_Surface",1);m.SetFloat("_Blend",2);m.SetFloat("_SrcBlend",(float)BlendMode.SrcAlpha);m.SetFloat("_DstBlend",(float)BlendMode.One);m.SetFloat("_ZWrite",0);m.SetFloat("_Cull",0);
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");m.renderQueue=queue;m.SetOverrideTag("RenderType","Transparent");m.enableInstancing=true;EditorUtility.SetDirty(m);return m;
+        }
+        // A flat colour that blends over what is behind it by its own alpha (the X-ray's dark backdrop and hollows). Queue sets what draws over what.
+        static Material Fade(string name,Color color,float alpha,int queue=3000)
+        {
+            string path=Folder+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
+            var shader=Shader.Find("Universal Render Pipeline/Particles/Unlit");if(!shader)shader=Shader.Find("Universal Render Pipeline/Unlit");
+            if(!m){m=new Material(shader);AssetDatabase.CreateAsset(m,path);}
+            m.shader=shader;m.SetColor("_BaseColor",new Color(color.r,color.g,color.b,alpha));
+            m.SetFloat("_Surface",1);m.SetFloat("_Blend",0);m.SetFloat("_SrcBlend",(float)BlendMode.SrcAlpha);m.SetFloat("_DstBlend",(float)BlendMode.OneMinusSrcAlpha);m.SetFloat("_ZWrite",0);m.SetFloat("_Cull",0);
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");m.renderQueue=queue;m.SetOverrideTag("RenderType","Transparent");m.enableInstancing=true;EditorUtility.SetDirty(m);return m;
+        }
+        // A flat colour that ignores lighting (the lantern glass and the moon).
+        static Material Unlit(string name,Color color)
+        {
+            string path=Folder+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
+            var shader=Shader.Find("Universal Render Pipeline/Unlit");
+            if(!m){m=new Material(shader);AssetDatabase.CreateAsset(m,path);}
+            m.shader=shader;m.DisableKeyword("_EMISSION");m.SetColor("_BaseColor",color);m.color=color;m.enableInstancing=true;EditorUtility.SetDirty(m);return m;
+        }
         static Color Hex(string value){ColorUtility.TryParseHtmlString(value,out var c);return c;}
         static void MakeArt()
         {
@@ -84,6 +112,15 @@ namespace AfterHours.Editor
             Art.White.EnableKeyword("_EMISSION");Art.White.SetColor("_EmissionColor",Hex("#C8C1AA")*.24f);
             Art.Skins=new[]{"#F2D6C2","#E3B48C","#C98F63","#A66C45","#7A4B2E","#4F3121"}.Select((c,i)=>Mat("17 Skin tone "+(i+1),Hex(c),0,.32f)).ToArray();
             Art.Hairs=new[]{"#1F1B1B","#563823","#8B4126","#D2AC6B","#B9BDC2"}.Select((c,i)=>Mat("18 Hair "+Wardrobe.HairColours[i].ToLowerInvariant(),Hex(c),0,.28f)).ToArray();
+            // The ocean at night. The lantern, the moon and the stars glow without any real-time light, which Quest does not need.
+            Art.NightWater=Mat("20 Night water",Hex("#12293A"),0,.3f);
+            // Unlit, so they show at full brightness whatever the light around them.
+            Art.Lantern=Unlit("21 Lantern glass",Hex("#FFCB6B"));Art.Moon=Unlit("22 Moon",Hex("#F3EFDA"));
+            Art.BeamGlow=Glow("19 Lighthouse beam",Hex("#FFE7A8"),.2f);Art.BeamGlowNight=Glow("19b Lighthouse beam at night",Hex("#FFE7A8"),.6f);Art.Star=Glow("23 Starlight",Color.white,1f);
+            // The mirror's X-ray. Bones are solid white light, with a soft halo, drawn over a dark backdrop. They all share one transparent queue
+            // (URP resets a material's queue to match its surface type), so the draw order is each renderer's sorting order: backdrop 0, halo 1, bone 2, hollow 3.
+            Art.XrayVeil=Fade("26 X-ray backdrop",Hex("#02050B"),.94f);Art.XrayHalo=Glow("25 X-ray glow",Hex("#8FD3FF"),.15f);
+            Art.XrayBone=Glow("24 X-ray bone",Color.white,1f);Art.XrayHollow=Fade("27 X-ray hollow",Hex("#02050B"),1f);
             Art.Font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             if(!Art.Font)Art.Font=TMP_Settings.defaultFontAsset;
         }
@@ -158,10 +195,14 @@ namespace AfterHours.Editor
             // Gradient ambient: up-facing facets read lighter and down-facing ones darker, so flat-shaded forms stay legible.
             RenderSettings.ambientMode=AmbientMode.Trilight;RenderSettings.ambientSkyColor=Hex("#B8C3C1");RenderSettings.ambientEquatorColor=Hex("#9CAAAC");RenderSettings.ambientGroundColor=Hex("#687578");RenderSettings.fog=true;RenderSettings.fogColor=Hex("#9FB6B7");RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=25;RenderSettings.fogEndDistance=72;
             var sky=AssetDatabase.LoadAssetAtPath<Material>(Folder+"15 Sky.mat");if(!sky){sky=new Material(Shader.Find("Skybox/Procedural"));AssetDatabase.CreateAsset(sky,Folder+"15 Sky.mat");}sky.SetColor("_SkyTint",Hex("#8FB7BB"));sky.SetColor("_GroundColor",Hex("#AAB9B7"));sky.SetFloat("_Exposure",1.1f);sky.SetFloat("_AtmosphereThickness",.7f);RenderSettings.skybox=sky;RenderSettings.sun=light;
+            // The ocean at night: a dark sky with no sun disc. The ocean room swaps it in while the player is there.
+            var night=AssetDatabase.LoadAssetAtPath<Material>(Folder+"15b Night sky.mat");if(!night){night=new Material(Shader.Find("Skybox/Procedural"));AssetDatabase.CreateAsset(night,Folder+"15b Night sky.mat");}
+            night.SetColor("_SkyTint",Hex("#1B2A55"));night.SetColor("_GroundColor",Hex("#0B1426"));night.SetFloat("_Exposure",.45f);night.SetFloat("_AtmosphereThickness",.45f);night.SetFloat("_SunSize",0f);EditorUtility.SetDirty(night);
+            var oceanRoom=Object.FindAnyObjectByType<OceanRoom>(FindObjectsInactive.Include);if(oceanRoom)oceanRoom.nightSkybox=night;
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.4.1";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.5.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;

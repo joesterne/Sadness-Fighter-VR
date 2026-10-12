@@ -10,7 +10,7 @@ Sit in an upright chair with no table in front of you. Keep your elbows near you
 
 1. **First visit.** The card in the lobby should be readable without leaning. Read the content note, then pinch CONTINUE and GOT IT. Look at your left palm and pinch: the menu opens and the card moves on by itself. Close the menu and pinch START.
 2. **Menu.** Open it again with a left palm pinch. Check that every button is readable and inside your view without turning your head. Select SEATED VIEW and try SEATED HEIGHT. Use TURN AROUND and FACE FORWARD. Close it.
-3. **Ocean.** Pinch ROW until you reach the shore (fourteen strokes). Try pinching a paddle and pulling once.
+3. **Ocean.** Pinch ROW until you reach the shore (fourteen strokes): both oars should sweep through the water by themselves. Then pinch an oar by its handle inside the boat, push it forward and draw it back once. The blade should swing the opposite way outside the boat, and the oar should stay in its lock. Watch the lighthouse light turn clockwise and listen for the sea and the gulls.
 4. **Heavy things.** For each box: point at it and pinch. It should glide to your hand. Point at the truck, check that the bay outline lights up, and open your fingers. The box should glide into the bay and count once. Check how forgiving the aim feels at the far side of the truck.
 5. **A small spill.** Pinch BREW twice. The watchers should appear at both sides of the machine, where you can see them without turning round, and the murmur should rise. Pinch ASK FOR HELP: the crowd leaves and the room goes quiet. Pick up the cup, point under the spout (the gold disc lights up), let go, and check it lands upright. Pinch BREW three times.
 6. **The infinite archive.** Send one note to the wrong tray: it should drift back to the desk. Then file all six.
@@ -28,11 +28,15 @@ Pass 1 passes if you finished everything without standing, leaning out of the im
 3. Stand up, switch SEATED VIEW off, and check the tracked height returns.
 4. In the warehouse, grab a box up close and carry it into the bay by hand instead of sending it.
 5. In the rage room, take the bat with the grip button and swing it with full, standing swings. Check hits still count once each, the controller buzzes on each hit (stronger for harder hits), and the bat stays in your hand through fast swings. Break everything and watch the frame rate: about 210 loose pieces are in play at once, so note the lowest figure.
-6. Stop midway through each chapter, close the app, reopen it and select CONTINUE. Paddle strokes, delivered boxes, sorted notes, shredded pages, broken computer parts, help and coffee pours should all be kept. Loose objects may return to their starting places. Completed chapters stay marked, the first-visit card should not return, and the mirror should show what you were wearing.
+6. Stop midway through each chapter, close the app, reopen it and select CONTINUE. Oar strokes, delivered boxes, sorted notes, shredded pages, broken computer parts, help and coffee pours should all be kept. Loose objects may return to their starting places. Completed chapters stay marked, the first-visit card should not return, and the mirror should show what you were wearing.
+
+7. **Messages, clean mode and night.** In any room with a message up, press the left menu button once: the message and the hint under it should go and the menu should stay shut. Press again: the menu opens. Select CLEAN MODE: every title, counter, caption and hint in the lobby and in each chapter should disappear while the buttons keep their labels. Close and reopen the app: it should still be clean. Turn it off and check everything returns. Then select OCEAN AT NIGHT, go to the ocean of shame, and check the sky, the moon, the dark water, the stronger beam and the bell buoy. Check the lobby and the other chapters are not dark.
+8. **Rowing with controllers.** Grip an oar handle and push forward, then draw back, several times. Check the blade follows the right way, the stroke counts once per push-and-pull, the boat's progress feels earned and not too fast, and that letting go eases the oar back. Check that the ROW button can still be pointed at with an oar next to it.
+9. **The mirror's secret.** Use MIRROR on the desk, then tap the glass three times (trigger or pinch, each tap within a couple of seconds of the last). Your reflection should become a white glowing skeleton on a dark backdrop that follows your head and hands. Three more taps, or leaving the lobby, bring the normal reflection back. Check the glow reads well against the dark and the skeleton keeps up with you.
 
 ## What to record
 
 - Quest model, seated or standing, hands or controllers.
 - Frame rate: turn on the headset's performance overlay (Meta Quest Developer Hub, or OVR Metrics Tool) and note the lowest figure in each room. The target is a steady 72 fps or better.
-- Any text you couldn't read, anything you couldn't reach, any discomfort, and any sound that was too loud, too quiet or missing.
+- Any text you couldn't read, anything you couldn't reach, any discomfort, and any sound that was too loud, too quiet or missing (the sea, the gulls and the bell buoy in particular).
 - How long the whole journey took. The competition judges play for up to ten minutes, so note how long each chapter takes on its own too.

@@ -1,0 +1,75 @@
+2026-10-12 00:33:52Z
+Passed
+The rowing oars, the lighthouse light, night in the ocean only, the sea sounds, the menu button that clears everything, and clean mode.
+PASS: The ocean room has oars, a lighthouse light and sea sounds
+PASS: The ocean is open
+PASS: The boat has two oars, and each can be held
+PASS: The left oar sits in an oarlock on the gunwale
+PASS: At rest the handle is inside the boat and the blade rests just above the water (-2.5, 0.14)
+PASS: The right oar sits in an oarlock on the gunwale
+PASS: At rest the handle is inside the boat and the blade rests just above the water (2.5, 0.14)
+PASS: A hand takes hold of an oar
+PASS: Drawing the handle toward the body swings the blade forward (24 degrees)
+PASS: Pushing the handle forward swings the blade back through the water (-22 degrees)
+PASS: The blade moves the opposite way to the handle (-1.02 m)
+PASS: One catch and drive is one stroke
+PASS: The oar nobody holds sweeps a stroke by itself
+PASS: The oar never leaves its lock
+PASS: The shaft passes through the lock at every angle
+PASS: The blade dips toward the water during the drive (0.14 m)
+PASS: A released oar eases back to rest
+PASS: A released oar is still in its lock
+PASS: The oar can be taken again
+PASS: Pushing without first drawing the handle back is not a stroke
+PASS: ROW takes a stroke
+PASS: Both oars sweep a stroke for ROW
+PASS: Both oars come back to rest after the stroke
+PASS: The sign tells the player how to use the oars
+PASS: The lighthouse has a light with two beams
+PASS: The light turns clockwise seen from above (40 degrees a second)
+PASS: The light sits in the lighthouse's lantern
+PASS: The ocean starts in daylight
+PASS: Swell, lapping and wind are looping sounds
+PASS: The gulls, the bell buoy and the oarlock creak are loaded
+PASS: By day the sea is swell and lapping, with no night wind
+PASS: A gull calls by day, and the bell buoy stays quiet
+PASS: The menu offers CLEAN MODE and OCEAN AT NIGHT, both off
+PASS: OCEAN AT NIGHT switches on and is saved
+PASS: Night darkens the ambient light, the fog and the sky
+PASS: The sun gives way to dim moonlight
+PASS: The stars and moon replace the sun
+PASS: The water, the lantern and the beams change for the night
+PASS: By night the sea fades to wind and a deeper swell
+PASS: A bell buoy rings far off at night
+PASS: Leaving the ocean puts the day's light back for the lobby
+PASS: The other rooms keep their own light
+PASS: Returning to the ocean brings the night back
+PASS: Switching night off in the ocean restores the day
+PASS: The water, lantern and beams return to day
+PASS: OCEAN AT NIGHT can be chosen from the lobby without changing the lobby
+PASS: The night choice survives a restart
+PASS: The ocean opens at night after a restart
+PASS: And back to day
+PASS: A message is showing
+PASS: With a message showing, the menu button clears it and does not open the menu
+PASS: The next press opens the menu
+PASS: A message and the menu are both showing
+PASS: One press closes the menu and the message together
+PASS: A first visit opens the guide
+PASS: The guide waits for the menu while a message shows
+PASS: During the guide's menu step, the first press still opens the menu
+PASS: Every menu button, including the new ones, is within 36 degrees of straight ahead
+PASS: The guiding signs are marked (35) and all show
+PASS: No button label counts as a guiding sign
+PASS: CLEAN MODE switches on and is saved
+PASS: Clean mode switches off every guiding sign
+PASS: Headings and progress boards go, in every room
+PASS: Button and door labels stay
+PASS: No message is shown in clean mode
+PASS: The menu button closes the menu in clean mode
+PASS: With nothing to clear, one press still opens the menu in clean mode
+PASS: The ocean shows no message and no instructions in clean mode
+PASS: Moving between rooms keeps clean mode
+PASS: Clean mode survives a restart, with no first-visit guide and no signs
+PASS: CLEAN MODE off brings every sign back
+PASS: And says so

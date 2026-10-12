@@ -16,7 +16,7 @@ namespace AfterHours.Editor
     {
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;static Keyboard keyboard;
         static readonly List<string> lines=new List<string>();
-        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key,Wardrobe.Key};
+        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,IntroGuide.Key,Wardrobe.Key};
         static bool[] existed;static string checkpoint,wardrobe;static int[] values;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
@@ -71,8 +71,8 @@ namespace AfterHours.Editor
             foreach(var t in Key(UnityEngine.InputSystem.Key.Tab))yield return t;
             foreach(var t in Click(D.intro.next.GetComponentInChildren<Interactable>()))yield return t;
             Check(!D.intro.IsShowing&&PlayerPrefs.GetInt(IntroGuide.Key)==1,"START closes the guide and it stays closed next time");
-            // Seated view on, then every chapter from its arrival point.
-            foreach(var t in Key(UnityEngine.InputSystem.Key.Tab))yield return t;
+            // Seated view on, then every chapter from its arrival point. The first press can only clear the welcome message.
+            for(int attempt=0;attempt<2&&!D.menu.IsOpen;attempt++)foreach(var t in Key(UnityEngine.InputSystem.Key.Tab))yield return t;
             foreach(var t in Click(D.menu.Button(ActionKind.SeatedMode)))yield return t;
             foreach(var t in Key(UnityEngine.InputSystem.Key.Tab))yield return t;
             Check(P.seatedMode&&!D.menu.IsOpen,"Seated view is on");

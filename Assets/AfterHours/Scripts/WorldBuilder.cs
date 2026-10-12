@@ -21,13 +21,17 @@ namespace AfterHours
             NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
             NewRoom(7,"The rage room",new Vector3(560,0,0),new Vector3(0,.04f,-1.25f));Rage();
             Menu();
+            // Signs that only guide or reassure can be switched off together (clean mode). Labels on buttons, doors and objects stay.
+            foreach(var room in d.rooms)foreach(var t in room.root.GetComponentsInChildren<TextMeshPro>(true))if(GuidanceNames.Contains(t.name)&&!t.GetComponent<Guidance>())t.gameObject.AddComponent<Guidance>();
             for(int i=0;i<d.rooms.Length;i++)d.rooms[i].root.SetActive(i==0);
         }
+        static readonly string[] GuidanceNames={"Chapter","Room title","Room subtitle","Room progress","Brand eyebrow","Title","Tagline","Welcome","Journey progress","Move instructions","Small sessions","Comfort note","Desk note","Rules","Rowing instruction","Distance","Ocean title","Ocean intention","Help permission"};
         // Each room has its own soundscape. Sources play when their room is switched on.
-        static void Sound(string clip,float volume,Transform parent=null)
+        static AudioSource Sound(string clip,float volume,Transform parent=null)
         {
             var source=(parent?parent:Art.Root).gameObject.AddComponent<AudioSource>();
             source.clip=SoundBank.Get(clip);source.loop=true;source.playOnAwake=true;source.spatialBlend=0;source.volume=volume;source.priority=64;
+            return source;
         }
         static void NewRoom(int i,string title,Vector3 at,Vector3 spawn)
         {
@@ -72,7 +76,7 @@ namespace AfterHours
             var root=Art.Group("Comfort menu",Vector3.zero,d.player.transform);
             var menu=root.gameObject.AddComponent<ComfortMenu>();menu.director=d;d.menu=menu;d.player.menu=menu;
             // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view.
-            Art.Box("Menu panel",new Vector3(0,-.01f,.014f),new Vector3(.53f,.52f,.012f),Art.Ink,true,root,.006f);
+            Art.Box("Menu panel",new Vector3(0,-.068f,.014f),new Vector3(.53f,.636f,.012f),Art.Ink,true,root,.006f);
             Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.222f,-.002f),.019f,muted,.36f,root);
             menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.19f,-.002f),.027f,ivory,.36f,root);
             MenuButton(root,"Menu close","CLOSE",.19f,.205f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
@@ -85,9 +89,11 @@ namespace AfterHours
             menu.vignette=MenuButton(root,"Menu comfort vignette","COMFORT VIGNETTE",.12f,-.045f,Art.Navy,ActionKind.Vignette);
             menu.crowd=MenuButton(root,"Menu kitchen crowd","KITCHEN CROWD",-.12f,-.13f,Art.Navy,ActionKind.GentleAudience);
             MenuButton(root,"Menu face forward","FACE FORWARD",.12f,-.13f,Art.Teal,ActionKind.FaceForward);
-            MenuButton(root,"Menu try again","TRY AGAIN",-.12f,-.215f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
-            MenuButton(root,"Menu lobby","LOBBY",.12f,-.215f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
-            Art.Text("Menu tip","Right stick turns; pull it back to turn around.  B / Y: lobby.",new Vector3(0,-.258f,-.002f),.016f,muted,.5f,root);
+            menu.clean=MenuButton(root,"Menu clean mode","CLEAN MODE",-.12f,-.215f,Art.Navy,ActionKind.CleanMode);
+            menu.night=MenuButton(root,"Menu ocean at night","OCEAN AT NIGHT",.12f,-.215f,Art.Navy,ActionKind.NightOcean);
+            MenuButton(root,"Menu try again","TRY AGAIN",-.12f,-.30f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
+            MenuButton(root,"Menu lobby","LOBBY",.12f,-.30f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
+            Art.Text("Menu tip","Menu button again closes everything.  B / Y: lobby.\nRight stick turns; pull it back to turn around.",new Vector3(0,-.348f,-.002f),.016f,muted,.5f,root);
             // A panel floating at arm's length should not throw a shadow onto the room.
             foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
             menu.Refresh();root.gameObject.SetActive(false);
@@ -197,7 +203,9 @@ namespace AfterHours
             Art.Tiled("Mirror wall",new Vector3(1.625f,2.3f,0),new Vector3(1.65f,4.6f,.2f),Art.Navy,new Vector3(2.4f,0,0));
             Art.Tiled("Mirror wall",new Vector3(0,3.5f,0),new Vector3(1.6f,2.2f,.2f),Art.Navy,new Vector3(2.4f,0,0));
             // The glass is solid: it stops walking, teleporting and pointing through it.
-            Art.Box("Mirror glass",new Vector3(0,1.21f,-.03f),new Vector3(1.6f,2.38f,.04f),Art.Glass,true,null,.002f);
+            // Tapping it three times is a small secret (see MirrorAvatar.Tap).
+            var glass=Art.Box("Mirror glass",new Vector3(0,1.21f,-.03f),new Vector3(1.6f,2.38f,.04f),Art.Glass,true,null,.002f);
+            var tap=glass.AddComponent<Interactable>();tap.kind=ActionKind.MirrorTap;tap.director=d;
             for(int s=-1;s<=1;s+=2)Art.Box("Mirror frame",new Vector3(s*.83f,1.22f,-.11f),new Vector3(.06f,2.44f,.06f),Art.Gold,false);
             Art.Box("Mirror frame",new Vector3(0,2.42f,-.11f),new Vector3(1.72f,.06f,.06f),Art.Gold,false);
             var wardrobe=wall.gameObject.AddComponent<Wardrobe>();wardrobe.director=d;d.wardrobe=wardrobe;
@@ -257,6 +265,9 @@ namespace AfterHours
             avatar.reflection=Art.Group("Reflected you",Vector3.zero,plane);
             Avatar(avatar);
             avatar.reflection.localScale=new Vector3(1,1,-1);
+            // The X-ray's dark backdrop sits just behind the glass, switched off until the secret is found.
+            var veil=Art.Box("X-ray backdrop",new Vector3(0,1.21f,.012f),new Vector3(1.58f,2.36f,.006f),Art.XrayVeil,false,null,0f);veil.SetActive(false);avatar.backdrop=veil;avatar.glass=glass.GetComponent<Renderer>();
+            avatar.scanOn=SoundBank.Get("SFX - X-ray on");avatar.scanOff=SoundBank.Get("SFX - X-ray off");
             Art.Root=old;
             wardrobe.Refresh();
             avatar.PoseFor(d.mirrorSpot.position+Vector3.up*1.61f,Quaternion.LookRotation(Vector3.left),0);
@@ -366,7 +377,106 @@ namespace AfterHours
             }
             m.skin=skin.ToArray();m.looks=looks.ToArray();m.skins=Art.Skins;m.hairs=Art.Hairs;
             foreach(var look in looks)look.group.SetActive(false);
+            m.body=root.GetComponentsInChildren<Renderer>(true);Skeleton(m);
             foreach(var r in root.GetComponentsInChildren<Renderer>(true))r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        // The X-ray skeleton, hidden until the mirror's secret is found. Every bone is a thin bar of white light with a wider, fainter copy as its glow,
+        // and the parts hang from the same joints as the body, so the skeleton poses itself. Eye sockets and a nose hollow are dark.
+        static void Skeleton(MirrorAvatar m)
+        {
+            var halos=new List<Renderer>();var parts=new List<GameObject>();
+            Transform Part(string name,Transform parent){var g=Art.Group("X-ray - "+name,Vector3.zero,parent);g.gameObject.SetActive(false);parts.Add(g.gameObject);return g;}
+            void Bone(Transform p,string name,Vector3 a,Vector3 b,float width,float glow)
+            {
+                Art.Line(name,a,b,width,Art.XrayBone,p);
+                if(glow>0)halos.Add(Art.Line(name+" glow",a,b,width*glow,Art.XrayHalo,p).GetComponent<Renderer>());
+            }
+            void Knob(Transform p,string name,Vector3 at,Vector3 size,float glow)
+            {
+                Art.Shape(name,PrimitiveType.Sphere,at,size,Art.XrayBone,false,p);
+                if(glow>0)halos.Add(Art.Shape(name+" glow",PrimitiveType.Sphere,at,size*glow,Art.XrayHalo,false,p).GetComponent<Renderer>());
+            }
+            void Slab(Transform p,string name,Vector3 at,Vector3 size,float glow,float roll=0)
+            {
+                Art.Box(name,at,size,Art.XrayBone,false,p,.01f).transform.localRotation=Quaternion.Euler(0,0,roll);
+                if(glow>0)halos.Add(Art.Box(name+" glow",at,size*glow,Art.XrayHalo,false,p,.01f).GetComponent<Renderer>());
+                if(glow>0)halos[halos.Count-1].transform.localRotation=Quaternion.Euler(0,0,roll);
+            }
+            void Hollow(Transform p,string name,PrimitiveType type,Vector3 at,Vector3 size){Art.Shape(name,type,at,size,Art.XrayHollow,false,p);}
+
+            // Skull and jaw, with dark eye sockets, a nose hollow and the line between the teeth.
+            var skull=Part("skull",m.head);
+            Knob(skull,"Cranium",new Vector3(0,.025f,-.01f),new Vector3(.17f,.18f,.19f),1.35f);
+            Slab(skull,"Cheekbones",new Vector3(0,-.05f,.03f),new Vector3(.1f,.05f,.1f),1.3f);
+            Slab(skull,"Jaw",new Vector3(0,-.1f,.02f),new Vector3(.085f,.045f,.095f),1.3f);
+            for(int s=-1;s<=1;s+=2)Hollow(skull,"Eye socket",PrimitiveType.Sphere,new Vector3(s*.04f,.012f,.088f),new Vector3(.04f,.045f,.03f));
+            Hollow(skull,"Nose hollow",PrimitiveType.Sphere,new Vector3(0,-.032f,.098f),new Vector3(.02f,.032f,.02f));
+            Hollow(skull,"Teeth gap",PrimitiveType.Cube,new Vector3(0,-.073f,.1f),new Vector3(.07f,.006f,.02f));
+            var neck=Part("neck",m.neck);
+            foreach(float y in new[]{.025f,.055f,.085f})Slab(neck,"Neck bone",new Vector3(0,y,-.012f),new Vector3(.04f,.022f,.042f),1.8f);
+            // Spine, ribs, breastbone, collarbones and pelvis hang from the torso, which stretches with the player's height.
+            var torso=Part("torso",m.torso);
+            for(int k=0;k<9;k++)Slab(torso,"Vertebra",new Vector3(0,.265f-k*.066f,-.058f),new Vector3(.046f,.034f,.05f),1.6f);
+            for(int k=0;k<6;k++)
+            {
+                float y=.235f-k*.05f,reach=k==5?.88f:1;
+                for(int s=-1;s<=1;s+=2)
+                {
+                    var a=new Vector3(s*.012f,y,-.058f);var b=new Vector3(s*.14f*reach,y-.012f,-.02f);var c=new Vector3(s*.14f*reach,y-.03f,.06f);var e=new Vector3(s*.024f,y-.046f,.094f);
+                    Bone(torso,"Rib",a,b,.013f,0);Bone(torso,"Rib",b,c,.013f,0);Bone(torso,"Rib",c,e,.013f,0);
+                }
+            }
+            halos.Add(Art.Shape("Ribcage glow",PrimitiveType.Sphere,new Vector3(0,.1f,.015f),new Vector3(.4f,.4f,.26f),Art.XrayHalo,false,torso).GetComponent<Renderer>());
+            Slab(torso,"Breastbone",new Vector3(0,.1f,.096f),new Vector3(.034f,.2f,.014f),1.8f);
+            for(int s=-1;s<=1;s+=2)
+            {
+                Bone(torso,"Collarbone",new Vector3(s*.014f,.283f,.07f),new Vector3(s*.175f,.262f,.015f),.02f,2.2f);
+                Slab(torso,"Hip bone",new Vector3(s*.095f,-.27f,-.005f),new Vector3(.1f,.11f,.05f),1.4f,s*20);
+            }
+            Slab(torso,"Sacrum",new Vector3(0,-.325f,-.04f),new Vector3(.08f,.1f,.04f),1.4f);
+            Slab(torso,"Pelvis front",new Vector3(0,-.36f,.065f),new Vector3(.1f,.04f,.04f),1.4f);
+            // Arms: a bone and joint at each segment, and a hand of fingers.
+            var lengths=new[]{.068f,.08f,.074f,.06f};
+            for(int i=0;i<2;i++)
+            {
+                float t=i==0?1:-1;
+                var upper=Part("upper arm "+i,m.upperArm[i]);
+                Knob(upper,"Shoulder joint",new Vector3(0,0,.005f),Vector3.one*.055f,1.8f);
+                Bone(upper,"Upper arm bone",new Vector3(0,0,.02f),new Vector3(0,0,.27f),.03f,2.6f);
+                var fore=Part("forearm "+i,m.foreArm[i]);
+                Knob(fore,"Elbow",Vector3.zero,Vector3.one*.045f,1.8f);
+                Bone(fore,"Radius",new Vector3(-.01f,0,.025f),new Vector3(-.008f,0,.255f),.016f,2.4f);
+                Bone(fore,"Ulna",new Vector3(.012f,0,.025f),new Vector3(.01f,0,.265f),.016f,2.4f);
+                var hand=Part("hand "+i,m.hand[i]);
+                Knob(hand,"Wrist",new Vector3(0,0,.005f),new Vector3(.04f,.03f,.03f),1.6f);
+                for(int f=0;f<4;f++)
+                {
+                    float x=(f-1.5f)*.02f;
+                    Bone(hand,"Palm bone",new Vector3(x*.6f,0,.015f),new Vector3(x,0,.058f),.01f,0);
+                    Bone(hand,"Finger bone",new Vector3(x,0,.06f),new Vector3(x*1.25f,0,.06f+lengths[f]),.008f,0);
+                }
+                Bone(hand,"Thumb bone",new Vector3(t*.015f,0,.012f),new Vector3(t*.052f,0,.06f),.011f,0);
+                halos.Add(Art.Shape("Hand glow",PrimitiveType.Sphere,new Vector3(0,0,.085f),new Vector3(.085f,.04f,.17f),Art.XrayHalo,false,hand).GetComponent<Renderer>());
+            }
+            // Legs hang from the hips; feet stand on the floor with the shoes.
+            var feet=Part("feet",m.legs);
+            for(int i=0;i<2;i++)
+            {
+                float t=i==0?1:-1,x=i==0?-.1f:.1f;
+                var leg=Part("leg "+i,m.leg[i]);
+                Knob(leg,"Hip joint",new Vector3(0,.85f,0),Vector3.one*.07f,1.7f);
+                Bone(leg,"Thigh bone",new Vector3(0,.84f,0),new Vector3(0,.49f,.012f),.04f,2.4f);
+                Knob(leg,"Knee",new Vector3(0,.475f,.012f),Vector3.one*.06f,1.8f);
+                Bone(leg,"Shin bone",new Vector3(0,.46f,.01f),new Vector3(0,.11f,0),.032f,2.4f);
+                Bone(leg,"Calf bone",new Vector3(t*.022f,.44f,.008f),new Vector3(t*.022f,.11f,0),.014f,2.4f);
+                Knob(leg,"Ankle",new Vector3(0,.09f,0),Vector3.one*.05f,1.7f);
+                Knob(feet,"Heel",new Vector3(x,.035f,-.03f),Vector3.one*.05f,1.7f);
+                Bone(feet,"Foot bone",new Vector3(x,.05f,-.02f),new Vector3(x,.03f,.12f),.03f,2.2f);
+                for(int f=-1;f<=1;f++)Bone(feet,"Toe bone",new Vector3(x+f*.02f,.028f,.12f),new Vector3(x+f*.024f,.026f,.19f),.014f,0);
+            }
+            // The pieces share one transparent queue, so their draw order is set here: glow, then bones over it, then the dark hollows over those. The backdrop (order 0) draws before all.
+            foreach(var g in parts)foreach(var r in g.GetComponentsInChildren<Renderer>(true))r.sortingOrder=r.sharedMaterial==Art.XrayHalo?1:r.sharedMaterial==Art.XrayBone?2:3;
+            m.xray=parts.ToArray();m.halos=halos.ToArray();m.haloMaterial=Art.XrayHalo;
         }
         // The old résumé: five pages on a rack, a shredder, and a blank page at the end.
         static void Shredding()
@@ -801,34 +911,64 @@ namespace AfterHours
         {
             var ocean=d.rooms[1].root.AddComponent<OceanRoom>();ocean.director=d;d.ocean=ocean;
             var horizon=Art.Group("Moving horizon",Vector3.zero);ocean.horizon=horizon;
-            WaterMesh(horizon);
+            ocean.water=WaterMesh(horizon);ocean.dayWater=Art.Water;ocean.nightWater=Art.NightWater;
             for(int i=0;i<20;i++)
             {float a=i*2.39f;Art.Facet("Far island",new Vector3((i%2==0?-1:1)*(9+i%5*3),-.6f,12+i*1.8f),new Vector3(7,4+i%4,7),i%2==0?Art.Teal:Art.Navy,5,horizon);}
             Art.Facet("The accepting shore",new Vector3(0,-.8f,20),new Vector3(12,3,7),Art.Cream,9,horizon);
             Art.Shape("Lighthouse tower",PrimitiveType.Cylinder,new Vector3(0,2.5f,20),new Vector3(1.1f,2.6f,1.1f),Art.Cream,true,horizon);
             Art.Shape("Lighthouse stripe",PrimitiveType.Cylinder,new Vector3(0,2.9f,20),new Vector3(1.12f,.38f,1.12f),Art.Coral,false,horizon);
-            Art.Shape("Lantern",PrimitiveType.Cylinder,new Vector3(0,5.3f,20),new Vector3(1.3f,.35f,1.3f),Art.Gold,false,horizon);
+            var lantern=Art.Shape("Lantern",PrimitiveType.Cylinder,new Vector3(0,5.3f,20),new Vector3(1.3f,.35f,1.3f),Art.Gold,false,horizon);ocean.lantern=lantern.GetComponent<MeshRenderer>();ocean.dayLantern=Art.Gold;ocean.nightLantern=Art.Lantern;
             Art.Facet("Lighthouse roof",new Vector3(0,5.96f,20),new Vector3(2,1,2),Art.Navy,8,horizon);
-            Art.Shape("Sun",PrimitiveType.Sphere,new Vector3(-14,13,48),Vector3.one*7,Art.Gold,false,horizon);
+            // The light turns clockwise seen from above: a beam and a fainter one behind it, about nine seconds a turn.
+            var beacon=Art.Group("Lighthouse light",new Vector3(0,5.3f,20),horizon);var spin=beacon.gameObject.AddComponent<Spin>();spin.degreesPerSecond=40;ocean.beacon=spin;
+            var beam=Art.Beam("Lighthouse beam",Vector3.zero,70,9,Art.BeamGlow,beacon);beam.transform.localRotation=Quaternion.Euler(2,0,0);
+            var beamBack=Art.Beam("Lighthouse beam behind",Vector3.zero,70,9,Art.BeamGlow,beacon);beamBack.GetComponent<MeshFilter>().sharedMesh=beam.GetComponent<MeshFilter>().sharedMesh;beamBack.transform.localRotation=Quaternion.Euler(0,180,0)*Quaternion.Euler(2,0,0);
+            ocean.beams=new[]{beam.GetComponent<MeshRenderer>(),beamBack.GetComponent<MeshRenderer>()};ocean.dayBeam=Art.BeamGlow;ocean.nightBeam=Art.BeamGlowNight;
+            ocean.sun=Art.Shape("Sun",PrimitiveType.Sphere,new Vector3(-14,13,48),Vector3.one*7,Art.Gold,false,horizon);
             Art.Text("Distant words","YOU ARE STILL WELCOME",new Vector3(0,1.25f,17),.24f,ivory,8,horizon);
+            // Night: a moon and a dome of stars, switched on by the OCEAN AT NIGHT option. They stay put while the shore moves.
+            var sky=Art.Group("Night sky",new Vector3(0,.3f,0));
+            Art.Stars("Stars",260,66,Art.Star,sky);
+            Art.Shape("Moon",PrimitiveType.Sphere,new Vector3(-16,27,50),Vector3.one*5.5f,Art.Moon,false,sky);
+            sky.gameObject.SetActive(false);ocean.nightSky=sky.gameObject;
             Art.Tiled("Boat deck",new Vector3(0,.12f,-.2f),new Vector3(2.5f,.25f,4.3f),Art.Wood,new Vector3(.42f,0,0)).AddComponent<TeleportSurface>();
             for(int side=-1;side<=1;side+=2){Art.Box("Boat gunwale",new Vector3(side*1.25f,.37f,-.2f),new Vector3(.16f,.55f,4.4f),Art.Coral);}
             Art.Box("Boat prow",new Vector3(0,.37f,1.97f),new Vector3(2.6f,.5f,.18f),Art.Coral);
             Art.Box("Boat stern",new Vector3(0,.37f,-2.4f),new Vector3(2.6f,.5f,.18f),Art.Coral);
             for(int z=0;z<2;z++)Art.Box("Bench",new Vector3(0,.45f,.9f-z*2.7f),new Vector3(2.3f,.14f,.38f),Art.Wood);
+            // A lantern on a post at the bow. It glows by itself, with no real-time light.
+            Art.Box("Boat lantern post",new Vector3(-.95f,.9f,1.9f),new Vector3(.06f,.6f,.06f),Art.Wood,false);
+            Art.Box("Boat lantern",new Vector3(-.95f,1.28f,1.9f),new Vector3(.2f,.26f,.2f),Art.Lantern,false);
+            // Two oars, each held in an oarlock on the gunwale. The oar turns about its lock; the handle and blade swing opposite ways.
+            var oars=new List<Oar>();
             for(int side=-1;side<=1;side+=2)
             {
-                var paddle=Art.Box("Paddle "+side,new Vector3(side*1.02f,.76f,-.7f),new Vector3(.07f,.07f,1.75f),Art.Wood);var g=paddle.AddComponent<Grabbable>();g.paddle=true;g.label="Paddle";g.room=1;var rb=paddle.AddComponent<Rigidbody>();rb.isKinematic=true;
-                Art.Box("Paddle blade",new Vector3(0,0,.55f),new Vector3(4,1.8f,.35f),Art.Gold,false,paddle.transform);
+                var lockAt=new Vector3(side*1.25f,.78f,-.55f);
+                Art.Box("Oarlock block",new Vector3(side*1.25f,.665f,-.55f),new Vector3(.22f,.04f,.22f),Art.Metal);
+                Art.Box("Oarlock pin",new Vector3(side*1.25f,.725f,-.55f),new Vector3(.05f,.16f,.05f),Art.Metal,false);
+                var oar=Art.Group("Oar "+side,lockAt);
+                var g=oar.gameObject.AddComponent<Grabbable>();g.paddle=true;g.label="Oar";g.room=1;var rb=oar.gameObject.AddComponent<Rigidbody>();rb.isKinematic=true;
+                var o=oar.gameObject.AddComponent<Oar>();o.side=side;oars.Add(o);
+                // A generous grip zone around the handle, so a hand does not have to find a thin shaft.
+                var grip=oar.gameObject.AddComponent<BoxCollider>();grip.center=new Vector3(0,0,-Oar.InboardLength+.25f);grip.size=new Vector3(.22f,.22f,.55f);
+                Art.Box("Oar shaft",new Vector3(0,0,(Oar.OutboardLength-Oar.InboardLength)/2),new Vector3(.065f,.065f,Oar.InboardLength+Oar.OutboardLength),Art.Wood,false,oar);
+                Art.Box("Oar grip",new Vector3(0,0,-Oar.InboardLength+.17f),new Vector3(.095f,.095f,.34f),Art.Coral,false,oar);
+                Art.Box("Oar collar",Vector3.zero,new Vector3(.13f,.13f,.17f),Art.Gold,false,oar);
+                Art.Box("Oar blade",new Vector3(0,0,Oar.OutboardLength-.32f),new Vector3(.05f,.26f,.64f),Art.Gold,false,oar);
+                o.ResetPose();
             }
+            ocean.oars=oars.ToArray();
             Art.Text("Ocean title","01  /  OCEAN OF SHAME",new Vector3(0,3.9f,10),.5f,ivory,12);
             Art.Text("Ocean intention","A feeling can be vast without being forever.",new Vector3(0,3.2f,10),.26f,muted,11);
             ocean.distance=Art.Text("Distance","14   SMALL STROKES TO SHORE",new Vector3(0,1.2f,1.8f),.13f,ivory,2.6f);
             Art.Button("Accessible rowing","ROW",new Vector3(0,.85f,1.6f),new Vector3(.8f,.32f,.1f),Art.Teal,ActionKind.Row,d);
-            Art.Text("Rowing instruction","Hold a paddle. Pull toward you.\nOr point at ROW and select.\nBlink steps keep the boat steady.",new Vector3(0,2.2f,3.3f),.11f,muted,2.6f);
-            Sound("Ambience - Ocean",.6f);
+            Art.Text("Rowing instruction","Hold an oar. Push it forward, then draw it back.\nOr point at ROW and select.\nBlink steps keep the boat steady.",new Vector3(0,2.9f,3.3f),.11f,muted,2.6f);
+            // The sea itself: swell, lapping at the hull and wind, with gulls by day and a bell buoy at night (see SeaSounds).
+            var sea=ocean.gameObject.AddComponent<SeaSounds>();ocean.sea=sea;
+            sea.swell=Sound("Ambience - Ocean",.6f);sea.lapping=Sound("Ambience - Sea lapping",.3f);sea.wind=Sound("Ambience - Night sea",0f);
+            sea.gulls=new[]{SoundBank.Get("SFX - Gull"),SoundBank.Get("SFX - Gull far")};sea.bell=SoundBank.Get("SFX - Buoy bell");sea.creak=SoundBank.Get("SFX - Oarlock");
         }
-        static void WaterMesh(Transform parent)
+        static MeshRenderer WaterMesh(Transform parent)
         {
             var verts=new List<Vector3>();var tris=new List<int>();var uv=new List<Vector2>();float H(int x,int z)=>-.35f+Mathf.PerlinNoise(x*.31f+20,z*.31f+20)*.3f;
             for(int x=-16;x<16;x++)for(int z=-8;z<36;z++)
@@ -837,7 +977,7 @@ namespace AfterHours
                 int n=verts.Count;verts.AddRange(new[]{a,c,b,b,c,e});for(int k=0;k<6;k++){tris.Add(n+k);uv.Add(new Vector2(verts[n+k].x*.04f,verts[n+k].z*.04f));}
             }
             var mesh=new Mesh{name="Original faceted ocean"};mesh.SetVertices(verts);mesh.SetTriangles(tris,0);mesh.SetUVs(0,uv);mesh.RecalculateNormals();
-            var go=new GameObject("Low polygon ocean",typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(parent,false);go.GetComponent<MeshFilter>().sharedMesh=mesh;go.GetComponent<MeshRenderer>().sharedMaterial=Art.Water;
+            var go=new GameObject("Low polygon ocean",typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(parent,false);go.GetComponent<MeshFilter>().sharedMesh=mesh;var water=go.GetComponent<MeshRenderer>();water.sharedMaterial=Art.Water;return water;
         }
         static Grabbable Item(string label,string category,int room,Vector3 p,Vector3 scale,Material mat)
         {

@@ -464,6 +464,97 @@ def sfx_hit_paper():
     return fade_edges(normalise(reverb(x, 0.4, 0.1), -6))
 
 
+# ---------- the sea: swell, lapping, night wind, gulls, a bell buoy and an oarlock ----------
+def amb_sealapping(seconds=28, fade=4):
+    """Small waves slapping and gurgling against a hull, in a slow swell. Plays under the main ocean swell."""
+    n = int((seconds + fade) * SR)
+    swell = lowpass(smooth_noise(n, 0.18), 1.0, 1)
+    x = np.zeros(n)
+    t = 0.2
+    while t < seconds + fade - 0.8:
+        # Slaps come closer together and harder as the swell lifts. Each is soft: a rounded burst of water noise, not a click.
+        level = 0.3 + 0.7 * float(swell[min(n - 1, int(t * SR))])
+        m = int(rng.uniform(0.45, 0.9) * SR); tt = np.arange(m) / SR
+        slap = lowpass(bandpass(white(m), 350, 1700, 2), 1900, 1) * decay(m, rng.uniform(0.1, 0.22)) * env_adsr(m, 0.035, 0.2, 2)
+        body = np.sin(2 * np.pi * rng.uniform(70, 120) * tt * (1 + 0.4 * np.exp(-tt * 10))) * decay(m, 0.14) * env_adsr(m, 0.02, 0.1, 2)
+        grain = lowpass(bubbles(m / SR, int(rng.integers(4, 12)), 260, 800, 1.1), 1500, 1) * 0.6 * decay(m, 0.3)
+        hit = (slap * 0.9 + body * 0.35 + grain) * level * rng.uniform(0.5, 1.0)
+        i = int(t * SR); x[i:i + m] += hit[:max(0, n - i)]
+        t += rng.uniform(0.4, 2.0) * (1.3 - 0.55 * level)
+    wash = lowpass(brown(n), 380, 2) * (0.2 + 0.4 * swell)
+    return normalise(make_loop(x * 0.9 + wash * 0.5, fade), -8, rms_db=-28)
+
+def amb_nightsea(seconds=32, fade=4):
+    """Night on open water: low wind with slow gusts, a deep swell and a few drops of lapping."""
+    n = int((seconds + fade) * SR); tt = np.arange(n) / SR
+    gust = 0.35 + 0.65 * smooth_noise(n, 0.12)
+    wind = bandpass(pink(n), 180, 1100, 2) * gust * 0.5
+    whistle = bandpass(white(n), 1400, 2100, 2) * (0.04 + 0.1 * smooth_noise(n, 0.07) ** 3)
+    deep = lowpass(brown(n), 140, 2) * (0.5 + 0.5 * smooth_noise(n, 0.15))
+    rigging = np.zeros(n)
+    for _ in range(int(seconds * 0.35)):
+        m = int(rng.uniform(0.05, 0.12) * SR); i = int(rng.uniform(0, seconds + fade - 0.2) * SR)
+        c = bandpass(white(m), 900, 3200, 1) * decay(m, 0.02) * rng.uniform(0.2, 0.8)
+        rigging[i:i + m] += c[:max(0, n - i)]
+    x = wind + whistle * 0.5 + deep * 0.7 + rigging * 0.12
+    return normalise(make_loop(x, fade), -9, rms_db=-27)
+
+def gull_cry(seconds, base, spread):
+    n = int(seconds * SR); tt = np.arange(n) / SR; p = tt / seconds
+    # A cry that climbs fast, then slides down: harmonics over a wobbling pitch, with a little breath.
+    f = base * (1 + 0.55 * np.sin(np.pi * np.minimum(1, p * 2.2)) - 0.28 * p) * (1 + 0.018 * np.sin(2 * np.pi * 26 * tt))
+    phase = np.cumsum(f) / SR * 2 * np.pi
+    x = sum(np.sin(k * phase) / k ** 1.3 for k in range(1, 7))
+    x = x * np.sin(np.pi * np.clip(p, 0, 1)) ** 0.7 * decay(n, seconds * spread)
+    x += bandpass(white(n), 1500, 4500, 1) * 0.04 * np.sin(np.pi * np.clip(p, 0, 1))
+    return x
+
+def sfx_gull(far=False):
+    n = int((2.4 if far else 1.7) * SR); x = np.zeros(n)
+    t = 0.05
+    for k in range(4 if far else 3):
+        d = rng.uniform(0.32, 0.5) if not far else rng.uniform(0.4, 0.6)
+        c = gull_cry(d, rng.uniform(1000, 1250) * (0.8 if far else 1.0), 0.8) * (1 - 0.15 * k)
+        i = int(t * SR); x[i:i + len(c)] += c[:max(0, n - i)]
+        t += d + rng.uniform(0.06, 0.2)
+    if far:
+        x = lowpass(x, 2800, 2)
+    return fade_edges(normalise(reverb(x, 1.4 if far else 0.6, 0.35 if far else 0.12), -9 if not far else -14))
+
+def sfx_buoy():
+    """A bell buoy heard from a distance: a few irregular strokes of a dull iron bell."""
+    n = int(7.0 * SR); x = np.zeros(n)
+    for t, amp in [(0.0, 1.0), (1.9, 0.75), (3.4, 0.9), (5.0, 0.55)]:
+        b = bell(rng.uniform(370, 400), 3.2); h = bell(rng.uniform(595, 620), 2.2) * 0.5; b[:len(h)] += h
+        i = int(t * SR); x[i:i + len(b)] += b[:max(0, n - i)] * amp
+    x = lowpass(x, 3200, 2)
+    return fade_edges(normalise(reverb(x, 2.6, 0.45, 2500), -10))
+
+def sfx_oarlock():
+    """Wood turning in a metal lock: a short, dry creak and a soft knock."""
+    n = int(0.55 * SR); tt = np.arange(n) / SR; p = tt / (n / SR)
+    f = 260 + 90 * np.sin(2 * np.pi * 2.2 * tt) + 60 * p
+    creak = signal.sawtooth(2 * np.pi * np.cumsum(f) / SR) * (0.5 + 0.5 * np.sin(2 * np.pi * 38 * tt))
+    creak = bandpass(creak, 300, 1600, 2) * np.sin(np.pi * np.clip(p, 0, 1)) ** 1.5 * 0.5
+    knock = thump(n, 150, 0.025) * 0.5
+    return fade_edges(normalise(reverb(creak + knock, 0.3, 0.1), -10))
+
+
+def sfx_xray(on=True):
+    """The mirror's X-ray: a cold electric hum climbing (on) or sinking (off), with a high shimmer and a few ticks of static."""
+    seconds = 1.25; n = int(seconds * SR); tt = np.arange(n) / SR; p = tt / seconds
+    f = 70 * (5.0 ** p) if on else 70 * (5.0 ** (1 - p))
+    ph = np.cumsum(f) / SR
+    hum = np.sin(2 * np.pi * ph) + 0.5 * np.sin(4 * np.pi * ph) + 0.25 * np.sin(6 * np.pi * ph)
+    sf = (1800 + 1700 * p) if on else (3500 - 1700 * p)
+    shimmer = np.sin(2 * np.pi * np.cumsum(sf) / SR) * (0.5 + 0.5 * np.sin(2 * np.pi * 13 * tt)) * 0.22
+    static = bandpass(white(n), 2500, 7000, 2) * (rng.random(n) < 0.05) * 0.5
+    if on: env = np.clip(p / 0.85, 0, 1) ** 1.5 * np.clip((1 - p) / 0.15, 0, 1)
+    else: env = np.clip((1 - p) / 0.9, 0, 1) ** 1.3 * np.clip(p / 0.03, 0, 1)
+    x = (lowpass(hum, 2200, 2) * 0.6 + shimmer + static) * env
+    return fade_edges(normalise(reverb(x, 0.6, 0.18), -8))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -478,6 +569,9 @@ def main(folder):
         'Ambience - Rage room': amb_rageroom, 'SFX - Swing': sfx_swing, 'SFX - Hit plastic': sfx_hit_plastic, 'SFX - Hit glass': sfx_hit_glass,
         'SFX - Hit metal': sfx_hit_metal, 'SFX - Smash': sfx_smash, 'SFX - Cart': sfx_cart, 'SFX - Calm': sfx_calm,
         'SFX - Clatter': sfx_clatter, 'SFX - Hit paper': sfx_hit_paper,
+        'Ambience - Sea lapping': amb_sealapping, 'Ambience - Night sea': amb_nightsea,
+        'SFX - Gull': sfx_gull, 'SFX - Gull far': lambda: sfx_gull(far=True), 'SFX - Buoy bell': sfx_buoy, 'SFX - Oarlock': sfx_oarlock,
+        'SFX - X-ray on': lambda: sfx_xray(True), 'SFX - X-ray off': lambda: sfx_xray(False),
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

@@ -19,13 +19,13 @@ namespace AfterHours
         public bool sending { get; private set; }
         public Rigidbody Body { get; private set; }
         Vector3 homePosition; Quaternion homeRotation;
-        Vector3 lastHand; float strokeTravel; float nextStroke;
+        float nextStroke;Oar oar;
         Vector3 holdPosition; Quaternion holdRotation; float holdYaw;
         Vector3 pullFrom, sendPoint; Quaternion pullFromRotation, sendRotation; float pullStart=-1;
         const float PullTime=.18f;
         float nextImpact;
         void Awake() { Initialize(); }
-        public void Initialize(){if(Body)return;Body=GetComponent<Rigidbody>();homePosition=transform.position;homeRotation=transform.rotation;}
+        public void Initialize(){if(Body)return;Body=GetComponent<Rigidbody>();oar=GetComponent<Oar>();homePosition=transform.position;homeRotation=transform.rotation;}
         // With no offset the object stays exactly where the hand closed on it. A distance grab passes the world offset
         // from the hand at which to hold it. Either way it keeps its orientation relative to the hand.
         public bool Take(Transform holder,Vector3? worldOffset=null,bool pull=false,Quaternion? worldRotation=null)
@@ -37,7 +37,6 @@ namespace AfterHours
             // A held tool must never catch the hand's own pointer ray.
             if(tool)SetLayer(2);
             holdYaw=Mathf.DeltaAngle(holder.eulerAngles.y,transform.eulerAngles.y);
-            lastHand=holder.position;strokeTravel=0;
             // A distance grab draws the object to the hand over a moment instead of snapping it there.
             pullStart=pull?Time.time:-1;pullFrom=transform.position;pullFromRotation=transform.rotation;
             return true;
@@ -46,24 +45,23 @@ namespace AfterHours
         {
             held=false;Holder=null;IgnorePlayer(false);
             if(tool){SetLayer(0);ReturnHome();return;}
-            if(paddle) { transform.SetPositionAndRotation(homePosition,homeRotation);Body.isKinematic=true; }
+            // An oar stays in its lock and eases back to rest by itself.
+            if(paddle) { if(oar)oar.LetGo();Body.isKinematic=true; }
             else if(!processed) Body.isKinematic=false;
         }
         void LateUpdate()
         {
             if(held && Holder)
             {
-                if(paddle)
+                // An oar turns about its lock to follow the hand. Each push through the water is one stroke.
+                if(paddle&&oar)
                 {
-                    // Row relative to the body, not the gaze: strokes still register while the player looks around.
-                    float back=Vector3.Dot(lastHand-Holder.position,GameDirector.Instance.player.transform.forward);
-                    if(back>0 && back<.2f)strokeTravel+=back;
-                    if(strokeTravel>.16f && Time.time>nextStroke) { GameDirector.Instance.ocean.Stroke();strokeTravel=0;nextStroke=Time.time+.65f; }
-                    lastHand=Holder.position;
+                    oar.Aim(Holder.position);
+                    if(oar.TakeStroke()&&Time.time>nextStroke){GameDirector.Instance.ocean.Stroke();nextStroke=Time.time+.65f;}
+                    return;
                 }
                 Vector3 position;Quaternion rotation;
-                if(paddle){position=Holder.position+Holder.forward*.13f;rotation=transform.rotation;}
-                else{position=Holder.position+Holder.rotation*holdPosition;rotation=upright?Quaternion.Euler(0,Holder.eulerAngles.y+holdYaw,0):Holder.rotation*holdRotation;}
+                position=Holder.position+Holder.rotation*holdPosition;rotation=upright?Quaternion.Euler(0,Holder.eulerAngles.y+holdYaw,0):Holder.rotation*holdRotation;
                 if(pullStart>=0&&Time.time<pullStart+PullTime)
                 {float s=Mathf.SmoothStep(0,1,(Time.time-pullStart)/PullTime);position=Vector3.Lerp(pullFrom,position,s);rotation=Quaternion.Slerp(pullFromRotation,rotation,s);}
                 transform.SetPositionAndRotation(position,rotation);
@@ -114,7 +112,7 @@ namespace AfterHours
         {
             Initialize();
             StopAllCoroutines();sending=false;pullStart=-1;
-            held=false;processed=false;Holder=null;IgnorePlayer(false);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.isKinematic=true;transform.SetPositionAndRotation(homePosition,homeRotation);
+            held=false;processed=false;Holder=null;IgnorePlayer(false);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.isKinematic=true;transform.SetPositionAndRotation(homePosition,homeRotation);if(oar)oar.ResetPose();
             if(tool)SetLayer(0);else if(!paddle)Body.isKinematic=false;
         }
         void SetLayer(int layer){foreach(var t in GetComponentsInChildren<Transform>(true))t.gameObject.layer=layer;}

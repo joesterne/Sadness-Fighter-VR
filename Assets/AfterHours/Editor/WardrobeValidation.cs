@@ -16,7 +16,7 @@ namespace AfterHours.Editor
     {
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;
         static readonly List<string> lines=new List<string>();
-        static readonly string[] intKeys={"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key};
+        static readonly string[] intKeys={"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",IntroGuide.Key};
         static readonly string[] stringKeys={CheckpointStore.Key,Wardrobe.Key};
         static bool[] intExisted,stringExisted;static int[] intValues;static string[] stringValues;
         public static string Status="Not run";
@@ -55,6 +55,22 @@ namespace AfterHours.Editor
         }
         // The point a mirror on this plane shows for a point in the lobby.
         static Vector3 Mirrored(Vector3 world){var plane=W.avatar.transform;var local=plane.InverseTransformPoint(world);local.z=-local.z;return plane.TransformPoint(local);}
+        // A still from a given point, rendered by a copy of the player's camera. A failure here only costs the picture.
+        static void Snap(string name,Vector3 from,Vector3 to)
+        {
+            GameObject go=null;RenderTexture rt=null;var previous=RenderTexture.active;
+            try
+            {
+                go=new GameObject("X-ray camera"){hideFlags=HideFlags.HideAndDontSave};var cam=go.AddComponent<Camera>();
+                cam.CopyFrom(P.Head.GetComponent<Camera>());cam.fieldOfView=78;
+                cam.transform.SetPositionAndRotation(from,Quaternion.LookRotation(to-from));
+                rt=new RenderTexture(1600,1000,24);cam.targetTexture=rt;cam.Render();RenderTexture.active=rt;
+                var image=new Texture2D(1600,1000,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,1600,1000),0,0);image.Apply();
+                Directory.CreateDirectory("Documentation/Previews");File.WriteAllBytes("Documentation/Previews/"+name+".png",image.EncodeToPNG());UnityEngine.Object.Destroy(image);
+            }
+            catch(Exception e){Debug.LogWarning("[WardrobeValidation] Could not save "+name+": "+e.Message);}
+            finally{RenderTexture.active=previous;if(go)UnityEngine.Object.DestroyImmediate(go);if(rt)UnityEngine.Object.DestroyImmediate(rt);}
+        }
         static bool Announced(string name)=>P.hint.gameObject.activeSelf&&P.hint.text.Contains(name);
         static IEnumerator<float> Checks()
         {
@@ -80,6 +96,50 @@ namespace AfterHours.Editor
             Check(Mathf.Abs(before-Vector3.Distance(P.Head.position,avatar.head.position)-1)<.05f,"Half a metre closer to the glass brings the reflection a metre closer");
             P.Shift(-D.mirrorSpot.forward*.5f);yield return .1f;
 
+            // The mirror's secret: three taps on the glass turn the reflection into a glowing skeleton on a dark backdrop, and three more turn it back.
+            var glass=Lobby(ActionKind.MirrorTap);
+            Check(avatar.xray.Length>=8&&avatar.halos.Length>30&&avatar.body.Length>40&&avatar.backdrop&&!avatar.Xray&&!avatar.backdrop.activeSelf&&avatar.xray.All(g=>!g.activeSelf),"A skeleton is built into the reflection and starts switched off ("+avatar.xray.Length+" parts, "+avatar.halos.Length+" glows)");
+            Check(avatar.scanOn&&avatar.scanOff,"The X-ray has its two sounds");
+            foreach(var t in Click(glass))yield return t;
+            foreach(var t in Click(glass))yield return t;
+            Check(!avatar.Xray&&avatar.body.All(r=>r.enabled),"Two taps on the glass change nothing");
+            foreach(var t in Click(glass))yield return t;
+            Check(avatar.Xray,"Three taps on the glass turn the X-ray on");
+            Check(avatar.xray.All(g=>g.activeSelf)&&avatar.backdrop.activeSelf&&avatar.body.All(r=>!r.enabled),"The skeleton shows over a dark backdrop and the body is hidden");
+            Check(avatar.xray.SelectMany(g=>g.GetComponentsInChildren<Renderer>()).All(r=>r.sharedMaterial&&r.sharedMaterial.name.Contains("X-ray")),"Every part of the skeleton is drawn with the X-ray's own glow materials");
+            // The pieces share one transparent queue, so sorting orders keep the bones from being dimmed by the backdrop: backdrop, glow, bones, hollows.
+            int Order(Renderer r)=>r.sharedMaterial.name.Contains("glow")?1:r.sharedMaterial.name.Contains("bone")?2:3;
+            Check(avatar.backdrop.GetComponent<Renderer>().sortingOrder==0&&avatar.xray.SelectMany(g=>g.GetComponentsInChildren<Renderer>()).All(r=>r.sortingOrder==Order(r)),"The backdrop draws first, then the glow, then the bones, then the dark hollows");
+            Check(Announced("X-RAY"),"The first X-ray says how to leave it");
+            yield return .2f;
+            var bounds=new Bounds();bool first=true;
+            foreach(var r in avatar.xray.SelectMany(g=>g.GetComponentsInChildren<Renderer>())){if(first){bounds=r.bounds;first=false;}else bounds.Encapsulate(r.bounds);}
+            Check(bounds.size.y>1.45f&&bounds.size.y<2.05f&&bounds.min.y<P.transform.position.y+.12f,"The skeleton is as tall as you are and stands on the floor ("+bounds.size.y.ToString("0.00")+" m)");
+            // Two stills for the previews, taken once the renderer has caught up with the switch: the whole figure, then closer.
+            var seen=P.Head.position;var ahead=D.mirrorSpot.forward;
+            Snap("Mirror - X-ray",seen,seen+ahead*3+Vector3.down*.3f);
+            Snap("Mirror - X-ray close",seen+ahead*1.15f+Vector3.down*.1f,seen+ahead*3.4f+Vector3.down*.4f);
+            // Taps spread out over more than a couple of seconds each do not add up.
+            foreach(var t in Click(glass))yield return t;yield return 2.8f;
+            foreach(var t in Click(glass))yield return t;yield return 2.8f;
+            foreach(var t in Click(glass))yield return t;yield return 2.8f;
+            Check(avatar.Xray,"Slow taps do not add up to three");
+            foreach(var t in Click(glass))yield return t;
+            foreach(var t in Click(glass))yield return t;
+            foreach(var t in Click(glass))yield return t;
+            Check(!avatar.Xray&&avatar.body.All(r=>r.enabled)&&avatar.xray.All(g=>!g.activeSelf)&&!avatar.backdrop.activeSelf,"Three more taps bring the body back and clear the backdrop");
+            Check(avatar.halos.All(h=>h.sharedMaterial==avatar.haloMaterial),"The glow returns to its saved material");
+            // Leaving the lobby ends it.
+            yield return 2.8f;
+            foreach(var t in Click(glass))yield return t;
+            foreach(var t in Click(glass))yield return t;
+            foreach(var t in Click(glass))yield return t;
+            Check(avatar.Xray,"Three taps turn it on again");
+            D.Travel(2);yield return 1f;
+            Check(!avatar.Xray&&avatar.body.All(r=>r.enabled),"Leaving the lobby ends the X-ray");
+            foreach(var t in ToMirror())yield return t;
+            Check(!avatar.Xray&&avatar.reflection.gameObject.activeInHierarchy,"Coming back, the reflection is ordinary again");
+
             // How you look: each row steps through its choices and the reflection follows.
             foreach(var t in Step(0))yield return t;
             Check(W.State.skin==3&&avatar.skin.All(r=>r.sharedMaterial==avatar.skins[3]),"SKIN TONE > changes the reflection's skin");
@@ -98,7 +158,7 @@ namespace AfterHours.Editor
 
             // What earns each piece. Pieces arrive once, are announced, and wait at the mirror.
             D.Travel(1);yield return 1f;D.ocean.Stroke();yield return 1f;
-            Check(W.Has("step-pin"),"One paddle stroke, a first small step, earns the small step pin");
+            Check(W.Has("step-pin"),"One oar stroke, a first small step, earns the small step pin");
             yield return 4.2f;Check(Announced("Small step pin"),"The new piece is announced");
             D.Travel(3);yield return 1f;D.kitchen.AskForHelp();
             Check(W.Has("scarf"),"Asking for help earns the kind scarf");

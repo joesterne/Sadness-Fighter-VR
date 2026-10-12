@@ -1,4 +1,4 @@
-2026-10-11 16:33:55Z
+2026-10-12 00:25:28Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -6,7 +6,7 @@ PASS: The menu starts closed
 PASS: A returning player sees no first-visit guide
 PASS: Menu key opens the menu at arm's length (0.68 m)
 PASS: The lobby menu hides LOBBY and TRY AGAIN
-PASS: Only doors, CONTINUE, the mirror, its wardrobe and the first-visit guide remain as lobby signs
+PASS: Only doors, CONTINUE, the mirror (and its glass), its wardrobe and the first-visit guide remain as lobby signs
 PASS: Menu SEATED VIEW enables seated view at 1.65 m
 PASS: Menu SEATED HEIGHT changes eye height to 1.85 m
 PASS: The open menu moves up with the new eye height

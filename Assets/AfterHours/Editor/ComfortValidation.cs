@@ -15,7 +15,7 @@ namespace AfterHours.Editor
     {
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;static Keyboard keyboard;
         static readonly List<string> lines=new List<string>();
-        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette",IntroGuide.Key,Wardrobe.Key};
+        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,IntroGuide.Key,Wardrobe.Key};
         static bool[] existed;static string checkpoint,wardrobe;static int[] values;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
@@ -45,7 +45,8 @@ namespace AfterHours.Editor
         // Selects a menu button with the pointer, exactly as a player would.
         static IEnumerable<float> Click(ActionKind kind){Aim(D.menu.Button(kind));Press(true);yield return .12f;Press(false);yield return .2f;}
         static IEnumerable<float> Hold(Key key,float seconds){Queue(keyboard,new KeyboardState(key));yield return seconds;Queue(keyboard,new KeyboardState());yield return .15f;}
-        static IEnumerable<float> MenuKey(bool open){if(D.menu.IsOpen!=open)foreach(var t in Hold(Key.Tab,.1f))yield return t;}
+        // With a message showing, the first press only clears it, so opening may take a second press.
+        static IEnumerable<float> MenuKey(bool open){for(int attempt=0;attempt<2&&D.menu.IsOpen!=open;attempt++)foreach(var t in Hold(Key.Tab,.1f))yield return t;}
         static IEnumerator<float> Checks()
         {
             SceneManager.LoadScene("AfterHours");yield return .8f;
@@ -56,7 +57,7 @@ namespace AfterHours.Editor
             float reach=Vector3.Distance(P.Head.position,D.menu.transform.position);
             Check(D.menu.IsOpen&&reach>.6f&&reach<.75f,"Menu key opens the menu at arm's length ("+reach.ToString("0.00")+" m)");
             Check(!D.menu.lobby.activeSelf&&!D.menu.tryAgain.activeSelf,"The lobby menu hides LOBBY and TRY AGAIN");
-            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext),"Only doors, CONTINUE, the mirror, its wardrobe and the first-visit guide remain as lobby signs");
+            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.MirrorTap||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext),"Only doors, CONTINUE, the mirror (and its glass), its wardrobe and the first-visit guide remain as lobby signs");
             foreach(var t in Click(ActionKind.SeatedMode))yield return t;
             Check(P.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Menu SEATED VIEW enables seated view at 1.65 m");
             foreach(var t in Click(ActionKind.SeatedHeight))yield return t;

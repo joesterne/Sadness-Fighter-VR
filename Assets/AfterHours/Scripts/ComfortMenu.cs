@@ -8,7 +8,7 @@ namespace AfterHours
     public class ComfortMenu : MonoBehaviour
     {
         public GameDirector director;
-        public TextMeshPro status, seated, height, walking, vignette, crowd;
+        public TextMeshPro status, seated, height, walking, vignette, crowd, clean, night;
         public GameObject lobby, tryAgain;
         public bool IsOpen => gameObject.activeSelf;
         const float Distance=.65f, Drop=.2f;
@@ -43,7 +43,7 @@ namespace AfterHours
         }
         public void Close(){if(IsOpen)gameObject.SetActive(false);}
         // The panel's centre and corners, relative to its pivot.
-        static readonly Vector3[] Corners={Vector3.zero,new Vector3(-.27f,.25f,0),new Vector3(.27f,.25f,0),new Vector3(-.27f,-.27f,0),new Vector3(.27f,-.27f,0)};
+        static readonly Vector3[] Corners={Vector3.zero,new Vector3(-.27f,.25f,0),new Vector3(.27f,.25f,0),new Vector3(-.27f,-.385f,0),new Vector3(.27f,-.385f,0)};
         float Clearance(Vector3 eye,Vector3 offset)
         {
             float length=offset.magnitude,fit=1;
@@ -63,6 +63,8 @@ namespace AfterHours
             Set(walking,"MOVEMENT\n"+(p.smoothMotion?"WALK + TELEPORT":"TELEPORT ONLY"));
             Set(vignette,"COMFORT VIGNETTE\n"+(p.comfortVignette?"ON":"OFF"));
             Set(crowd,"KITCHEN CROWD\n"+(director.gentleAudience?"HIDDEN":"SHOWN"));
+            Set(clean,"CLEAN MODE\n"+(p.cleanMode?"ON":"OFF"));
+            Set(night,"OCEAN AT NIGHT\n"+(director.ocean&&director.ocean.night?"ON":"OFF"));
         }
         static void Set(TextMeshPro label,string text){if(label)label.text=text;}
         public Interactable Button(ActionKind kind)
