@@ -93,10 +93,15 @@ namespace AfterHours
             menu.night=MenuButton(root,"Menu ocean at night","OCEAN AT NIGHT",.12f,-.215f,Art.Navy,ActionKind.NightOcean);
             MenuButton(root,"Menu try again","TRY AGAIN",-.12f,-.30f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
             MenuButton(root,"Menu lobby","LOBBY",.12f,-.30f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
-            Art.Text("Menu tip","Menu button again closes everything.  B / Y: lobby.\nRight stick turns; pull it back to turn around.",new Vector3(0,-.348f,-.002f),.016f,muted,.5f,root);
+            Words(Art.Text("Menu tip","",new Vector3(0,-.348f,-.002f),.016f,muted,.5f,root),"Palm pinch again closes everything.  LOBBY: back to the start.\nTeleports turn you to face where you point.","Menu button again closes everything.  B / Y: lobby.\nRight stick turns; pull it back to turn around.");
             // A panel floating at arm's length should not throw a shadow onto the room.
             foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
             menu.Refresh();root.gameObject.SetActive(false);
+        }
+        // A sign that says one thing to a player using hands and another to a player using controllers, and follows them if they switch.
+        static TextMeshPro Words(TextMeshPro text,string hands,string controllers)
+        {
+            var words=text.gameObject.AddComponent<InputText>();words.hands=hands;words.controllers=controllers;text.text=hands;return text;
         }
         static TextMeshPro MenuButton(Transform menu,string name,string label,float x,float y,Material color,ActionKind kind,float width=.225f,float height=.072f)
         {
@@ -177,11 +182,11 @@ namespace AfterHours
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.01f,-.64f),.18f,ivory,2.2f);
             d.lobbyProgress=Art.Text("Journey progress","0 / 6   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.65f,-.645f),.145f,muted,2.15f);
             Art.Box("Getting started board",new Vector3(3.5f,1.9f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy);
-            Art.Text("Move instructions","POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch or menu button: the menu.",new Vector3(3.5f,1.9f,2.8f),.14f,ivory,2.7f);
+            Words(Art.Text("Move instructions","",new Vector3(3.5f,1.9f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
             var resume=Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(0,2.16f,-.3f),new Vector3(2.75f,.4f,.12f),Art.Teal,ActionKind.Resume,d);
             d.resumeLabel=Art.Root.Find("Continue last room label").GetComponent<TextMeshPro>();
             Art.Text("Small sessions","A FEW MINUTES IS ENOUGH\nEach small step saves. Return to the lobby to take a break.",new Vector3(0,2.65f,-.3f),.13f,muted,3.8f);
-            Art.Text("Comfort note","SITTING DOWN? OPEN THE MENU\nMenu button or left palm pinch, then SEATED VIEW.\nB / Y returns here from any room.",new Vector3(0,.24f,-.65f),.1f,muted,2.2f);
+            Words(Art.Text("Comfort note","",new Vector3(0,.24f,-.65f),.1f,muted,2.2f),"SITTING DOWN? OPEN THE MENU\nLeft palm pinch, then SEATED VIEW.\nThe menu's LOBBY button returns here from any room.","SITTING DOWN? OPEN THE MENU\nMenu button, then SEATED VIEW.\nB / Y returns here from any room.");
             Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,1.1f,13.5f),new Vector3(4.2f,.65f,.16f),Art.Teal,ActionKind.Travel,d,5);
             Art.Button("Mirror and wardrobe","MIRROR  /  YOUR WARDROBE",new Vector3(0,1.62f,-.3f),new Vector3(2f,.26f,.1f),Art.Coral,ActionKind.GoToMirror,d);
             d.mirrorLabel=Art.Root.Find("Mirror and wardrobe label").GetComponent<TextMeshPro>();
@@ -995,7 +1000,7 @@ namespace AfterHours
         static void Warehouse()
         {
             Shell(16,21,Art.Cream);d.rooms[2].total=5;
-            Header(2,"02 / HEAVY THINGS","Processing, not erasing.","Pick up each feeling, point at the truck, and let it go.",new Vector3(0,3.25f,11));
+            Header(2,"02 / HEAVY THINGS","Processing, not erasing.","Pick up each feeling. Point at the truck and let go, or throw it in.",new Vector3(0,3.25f,11));
             for(int side=-1;side<=1;side+=2)
             {
                 for(int z=0;z<3;z++)
@@ -1011,7 +1016,7 @@ namespace AfterHours
                 // Rest each box on its plinth (top at 0.72 m). Starting inside the plinth made physics shove the boxes askew.
                 Vector3 p=new Vector3(-2.8f+i*1.4f,1.008f,-.3f+(i%2)*.4f);
                 Art.Box("Packing plinth",new Vector3(p.x,.36f,p.z),new Vector3(.95f,.72f,.95f),Art.Wood);
-                var item=Item(names[i],"",2,p,new Vector3(.6f,.57f,.6f),colors[i]);
+                var item=Item(names[i],"",2,p,new Vector3(.6f,.57f,.6f),colors[i]);item.throwable=true;
                 Art.Box("Packing tape",new Vector3(0,.503f,0),new Vector3(.14f,.02f,1.01f),Art.Cream,false,item.transform);
             }
             var truck=Art.Group("Feelings processing truck",new Vector3(0,0,6.6f));

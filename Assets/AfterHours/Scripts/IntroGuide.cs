@@ -13,15 +13,19 @@ namespace AfterHours
         public bool IsShowing=>gameObject.activeSelf;
         const int MenuStep=2;
         static readonly string[] titles={"Before you begin","Point and pinch","Your menu","Begin anywhere"};
+        bool OnDesktop=>director&&director.player&&!director.player.IsXR;
+        string Title(int step)=>Title(step,OnDesktop);
+        public static string Title(int step,bool desktop)=>step==1&&Wording.Controllers&&!desktop?"Point and squeeze":titles[step];
         static readonly string[] buttons={"CONTINUE","GOT IT","","START"};
-        string Body(int step)
+        string Body(int step)=>Body(step,OnDesktop);
+        // The wording for a step, for a desktop mouse or for a headset (hands or controllers, whichever is in use).
+        public static string Body(int step,bool desktop)
         {
-            bool desktop=director&&director.player&&!director.player.IsXR;
             switch(step)
             {
                 case 0: return "After Hours is about losing a job: the shame, the worry, and what is still true.\nTake a break whenever you like. It is a gentle experience, not a substitute for professional support.";
-                case 1: return desktop?"Point with the mouse and click to choose.\nTry it on the button below.":"Point with your hand, then touch your thumb and index finger together to choose.\nTry it on the button below.";
-                case 2: return desktop?"Press Tab to open the menu.\nIt has seated view, turning, comfort options and the lobby.":"Look at your left palm and pinch to open the menu.\nWith controllers, press the menu button.\nIt has seated view, turning, comfort options and the lobby.";
+                case 1: return desktop?"Point with the mouse and click to choose.\nTry it on the button below.":Wording.Choose+"\nTry it on the button below.";
+                case 2: return desktop?"Press Tab to open the menu.\nIt has seated view, turning, comfort options and the lobby.":Wording.OpenMenu+"\nIt has seated view, turning, comfort options and the lobby.";
                 default: return "Point at a door and choose ENTER, or CONTINUE at the desk.\nEvery small step saves, and earns things to wear at the MIRROR. Stop whenever you like.";
             }
         }
@@ -32,10 +36,12 @@ namespace AfterHours
         public void Dismiss(){if(!IsShowing)return;gameObject.SetActive(false);Step=-1;PlayerPrefs.SetInt(Key,1);PlayerPrefs.Save();}
         // Hides the guide without marking it done (automated tests).
         public void Hide(){gameObject.SetActive(false);Step=-1;}
-        void Update(){if(Step==MenuStep&&director.menu&&director.menu.IsOpen)Next();}
+        int seenVersion;
+        // If the player picks up controllers (or puts them down) while a step is showing, the step's words follow.
+        void Update(){if(Step==MenuStep&&director.menu&&director.menu.IsOpen)Next();else if(Step>=0&&seenVersion!=Wording.Version)Show();}
         void Show()
         {
-            title.text=titles[Step];body.text=Body(Step);
+            seenVersion=Wording.Version;title.text=Title(Step);body.text=Body(Step);
             next.SetActive(buttons[Step].Length>0);if(nextLabel)nextLabel.text=buttons[Step];
             skip.SetActive(Step<titles.Length-1);
         }

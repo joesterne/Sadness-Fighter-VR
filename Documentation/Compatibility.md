@@ -1,15 +1,26 @@
-# Unity 6000.6 compatibility
+# Headsets and input
 
-The starting project contained Unity OpenXR Meta 2.2.0 and Inference Engine 2.3.0. A fresh compilation in Unity 6000.6.3f1 failed in their source before game scripts could run.
+One APK (`com.afterhours.mindoffice`, Android API 32 minimum, 34 target) is built for every Quest that can run it.
 
-To keep fixes durable rather than modifying Library/PackageCache, these two packages are embedded under Packages with their licenses intact. Three source sites changed:
+| Headset | Listed in the manifest | Measured |
+|---|---|---|
+| Quest 3 | yes | played on a headset; all earlier builds |
+| Quest 3S | yes | not measured (same chip and runtime as the Quest 3) |
+| Quest Pro | yes | not measured |
+| Quest 2 | yes | **not measured**: no Quest 2 has run this build |
 
-- `com.unity.xr.meta-openxr/Editor/SoftShadowsMetaOpenXRValidationRules.cs`: use `urpAsset.GetEntityId()` so editor asset opening uses the current overloads.
-- `com.unity.ai.inference/Runtime/Core/PluginInterfaces.cs`: use `UnityEngine.Assemblies.CurrentAssemblies.GetLoadedAssemblies()` to avoid accessing unloaded assemblies.
-- `com.unity.ai.inference/Editor/Visualizer/Editor/ModelAssetOpenHandler.cs`: accept `UnityEngine.EntityId` in the asset-open callback and call `EditorUtility.EntityIdToObject`.
+## Input
 
-These patches target the project's declared editor version. When upgrading to package releases compatible with Unity 6000.6, compare these files before removing the embedded copies.
+Hand tracking is optional in the manifest (`required=false`), so a headset with hand tracking off still starts, and the game works with either hands or controllers.
 
-**Inference Engine was removed on October 2, 2026.** The game never used it, but its Resources folder put about 75 MB of compute shaders into every APK. It is no longer in `Packages/manifest.json`. The patched embedded copy was moved to `_RemovedPackages/com.unity.ai.inference`, outside the folders Unity loads. You can delete that folder. Meta's AI Building Blocks compile without the package, because they only use it behind `UNITY_INFERENCE_INSTALLED`. If you add the package back, reuse the two patches above.
+- **Hands are the default.** The game starts in hands wording. The headset's own report of which input is active decides what the signs and hints say: hands, or controllers when they are picked up. If the headset reports neither, a single tracked hand or controller decides; both or neither changes nothing. A change must last 0.6 s before the wording follows, and the first report is believed at once.
+- **Controllers.** Point with the controller and squeeze the trigger to choose. The trigger and the grip both pick things up and hold them; letting go sends, throws or drops. Left stick walks (unless MOVEMENT is on TELEPORT ONLY), right stick snap-turns and pulls back to turn around, B/Y returns to the lobby, the menu button opens the menu.
+- **Hands.** Point and pinch (index and thumb) to choose, hold and throw. A palm pinch on the left hand opens the menu. Movement is by teleport, and the menu has turn buttons.
 
-The optional Oculus Touch proximity interaction feature is disabled: simulator v207 rejected its trigger-proximity binding. Standard Oculus Touch, Meta XR, and hand tracking remain enabled.
+## Quest 2 profile
+
+`DeviceProfile` asks the runtime which headset it is (Quest 2 and Quest 2 over a link cable are recognised) and, only on a Quest 2, lowers the render scale to 0.9, the shadow distance to 20 m and requests a 72 Hz display if the headset offers it. These are conservative guesses for the Quest 2's lower resolution and weaker chip. They are not measured. If the rage room's 210 pieces or any scene is too heavy on a Quest 2, the next steps are 2x MSAA, a lower render scale, and fewer loose pieces.
+
+## What the editor tests cover
+
+The tests run on a desktop, so they check the wording rules, the choice between hands and controllers from the headset's reported state, the headset recognition, that the Quest 2 profile applies and undoes exactly, and the throw maths and the real throw path through the player code (with throwing switched on for the desktop). They cannot check that a Quest 2 or a controller actually behaves, which is what `Playtest.md` is for.

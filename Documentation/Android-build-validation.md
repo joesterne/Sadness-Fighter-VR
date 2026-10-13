@@ -327,6 +327,49 @@ The release APK built with zero errors.
 
 It was installed on the connected Quest with **After Hours → Install release APK on connected Quest**. The copy already on the headset was signed with a different key, so it was uninstalled first (its saved progress went with it); Unity then reported "Installed AfterHours-release.apk … and started com.afterhours.mindoffice". Nothing has been played on the headset yet.
 
+## October 12: throwing, controllers and Quest 2
+
+### What changed
+
+- **Boxes can be thrown into the truck** (heavy things). Let go of a box while your hand is moving and it leaves with that speed (a little boosted, never over 14 m/s) and direction, flies under physics and is caught by the bay. A throw aimed within 25 degrees of the truck is pulled most of the way onto a lofted arc that lands in it; the pull fades to nothing at 55 degrees, so a throw the other way goes where it was thrown. A box that stops short goes back on its stand after about 1.6 s of rest, with a gentle message. Point-and-let-go is unchanged, and so is desktop play, where nothing is thrown.
+- **Hands first, controllers automatic.** The wording of the first-visit guide, the lobby board, the comfort note, the menu's tip, hold hints and room messages follows what the headset reports: hands by default, controllers once they are picked up (after 0.6 s, so a passing controller does not flicker the signs). The trigger now also picks things up with controllers.
+- **Quest 2.** One APK for Quest 2, Quest Pro, Quest 3 and Quest 3S (the manifest already listed all four). On a Quest 2 the game asks for render scale 0.9, shadows to 20 m and 72 Hz if offered. Unmeasured.
+- **Boxes settle exactly into the truck.** A box drawn into its place used to end a few centimetres out because the physics smoothing lagged behind the hand-set position; found by the new throw checks and fixed in `Grabbable` (the position is now given to the body as well).
+- Version 0.6.0.
+
+### Tests
+
+A new suite (throwing, controllers and Quest 2) covers the throw maths, the wording and the real throw path (see the README). The other six suites were run again.
+
+### Results
+
+All seven suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 108 |
+| Navigation | 126 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 46 |
+| Mirror and wardrobe | 56 |
+| Ocean, clean mode and night | 72 |
+| Throwing, controllers and Quest 2 | 71 |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 73.7 MB (73,698,625 bytes; 6.5 KB more than 0.5.0) |
+| SHA-256 of the APK | `95bb1dea25409ef998fcd64be9be838a74e20e1d17bae56cc8c114a2b9bad8b0` |
+| Version | 0.6.0, version code 410541 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | The manifest lists Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley (`quest2`, `questpro`, `quest3`, `quest3s`, `stanley`); hand tracking stays optional (`required=false`) so controllers work without it |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | The new scripts (`Throwing`, `DeviceProfile`, `Wording`, `InputText`) and the throw and hand-speed code are in the APK. No DevAgent settings or session data, no LAN address and no XR Operator layer (Meta's own debugger classes are code in the SDK, as in 0.5.0). |
+
+It has not been installed on a headset or played there yet.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -348,6 +391,9 @@ These still need a physical headset playtest (see `Playtest.md`):
 - frame rate with about 210 loose rigid bodies in the rage room at once
 - how knocked pieces feel to bat around
 - how the mirror's X-ray looks on the headset: the glow of the bones, how dark the backdrop reads, and whether the skeleton keeps up with real hands
+- how throwing a box feels, and whether the pull toward the truck is right, with real hands and with controllers
+- the trigger picking things up with controllers, and the wording switching between hands and controllers on a real headset
+- everything on a Quest 2: that it installs and runs, frame rate at render scale 0.9 and 72 Hz, hand tracking, and controllers
 - how rowing with the oars feels with real hands and controllers, including the direction of the push stroke and whether the grip zone is easy to find
 - whether the taller menu (two more buttons) reads well and is reachable from a seat
 - how the lighthouse beam looks on the headset (soft edges, no banding) and what it costs in frame rate

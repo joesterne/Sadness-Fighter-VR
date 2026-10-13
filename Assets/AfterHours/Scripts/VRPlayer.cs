@@ -40,6 +40,11 @@ namespace AfterHours
         readonly bool[] teleportGesture=new bool[2], inputBlocked=new bool[2];
         readonly GameObject[] controllerModels=new GameObject[2];
         float turnReady, hintUntil; float pitch; bool wasHome;
+        // What the headset sees this frame, for choosing the wording, and when the headset model was last asked.
+        bool handSeen, controllerSeen; float nextProfileCheck;
+        // Throwing needs real hands or controllers. Tests switch it on to run the whole path from the desktop.
+        public static bool ThrowOnDesktop;
+        public bool CanThrow=>IsXR||ThrowOnDesktop;
         public void ShowHint(string text,float duration=6){if(cleanMode){HideHint();return;}hint.text=text;hintUntil=Time.time+duration;}
         public void HideHint(){hintUntil=0;if(hint)hint.gameObject.SetActive(false);}
         public bool HintVisible=>hint&&!cleanMode&&Time.time<hintUntil;
@@ -85,8 +90,28 @@ namespace AfterHours
             }
             Move();
             if(returnPressed)GameDirector.Instance.Travel(0);
+            handSeen=controllerSeen=false;
             for(int i=0;i<2&&!busy;i++)Interact(i);
+            if(IsXR)ObserveHardware();
             UpdateHighlights();
+        }
+        // What the headset says is in use. The runtime's own answer wins; when it gives none, whichever of hand or controller
+        // is tracked alone decides, and tracking both at once says nothing.
+        public static InputKind? SeenInput(OVRInput.Controller active,bool handTracked,bool controllerTracked)
+        {
+            if((active&OVRInput.Controller.Hands)!=0)return InputKind.Hands;
+            if((active&OVRInput.Controller.Touch)!=0)return InputKind.Controllers;
+            if(handTracked!=controllerTracked)return handTracked?InputKind.Hands:InputKind.Controllers;
+            return null;
+        }
+        // With controllers, the trigger holds an object just as a pinch does, and so does the grip.
+        public static bool ControllerGrab(float grip,float trigger)=>grip>.65f||trigger>.65f;
+        // Which input the player is using, so every hint says the right thing, and which headset this is, so a Quest 2 gets a lighter picture.
+        // Both are asked every frame or two until the runtime answers, and never change how the game plays.
+        void ObserveHardware()
+        {
+            Wording.Observe(SeenInput(OVRInput.GetActiveController(),handSeen,controllerSeen),Time.unscaledTime);
+            if(!DeviceProfile.Applied&&Time.unscaledTime>nextProfileCheck){nextProfileCheck=Time.unscaledTime+.5f;DeviceProfile.TryApply();}
         }
         void DesktopPose()
         {
@@ -143,7 +168,7 @@ namespace AfterHours
         public void ToggleSeated()
         {
             seatedMode=!seatedMode;ApplyHeight();SaveComfort();
-            ShowHint(seatedMode?"Seated view on. Eye height "+EyeText+". Right stick turns; pull it back to turn around. Teleports turn you to face where you point.":"Standing view on. Your tracked height is restored.");
+            ShowHint(seatedMode?"Seated view on. Eye height "+EyeText+". "+Wording.Turning:"Standing view on. Your tracked height is restored.");
         }
         public void CycleSeatedHeight()
         {
@@ -194,8 +219,9 @@ namespace AfterHours
             Transform grip=desktop?desktopGrip:trackedHand?hand.transform:index==0?rig.leftControllerAnchor:rig.rightControllerAnchor;
             Transform aim=desktop?Head:trackedHand&&hand.IsPointerPoseValid?hand.PointerPose:grip;
             bool valid=desktop||trackedHand||trackedController;
+            if(trackedHand)handSeen=true;if(trackedController&&!trackedHand)controllerSeen=true;
             bool select=valid&&(desktop?(Mouse.current!=null&&Mouse.current.leftButton.isPressed):trackedHand?!hand.IsSystemGestureInProgress&&hand.GetFingerIsPinching(OVRHand.HandFinger.Index):OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger,controller)>.65f);
-            bool grab=valid&&(trackedHand?select:desktop?select:OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger,controller)>.65f);
+            bool grab=valid&&(trackedHand?select:desktop?select:ControllerGrab(OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger,controller),OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger,controller)));
             controllerModels[index].SetActive(trackedController&&!trackedHand);
             // A tool stays in the hand through a moment of lost tracking, which fast swings often cause.
             if(!valid){if(held[index]&&!held[index].tool){held[index].Release();held[index]=null;}aimedTarget[index]=null;wasGrip[index]=wasSelect[index]=false;teleportReady[index]=teleportGesture[index]=false;inputBlocked[index]=true;rays[index].enabled=false;cursors[index].gameObject.SetActive(false);return;}
@@ -252,8 +278,16 @@ namespace AfterHours
             if(carrying&&held[index]&&!grab)
             {
                 var letGo=held[index];held[index]=null;aimedTarget[index]=null;
-                // Pointing at where it belongs sends it there; otherwise it simply drops.
-                if(sendTo){letGo.SendTo(sendTo.LandingPoint,Quaternion.Euler(0,letGo.transform.eulerAngles.y,0));var d=GameDirector.Instance;d.PlayAt(d.send,letGo.transform.position,.7f);Pulse(controller);}
+                // A throwable box let go while the hand is moving is thrown, bent toward the truck if it was aimed that way. Pointing at
+                // where it belongs and letting go still sends it there, which is what a seated player with a still hand does.
+                var flick=letGo.throwable&&CanThrow?letGo.HandVelocity():Vector3.zero;
+                if(letGo.throwable&&CanThrow&&Throwing.IsThrow(flick))
+                {
+                    var from=letGo.transform.position;var thrownAt=ThrowTarget(from,flick,letGo);
+                    letGo.Throw(Throwing.Launch(flick,from,thrownAt?(Vector3?)thrownAt.LandingPoint:null,out _));
+                    var d=GameDirector.Instance;d.PlayAt(d.send,from,.7f);Pulse(controller);
+                }
+                else if(sendTo){letGo.SendTo(sendTo.LandingPoint,Quaternion.Euler(0,letGo.transform.eulerAngles.y,0));var d=GameDirector.Instance;d.PlayAt(d.send,letGo.transform.position,.7f);Pulse(controller);}
                 else letGo.Release();
             }
             wasSelect[index]=select;wasGrip[index]=grab;
@@ -269,8 +303,9 @@ namespace AfterHours
         string HoldHint(Grabbable item)
         {
             if(item.paddle)return "The oar turns at its lock. Push the handle forward to drive the blade back through the water, then draw it toward you. Or press ROW.";
-            if(item.tool)return "The bat stays in your hand. Swing at the old computer: short swings count. Point at the rack and pinch to put it back.";
-            foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt;
+            if(item.tool)return "The bat stays in your hand. Swing at the old computer: short swings count. Point at the rack and "+Wording.PutBack+" to put it back.";
+            string toss=item.throwable&&CanThrow?" Or throw it.":"";
+            foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt+toss;
             return item.label.Replace("\n"," ")+"  /  Let go to place it.";
         }
         Grabbable Assist(Vector3 origin,Vector3 direction)
@@ -283,6 +318,18 @@ namespace AfterHours
                 float angle=Vector3.Angle(direction,to);if(angle>=bestAngle)continue;
                 if(Blocked(origin,g.transform.position,g.transform,null))continue;
                 best=g;bestAngle=angle;
+            }
+            return best;
+        }
+        // The place a throw is aimed at: the nearest target, sideways, that would take this box and lies within the pull's cone.
+        SendTarget ThrowTarget(Vector3 from,Vector3 hand,Grabbable item)
+        {
+            SendTarget best=null;float bestAngle=Throwing.NoAssistAngle;
+            foreach(var t in GameDirector.Instance.Targets)
+            {
+                if(!t||!t.isActiveAndEnabled||!t.Accepts(item))continue;
+                float angle=Throwing.Angle(hand,from,t.LandingPoint);if(angle>=bestAngle)continue;
+                best=t;bestAngle=angle;
             }
             return best;
         }

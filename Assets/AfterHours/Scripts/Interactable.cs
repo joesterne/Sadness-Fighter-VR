@@ -17,7 +17,7 @@ namespace AfterHours
                 case ActionKind.Brew: director.kitchen.Brew(); break;
                 case ActionKind.Help: director.kitchen.AskForHelp(); break;
                 case ActionKind.Rest: director.Travel(0); break;
-                case ActionKind.SmoothMotion: director.player.smoothMotion=!director.player.smoothMotion; director.Say(director.player.smoothMotion?"Walking on. The left stick walks; floor teleport still works.":"Teleport only. Point at the floor and release. Either stick snap turns.");break;
+                case ActionKind.SmoothMotion: director.player.smoothMotion=!director.player.smoothMotion; director.Say(director.player.smoothMotion?Wording.Pick("Walking is on, but it needs the controller sticks. Floor teleport still works with your hands.","Walking on. The left stick walks; floor teleport still works."):Wording.Pick("Teleport only. Point at the floor and release.","Teleport only. Point at the floor and release. Either stick snap turns."));break;
                 case ActionKind.GentleAudience: director.gentleAudience=!director.gentleAudience; director.kitchen.RefreshAudience(); director.Say(director.gentleAudience?"Quiet kitchen: no watching crowd.":"Watching crowd enabled. You can change this anytime.");break;
                 case ActionKind.Row: director.ocean.Stroke();break;
                 case ActionKind.ResetRoom: if(director.menu)director.menu.Close();director.RestartCurrentRoom();break;

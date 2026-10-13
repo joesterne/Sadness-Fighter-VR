@@ -19,7 +19,10 @@ namespace AfterHours
                 item.ReturnHome();return;
             }
             if(filled>=slots.Length)return;
-            item.MarkProcessed(slots[filled++]);GameDirector.Instance.AcceptItem(room,item.label);
+            // A box that has been thrown into the truck settles into its place; one that is put or sent there takes it at once.
+            var slot=slots[filled++];
+            if(item.thrown)item.Catch(slot);else item.MarkProcessed(slot);
+            GameDirector.Instance.AcceptItem(room,item.label);
         }
         public void ResetZone(){filled=0;}
         public bool RestoreItem(Grabbable item)
