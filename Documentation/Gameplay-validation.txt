@@ -1,4 +1,4 @@
-2026-10-13 16:52:06Z
+2026-10-13 17:44:27Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -95,9 +95,9 @@ PASS: Every hit throws pieces: 19 hits threw all 210, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
 PASS: All 210 pieces stay inside the room, above the floor
-PASS: 198 of 210 pieces have come to rest by the end of the quiet
+PASS: 194 of 210 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose key along the desk (11 cm)
+PASS: A swing knocks a loose key along the desk (180 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place

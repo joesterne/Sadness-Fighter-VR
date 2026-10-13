@@ -1005,7 +1005,7 @@ namespace AfterHours
         {
             var ocean=d.rooms[1].root.AddComponent<OceanRoom>();ocean.director=d;d.ocean=ocean;
             var horizon=Art.Group("Moving horizon",Vector3.zero);ocean.horizon=horizon;
-            ocean.water=WaterMesh(horizon);ocean.dayWater=Art.Water;ocean.nightWater=Art.NightWater;
+            ocean.water=WaterMesh(horizon,out var waves);ocean.waves=waves;waves.room=ocean.transform;ocean.dayWater=Art.Water;ocean.nightWater=Art.NightWater;
             for(int i=0;i<20;i++)
             {float a=i*2.39f;Art.Facet("Far island",new Vector3((i%2==0?-1:1)*(9+i%5*3),-.6f,12+i*1.8f),new Vector3(7,4+i%4,7),i%2==0?Art.Teal:Art.Navy,5,horizon);}
             Art.Facet("The accepting shore",new Vector3(0,-.8f,20),new Vector3(12,3,7),Art.Cream,9,horizon);
@@ -1067,21 +1067,23 @@ namespace AfterHours
             var rowTurn=Quaternion.Euler(0,-30.7f,0);
             var rowPlate=Backed(1,"Rowing instruction",Fitted(Art.Box("Rowing plate",new Vector3(-2.6f,2.3f,3.45f),new Vector3(2.9f,.72f,.03f),Art.Navy,false),.1f,1.6f));rowPlate.transform.localRotation=rowTurn;
             Art.Text("Rowing instruction","Hold an oar. Push it forward, then draw it back.\nOr point at ROW and select.\nBlink steps keep the boat steady.",new Vector3(-2.577f,2.3f,3.411f),.105f,ivory,2.7f).transform.localRotation=rowTurn;
-            // The sea itself: swell, lapping at the hull and wind, with gulls by day and a bell buoy at night (see SeaSounds).
-            var sea=ocean.gameObject.AddComponent<SeaSounds>();ocean.sea=sea;
-            sea.swell=Sound("Ambience - Ocean",.6f);sea.lapping=Sound("Ambience - Sea lapping",.3f);sea.wind=Sound("Ambience - Night sea",0f);
+            // The sea itself: waves that roll in step with the moving water, a bed of open sea, lapping at the hull and wind, and surf from the
+            // shore that grows as the boat nears it, with gulls by day and a bell buoy at night (see SeaSounds and OceanWaves).
+            var sea=ocean.gameObject.AddComponent<SeaSounds>();ocean.sea=sea;waves.sea=sea;
+            sea.swell=Sound("Ambience - Waves",.8f);sea.wash=Sound("Ambience - Ocean",.2f);sea.lapping=Sound("Ambience - Sea lapping",.3f);sea.wind=Sound("Ambience - Night sea",0f);
+            // The surf is a real place: it is on the shore, and the shore is part of the moving horizon, so it gets louder and clearer as you row.
+            var beach=Art.Group("Surf on the shore",new Vector3(0,.6f,17.5f),horizon);
+            var surf=beach.gameObject.AddComponent<AudioSource>();surf.clip=SoundBank.Get("Ambience - Surf");surf.loop=true;surf.playOnAwake=true;surf.volume=.8f;surf.priority=72;
+            surf.spatialBlend=1;surf.rolloffMode=AudioRolloffMode.Logarithmic;surf.minDistance=7;surf.maxDistance=90;surf.dopplerLevel=0;sea.surf=surf;
             sea.gulls=new[]{SoundBank.Get("SFX - Gull"),SoundBank.Get("SFX - Gull far")};sea.bell=SoundBank.Get("SFX - Buoy bell");sea.creak=SoundBank.Get("SFX - Oarlock");
         }
-        static MeshRenderer WaterMesh(Transform parent)
+        // The sea: a grid of flat facets that the swells move (OceanWaves). The picture saved in the scene shows it mid-swell.
+        static MeshRenderer WaterMesh(Transform parent,out OceanWaves waves)
         {
-            var verts=new List<Vector3>();var tris=new List<int>();var uv=new List<Vector2>();float H(int x,int z)=>-.35f+Mathf.PerlinNoise(x*.31f+20,z*.31f+20)*.3f;
-            for(int x=-16;x<16;x++)for(int z=-8;z<36;z++)
-            {
-                Vector3 a=new Vector3(x*2,H(x,z),z*2), b=new Vector3((x+1)*2,H(x+1,z),z*2),c=new Vector3(x*2,H(x,z+1),(z+1)*2),e=new Vector3((x+1)*2,H(x+1,z+1),(z+1)*2);
-                int n=verts.Count;verts.AddRange(new[]{a,c,b,b,c,e});for(int k=0;k<6;k++){tris.Add(n+k);uv.Add(new Vector2(verts[n+k].x*.04f,verts[n+k].z*.04f));}
-            }
-            var mesh=new Mesh{name="Original faceted ocean"};mesh.SetVertices(verts);mesh.SetTriangles(tris,0);mesh.SetUVs(0,uv);mesh.RecalculateNormals();
-            var go=new GameObject("Low polygon ocean",typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(parent,false);go.GetComponent<MeshFilter>().sharedMesh=mesh;var water=go.GetComponent<MeshRenderer>();water.sharedMaterial=Art.Water;return water;
+            var go=new GameObject("Low polygon ocean",typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(parent,false);
+            go.GetComponent<MeshFilter>().sharedMesh=OceanWaves.CreateMesh(OceanWaves.PreviewTime);
+            var water=go.GetComponent<MeshRenderer>();water.sharedMaterial=Art.Water;water.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            waves=go.AddComponent<OceanWaves>();return water;
         }
         static Grabbable Item(string label,string category,int room,Vector3 p,Vector3 scale,Material mat)
         {

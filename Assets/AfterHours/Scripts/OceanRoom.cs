@@ -15,6 +15,7 @@ namespace AfterHours
         public Oar[] oars;
         public Spin beacon;
         public SeaSounds sea;
+        public OceanWaves waves;
         public MeshRenderer water,lantern;
         public Renderer[] beams;
         public Material dayWater,nightWater,dayLantern,nightLantern,dayBeam,nightBeam,nightSkybox;

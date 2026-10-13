@@ -555,6 +555,50 @@ def sfx_xray(on=True):
     return fade_edges(normalise(reverb(x, 0.6, 0.18), -8))
 
 
+# ---------- waves that roll in time with the water, and surf on the shore ----------
+WAVE_PERIOD = 8.0   # seconds from one wave to the next; the water in the game rolls with this same beat (see OceanWaves)
+WAVE_CREST = 3.3    # seconds into each wave when it peaks, and when the crest passes the boat
+
+def amb_waves(seconds=32, fade=4):
+    """Rolling waves at a steady 8 second beat, four to the loop: a low swell lifts, the crest hisses past, and the water drains away
+    with a trickle. The loop is a whole number of waves long, so the game can keep the moving water in step with it."""
+    n = int((seconds + fade) * SR); tt = np.arange(n) / SR
+    u = np.mod(tt, WAVE_PERIOD); k = np.floor(tt / WAVE_PERIOD).astype(int) % 4
+    amp = np.array([1.0, 0.82, 0.94, 0.74])[k]
+    lift = np.where(u < WAVE_CREST, (u / WAVE_CREST) ** 1.8, np.clip(1 - (u - WAVE_CREST) / (WAVE_PERIOD - WAVE_CREST), 0, 1) ** 1.5) * amp
+    rumble = lowpass(brown(n), 260, 2) * 1.0 + lowpass(pink(n), 650, 1) * 0.35
+    # The crest: foam hissing past as the wave tips over, then thinning as it moves on.
+    onset = np.clip((u - (WAVE_CREST - 0.35)) / 0.7, 0, 1) ** 2
+    tail = np.exp(-np.clip(u - (WAVE_CREST + 0.2), 0, None) / 1.25) * np.clip(1 - (u - 6.4) / 1.4, 0, 1)
+    hiss_env = onset * tail * amp
+    hiss = bandpass(white(n), 1700, 7200, 2) * (0.65 + 0.35 * smooth_noise(n, 8))
+    # The draw back: a softer, lower fizz and a scatter of small bubbles while the water runs off.
+    back_env = np.clip(np.sin(np.pi * np.clip((u - 4.1) / 3.6, 0, 1)), 0, 1) ** 1.4 * amp
+    back = bandpass(pink(n), 500, 2600, 2) * back_env
+    pops = lowpass(bubbles(seconds + fade, int(46 * (seconds + fade) / 8), 320, 1500, 1.2), 3200, 1) * back_env
+    x = rumble * (0.2 + 0.8 * lift) + hiss * hiss_env * 0.5 + back * 0.32 + pops * 0.42
+    return normalise(make_loop(x, fade), -4, rms_db=-20)
+
+def amb_surf(seconds=32, fade=4):
+    """Surf breaking on a beach, heard from out at sea: now and then a low thud and a long hiss of foam as a wave falls, and the water
+    sliding back down the sand. Played from the shore, so it swells as the boat gets nearer."""
+    n = int((seconds + fade) * SR)
+    x = np.zeros(n)
+    t = 0.8
+    while t < seconds + fade - 3.5:
+        m = int(rng.uniform(4.6, 6.0) * SR); tt = np.arange(m) / SR
+        strength = rng.uniform(0.65, 1.0)
+        fall = bandpass(white(m), 350, 4200, 2) * env_adsr(m, 0.35, 2.4, 2.0) * decay(m, 1.5)
+        foam = highpass(white(m), 2600, 1) * env_adsr(m, 0.5, 3.0, 1.6) * decay(m, 2.2) * 0.38
+        thud = np.sin(2 * np.pi * rng.uniform(46, 70) * tt * (1 + 0.5 * np.exp(-tt * 5))) * decay(m, 0.5) * env_adsr(m, 0.12, 0.3, 2) * 0.9
+        drain = lowpass(pink(m), 1100, 1) * np.clip(np.sin(np.pi * np.clip((tt - 1.6) / 3.0, 0, 1)), 0, 1) ** 1.3 * 0.35
+        hit = (fall + foam + thud + drain) * strength
+        i = int(t * SR); x[i:i + m] += hit[:max(0, n - i)]
+        t += rng.uniform(6.5, 11.0)
+    bed = lowpass(brown(n), 320, 2) * (0.22 + 0.2 * smooth_noise(n, 0.12)) + bandpass(pink(n), 700, 3000, 1) * 0.04
+    return normalise(make_loop(x + bed, fade), -4, rms_db=-19)
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -572,6 +616,7 @@ def main(folder):
         'Ambience - Sea lapping': amb_sealapping, 'Ambience - Night sea': amb_nightsea,
         'SFX - Gull': sfx_gull, 'SFX - Gull far': lambda: sfx_gull(far=True), 'SFX - Buoy bell': sfx_buoy, 'SFX - Oarlock': sfx_oarlock,
         'SFX - X-ray on': lambda: sfx_xray(True), 'SFX - X-ray off': lambda: sfx_xray(False),
+        'Ambience - Waves': amb_waves, 'Ambience - Surf': amb_surf,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

@@ -459,6 +459,51 @@ The release APK built with zero errors.
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 13 (evening): waves on the water, and a sea you can hear
+
+### What changed
+
+- **The water moves.** It was one static mesh of flat facets. `OceanWaves` (new) now rebuilds it thirty times a second from four crossing swells: a main swell (24 m long, an eight second beat), a longer swell underneath, a cross swell and a little chop. Together they are a little under half a metre from trough to crest, and never reach the deck. The facets stay flat and use the same matte water material by day and by night, and each is lit afresh as it tilts, so the light slides over the sea. The player and the boat do not move with it. The water now casts no shadows. The mesh is rebuilt on the CPU (about 1,500 height samples and 2,800 triangles) and only while the ocean room is on.
+- **Waves in the sound, in step with the water.** A new sound, `Ambience - Waves`, is four waves to a 32 second loop, one every eight seconds: a low swell lifts, the crest hisses past, the water drains away with a trickle, about 14 dB from trough to crest. It is the main sound of the sea by day. `SeaSounds` keeps a clock that follows the sound's own position, and the main swell's crest passes the boat 3.3 seconds into each wave, as the sound crests.
+- **Surf from the island.** A new sound, `Ambience - Surf` (waves breaking on a beach: a thud, a long hiss of foam, the water sliding back), is played from the island's own beach, so it is a real place: the island is part of the moving horizon, so the sound grows louder and clearer as you row nearer.
+- **The sea is louder and clearer.** The old swell loop (random timing) is now a quiet bed of open sea under the waves. Overall the sea is about 5 dB louder than before.
+- **New sounds go at the end of `Tools/make_audio.py`**, so regenerating still leaves every earlier file as it was (42 WAV files in all).
+- Version 0.6.3.
+
+### Tests
+
+The ocean suite has 16 new checks (88 in all): the water is one moving mesh kept in step with the sea sounds, its size and bounds, no shadows, the main swell repeats every 8 seconds with a crest at 3.3 seconds, all the swells together are under 0.26 m, the water is rebuilt as the game runs (260 times in ten seconds), the sea at the boat rises and falls (0.35 m in ten seconds), no wave climbs above the deck (highest 0.12 m, lowest -0.52 m), the beat keeps time with the game, one rebuild takes 0.33 ms in the editor, the surf comes from the shore and gets nearer as the boat is rowed (17 m, then 11 m), the new sounds are loaded, looping and the right length, the day and night mix includes them, and the water keeps rolling at night. The sound was not playing in the editor run, so the water's beat was tested against the game clock and not against the sound's own position.
+
+### Results
+
+All eight suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 108 |
+| Navigation | 131 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 46 |
+| Mirror and wardrobe | 56 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 71 |
+| Text visibility | 138 signs, 11 plates |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 74.2 MB (74,195,057 bytes) |
+| SHA-256 of the APK | `9cb56ebcfd8b26f98e21158692f39d3e66a82b3255a5ef61bf2bade269cfdd7d` |
+| Version | 0.6.3, version code 411472 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.6.3, versionCode 411472, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. No private-network address and no session data in any file (Meta's own debugger classes appear as code and type names in the SDK, as before). 457 KB larger than 0.6.2: the two new sounds, compressed. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -468,7 +513,8 @@ These still need a physical headset playtest (see `Playtest.md`):
 - text readability on the headset, including the menu labels (the text visibility suite proves no sign is hidden behind something in the editor; it cannot say how sharp small lettering looks in the lenses)
 - seated reach on a real chair (the airplane-seat suite checks it in the editor)
 - hands-only play from start to finish
-- sound levels on the headset's speakers
+- sound levels on the headset's speakers, including the new waves and surf
+- whether the moving water and the wave sound feel in step on the headset, and how the moving water looks and feels in the lenses (the editor run had no sound playing)
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

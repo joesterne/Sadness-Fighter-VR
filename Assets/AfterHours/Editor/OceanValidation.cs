@@ -55,8 +55,8 @@ namespace AfterHours.Editor
         static IEnumerator<float> Checks()
         {
             SceneManager.LoadScene("AfterHours");yield return .8f;
-            var ocean=D.ocean;var sea=ocean.sea;
-            Check(ocean&&sea&&ocean.oars!=null&&ocean.beacon,"The ocean room has oars, a lighthouse light and sea sounds");
+            var ocean=D.ocean;var sea=ocean.sea;var waves=ocean.waves;
+            Check(ocean&&sea&&waves&&ocean.oars!=null&&ocean.beacon,"The ocean room has oars, a lighthouse light, moving water and sea sounds");
 
             // ---- The oars
             D.Travel(1);yield return .9f;
@@ -105,6 +105,42 @@ namespace AfterHours.Editor
             Check(ocean.oars.All(o=>!o.Playing&&Mathf.Abs(o.angle-Oar.RestAngle)<1f),"Both oars come back to rest after the stroke");
             Check(D.rooms[1].root.GetComponentsInChildren<TMP_Text>().Any(x=>x.text.Contains("Hold an oar")),"The sign tells the player how to use the oars");
 
+
+            // ---- The waves
+            Check(waves.sea==sea&&waves.room==ocean.transform&&waves.live&&waves.GetComponent<MeshRenderer>()==ocean.water&&waves.transform.IsChildOf(ocean.horizon),"The water is one moving mesh on the horizon, kept in step with the sea sounds");
+            Check(waves.live.vertexCount==OceanWaves.CellsX*OceanWaves.CellsZ*6&&waves.live.bounds.size.x>=64&&waves.live.bounds.size.z>=88,"The sea is "+OceanWaves.CellsX+" by "+OceanWaves.CellsZ+" flat facets, and its bounds hold every wave");
+            Check(ocean.water.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.Off,"The water casts no shadows, which saves the headset a pass");
+            Check(Mathf.Abs(OceanWaves.MainSwell(0,0,1.7f)-OceanWaves.MainSwell(0,0,1.7f+OceanWaves.Period))<.001f&&Mathf.Abs(OceanWaves.MainSwell(0,0,OceanWaves.Crest)-OceanWaves.MainSwell(0,0,OceanWaves.Crest+OceanWaves.Period*3))<.001f,"The main swell repeats every "+OceanWaves.Period+" seconds, to match the waves in the sound");
+            Check(OceanWaves.MainSwell(0,0,OceanWaves.Crest)>OceanWaves.MainSwell(0,0,OceanWaves.Crest-.7f)&&OceanWaves.MainSwell(0,0,OceanWaves.Crest)>OceanWaves.MainSwell(0,0,OceanWaves.Crest+.7f),"A crest passes the boat "+OceanWaves.Crest+" seconds into each wave, as the sound crests");
+            Check(OceanWaves.MostSwell<.26f,"All the swells together are only "+(OceanWaves.MostSwell*2).ToString("0.00")+" m from trough to crest");
+            // Watch the sea for ten seconds: it moves where the boat is, stays below the deck, and stays in time with the sound.
+            Vector3 SeaAtBoat(out float y)
+            {
+                var at=waves.transform.InverseTransformPoint(origin);int ix=Mathf.RoundToInt((at.x-OceanWaves.OriginX)/OceanWaves.Cell),iz=Mathf.RoundToInt((at.z-OceanWaves.OriginZ)/OceanWaves.Cell);
+                var v=waves.live.vertices[(iz*OceanWaves.CellsX+ix)*6];y=v.y;return v;
+            }
+            float low=99,high=-99,tall=-99,deep=99,clockOff=0;int startUpdates=waves.updates;float startClock=sea.Clock;bool clockRan=true,sampled=false;
+            for(int i=0;i<40;i++)
+            {
+                yield return .25f;SeaAtBoat(out var y);low=Mathf.Min(low,y);high=Mathf.Max(high,y);tall=Mathf.Max(tall,waves.highest);deep=Mathf.Min(deep,waves.lowest);
+                clockRan&=sea.Clock>=0&&sea.Clock<SeaSounds.WaveLoop;
+                if(sea.swell.isPlaying){float gap=Mathf.Abs(Mathf.Repeat(sea.swell.time-sea.Clock+SeaSounds.WaveLoop*.5f,SeaSounds.WaveLoop)-SeaSounds.WaveLoop*.5f);clockOff=Mathf.Max(clockOff,gap);sampled=true;}
+            }
+            Check(waves.updates-startUpdates>=100,"The water is rebuilt as the game runs ("+(waves.updates-startUpdates)+" times in ten seconds)");
+            Check(high-low>.12f,"The sea at the boat rises and falls ("+(high-low).ToString("0.00")+" m in ten seconds)");
+            Check(tall<OceanWaves.Ceiling&&deep>-.75f,"No wave climbs above the deck or sinks out of sight (highest "+tall.ToString("0.00")+" m, lowest "+deep.ToString("0.00")+" m)");
+            Check(clockRan&&Mathf.Abs(Mathf.Repeat(sea.Clock-startClock+SeaSounds.WaveLoop*.5f,SeaSounds.WaveLoop)-SeaSounds.WaveLoop*.5f-10)<3,"The sea's beat keeps time with the game ("+sea.Clock.ToString("0.0")+" s into the wave loop)");
+            lines.Add(sampled?"INFO: the beat was never more than "+clockOff.ToString("0.00")+" s from the wave sound's own position in ten seconds":"INFO: the wave sound was not playing in this run, so its position was not compared");
+            Check(!sampled||clockOff<2f,"The water's beat follows the wave sound");
+            var timer=System.Diagnostics.Stopwatch.StartNew();for(int i=0;i<60;i++)waves.Apply(i*.1f);timer.Stop();double perUpdate=timer.Elapsed.TotalMilliseconds/60;
+            lines.Add("INFO: one rebuild of the water takes "+perUpdate.ToString("0.00")+" ms in the editor (it is done 30 times a second)");
+            Check(perUpdate<4,"Rebuilding the water is cheap ("+perUpdate.ToString("0.00")+" ms)");
+            // The surf is on the shore, so it comes nearer as the boat is rowed.
+            Check(sea.surf.spatialBlend>.99f&&sea.surf.transform.IsChildOf(ocean.horizon),"The surf comes from the shore itself, which moves with the horizon");
+            float farShore=Vector3.Distance(P.Head.position,sea.surf.transform.position);int kept=ocean.strokes;ocean.RestoreProgress(Mathf.Min(ocean.requiredStrokes-1,kept+6));
+            float nearShore=Vector3.Distance(P.Head.position,sea.surf.transform.position);ocean.RestoreProgress(kept);
+            Check(nearShore<farShore-3,"Rowing brings the surf nearer ("+farShore.ToString("0")+" m, then "+nearShore.ToString("0")+" m)");
+
             // ---- The lighthouse light
             Check(ocean.beams.Length==2&&ocean.beams.All(b=>b.enabled)&&ocean.beacon.degreesPerSecond>20,"The lighthouse has a light with two beams");
             var beam=ocean.beams[0].transform;var f0=Flat(beam.forward);float t0=Time.time;yield return .6f;
@@ -115,9 +151,12 @@ namespace AfterHours.Editor
             // ---- Night, by the menu
             var daySky=Sky;var daySkybox=RenderSettings.skybox;float dayIntensity=RenderSettings.sun.intensity;var dayFog=RenderSettings.fogColor;
             Check(!ocean.night&&!ocean.nightSky.activeSelf&&ocean.sun.activeSelf,"The ocean starts in daylight");
-            Check(sea.swell&&sea.lapping&&sea.wind&&sea.swell.clip&&sea.lapping.clip&&sea.wind.clip&&sea.swell.loop&&sea.lapping.loop&&sea.wind.loop,"Swell, lapping and wind are looping sounds");
+            int rolled=waves.updates;
+            var sounds=new[]{sea.swell,sea.wash,sea.lapping,sea.wind,sea.surf};
+            Check(sounds.All(x=>x&&x.clip&&x.loop),"The waves, the open sea, the lapping, the wind and the surf are looping sounds");
+            Check(sea.swell.clip.name=="Ambience - Waves"&&sea.surf.clip.name=="Ambience - Surf"&&Mathf.Abs(sea.swell.clip.length-SeaSounds.WaveLoop)<.05f,"The waves are four eight-second waves to the loop ("+sea.swell.clip.length.ToString("0.0")+" s)");
             Check(sea.gulls.Length==2&&sea.gulls.All(x=>x)&&sea.bell&&sea.creak,"The gulls, the bell buoy and the oarlock creak are loaded");
-            Check(sea.swell.volume>.5f&&sea.lapping.volume>.25f&&sea.wind.volume<.05f,"By day the sea is swell and lapping, with no night wind");
+            Check(sea.swell.volume>.6f&&sea.wash.volume>.15f&&sea.lapping.volume>.25f&&sea.surf.volume>.6f&&sea.wind.volume<.05f,"By day the sea is waves, surf and lapping, with no night wind");
             sea.Soon();yield return 1.2f;
             Check(sea.gullCount>0&&sea.bellCount==0,"A gull calls by day, and the bell buoy stays quiet");
             foreach(var t in OpenMenu())yield return t;
@@ -129,7 +168,8 @@ namespace AfterHours.Editor
             Check(ocean.nightSky.activeSelf&&!ocean.sun.activeSelf,"The stars and moon replace the sun");
             Check(ocean.water.sharedMaterial==ocean.nightWater&&ocean.lantern.sharedMaterial==ocean.nightLantern&&ocean.beams.All(b=>b.sharedMaterial==ocean.nightBeam),"The water, the lantern and the beams change for the night");
             yield return 3f;
-            Check(sea.wind.volume>.35f&&sea.swell.volume<.5f&&sea.lapping.volume<.3f,"By night the sea fades to wind and a deeper swell");
+            Check(sea.wind.volume>.35f&&sea.swell.volume<.5f&&sea.lapping.volume<.3f&&sea.surf.volume<.6f,"By night the sea fades to wind and a deeper swell");
+            Check(waves.updates>rolled+20,"The water keeps rolling at night");
             sea.Soon();yield return 1.2f;
             Check(sea.bellCount>0,"A bell buoy rings far off at night");
             foreach(var t in CloseMenu())yield return t;
