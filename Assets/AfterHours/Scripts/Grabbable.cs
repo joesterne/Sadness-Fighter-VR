@@ -16,6 +16,9 @@ namespace AfterHours
         public bool tool;
         // The boxes in the heavy room can be thrown: let go while the hand is moving and the box flies on, helped toward the truck.
         public bool throwable;
+        // The old résumé pages can be tossed too, as a quiet extra: let go while the hand is moving and with nothing pointed at, and the page flies on.
+        // It is never helped toward a target, and it stays wherever it lands (a box that misses goes back to its stand). A page tossed onto the floor bursts into confetti.
+        public bool tossable;
         public Transform Holder { get; private set; }
         // Gliding to a send target (or back home after a wrong tray). Drop zones wait until it lands.
         public bool sending { get; private set; }
@@ -75,7 +78,7 @@ namespace AfterHours
                 {float s=Mathf.SmoothStep(0,1,(Time.time-pullStart)/PullTime);position=Vector3.Lerp(pullFrom,position,s);rotation=Quaternion.Slerp(pullFromRotation,rotation,s);}
                 transform.SetPositionAndRotation(position,rotation);
                 // The first moments of a distance grab are the box being drawn in, not a throw.
-                if(throwable){if(pullStart>=0&&Time.time<pullStart+PullTime)trailCount=0;else Record();}
+                if(throwable||tossable){if(pullStart>=0&&Time.time<pullStart+PullTime)trailCount=0;else Record();}
             }
             if(!held&&!processed&&transform.position.y < -3) ResetObject();
         }
@@ -123,11 +126,19 @@ namespace AfterHours
                 if(!still)rest=-1;else if(rest<0)rest=Time.time;else if(Time.time-rest>=Throwing.RestToReturn)break;
                 if(Time.time-start>14f)break;
             }
-            // It missed. Back to its stand, with no penalty.
             thrown=false;
+            // A page that was tossed stays where it fell. A box that missed goes back to its stand, with no penalty.
+            if(!throwable)yield break;
             var d=GameDirector.Instance;
             if(d&&Time.time>nextMissMessage){d.Say("Not quite. That one is back on its stand. There is no penalty, and you can still point and let go.");nextMissMessage=Time.time+12;}
             ReturnHome();
+        }
+        // For the confetti: gone at once, in flight or lying on the floor. ResetObject brings it back to its stand.
+        public void Vanish()
+        {
+            Initialize();StopAllCoroutines();sending=false;thrown=false;pullStart=-1;trailCount=0;
+            if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}
+            Body.isKinematic=true;gameObject.SetActive(false);
         }
         // A thrown box that reaches the truck is drawn into its place in a moment, rather than snapping there.
         public void Catch(Transform slot)

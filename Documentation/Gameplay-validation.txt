@@ -1,4 +1,4 @@
-2026-10-13 20:05:04Z
+2026-10-13 23:06:48Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -51,6 +51,14 @@ PASS: Archive completes after six correct placements
 PASS: Menu key opens the comfort menu in room 4
 PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 6
+PASS: The résumé room has its confetti, and its five pages can be tossed
+PASS: A page thrown onto the floor bursts into confetti and goes
+PASS: The confetti is in the air: 220 bits in the burst, 79 in the shower so far, in 7 colours
+PASS: The page is back on its stand a moment later, and nothing is counted
+PASS: The confetti comes to rest on the floor, and none falls through it (220 bits, lowest 0.012 m)
+PASS: A page dropped onto the desk does not burst
+PASS: Another page bursts
+PASS: TRY AGAIN in this room brings a burst page back and clears the confetti
 PASS: Input picks up the résumé "SENIOR COORDINATOR since 2016"
 PASS: Pointing at the shredder lights its slot
 PASS: The shredder takes "SENIOR COORDINATOR since 2016"
@@ -97,9 +105,9 @@ PASS: Every hit throws pieces: 19 hits threw all 210, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
 PASS: All 210 pieces stay inside the room, above the floor
-PASS: 190 of 210 pieces have come to rest by the end of the quiet
+PASS: 199 of 210 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose key along the desk (18 cm)
+PASS: A swing knocks a loose key along the desk (53 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place

@@ -599,6 +599,20 @@ def amb_surf(seconds=32, fade=4):
     return normalise(make_loop(x + bed, fade), -4, rms_db=-19)
 
 
+# ---------- a quiet easter egg: confetti ----------
+def sfx_confetti():
+    # A party popper: a sharp pop, streamers hissing out, a few bright notes climbing over it, and paper bits fluttering down.
+    n = int(1.8 * SR)
+    pop = lowpass(white(n), 2600, 2) * decay(n, 0.012) + thump(n, 210, 0.04) * 0.9
+    hiss = bandpass(white(n), 3000, 9000, 2) * decay(n, 0.22) * env_adsr(n, 0.01, 0.4) * 0.5
+    flutter = clicks(1.8, 70, 2500, 9500, 1.0) * decay(n, 0.7) * 0.6
+    notes = np.zeros(n)
+    for k, f in enumerate([hz('C', 6), hz('E', 6), hz('G', 6), hz('C', 7)]):
+        b = bell(f, 1.2) * 0.18; i = int((0.05 + k * 0.07) * SR); notes[i:i + len(b)] += b[:max(0, n - i)]
+    x = pop + hiss + flutter + notes
+    return fade_edges(normalise(reverb(x, 0.5, 0.12), -5))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -617,6 +631,7 @@ def main(folder):
         'SFX - Gull': sfx_gull, 'SFX - Gull far': lambda: sfx_gull(far=True), 'SFX - Buoy bell': sfx_buoy, 'SFX - Oarlock': sfx_oarlock,
         'SFX - X-ray on': lambda: sfx_xray(True), 'SFX - X-ray off': lambda: sfx_xray(False),
         'Ambience - Waves': amb_waves, 'Ambience - Surf': amb_surf,
+        'SFX - Confetti': sfx_confetti,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

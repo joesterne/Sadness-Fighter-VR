@@ -14,6 +14,8 @@ namespace AfterHours
         public static Material XrayBone, XrayHalo, XrayHollow, XrayVeil;
         // The avatar's skin tones and hair colours, in wardrobe order.
         public static Material[] Skins, Hairs;
+        // Flat, unlit white that takes the colour of each particle: the confetti.
+        public static Material ConfettiPaper;
         public static TMP_FontAsset Font;
         // Outlined lettering. Light text gets a deep-blue outline and dark text an ivory one, so a sign stays readable over whatever is behind it.
         public static Material TextHalo, TextHaloDark;

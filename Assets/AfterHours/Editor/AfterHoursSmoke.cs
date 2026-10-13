@@ -63,6 +63,8 @@ namespace AfterHours.Editor
         // The swing helpers yield game-time waits; zero means the next frame.
         static object Wait(float seconds)=>seconds>0?new WaitForSeconds(seconds):null;
         static void Aim(Vector3 point){d.player.Head.rotation=Quaternion.LookRotation(point-d.player.Head.position);}
+        // Puts a loose object somewhere new, and its body there too, so physics does not draw it back to where it was.
+        static void Put(Grabbable item,Vector3 point){item.Initialize();item.transform.position=point;item.Body.position=point;if(!item.Body.isKinematic){item.Body.linearVelocity=Vector3.zero;item.Body.angularVelocity=Vector3.zero;}}
         static void Press(bool down){Queue(mouse,new MouseState().WithButton(MouseButton.Left,down));}
         static IEnumerator Click(Interactable button)
         {Aim(button.transform.position);yield return Delay(.06f);Press(true);yield return Delay(.12f);Press(false);yield return Delay(.25f);}
@@ -118,6 +120,35 @@ namespace AfterHours.Editor
             }
             Check(d.rooms[4].complete&&d.rooms[4].accepted==6,"Archive completes after six correct placements");
             yield return Visit(6);Capture("Old resume");
+            // A quiet easter egg: a page thrown onto the floor bursts into confetti, then is back on its stand. Nothing is counted.
+            {
+                var egg=d.shredder.egg;var sheet=d.shredder.pages[4];var sheetHome=sheet.transform.position;int popped=egg.bursts;
+                Check(egg&&egg.pop&&egg.shower&&egg.sound&&d.shredder.pages.All(x=>x.tossable&&!x.throwable),"The résumé room has its confetti, and its five pages can be tossed");
+                d.player.Place(d.rooms[6].spawn.position,0);yield return Delay();
+                Put(sheet,d.rooms[6].root.transform.TransformPoint(new Vector3(3.4f,1.2f,-2f)));
+                sheet.Throw(new Vector3(.4f,-1.5f,1.4f));yield return Delay(.6f);
+                Check(egg.bursts==popped+1&&!sheet.gameObject.activeSelf&&egg.IsAway(sheet),"A page thrown onto the floor bursts into confetti and goes");
+                yield return Delay(.4f);
+                var bits=new ParticleSystem.Particle[400];int inBurst=egg.pop.GetParticles(bits);
+                int shades=bits.Take(inBurst).Select(p=>ColorUtility.ToHtmlStringRGB(p.GetCurrentColor(egg.pop))).Distinct().Count();int inShower=egg.shower.particleCount;
+                Check(inBurst>150&&inShower>20&&shades>=6,"The confetti is in the air: "+inBurst+" bits in the burst, "+inShower+" in the shower so far, in "+shades+" colours");
+                Aim(egg.lastAt+Vector3.up*1.2f);yield return Delay(.1f);Capture("Old resume-Confetti");
+                yield return Delay(1.4f);
+                bool backHome=sheet.gameObject.activeSelf&&!egg.IsAway(sheet)&&Vector3.Distance(sheet.transform.position,sheetHome)<.3f&&!sheet.processed&&d.rooms[6].accepted==0&&d.shredder.shredded==0;
+                Check(backHome,"The page is back on its stand a moment later, and nothing is counted"+(backHome?"":" [active "+sheet.gameObject.activeSelf+", away "+egg.IsAway(sheet)+", "+Vector3.Distance(sheet.transform.position,sheetHome).ToString("0.00")+" m from home, popped "+(Time.time-egg.popTime).ToString("0.00")+" s ago, returns "+egg.returns+", processed "+sheet.processed+", accepted "+d.rooms[6].accepted+", shredded "+d.shredder.shredded+"]"));
+                yield return Delay(2.6f);
+                inBurst=egg.pop.GetParticles(bits);float lowest=bits.Take(inBurst).Min(p=>p.position.y);
+                Check(inBurst>100&&lowest>-.03f,"The confetti comes to rest on the floor, and none falls through it ("+inBurst+" bits, lowest "+lowest.ToString("0.000")+" m)");
+                // A page dropped onto the desk is nothing special.
+                sheet.ResetObject();Put(sheet,sheetHome+Vector3.up*.35f);yield return Delay(.8f);
+                Check(egg.bursts==popped+1&&sheet.gameObject.activeSelf,"A page dropped onto the desk does not burst");
+                sheet.ResetObject();yield return Delay(.3f);
+                // TRY AGAIN in the room brings a burst page back at once and clears the confetti.
+                egg.Pop(d.shredder.pages[3],egg.lastAt);yield return Delay(.2f);
+                Check(!d.shredder.pages[3].gameObject.activeSelf&&egg.pop.particleCount>0,"Another page bursts");
+                d.shredder.ResetRoom();yield return Delay(.1f);
+                Check(d.shredder.pages.All(x=>x.gameObject.activeSelf)&&egg.pop.particleCount==0&&egg.shower.particleCount==0&&!egg.IsAway(d.shredder.pages[3]),"TRY AGAIN in this room brings a burst page back and clears the confetti");
+            }
             var slot=d.Targets.First(x=>x.GetComponent<Shredder>());
             foreach(var page in d.shredder.pages)
             {

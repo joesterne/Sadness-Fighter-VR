@@ -509,14 +509,14 @@ Desktop XR start-up was switched off for the test run and switched back on befor
 ### What changed
 
 - **A flurry of loose bits.** Each shredded page now sends up a burst of loose paper bits (two particle systems, white and ivory, about 160 bits each) that fountain out of the shredder's head, tumble on noise and drift down across the room, and rest on a floor plane until their time is up. There is no world collision, so it costs next to nothing.
-- **Scraps that stay.** Once the bits have come down (1.8 seconds after the page is gone), that page's set of scraps appears: about 260 thin flecks and strips, thickest around the shredder and the desk, with more across the whole floor, on the desk either side of the page rack, on the shredder's top clear of the slot, and on the window sill. Five pages leave 1,300 scraps in all over 10.9 by 14.4 m. Each set is merged into two meshes (white and ivory) with no colliders, and sits hidden until its page is shredded, so it is two draws a set.
+- **Scraps that stay.** Once the bits have come down (1.8 seconds after the page is gone), that page's set of scraps appears: about 240 thin flecks and strips, thickest around the shredder and the desk, with more across the whole floor, on the desk either side of the page rack, on the shredder's top clear of the slot, and on the window sill. Five pages leave 1,195 scraps in all over 10.8 by 14.3 m. Each set is merged into two meshes (white and ivory) with no colliders, and sits hidden until its page is shredded, so it is two draws a set.
 - **Fuller bins.** Each heap in the bin is now 56 strips and chips merged into two meshes, in place of ten long strips that were each an object of their own.
 - **They keep.** If the app is closed midway, the scraps of every page already shredded are there when it reopens, and a page that is restored is restored once. Resetting the room clears every set and the flurry.
 - Version 0.6.4.
 
 ### Tests
 
-The gameplay journey has 2 new checks (110 in all): a flurry of paper bits (326 in the air) is over the shredder after the first page, and every shredded page has left its scraps on the floor, the desk and the shredder. The menu and seated suite has 3 new checks (49 in all, one existing check now also covers the scraps): a shredded résumé restores exactly once with its paper in the bin and on the floor, every page leaves at least 100 scraps (1,300 in all), the scraps lie across the room, on the desk, the shredder's top and the window sill (10.9 by 14.4 m), and they have no colliders and cost two draws a set. On one early run the gameplay journey failed its first check (keyboard movement in the lobby), long before any paper is involved, and the cause was not found; the same suite passed when run again on its own and in the full run after the final changes.
+The gameplay journey has 2 new checks (110 in all): a flurry of paper bits (326 in the air) is over the shredder after the first page, and every shredded page has left its scraps on the floor, the desk and the shredder. The menu and seated suite has 3 new checks (49 in all, one existing check now also covers the scraps): a shredded résumé restores exactly once with its paper in the bin and on the floor, every page leaves at least 100 scraps (1,195 in all), the scraps lie across the room, on the desk, the shredder's top and the window sill (10.8 by 14.3 m), and they have no colliders and cost two draws a set. On one early run the gameplay journey failed its first check (keyboard movement in the lobby), long before any paper is involved, and the cause was not found; the same suite passed when run again on its own and in the full run after the final changes.
 
 ### Results
 
@@ -548,6 +548,54 @@ The release APK built with zero errors.
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 13 (late night): confetti when a résumé page hits the floor
+
+### What changed
+
+- **An easter egg.** In the old résumé room, a page thrown or dropped onto the floor vanishes in a burst of multi-coloured confetti. A burst of 220 flat bits flies up and out from where the page landed and slows in the air, and a shower of about 150 more falls from two metres overhead. There are seven colours (pink, amber, green, blue, violet, orange and yellow), each bit taking one at random, so each of the two particle systems shares one flat unlit material and is one draw; the bits cast no shadows, tumble, rest on a floor plane and shrink away after about eight seconds. A pop with a flutter of paper and four bell notes (`SFX - Confetti`, 1.8 seconds, generated in `Tools/make_audio.py` at the end of the list, so every earlier sound regenerates as it was; 43 WAV files in all) plays where the page landed.
+- **Nothing is lost.** The page is back on its stand 1.6 seconds later, set down gently, and nothing is counted. It only counts as a throw when the page hits the floor at 1.5 m/s or more, within 20 cm of the floor, on a flat knock, so a page set on the desk or lowered gently does nothing. Leaving the room mid-burst brings the page back at once, and TRY AGAIN in the room clears the confetti.
+- **Pages are tossed, not thrown.** A page let go while the hand is moving and nothing is pointed at is tossed with the hand's own speed. A page let go while pointing at the shredder is sent in, as before, and a page is never helped toward anything in flight. Pages are a new kind of thing that can be tossed (`tossable`), not the throwable boxes: the throwing suite still insists on exactly five throwable boxes, and a tossed page that comes to rest stays where it fell (the confetti takes it away before long). The hint for a page does not mention throwing, so the egg stays a surprise.
+- Version 0.6.5.
+- The notes for 0.6.4 gave the scraps as 1,300 in all; the committed scene has 1,195 (the suite prints the count), so that figure is corrected here and in the README.
+
+### A bug the tests caught
+
+A page that came back from the confetti sprang back to where it had landed a moment after it was set on its stand: its physics body woke where the page lay and was never told where the stand was. The page is now given its stand's pose on the body as well. The throwing suite also had to move the player with the page in hand (placing the player lets go of everything held), which is why its first run missed the burst.
+
+### Tests
+
+The gameplay journey has 8 new checks (118 in all): the room has its confetti and the pages can be tossed; a page thrown onto the floor bursts and goes; 220 bits in the burst, more than 20 in the shower and at least 6 of the 7 colours are in the air; the page is back on its stand and nothing is counted; the confetti comes to rest on the floor with none falling through it; a page dropped on the desk does not burst; another page bursts; and TRY AGAIN brings it back and clears the confetti. The menu and seated suite has 4 new checks (53 in all) on how the egg is wired. The throwing suite has 8 new checks (79 in all) that use the real player code: only the five pages can be tossed and a toss is never helped; a page does not mention throwing; the page stays in hand when the player steps clear of the desk; a page flicked at the floor flies off the hand and bursts; it is back on its stand with nothing counted; and a page let go while pointing at the shredder is sent in, not tossed. A picture of the confetti is saved as `Documentation/Previews/Old resume-Confetti.png`; it shows the colours and the burst and shower plainly.
+
+### Results
+
+All eight suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 118 |
+| Navigation | 131 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 53 |
+| Mirror and wardrobe | 56 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 79 |
+| Text visibility | 138 signs, 11 plates |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 74.3 MB (74,337,197 bytes) |
+| SHA-256 of the APK | `3e565c028c2b7812ec000a66501a5c8228a18c07a7d6f61c8272ada9617ac635` |
+| Version | 0.6.5, version code 411796 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.6.5, versionCode 411796, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. The confetti code, its material and its sound are in the build. No private-network address and no session data in any file (the only matches for an address pattern are version numbers and encoding identifiers in the .NET libraries, and Meta's own debugger classes appear as code and type names in the SDK, as before). The account name appears once, beside the project name in the player's global settings. 36 KB larger than 0.6.4: the confetti sound and the new code. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -560,6 +608,7 @@ These still need a physical headset playtest (see `Playtest.md`):
 - sound levels on the headset's speakers, including the new waves and surf
 - whether the moving water and the wave sound feel in step on the headset, and how the moving water looks and feels in the lenses (the editor run had no sound playing)
 - how the paper looks and feels in the headset: the flurry of thin bits (flicker or shimmer in the lenses), how thick the scraps look on the floor, whether you can see a set pop in, and the frame rate with all five sets on screen (the editor only counts them)
+- how the confetti looks and feels in the headset: whether the thin flat bits flicker or shimmer in the lenses, whether the burst and the shower read well, how loud the pop is on the headset's speakers, the frame rate during a burst (about 400 bits at once), and whether a real hand toss reliably counts as a throw (the editor test simulates the hand's speed)
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

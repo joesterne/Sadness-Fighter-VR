@@ -86,6 +86,16 @@ namespace AfterHours.Editor
             m.SetFloat("_Surface",1);m.SetFloat("_Blend",0);m.SetFloat("_SrcBlend",(float)BlendMode.SrcAlpha);m.SetFloat("_DstBlend",(float)BlendMode.OneMinusSrcAlpha);m.SetFloat("_ZWrite",0);m.SetFloat("_Cull",0);
             m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");m.renderQueue=queue;m.SetOverrideTag("RenderType","Transparent");m.enableInstancing=true;EditorUtility.SetDirty(m);return m;
         }
+        // Flat, unlit white that takes the colour of each particle that is drawn with it (the confetti). Opaque and two-sided.
+        static Material Tint(string name)
+        {
+            string path=Folder+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
+            var shader=Shader.Find("Universal Render Pipeline/Particles/Unlit");if(!shader)shader=Shader.Find("Universal Render Pipeline/Unlit");
+            if(!m){m=new Material(shader);AssetDatabase.CreateAsset(m,path);}
+            m.shader=shader;m.SetColor("_BaseColor",Color.white);
+            m.SetFloat("_Surface",0);m.SetFloat("_Blend",0);m.SetFloat("_SrcBlend",(float)BlendMode.One);m.SetFloat("_DstBlend",(float)BlendMode.Zero);m.SetFloat("_ZWrite",1);m.SetFloat("_Cull",0);
+            m.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");m.renderQueue=2000;m.SetOverrideTag("RenderType","Opaque");m.enableInstancing=true;EditorUtility.SetDirty(m);return m;
+        }
         // A flat colour that ignores lighting (the lantern glass and the moon).
         static Material Unlit(string name,Color color)
         {
@@ -121,6 +131,7 @@ namespace AfterHours.Editor
             // (URP resets a material's queue to match its surface type), so the draw order is each renderer's sorting order: backdrop 0, halo 1, bone 2, hollow 3.
             Art.XrayVeil=Fade("26 X-ray backdrop",Hex("#02050B"),.94f);Art.XrayHalo=Glow("25 X-ray glow",Hex("#8FD3FF"),.15f);
             Art.XrayBone=Glow("24 X-ray bone",Color.white,1f);Art.XrayHollow=Fade("27 X-ray hollow",Hex("#02050B"),1f);
+            Art.ConfettiPaper=Tint("28 Confetti paper");
             Art.Font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             if(!Art.Font)Art.Font=TMP_Settings.defaultFontAsset;
             // Lettering with an outline: light text gets a deep-blue one, dark text an ivory one, so a sign stays readable over whatever is behind it.
@@ -216,7 +227,7 @@ namespace AfterHours.Editor
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.6.4";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.6.5";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;

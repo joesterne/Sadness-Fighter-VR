@@ -280,6 +280,36 @@ namespace AfterHours.Editor
             lines.Add("INFO: boxes in each place: "+string.Join(" ",slots.Select(s=>boxes.Count(x=>Vector3.Distance(x.transform.position,s.position)<.02f))));
             Check(slots.Select(s=>boxes.Count(x=>Vector3.Distance(x.transform.position,s.position)<.02f)).All(n=>n==1),"Every place in the truck holds exactly one box");
 
+            // ---- An easter egg: a résumé page tossed onto the floor bursts into confetti
+            VRPlayer.ThrowOnDesktop=true;
+            D.Travel(6);yield return .95f;
+            var egg=D.shredder.egg;var sheet=D.shredder.pages[1];var sheetHome=sheet.transform.position;int popped=egg.bursts;
+            Check(D.shredder.pages.All(p=>p.tossable&&!p.throwable)&&everything.Count(g=>g.tossable)==5&&everything.Count(g=>g.throwable)==5,"Only the five résumé pages can be tossed, and a toss is never helped toward the shredder");
+            foreach(var t in Take(sheet))yield return t;
+            Check(!P.hint.text.Contains("Or throw it."),"Picking up a page does not mention throwing");
+            // Stand clear of the desk with the page in hand, and flick it down at the floor.
+            // (Place would let go of the page, so the player is shifted with it in hand.)
+            var clear=D.rooms[6].root.transform.TransformPoint(new Vector3(3.6f,.04f,-2.2f));P.Shift(new Vector3(clear.x,.04f,clear.z)-P.transform.position);P.Head.rotation=Quaternion.identity;yield return .2f;
+            Check(sheet.held,"The page stays in hand when the player steps clear of the desk");
+            foreach(var t in Fling(new Vector3(.3f,-.5f,1f),3.5f))yield return t;
+            Release();
+            foreach(var t in Watch(sheet,2.5f,()=>egg.bursts>popped))yield return t;
+            lines.Add("INFO: the page flick: thrown seen "+flight.thrown+", peak "+flight.peak.ToString("0.0")+" m/s, bursts "+(egg.bursts-popped)+", active "+sheet.gameObject.activeSelf+", held "+sheet.held+", at "+sheet.transform.position.ToString("0.00")+" (last burst "+egg.lastAt.ToString("0.00")+"), room "+D.currentRoom);
+            Check(flight.thrown&&egg.bursts==popped+1&&!sheet.gameObject.activeSelf,"A page flicked at the floor flies off the hand and bursts into confetti");
+            foreach(var t in Watch(sheet,3,()=>sheet.gameObject.activeSelf))yield return t;
+            yield return .4f;
+            lines.Add("INFO: the page after the toss: active "+sheet.gameObject.activeSelf+", returns "+egg.returns+", "+Vector3.Distance(sheet.transform.position,sheetHome).ToString("0.00")+" m from home, processed "+sheet.processed+", accepted "+D.rooms[6].accepted);
+            Check(sheet.gameObject.activeSelf&&!sheet.processed&&Vector3.Distance(sheet.transform.position,sheetHome)<.3f&&D.rooms[6].accepted==0,"It is back on its stand, and nothing is counted");
+            // Pointing at the shredder and letting go still sends the page in, even with the hand moving.
+            foreach(var t in Take(sheet))yield return t;
+            var slot=D.Targets.First(x=>x.GetComponent<Shredder>());
+            P.Head.rotation=Quaternion.LookRotation(slot.LandingPoint-P.Head.position);yield return .4f;
+            foreach(var t in Fling(Vector3.up,4f,.2f))yield return t;
+            Release();
+            foreach(var t in Watch(sheet,5,()=>sheet.processed&&!sheet.sending))yield return t;
+            Check(!flight.thrown&&sheet.processed&&egg.bursts==popped+1,"A page let go while pointing at the shredder is sent in, not tossed");
+            VRPlayer.ThrowOnDesktop=false;yield return .5f;
+
             // ---- Quest 2
             Check(DeviceProfile.Classify(OVRPlugin.SystemHeadset.Oculus_Quest_2)==Headset.Quest2&&DeviceProfile.Classify(OVRPlugin.SystemHeadset.Oculus_Link_Quest_2)==Headset.Quest2,"A Quest 2, or a Quest 2 on a link cable, is recognised");
             Check(DeviceProfile.Classify(OVRPlugin.SystemHeadset.Meta_Quest_3)==Headset.Quest3&&DeviceProfile.Classify(OVRPlugin.SystemHeadset.Meta_Quest_3S)==Headset.Quest3S&&DeviceProfile.Classify(OVRPlugin.SystemHeadset.Meta_Quest_Pro)==Headset.QuestPro&&DeviceProfile.Classify(OVRPlugin.SystemHeadset.None)==Headset.Unknown,"A Quest 3, 3S and Pro are recognised, and no answer stays unknown");

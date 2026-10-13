@@ -280,10 +280,12 @@ namespace AfterHours
                 var letGo=held[index];held[index]=null;aimedTarget[index]=null;
                 // A throwable box let go while the hand is moving is thrown, bent toward the truck if it was aimed that way. Pointing at
                 // where it belongs and letting go still sends it there, which is what a seated player with a still hand does.
-                var flick=letGo.throwable&&CanThrow?letGo.HandVelocity():Vector3.zero;
-                if(letGo.throwable&&CanThrow&&Throwing.IsThrow(flick))
+                // A résumé page can be tossed the same way, but only when nothing is pointed at, and it is never helped toward anything.
+                bool tossing=(letGo.throwable||(letGo.tossable&&!sendTo))&&CanThrow;
+                var flick=tossing?letGo.HandVelocity():Vector3.zero;
+                if(tossing&&Throwing.IsThrow(flick))
                 {
-                    var from=letGo.transform.position;var thrownAt=ThrowTarget(from,flick,letGo);
+                    var from=letGo.transform.position;var thrownAt=letGo.throwable?ThrowTarget(from,flick,letGo):null;
                     letGo.Throw(Throwing.Launch(flick,from,thrownAt?(Vector3?)thrownAt.LandingPoint:null,out _));
                     var d=GameDirector.Instance;d.PlayAt(d.send,from,.7f);Pulse(controller);
                 }

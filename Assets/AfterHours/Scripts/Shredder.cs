@@ -23,6 +23,8 @@ namespace AfterHours
         public ParticleSystem[] bits;
         public GameObject[] litter;
         public const float SettleDelay=1.8f;
+        // The easter egg: a page thrown onto the floor bursts into confetti and comes back to its stand. See ConfettiEgg.
+        public ConfettiEgg egg;
         public GameObject blankPage, choices;
         public TextMeshPro blankText;
         public string[] lines;
@@ -96,6 +98,7 @@ namespace AfterHours
         public void ResetRoom()
         {
             StopAllCoroutines();busy=false;current=null;shredded=0;line="";
+            if(egg)egg.ResetRoom();
             foreach(var page in pages){page.gameObject.SetActive(true);page.ResetObject();}
             foreach(var pile in piles)pile.SetActive(false);
             if(litter!=null)foreach(var set in litter)if(set)set.SetActive(false);

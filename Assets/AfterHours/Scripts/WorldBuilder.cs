@@ -648,7 +648,7 @@ namespace AfterHours
                 }
                 for(int k=0;k<210;k++)
                 {
-                    // Three in five fall near the shredder, the rest anywhere on the floor.
+                    // Three in five fall around the shredder and the desk, the rest anywhere on the floor.
                     float x=k%5<3?Gauss()*1.9f:R()*11f-5.5f,zz=k%5<3?1.6f+Gauss()*2.2f:R()*13.8f-4.4f;
                     x=Mathf.Clamp(x,-5.5f,5.5f);zz=Mathf.Clamp(zz,-4.4f,9.4f);
                     if(OnFloor(x,zz))Drop(x,.004f+R()*.006f,zz);
@@ -663,6 +663,7 @@ namespace AfterHours
             var slot=Art.Box("Shredder slot",new Vector3(0,top+.23f,z),new Vector3(.9f,.4f,.45f),Art.Teal,false);
             Object.DestroyImmediate(slot.GetComponent<Renderer>());slot.AddComponent<BoxCollider>().isTrigger=true;
             var shredder=slot.AddComponent<Shredder>();d.shredder=shredder;shredder.director=d;shredder.pages=pages;shredder.farewells=farewells;shredder.piles=piles;shredder.strips=strips;shredder.bits=flurry;shredder.litter=litter;
+            Confetti(shredder,pages,floorPlane);
             // A page stands in the slot, then sinks out of sight into the head.
             shredder.feed=Art.Group("Feed point",new Vector3(0,top+.305f,z));
             Target(slot,6,new Vector3(0,.09f,0),.55f,"Point at the shredder and let go.",Outline("Shredder highlight",new Vector3(0,top+.045f,z),new Vector2(1.15f,.88f),false));
@@ -726,6 +727,47 @@ namespace AfterHours
             var noise=ps.noise;noise.enabled=true;noise.strength=.8f;noise.frequency=.5f;noise.quality=ParticleSystemNoiseQuality.Low;
             var collision=ps.collision;collision.enabled=true;collision.type=ParticleSystemCollisionType.Planes;collision.AddPlane(floor);collision.dampen=1;collision.bounce=0;collision.lifetimeLoss=0;collision.radiusScale=.05f;
             var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Cube);renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            return ps;
+        }
+        // The confetti easter egg: throw a résumé page onto the floor and it bursts into a shower of confetti, then is back on its stand. See ConfettiEgg.
+        static void Confetti(Shredder shredder,Grabbable[] pages,Transform floor)
+        {
+            var group=Art.Group("Confetti",Vector3.zero);var egg=group.gameObject.AddComponent<ConfettiEgg>();
+            egg.director=d;egg.pages=pages;egg.sound=SoundBank.Get("SFX - Confetti");
+            egg.pop=ConfettiSystem("Confetti burst",group,floor,true);egg.shower=ConfettiSystem("Confetti shower",group,floor,false);
+            foreach(var page in pages){page.tossable=true;page.gameObject.AddComponent<ConfettiPage>().egg=egg;}
+            shredder.egg=egg;
+        }
+        // Seven bright colours; each bit takes one at random. The burst flies up from the floor and slows in the air; the shower falls from two metres up.
+        // Both drift down slowly (drag, a little noise), tumble, rest on the floor plane, and shrink away at the end of their time. Each is one draw.
+        static ParticleSystem ConfettiSystem(string name,Transform parent,Transform floor,bool burst)
+        {
+            var group=Art.Group(name,Vector3.zero,parent);group.localRotation=Quaternion.Euler(burst?-90:90,0,0);
+            var ps=group.gameObject.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main=ps.main;main.playOnAwake=false;main.loop=false;main.duration=burst?.2f:1.4f;
+            main.startLifetime=burst?new ParticleSystem.MinMaxCurve(5f,7f):new ParticleSystem.MinMaxCurve(5.5f,8f);
+            main.startSpeed=burst?new ParticleSystem.MinMaxCurve(2.5f,7f):new ParticleSystem.MinMaxCurve(0f,.5f);
+            main.gravityModifier=burst?.35f:.25f;main.maxParticles=burst?320:260;main.simulationSpace=ParticleSystemSimulationSpace.World;
+            main.startSize3D=true;main.startSizeX=new ParticleSystem.MinMaxCurve(.05f,.11f);main.startSizeY=new ParticleSystem.MinMaxCurve(.03f,.06f);main.startSizeZ=.004f;
+            var anyTurn=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);main.startRotation3D=true;main.startRotationX=anyTurn;main.startRotationY=anyTurn;main.startRotationZ=anyTurn;
+            string[] hex={"#FF4D6D","#FFB703","#2FD38A","#23B5F0","#8B5CF6","#FF7A1A","#F9F871"};
+            var colours=new Gradient{mode=GradientMode.Fixed};var keys=new GradientColorKey[hex.Length];
+            for(int i=0;i<hex.Length;i++){ColorUtility.TryParseHtmlString(hex[i],out var c);keys[i]=new GradientColorKey(c,(i+1f)/hex.Length);}
+            colours.SetKeys(keys,new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(1,1)});
+            var pick=new ParticleSystem.MinMaxGradient(colours);pick.mode=ParticleSystemGradientMode.RandomColor;main.startColor=pick;
+            var emission=ps.emission;
+            if(burst){emission.rateOverTime=0;emission.SetBursts(new[]{new ParticleSystem.Burst(0,(short)220)});}
+            else emission.rateOverTime=110;
+            var shape=ps.shape;
+            if(burst){shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=48;shape.radius=.1f;}
+            else{shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(2f,2f,.05f);}
+            var drag=ps.limitVelocityOverLifetime;drag.enabled=true;drag.limit=new ParticleSystem.MinMaxCurve(50f);drag.drag=new ParticleSystem.MinMaxCurve(burst?2.2f:1.4f);drag.multiplyDragByParticleSize=false;drag.multiplyDragByParticleVelocity=false;
+            var tumble=ps.rotationOverLifetime;tumble.enabled=true;tumble.separateAxes=true;var turning=new ParticleSystem.MinMaxCurve(-5,5);tumble.x=turning;tumble.y=turning;tumble.z=turning;
+            var noise=ps.noise;noise.enabled=true;noise.strength=.5f;noise.frequency=.5f;noise.quality=ParticleSystemNoiseQuality.Low;
+            var fade=ps.sizeOverLifetime;fade.enabled=true;fade.size=new ParticleSystem.MinMaxCurve(1,new AnimationCurve(new Keyframe(0,1),new Keyframe(.8f,1),new Keyframe(1,0)));
+            var collision=ps.collision;collision.enabled=true;collision.type=ParticleSystemCollisionType.Planes;collision.AddPlane(floor);collision.dampen=1;collision.bounce=0;collision.lifetimeLoss=0;collision.radiusScale=.05f;
+            var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Cube);renderer.sharedMaterial=Art.ConfettiPaper;
+            renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;
             return ps;
         }
         // The rage room: the old work computer on a desk, a bat on its rack, and a quiet moment once it is all broken.
