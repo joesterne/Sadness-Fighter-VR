@@ -1,4 +1,4 @@
-2026-10-13 15:10:24Z
+2026-10-13 16:49:10Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -139,13 +139,11 @@ PASS: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0) 'SENIOR ASSOCI
 PASS: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0) 'PUT THE BAT BACK'
 PASS: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2) 'MY THINGS'
 PASS: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0) 'RAGE ROOM RULES 1. Break things, n...'
-NOTE: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): partly blocked from 9 of 107 places, by 00 - The lobby/Batched geometry - 02 Deep blue near (2.0, 2.5, 3.0)
-NOTE: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): partly blocked from 2 of 107 places, by 00 - The lobby/Batched geometry - 02 Deep blue near (2.0, 2.5, 3.0)
+NOTE: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): partly blocked from 3 of 107 places, by text 'BEFORE  /  THE WAY YOU REMEMBER IT'
 NOTE: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): partly blocked from 14 of 107 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 3.0, 13.5)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 109 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 3 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, -0.5)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Enter Ocean of shame label at (0.0, 1.0, -0.1): partly blocked from 11 of 108 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 9.5)
-NOTE: room 0 [The lobby] Heavy things doorway/Chapter number at (0.0, 2.6, -0.1): partly blocked from 1 of 116 places, by 00 - The lobby/Batched geometry - 02 Deep blue near (5.0, 2.5, 3.0)
 NOTE: room 0 [The lobby] Heavy things doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 117 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
 NOTE: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 4 of 68 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (5.5, 1.5, 4.0)
 NOTE: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): partly blocked from 17 of 113 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (5.5, 1.0, 4.0)
@@ -181,15 +179,15 @@ NOTE: room 2 [Heavy things] 02 - Heavy things/Room progress at (0.0, 3.3, 15.8):
 NOTE: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5): partly blocked from 4 of 30 places, by 02 - Heavy things/RELIEF
 NOTE: room 2 [Heavy things] GRIEF/GRIEF tag at (0.0, 0.0, -0.5): partly blocked from 3 of 30 places, by 02 - Heavy things/RELIEF
 NOTE: room 2 [Heavy things] 02 - Heavy things/Truck message at (0.0, 1.5, 4.5): partly blocked from 6 of 64 places, by 02 - Heavy things/Batched geometry - 10 Brushed aluminium near (-5.0, 1.5, 0.5)
-NOTE: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5): partly blocked from 5 of 64 places, by 02 - Heavy things/Batched geometry - 10 Brushed aluminium near (-5.0, 1.5, 1.5)
+NOTE: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5): partly blocked from 6 of 64 places, by 02 - Heavy things/Batched geometry - 10 Brushed aluminium near (-5.0, 1.5, 0.5)
 NOTE: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): partly blocked from 2 of 67 places, by 03 - A small spill/Batched geometry - 07 Polished limestone near (-3.5, 2.0, 5.5)
 NOTE: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): partly blocked from 3 of 72 places, by 03 - A small spill/Batched geometry - 08 Warm porcelain near (-4.5, 2.0, 5.5)
 NOTE: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): partly blocked from 5 of 72 places, by 03 - A small spill/Help plate
 NOTE: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7): partly blocked from 11 of 60 places, by 03 - A small spill/Batched geometry - 07 Polished limestone near (-3.5, 2.5, 5.5)
-NOTE: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): partly blocked from 12 of 83 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-7.5, 2.0, 2.5)
-NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): partly blocked from 18 of 89 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (-6.0, 2.5, 3.0)
-NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): partly blocked from 24 of 89 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 2.5, 2.5)
-NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room progress at (0.0, 2.9, 7.4): partly blocked from 28 of 77 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 2.0, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): partly blocked from 10 of 79 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-7.0, 2.0, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): partly blocked from 16 of 89 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (-6.0, 2.5, 3.0)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): partly blocked from 22 of 87 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 2.5, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room progress at (0.0, 2.9, 7.4): partly blocked from 22 of 71 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-0.5, 2.0, 5.0)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/FACT sign at (-2.3, 2.1, 5.0): partly blocked from 8 of 69 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (-5.0, 2.0, 2.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/FACT description at (-2.3, 1.7, 5.0): partly blocked from 9 of 64 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-4.5, 1.5, 2.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/FEAR sign at (0.0, 2.1, 5.0): partly blocked from 6 of 71 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-4.5, 2.0, 2.5)
@@ -202,14 +200,14 @@ NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 
 NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 52 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
 NOTE: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): out of reading range from everywhere sampled (letters about 0.7 cm tall)
 NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 18 places, by Monitor - pieces/Monitor body
-INFO: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): in range of 126 places, faced from 107, clear from 98, outlined
-INFO: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): in range of 126 places, faced from 107, clear from 105, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): in range of 126 places, faced from 107, clear from 104, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): in range of 126 places, faced from 107, clear from 107, outlined
 INFO: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): in range of 126 places, faced from 107, clear from 93, outlined
 INFO: room 0 [The lobby] Ocean of shame doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 109, clear from 109, outlined
 INFO: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 109, clear from 108, outlined
 INFO: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1): in range of 79 places, faced from 67, clear from 64, outlined
 INFO: room 0 [The lobby] Ocean of shame doorway/Enter Ocean of shame label at (0.0, 1.0, -0.1): in range of 125 places, faced from 108, clear from 97
-INFO: room 0 [The lobby] Heavy things doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 116, clear from 115, outlined
+INFO: room 0 [The lobby] Heavy things doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 116, clear from 116, outlined
 INFO: room 0 [The lobby] Heavy things doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 117, clear from 116, outlined
 INFO: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): in range of 73 places, faced from 68, clear from 64, outlined
 INFO: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): in range of 125 places, faced from 113, clear from 96
@@ -276,7 +274,7 @@ INFO: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2): 
 INFO: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2): in range of 78 places, faced from 67, clear from 65
 INFO: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
 INFO: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2): in range of 21 places, faced from 18, clear from 18, outlined
-INFO: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0): in range of 9 places, faced from 9, clear from 9, outlined
+INFO: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0): in range of 4 places, faced from 4, clear from 4, outlined
 INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
 INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
 INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Distance at (0.0, 1.2, 1.8): in range of 9 places, faced from 9, clear from 9, outlined
@@ -292,7 +290,7 @@ INFO: room 2 [Heavy things] RELIEF/RELIEF tag at (0.0, 0.0, -0.5): in range of 9
 INFO: room 2 [Heavy things] GRIEF/GRIEF tag at (0.0, 0.0, -0.5): in range of 104 places, faced from 30, clear from 27
 INFO: room 2 [Heavy things] UNCERTAINTY/UNCERTAINTY tag at (0.0, 0.0, -0.5): in range of 96 places, faced from 26, clear from 26
 INFO: room 2 [Heavy things] 02 - Heavy things/Truck message at (0.0, 1.5, 4.5): in range of 148 places, faced from 64, clear from 58, outlined
-INFO: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5): in range of 146 places, faced from 64, clear from 59, outlined
+INFO: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5): in range of 148 places, faced from 64, clear from 58, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): in range of 82 places, faced from 67, clear from 65, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): in range of 86 places, faced from 72, clear from 69, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): in range of 86 places, faced from 72, clear from 67, outlined
@@ -300,11 +298,11 @@ INFO: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7)
 INFO: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): in range of 86 places, faced from 52, clear from 52
 INFO: room 3 [A small spill] 03 - A small spill/Machine display at (-0.2, 1.8, 4.5): in range of 50 places, faced from 25, clear from 25, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Ask for support label at (2.1, 1.4, 4.4): in range of 86 places, faced from 52, clear from 52
-INFO: room 3 [A small spill] 03 - A small spill/Help permission at (2.1, 1.9, 4.4): in range of 81 places, faced from 47, clear from 47, outlined
-INFO: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): in range of 193 places, faced from 83, clear from 71, outlined
-INFO: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): in range of 419 places, faced from 89, clear from 71, outlined
-INFO: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): in range of 207 places, faced from 89, clear from 65, outlined
-INFO: room 4 [The infinite archive] 04 - The infinite archive/Room progress at (0.0, 2.9, 7.4): in range of 171 places, faced from 77, clear from 49, outlined
+INFO: room 3 [A small spill] 03 - A small spill/Help permission at (2.1, 1.9, 4.4): in range of 85 places, faced from 51, clear from 51, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): in range of 183 places, faced from 79, clear from 69, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): in range of 419 places, faced from 89, clear from 73, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): in range of 197 places, faced from 87, clear from 65, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Room progress at (0.0, 2.9, 7.4): in range of 161 places, faced from 71, clear from 49, outlined
 INFO: room 4 [The infinite archive] My job ended./My job ended. tag at (0.0, 0.0, -0.5): in range of 140 places, faced from 41, clear from 41
 INFO: room 4 [The infinite archive] I lost my routine./I lost my routine. tag at (0.0, 0.0, -0.5): in range of 142 places, faced from 42, clear from 42
 INFO: room 4 [The infinite archive] I will never work again./I will never work again. tag at (0.0, 0.0, -0.5): in range of 142 places, faced from 42, clear from 42
@@ -339,5 +337,16 @@ INFO: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): in range of
 INFO: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0): in range of 7 places, faced from 5, clear from 5
 INFO: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): in range of 42 places, faced from 18, clear from 16
 INFO: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2): in range of 31 places, faced from 10, clear from 10
-INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0): in range of 57 places, faced from 53, clear from 53, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0): in range of 59 places, faced from 55, clear from 55, outlined
+INFO: plate room 0 [The lobby] Getting started board: 2.93 by 0.73 m, 1 sign on it, smallest margin 17.4 cm
+INFO: plate room 1 [Ocean of shame] Distance plate: 1.55 by 0.22 m, 1 sign on it, smallest margin 6.0 cm
+INFO: plate room 1 [Ocean of shame] Rowing plate: 2.65 by 0.60 m, 1 sign on it, smallest margin 10.0 cm
+INFO: plate room 1 [Ocean of shame] Welcome sign: 2.10 by 0.33 m, 1 sign on it, smallest margin 8.0 cm
+INFO: plate room 2 [Heavy things] Bay sign plate: 1.92 by 0.80 m, 2 signs on it, smallest margin 10.0 cm
+INFO: plate room 3 [A small spill] Help plate: 1.29 by 0.38 m, 1 sign on it, smallest margin 8.0 cm
+INFO: plate room 4 [The infinite archive] FACT sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
+INFO: plate room 4 [The infinite archive] FEAR sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
+INFO: plate room 4 [The infinite archive] Heading plate: 4.86 by 2.10 m, 4 signs on it, smallest margin 20.0 cm
+INFO: plate room 4 [The infinite archive] STILL TRUE sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
+INFO: plate room 7 [The rage room] Rules board: 1.32 by 0.61 m, 1 sign on it, smallest margin 10.0 cm
 INFO: 138 signs checked; 0 skinned meshes in the last scan were not counted as solid.

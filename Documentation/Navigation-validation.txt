@@ -1,4 +1,4 @@
-2026-10-13 15:04:24Z
+2026-10-13 16:53:07Z
 Passed
 Production mouse/keyboard input and physics, with direct placement for test setup and API calls for race conditions.
 PASS: Menu key opens the menu in room 0
@@ -122,7 +122,12 @@ PASS: Room 0 is the only active environment
 PASS: Room 0 fade clears
 PASS: Room 0 places the head over its safe spawn
 PASS: Leaving during the final paddle stroke preserves completion
-PASS: Returning after an interrupted row restores the horizon
+PASS: Returning after a finished crossing starts from open water and keeps the chapter done
+PASS: Room 0 arrives with movement unlocked
+PASS: Room 0 is the only active environment
+PASS: Room 0 fade clears
+PASS: Room 0 places the head over its safe spawn
+PASS: Returning mid-crossing carries on where it was left
 PASS: Room 0 arrives with movement unlocked
 PASS: Room 0 is the only active environment
 PASS: Room 0 fade clears

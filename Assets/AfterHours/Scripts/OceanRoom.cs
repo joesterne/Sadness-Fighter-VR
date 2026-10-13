@@ -39,7 +39,15 @@ namespace AfterHours
             if(Application.isPlaying)ApplyProps();
         }
         // ChangeRoom clears player.busy after the fade-in completes; clearing it here would enable input mid-fade.
-        public void OnArrive(){rowing=false;RestoreProgress(strokes);SetEnvironment(true);}
+        public void OnArrive()
+        {
+            rowing=false;
+            // A crossing that was finished starts again from open water each visit, and the chapter stays marked as done. One still under way carries on where it was left (TRY AGAIN starts it over).
+            if(strokes>=requiredStrokes){strokes=0;director.SaveCheckpoint();}
+            // Oars that were left mid-stroke, or still held when the room was last left, are back at rest.
+            if(oars!=null)foreach(var oar in oars)if(oar)oar.ResetPose();
+            RestoreProgress(strokes);SetEnvironment(true);
+        }
         public void OnDepart()
         {
             StopAllCoroutines();rowing=false;RestoreProgress(strokes);

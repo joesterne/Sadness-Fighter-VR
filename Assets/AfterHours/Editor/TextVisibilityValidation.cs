@@ -41,6 +41,9 @@ namespace AfterHours.Editor
         static readonly List<string> order=new List<string>();
         static readonly Dictionary<string,string> labels=new Dictionary<string,string>();
         static int skinned;
+        // Every plate that had words on it, with its smallest margin and size (the smallest margin over every state the room was scanned in).
+        static readonly Dictionary<string,float> plateLeast=new Dictionary<string,float>();static readonly Dictionary<string,string> plateInfo=new Dictionary<string,string>();static readonly HashSet<string> platesSeen=new HashSet<string>();
+        static readonly string[] ExpectedPlates={"Distance plate","Rowing plate","Welcome sign","Getting started board","Bay sign plate","Help plate","Heading plate","FACT sign plate","FEAR sign plate","STILL TRUE sign plate","Rules board"};
 
         public static void Start()
         {
@@ -48,7 +51,7 @@ namespace AfterHours.Editor
             checkpoint=PlayerPrefs.GetString(CheckpointStore.Key);hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);
             hadProgress=PlayerPrefs.HasKey("AfterHours.Progress.v1");progress=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);
             D.saveEnabled=false;if(D.intro)D.intro.Hide();
-            results.Clear();details.Clear();issues.Clear();notes.Clear();order.Clear();labels.Clear();skinned=0;
+            results.Clear();details.Clear();issues.Clear();notes.Clear();order.Clear();labels.Clear();skinned=0;plateLeast.Clear();plateInfo.Clear();platesSeen.Clear();
             Status="Running";waitUntil=0;sequence=Run();EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=OnPlay;
         }
         static void OnPlay(PlayModeStateChange s){if(s==PlayModeStateChange.ExitingPlayMode)Finish("Stopped");}
@@ -208,6 +211,7 @@ namespace AfterHours.Editor
             var quads=new List<Quad>();
             foreach(var t in texts){t.ForceMeshUpdate();var tb=t.textBounds;if(tb.size.x<.001f||tb.size.y<.001f)continue;quads.Add(new Quad{t=t,pos=t.transform.position,fwd=t.transform.forward,local=tb});}
             foreach(var q in quads)AuditSign(roomIndex,state,room,q,quads,views);
+            AuditPlates(roomIndex,state,room,quads);
             // Two signs printed on top of each other.
             for(int i=0;i<quads.Count;i++)for(int j=i+1;j<quads.Count;j++)
             {
@@ -223,6 +227,41 @@ namespace AfterHours.Editor
                 if(ox<=0||oy<=0)continue;
                 float overlap=ox*oy/Mathf.Min(a.local.size.x*a.local.size.y,(maxX-minX)*(maxY-minY));
                 if(overlap>.15f){Issue(roomIndex,a,state,"printed over text '"+Short(b.t.text)+"'");Issue(roomIndex,b,state,"printed over text '"+Short(a.t.text)+"'");}
+            }
+        }
+        // ----- Words on plates -----
+        // The plates the builder sizes to their words (see WorldBuilder.FitPlates). Their game objects outlive the merged scenery, so they can be found by name.
+        static bool IsPlate(string n)=>n.EndsWith(" plate")||n=="Welcome sign"||n=="Getting started board"||n=="Rules board";
+        const float MinMargin=.03f;
+        // Words printed on a plate must sit inside its outline with a margin all round. A plate far larger than its words is only noted.
+        static void AuditPlates(int roomIndex,int state,MindRoom room,List<Quad> quads)
+        {
+            foreach(var plate in room.root.GetComponentsInChildren<Transform>(false))
+            {
+                if(!IsPlate(plate.name))continue;
+                var scale=plate.lossyScale;Quad first=null;int signs=0;float plateMin=float.MaxValue;float uMinX=float.MaxValue,uMinY=float.MaxValue,uMaxX=float.MinValue,uMaxY=float.MinValue;
+                foreach(var q in quads)
+                {
+                    var tt=q.t.transform;if(Vector3.Dot(tt.forward,plate.forward)<.98f)continue;
+                    var c=plate.InverseTransformPoint(tt.TransformPoint(q.local.center));
+                    // Just in front of the plate and inside its outline: the words printed on it.
+                    if(Mathf.Abs(c.x)>.5f+.05f/scale.x||Mathf.Abs(c.y)>.5f+.05f/scale.y||c.z>0||c.z*scale.z<-.3f)continue;
+                    float minX=float.MaxValue,minY=float.MaxValue,maxX=float.MinValue,maxY=float.MinValue;
+                    for(int k=0;k<4;k++)
+                    {
+                        var l=plate.InverseTransformPoint(tt.TransformPoint(new Vector3(k%2==0?q.local.min.x:q.local.max.x,k<2?q.local.min.y:q.local.max.y,q.local.center.z)));
+                        minX=Mathf.Min(minX,l.x);maxX=Mathf.Max(maxX,l.x);minY=Mathf.Min(minY,l.y);maxY=Mathf.Max(maxY,l.y);
+                    }
+                    float least=Mathf.Min(Mathf.Min((minX+.5f)*scale.x,(.5f-maxX)*scale.x),Mathf.Min((minY+.5f)*scale.y,(.5f-maxY)*scale.y));
+                    plateMin=Mathf.Min(plateMin,least);signs++;
+                    if(least<-.005f)Issue(roomIndex,q,state,"text runs "+(-least*100).ToString("0.0")+" cm past the edge of "+plate.name);
+                    else if(least<MinMargin)Issue(roomIndex,q,state,"text is only "+(least*100).ToString("0.0")+" cm from the edge of "+plate.name+" (a margin of at least "+(MinMargin*100).ToString("0")+" cm is needed)");
+                    if(first==null)first=q;uMinX=Mathf.Min(uMinX,minX);uMaxX=Mathf.Max(uMaxX,maxX);uMinY=Mathf.Min(uMinY,minY);uMaxY=Mathf.Max(uMaxY,maxY);
+                }
+                if(first==null){Debug.LogWarning("Text visibility: "+plate.name+" has no words on it.");continue;}
+                platesSeen.Add(plate.name);var pkey="room "+roomIndex+" ["+room.title+"] "+plate.name;plateLeast[pkey]=plateLeast.TryGetValue(pkey,out var oldLeast)?Mathf.Min(oldLeast,plateMin):plateMin;plateInfo[pkey]=scale.x.ToString("0.00")+" by "+scale.y.ToString("0.00")+" m, "+signs+(signs==1?" sign":" signs")+" on it";
+                float fillX=(uMaxX-uMinX),fillY=(uMaxY-uMinY);
+                if(fillX<.5f||fillY<.4f)Note(roomIndex,first,"its words fill only "+Mathf.RoundToInt(fillX*100)+"% of the width and "+Mathf.RoundToInt(fillY*100)+"% of the height of "+plate.name+" ("+(scale.x).ToString("0.00")+" by "+(scale.y).ToString("0.00")+" m)");
             }
         }
         // Identified by where it hangs in its parent, so a sign that moves with the shore or changes its words is still one sign.
@@ -317,6 +356,8 @@ namespace AfterHours.Editor
             }
             foreach(var kv in notes.Where(x=>x.Key.EndsWith("|note")))details.Add("NOTE: "+kv.Key.Replace("|note","")+": "+kv.Value);
             foreach(var kv in notes.Where(x=>x.Key.EndsWith("|stats")))details.Add("INFO: "+kv.Key.Replace("|stats","")+": "+kv.Value);
+            foreach(var kv in plateLeast.OrderBy(x=>x.Key))details.Add("INFO: plate "+kv.Key+": "+plateInfo[kv.Key]+", smallest margin "+(kv.Value*100).ToString("0.0")+" cm");
+            foreach(var name in ExpectedPlates)if(!platesSeen.Contains(name)){failed++;results.Add("FAIL: plate '"+name+"' was not found with words printed on it");}
             details.Add("INFO: "+order.Count+" signs checked; "+skinned+" skinned meshes in the last scan were not counted as solid.");
             Finish(failed==0?"Passed":"Failed: "+failed+" of "+order.Count+" signs have a problem");
         }

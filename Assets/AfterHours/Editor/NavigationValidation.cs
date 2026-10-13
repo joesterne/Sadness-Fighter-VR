@@ -114,7 +114,8 @@ namespace AfterHours.Editor
             Check(D.lastRoom==1,"Rapid competing travel requests keep the accepted destination");
             D.ocean.RestoreProgress(13);D.rooms[1].complete=false;D.ocean.Stroke();D.Travel(0);yield return .8f;Arrived(0);
             Check(D.ocean.strokes==14&&D.rooms[1].complete,"Leaving during the final paddle stroke preserves completion");
-            D.Travel(1);yield return .8f;Check(Mathf.Abs(D.ocean.horizon.localPosition.z+12.6f)<.02f,"Returning after an interrupted row restores the horizon");
+            D.Travel(1);yield return .8f;Check(D.ocean.strokes==0&&Mathf.Abs(D.ocean.horizon.localPosition.z)<.02f&&D.rooms[1].complete,"Returning after a finished crossing starts from open water and keeps the chapter done");
+            D.ocean.RestoreProgress(5);D.Travel(0);yield return .8f;Arrived(0);D.Travel(1);yield return .8f;Check(D.ocean.strokes==5&&Mathf.Abs(D.ocean.horizon.localPosition.z+4.5f)<.02f,"Returning mid-crossing carries on where it was left");
             D.Travel(0);yield return .8f;Arrived(0);
         }
         static void Tick()

@@ -416,6 +416,49 @@ The release APK built with zero errors.
 
 Unity crashed once during this round when entering Play Mode (Meta's XR Operator layer, the crash described in the README). Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 13 (later): a fresh boat, and signs that fit their plates
+
+### What changed
+
+- **The boat starts fresh.** Saved progress used to put the shore back where it was left even after a finished crossing, so the lighthouse stood right beside the boat on the next visit (and when the game was started with a finished ocean saved). Now `OceanRoom.OnArrive` starts a finished crossing again from open water, with the counter at 14, and the chapter stays marked as done. A crossing still under way carries on where it was left, and TRY AGAIN still starts it over. The oars are also put back at rest on arrival.
+- **Plates fitted to their words.** Eleven plates were sized by hand, so some had a lot of empty space (the ocean's rowing note, the lobby's getting-started board, the archive heading) and some had words touching their edges (the island's welcome sign, the distance counter, the archive trays). `WorldBuilder.FitPlates` now measures the words that stand on each plate, including every wording a sign can show (hands and controllers, both distance counters), grows or shrinks them to fill the plate less a margin, and closes the plate in around them (6 cm of margin or more on every side). A plate is never bigger than before. The three archive trays share a size. The rowing note's lettering is noticeably larger. The rage room's rules board is now built facing the room like the other plates, and the lobby's getting-started board goes with its text in clean mode.
+- **A plate check in the text suite.** The suite now also tests the built scene: every word on a plate must sit inside the plate with at least 3 cm to spare, and each plate's smallest margin is reported. All 11 plates were found (smallest margin 6.0 cm) and all 138 signs pass.
+- Version 0.6.2.
+
+### Tests
+
+The navigation suite now checks that returning after a finished crossing starts from open water with the chapter still done, and that returning halfway carries on where it was left (131 checks; it had one for the old behaviour).
+
+### Results
+
+All eight suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 108 |
+| Navigation | 131 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 46 |
+| Mirror and wardrobe | 56 |
+| Ocean, clean mode and night | 72 |
+| Throwing, controllers and Quest 2 | 71 |
+| Text visibility | 138 signs, 11 plates |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 73.7 MB (73,737,873 bytes; 4.9 KB more than 0.6.1 bytes) |
+| SHA-256 of the APK | `bf6c99f6564e02ddee0173a52a81deaa799053dadcc54cde2b39e92090e905a6` |
+| Version | 0.6.2, version code 411420 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.6.2, versionCode 411420, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. No private-network address and no session data in any file (Meta's own debugger classes appear as code and type names in the SDK, as before). |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
