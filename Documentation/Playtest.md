@@ -37,6 +37,8 @@ Pass 1 passes if you finished everything without standing, leaning out of the im
 10. **Hands to controllers and back.** Start with your hands only, then pick up the controllers: within about a second the lobby board, the comfort note and the first message you see should talk about the trigger and the menu button, not pinching. Put them down again: the wording should return to pinching. Note any flicker, and anything that still said the wrong thing.
 11. **Quest 2.** On a Quest 2, repeat Pass 1 (hands) and Pass 2 (controllers). Check it installs and starts, the lobby and each chapter hold a steady frame rate (the profile asks for 72 Hz at render scale 0.9), nothing is too blurry to read at that scale, hand tracking works as it does on the Quest 3, and throwing and the oars feel the same. The Quest 2 profile is a guess that has not been measured; if it is too slow or too soft, say which room and what you saw.
 
+12. **Reading everything.** In each room, from your seat, read every sign without leaning or moving: the heading, the instructions and the counters. In the ocean, read the rowing note on your left, the title on your right and the distance counter while you row toward the lighthouse, and check the lighthouse or its beam never covers any of them. In the lobby, read the door signs, the tagline over the far wall and the rooftop sign at the far end. In the heavy room, read the heading on the back wall over the truck and the truck's sign. Note any sign that is hidden, too small, or too faint against what is behind it, with the room and where you were looking.
+
 ## What to record
 
 - Quest model, seated or standing, hands or controllers.

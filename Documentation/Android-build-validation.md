@@ -370,13 +370,59 @@ The release APK built with zero errors.
 
 It has not been installed on a headset or played there yet.
 
+## October 13: text that nothing stands in front of
+
+### What changed
+
+- **A new text visibility check.** Every sign in the game (138 of them, counting door signs, counters, buttons, headings, captions and the words on the wardrobe) is tested from each place a player can read it: rays from the three seated eye heights at every arrival point and from a grid of floor places 1.5 m apart, to a 5 by 3 grid of points across the lettering. A ray that meets the visible faces of anything solid, or another sign, first counts as blocked. A sign fails if it faces away, is hidden from the arrival point, is hidden from at least half of the places it could be read from, is in fog, or sits at under 1.8 to 1 contrast against what is behind it as seen from the arrival point. The ocean is scanned at every stroke from 0 to 14, because the lighthouse comes toward the boat.
+- **What it found.** 31 problem signs on the first scan, including the ones behind the lighthouse and its beam in the ocean (the rowing note straight ahead, the heading and counter), the lobby counter and its two buttons hiding door signs, the getting-started board covering the door numbers, and the truck hiding the heavy room's heading. After several rounds of changes the scan reports 138 of 138 signs clear.
+- **Layout changes.** The ocean's heading is on the right, turned toward the boat, and the rowing note is on the left on its own plate, both clear of the lighthouse's path; the distance counter and the welcome sign on the island have plates. The lobby counter is narrower, its buttons moved, the getting-started board is higher, and the far wall's lines are larger. The heavy room's heading is high on the back wall below the ceiling, and its truck sign carries both lines on one plate. The kitchen's help note, the archive's heading and category signs and the rooftop's message each have a dark plate. Light lettering has a thin dark outline (and dark lettering a light one) through two new text materials.
+- **Clean mode** hides the new plates along with their text (`Guidance.backing`). The plates are left out of the merged room geometry.
+- Version 0.6.1.
+
+### Tests
+
+A new suite (text visibility) was added and the other seven were run again. The queue runner starts it with `text`. The first run of the gameplay journey after Unity was reopened stopped at its first movement check; the same suite passed in full when run again.
+
+### Results
+
+All eight suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 108 |
+| Navigation | 126 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 46 |
+| Mirror and wardrobe | 56 |
+| Ocean, clean mode and night | 72 |
+| Throwing, controllers and Quest 2 | 71 |
+| Text visibility | 138 signs |
+
+The text check also records 63 notes: 62 of signs that are partly hidden from a few places in a room (a shelf or the truck in the way from one corner), and one for the words on the whole mug, which are too small to read from anywhere by design.
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 73.7 MB (73,733,017 bytes; 34 KB more than 0.6.0) |
+| SHA-256 of the APK | `f86ac3a624b280e66affb2fc7c60e3f7f9271b52a5ec4757579a7ea264933df9` |
+| Version | 0.6.1, version code 411316 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | No DevAgent settings or session data, no LAN address and no XR Operator layer (Meta's own debugger classes are code in the SDK, as before). |
+
+Unity crashed once during this round when entering Play Mode (Meta's XR Operator layer, the crash described in the README). Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
 
 - frame rate at render scale 1.0
 - thermals
-- text readability, including the menu labels
+- text readability on the headset, including the menu labels (the text visibility suite proves no sign is hidden behind something in the editor; it cannot say how sharp small lettering looks in the lenses)
 - seated reach on a real chair (the airplane-seat suite checks it in the editor)
 - hands-only play from start to finish
 - sound levels on the headset's speakers

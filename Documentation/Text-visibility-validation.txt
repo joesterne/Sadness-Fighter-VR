@@ -1,0 +1,343 @@
+2026-10-13 15:10:24Z
+Passed
+Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
+PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
+PASS: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7) 'AFTER HOURS'
+PASS: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7) 'A job ended. Your story did not.'
+PASS: room 0 [The lobby] Ocean of shame doorway/Chapter number at (0.0, 2.6, -0.1) '01'
+PASS: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1) 'Ocean of shame'
+PASS: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1) 'A small boat. A light ahead.'
+PASS: room 0 [The lobby] Ocean of shame doorway/Enter Ocean of shame label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] Heavy things doorway/Chapter number at (0.0, 2.6, -0.1) '02'
+PASS: room 0 [The lobby] Heavy things doorway/Destination at (0.0, 2.1, -0.1) 'Heavy things'
+PASS: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1) 'Give your feelings a place to go.'
+PASS: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] A small spill doorway/Chapter number at (0.0, 2.6, -0.1) '03'
+PASS: room 0 [The lobby] A small spill doorway/Destination at (0.0, 2.1, -0.1) 'A small spill'
+PASS: room 0 [The lobby] A small spill doorway/Intention at (0.0, 1.5, -0.1) 'The machine is broken. You are all...'
+PASS: room 0 [The lobby] A small spill doorway/Enter A small spill label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] The infinite archive doorway/Chapter number at (0.0, 2.6, -0.1) '04'
+PASS: room 0 [The lobby] The infinite archive doorway/Destination at (0.0, 2.1, -0.1) 'The infinite archive'
+PASS: room 0 [The lobby] The infinite archive doorway/Intention at (0.0, 1.5, -0.1) 'A fact, a fear, and what is still ...'
+PASS: room 0 [The lobby] The infinite archive doorway/Enter The infinite archive label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] The old résumé doorway/Chapter number at (0.0, 2.6, -0.1) '05'
+PASS: room 0 [The lobby] The old résumé doorway/Destination at (0.0, 2.1, -0.1) 'The old résumé'
+PASS: room 0 [The lobby] The old résumé doorway/Intention at (0.0, 1.5, -0.1) 'Let go of who you were for them.'
+PASS: room 0 [The lobby] The old résumé doorway/Enter The old résumé label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] The rage room doorway/Chapter number at (0.0, 2.6, -0.1) '06'
+PASS: room 0 [The lobby] The rage room doorway/Destination at (0.0, 2.1, -0.1) 'The rage room'
+PASS: room 0 [The lobby] The rage room doorway/Intention at (0.0, 1.5, -0.1) 'Break the old work computer. Let i...'
+PASS: room 0 [The lobby] The rage room doorway/Enter The rage room label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2) 'MONDAY 09:00'
+PASS: room 0 [The lobby] BEFORE - remembered office/Memory caption at (0.0, 2.8, -1.9) 'BEFORE  /  THE WAY YOU REMEMBER IT'
+PASS: room 0 [The lobby] 00 - The lobby/Welcome at (0.0, 1.1, -0.6) 'YOU CAN BEGIN ANYWHERE'
+PASS: room 0 [The lobby] 00 - The lobby/Journey progress at (0.0, 0.6, -0.6) '0 / 6   ROOMS EXPLORED Your pace. ...'
+PASS: room 0 [The lobby] 00 - The lobby/Move instructions at (3.5, 3.2, 2.8) 'POINT AND PINCH TO CHOOSE Pinch an...'
+PASS: room 0 [The lobby] 00 - The lobby/Continue last room label at (-1.0, 1.5, -0.4) 'BEGIN / OCEAN OF SHAME'
+PASS: room 0 [The lobby] 00 - The lobby/Small sessions at (0.0, 0.8, -0.6) 'A FEW MINUTES IS ENOUGH Each small...'
+PASS: room 0 [The lobby] 00 - The lobby/Comfort note at (0.0, 0.2, -0.7) 'SITTING DOWN? OPEN THE MENU Left p...'
+PASS: room 0 [The lobby] 00 - The lobby/Rooftop passage label at (0.0, 2.7, 13.4) 'ROOM FOR TOMORROW  /  ROOFTOP'
+PASS: room 0 [The lobby] 00 - The lobby/Mirror and wardrobe label at (1.0, 1.5, -0.4) 'MIRROR  /  YOUR WARDROBE'
+PASS: room 0 [The lobby] Mirror wall/Mirror nameplate at (0.0, 2.7, -0.1) 'YOUR WARDROBE'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe heading at (-1.5, 2.1, -0.2) 'YOU'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.9, -0.2) 'SKIN TONE'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 0 label at (-1.9, 1.8, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 0 label at (-1.1, 1.8, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 0 at (-1.5, 1.8, -0.2) 'Tone 3'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.7, -0.2) 'HAIR'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 1 label at (-1.9, 1.5, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 1 label at (-1.1, 1.5, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 1 at (-1.5, 1.5, -0.2) 'Short'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.4, -0.2) 'HAIR COLOUR'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 2 label at (-1.9, 1.3, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 2 label at (-1.1, 1.3, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 2 at (-1.5, 1.3, -0.2) 'Brown'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.1, -0.2) 'BUILD'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 3 label at (-1.9, 1.0, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 3 label at (-1.1, 1.0, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 3 at (-1.5, 1.0, -0.2) 'Medium'
+PASS: room 0 [The lobby] Mirror wall/Still to find at (-1.5, 0.5, -0.2) 'STILL TO FIND Reach the shore in O...'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe heading at (1.6, 2.1, -0.2) 'WHAT YOU WEAR'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.9, -0.2) 'TOP'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 4 label at (1.1, 1.8, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 4 label at (2.0, 1.8, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 4 at (1.6, 1.8, -0.2) 'Plain tee'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.7, -0.2) 'HAT'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.5, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.5, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 5 at (1.6, 1.5, -0.2) 'No hat'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.4, -0.2) 'NECK'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.3, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.3, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 6 at (1.6, 1.3, -0.2) 'Open collar'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.1, -0.2) 'PIN'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2) 'No pin'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 10 PIECES FOUND'
+PASS: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0) 'YOU ARE STILL WELCOME'
+PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0) '01  /  OCEAN OF SHAME'
+PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0) 'A feeling can be vast without bein...'
+PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Distance at (0.0, 1.2, 1.8) '14   SMALL STROKES TO SHORE'
+PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Accessible rowing label at (0.0, 0.9, 1.5) 'ROW'
+PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Rowing instruction at (-2.6, 2.3, 3.4) 'Hold an oar. Push it forward, then...'
+PASS: room 2 [Heavy things] 02 - Heavy things/Chapter at (0.0, 4.4, 15.8) '02 / HEAVY THINGS'
+PASS: room 2 [Heavy things] 02 - Heavy things/Room title at (0.0, 4.0, 15.8) 'Processing, not erasing.'
+PASS: room 2 [Heavy things] 02 - Heavy things/Room subtitle at (0.0, 3.6, 15.8) 'Pick up each feeling. Point at the...'
+PASS: room 2 [Heavy things] 02 - Heavy things/Room progress at (0.0, 3.3, 15.8) '0 / 5   GIVEN A PLACE'
+PASS: room 2 [Heavy things] ANGER/ANGER tag at (0.0, 0.0, -0.5) 'ANGER'
+PASS: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5) 'FEAR'
+PASS: room 2 [Heavy things] RELIEF/RELIEF tag at (0.0, 0.0, -0.5) 'RELIEF'
+PASS: room 2 [Heavy things] GRIEF/GRIEF tag at (0.0, 0.0, -0.5) 'GRIEF'
+PASS: room 2 [Heavy things] UNCERTAINTY/UNCERTAINTY tag at (0.0, 0.0, -0.5) 'UNCERTAINTY'
+PASS: room 2 [Heavy things] 02 - Heavy things/Truck message at (0.0, 1.5, 4.5) 'ROOM TO CARRY ON'
+PASS: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5) 'SEND BOXES HERE'
+PASS: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7) '03 / A SMALL SPILL'
+PASS: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7) 'Everyone is watching.'
+PASS: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7) 'At least, that is how it feels. Ma...'
+PASS: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7) 'TAKE YOUR TIME'
+PASS: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5) 'BREW'
+PASS: room 3 [A small spill] 03 - A small spill/Machine display at (-0.2, 1.8, 4.5) 'READY? One ordinary task.'
+PASS: room 3 [A small spill] 03 - A small spill/Ask for support label at (2.1, 1.4, 4.4) 'ASK FOR HELP'
+PASS: room 3 [A small spill] 03 - A small spill/Help permission at (2.1, 1.9, 4.4) 'Available from the start. You do n...'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4) '04 / THE INFINITE ARCHIVE'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4) 'Not every thought is a fact.'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4) 'Pick up a note, point at its tray,...'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/Room progress at (0.0, 2.9, 7.4) '0 / 6   GIVEN A PLACE'
+PASS: room 4 [The infinite archive] My job ended./My job ended. tag at (0.0, 0.0, -0.5) 'My job ended.'
+PASS: room 4 [The infinite archive] I lost my routine./I lost my routine. tag at (0.0, 0.0, -0.5) 'I lost my routine.'
+PASS: room 4 [The infinite archive] I will never work again./I will never work again. tag at (0.0, 0.0, -0.5) 'I will never work again.'
+PASS: room 4 [The infinite archive] Everyone must think I failed./Everyone must think I failed. tag at (0.0, 0.0, -0.5) 'Everyone must think I failed.'
+PASS: room 4 [The infinite archive] My skills still exist./My skills still exist. tag at (0.0, 0.0, -0.5) 'My skills still exist.'
+PASS: room 4 [The infinite archive] I can ask for support./I can ask for support. tag at (0.0, 0.0, -0.5) 'I can ask for support.'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/FACT sign at (-2.3, 2.1, 5.0) 'FACT'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/FACT description at (-2.3, 1.7, 5.0) 'What happened'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/FEAR sign at (0.0, 2.1, 5.0) 'FEAR'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/FEAR description at (0.0, 1.7, 5.0) 'What my mind predicts'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE sign at (2.3, 2.1, 5.0) 'STILL TRUE'
+PASS: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE description at (2.3, 1.7, 5.0) 'What I still carry'
+PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0) 'You can rest before you are ready.'
+PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0) 'The office is only one room in you...'
+PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0) 'For now: a glass of water. A messa...'
+PASS: room 6 [The old résumé] 06 - The old résumé/Chapter at (0.0, 4.1, 9.6) '05 / THE OLD RÉSUMÉ'
+PASS: room 6 [The old résumé] 06 - The old résumé/Room title at (0.0, 3.5, 9.6) 'You are more than a page.'
+PASS: room 6 [The old résumé] 06 - The old résumé/Room subtitle at (0.0, 2.9, 9.6) 'Let each old résumé go, one at a t...'
+PASS: room 6 [The old résumé] 06 - The old résumé/Room progress at (0.0, 2.5, 9.6) '0 / 5   LET GO'
+PASS: room 6 [The old résumé] Page face/Page heading at (0.0, 0.2, 0.0) 'RÉSUMÉ'
+PASS: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0) 'SENIOR COORDINATOR since 2016'
+PASS: room 6 [The old résumé] 06 - The old résumé/Shredder label at (0.0, 1.3, 2.9) 'LET IT GO'
+PASS: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8) '06 / THE RAGE ROOM'
+PASS: room 7 [The rage room] 07 - The rage room/Room title at (0.0, 3.8, 6.8) 'Let it out.'
+PASS: room 7 [The rage room] 07 - The rage room/Room subtitle at (0.0, 3.2, 6.8) 'Break the old work computer. Short...'
+PASS: room 7 [The rage room] 07 - The rage room/Room progress at (0.0, 2.8, 6.8) '0 / 4   BROKEN'
+PASS: room 7 [The rage room] 07 - The rage room/Spray paint at (-2.5, 1.9, 6.8) 'LAST DAY'
+PASS: room 7 [The rage room] 07 - The rage room/Spray paint at (2.2, 1.0, 6.8) '"IT'S NOT PERSONAL"'
+PASS: room 7 [The rage room] 07 - The rage room/Desk note at (0.0, 0.5, -0.6) 'SHORT SWINGS COUNT Nothing here ca...'
+PASS: room 7 [The rage room] Monitor - pieces/Screen text at (0.0, 0.0, 0.0) 'INBOX   1,284 unread Re: Re: Re: q...'
+PASS: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0) 'TEAM PLAYER'
+PASS: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0) 'SENIOR ASSOCIATE'
+PASS: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0) 'PUT THE BAT BACK'
+PASS: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2) 'MY THINGS'
+PASS: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0) 'RAGE ROOM RULES 1. Break things, n...'
+NOTE: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): partly blocked from 9 of 107 places, by 00 - The lobby/Batched geometry - 02 Deep blue near (2.0, 2.5, 3.0)
+NOTE: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): partly blocked from 2 of 107 places, by 00 - The lobby/Batched geometry - 02 Deep blue near (2.0, 2.5, 3.0)
+NOTE: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): partly blocked from 14 of 107 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 3.0, 13.5)
+NOTE: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 109 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
+NOTE: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 3 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, -0.5)
+NOTE: room 0 [The lobby] Ocean of shame doorway/Enter Ocean of shame label at (0.0, 1.0, -0.1): partly blocked from 11 of 108 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 9.5)
+NOTE: room 0 [The lobby] Heavy things doorway/Chapter number at (0.0, 2.6, -0.1): partly blocked from 1 of 116 places, by 00 - The lobby/Batched geometry - 02 Deep blue near (5.0, 2.5, 3.0)
+NOTE: room 0 [The lobby] Heavy things doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 117 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
+NOTE: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 4 of 68 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (5.5, 1.5, 4.0)
+NOTE: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): partly blocked from 17 of 113 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (5.5, 1.0, 4.0)
+NOTE: room 0 [The lobby] A small spill doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 110 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.5, 1.5, 13.0)
+NOTE: room 0 [The lobby] A small spill doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 8 of 71 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
+NOTE: room 0 [The lobby] A small spill doorway/Enter A small spill label at (0.0, 1.0, -0.1): partly blocked from 26 of 110 places, by 00 - The lobby/Batched geometry - 05 Burnt coral near (0.5, 1.5, -0.5)
+NOTE: room 0 [The lobby] The infinite archive doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 2 of 117 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
+NOTE: room 0 [The lobby] The infinite archive doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 9 of 73 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
+NOTE: room 0 [The lobby] The infinite archive doorway/Enter The infinite archive label at (0.0, 1.0, -0.1): partly blocked from 26 of 115 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.0, 10.0)
+NOTE: room 0 [The lobby] The old résumé doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 110 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
+NOTE: room 0 [The lobby] The old résumé doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 3 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] The old résumé doorway/Enter The old résumé label at (0.0, 1.0, -0.1): partly blocked from 11 of 99 places, by 00 - The lobby/Batched geometry - 06 Brass and daylight near (0.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] The rage room doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 111 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
+NOTE: room 0 [The lobby] The rage room doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 4 of 75 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, -0.5)
+NOTE: room 0 [The lobby] The rage room doorway/Enter The rage room label at (0.0, 1.0, -0.1): partly blocked from 18 of 111 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.5, 1.5, 10.0)
+NOTE: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2): partly blocked from 2 of 27 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0); partly blocked from 3 of 25 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 1 label at (-1.9, 1.5, -0.2): partly blocked from 3 of 47 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 1 label at (-1.1, 1.5, -0.2): partly blocked from 4 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 2 label at (-1.9, 1.3, -0.2): partly blocked from 5 of 47 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 2 label at (-1.1, 1.3, -0.2): partly blocked from 6 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 3 label at (-1.9, 1.0, -0.2): partly blocked from 5 of 45 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 3 label at (-1.1, 1.0, -0.2): partly blocked from 6 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.5, -0.2): partly blocked from 3 of 63 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.5, -0.2): partly blocked from 2 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.3, -0.2): partly blocked from 4 of 62 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.3, -0.2): partly blocked from 2 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2): partly blocked from 5 of 61 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2): partly blocked from 2 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 2 [Heavy things] 02 - Heavy things/Chapter at (0.0, 4.4, 15.8): partly blocked from 22 of 95 places, by 02 - Heavy things/Batched geometry - 11 Uncoated paper near (-6.5, 2.0, 3.5)
+NOTE: room 2 [Heavy things] 02 - Heavy things/Room title at (0.0, 4.0, 15.8): partly blocked from 51 of 136 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (1.5, 2.5, 5.0)
+NOTE: room 2 [Heavy things] 02 - Heavy things/Room subtitle at (0.0, 3.6, 15.8): partly blocked from 64 of 137 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (1.5, 2.5, 5.0)
+NOTE: room 2 [Heavy things] 02 - Heavy things/Room progress at (0.0, 3.3, 15.8): partly blocked from 23 of 83 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (-1.5, 2.5, 9.0)
+NOTE: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5): partly blocked from 4 of 30 places, by 02 - Heavy things/RELIEF
+NOTE: room 2 [Heavy things] GRIEF/GRIEF tag at (0.0, 0.0, -0.5): partly blocked from 3 of 30 places, by 02 - Heavy things/RELIEF
+NOTE: room 2 [Heavy things] 02 - Heavy things/Truck message at (0.0, 1.5, 4.5): partly blocked from 6 of 64 places, by 02 - Heavy things/Batched geometry - 10 Brushed aluminium near (-5.0, 1.5, 0.5)
+NOTE: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5): partly blocked from 5 of 64 places, by 02 - Heavy things/Batched geometry - 10 Brushed aluminium near (-5.0, 1.5, 1.5)
+NOTE: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): partly blocked from 2 of 67 places, by 03 - A small spill/Batched geometry - 07 Polished limestone near (-3.5, 2.0, 5.5)
+NOTE: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): partly blocked from 3 of 72 places, by 03 - A small spill/Batched geometry - 08 Warm porcelain near (-4.5, 2.0, 5.5)
+NOTE: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): partly blocked from 5 of 72 places, by 03 - A small spill/Help plate
+NOTE: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7): partly blocked from 11 of 60 places, by 03 - A small spill/Batched geometry - 07 Polished limestone near (-3.5, 2.5, 5.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): partly blocked from 12 of 83 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-7.5, 2.0, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): partly blocked from 18 of 89 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (-6.0, 2.5, 3.0)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): partly blocked from 24 of 89 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 2.5, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room progress at (0.0, 2.9, 7.4): partly blocked from 28 of 77 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 2.0, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/FACT sign at (-2.3, 2.1, 5.0): partly blocked from 8 of 69 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (-5.0, 2.0, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/FACT description at (-2.3, 1.7, 5.0): partly blocked from 9 of 64 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-4.5, 1.5, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/FEAR sign at (0.0, 2.1, 5.0): partly blocked from 6 of 71 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-4.5, 2.0, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/FEAR description at (0.0, 1.7, 5.0): partly blocked from 8 of 69 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-4.5, 1.5, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE sign at (2.3, 2.1, 5.0): partly blocked from 10 of 69 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (4.5, 2.0, 2.5)
+NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE description at (2.3, 1.7, 5.0): partly blocked from 9 of 64 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 1.5, 2.5)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): partly blocked from 1 of 107 places, by 05 - Room for tomorrow/Batched geometry - 03 Quiet teal near (-6.0, 1.5, 5.0)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): partly blocked from 1 of 108 places, by 05 - Room for tomorrow/Batched geometry - 03 Quiet teal near (-6.0, 1.5, 5.0)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 6 of 108 places, by 05 - Room for tomorrow/Batched geometry - 03 Quiet teal near (-6.0, 1.5, 5.0)
+NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 52 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
+NOTE: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): out of reading range from everywhere sampled (letters about 0.7 cm tall)
+NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 18 places, by Monitor - pieces/Monitor body
+INFO: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): in range of 126 places, faced from 107, clear from 98, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): in range of 126 places, faced from 107, clear from 105, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): in range of 126 places, faced from 107, clear from 93, outlined
+INFO: room 0 [The lobby] Ocean of shame doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 109, clear from 109, outlined
+INFO: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 109, clear from 108, outlined
+INFO: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1): in range of 79 places, faced from 67, clear from 64, outlined
+INFO: room 0 [The lobby] Ocean of shame doorway/Enter Ocean of shame label at (0.0, 1.0, -0.1): in range of 125 places, faced from 108, clear from 97
+INFO: room 0 [The lobby] Heavy things doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 116, clear from 115, outlined
+INFO: room 0 [The lobby] Heavy things doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 117, clear from 116, outlined
+INFO: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): in range of 73 places, faced from 68, clear from 64, outlined
+INFO: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): in range of 125 places, faced from 113, clear from 96
+INFO: room 0 [The lobby] A small spill doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 110, clear from 110, outlined
+INFO: room 0 [The lobby] A small spill doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 110, clear from 109, outlined
+INFO: room 0 [The lobby] A small spill doorway/Intention at (0.0, 1.5, -0.1): in range of 86 places, faced from 71, clear from 63, outlined
+INFO: room 0 [The lobby] A small spill doorway/Enter A small spill label at (0.0, 1.0, -0.1): in range of 126 places, faced from 110, clear from 84
+INFO: room 0 [The lobby] The infinite archive doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 117, clear from 117, outlined
+INFO: room 0 [The lobby] The infinite archive doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 117, clear from 115, outlined
+INFO: room 0 [The lobby] The infinite archive doorway/Intention at (0.0, 1.5, -0.1): in range of 81 places, faced from 73, clear from 64, outlined
+INFO: room 0 [The lobby] The infinite archive doorway/Enter The infinite archive label at (0.0, 1.0, -0.1): in range of 126 places, faced from 115, clear from 89
+INFO: room 0 [The lobby] The old résumé doorway/Chapter number at (0.0, 2.6, -0.1): in range of 122 places, faced from 106, clear from 106, outlined
+INFO: room 0 [The lobby] The old résumé doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 110, clear from 109, outlined
+INFO: room 0 [The lobby] The old résumé doorway/Intention at (0.0, 1.5, -0.1): in range of 58 places, faced from 52, clear from 49, outlined
+INFO: room 0 [The lobby] The old résumé doorway/Enter The old résumé label at (0.0, 1.0, -0.1): in range of 115 places, faced from 99, clear from 88
+INFO: room 0 [The lobby] The rage room doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 111, clear from 111, outlined
+INFO: room 0 [The lobby] The rage room doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 111, clear from 110, outlined
+INFO: room 0 [The lobby] The rage room doorway/Intention at (0.0, 1.5, -0.1): in range of 89 places, faced from 75, clear from 71, outlined
+INFO: room 0 [The lobby] The rage room doorway/Enter The rage room label at (0.0, 1.0, -0.1): in range of 126 places, faced from 111, clear from 93
+INFO: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2): in range of 49 places, faced from 27, clear from 25, outlined
+INFO: room 0 [The lobby] BEFORE - remembered office/Memory caption at (0.0, 2.8, -1.9): in range of 87 places, faced from 49, clear from 49, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Welcome at (0.0, 1.1, -0.6): in range of 107 places, faced from 24, clear from 24, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Journey progress at (0.0, 0.6, -0.6): in range of 88 places, faced from 24, clear from 24, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Move instructions at (3.5, 3.2, 2.8): in range of 105 places, faced from 42, clear from 42, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Continue last room label at (-1.0, 1.5, -0.4): in range of 114 places, faced from 25, clear from 25
+INFO: room 0 [The lobby] 00 - The lobby/Small sessions at (0.0, 0.8, -0.6): in range of 74 places, faced from 24, clear from 24, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Comfort note at (0.0, 0.2, -0.7): in range of 68 places, faced from 24, clear from 24, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Rooftop passage label at (0.0, 2.7, 13.4): in range of 124 places, faced from 105, clear from 105
+INFO: room 0 [The lobby] 00 - The lobby/Mirror and wardrobe label at (1.0, 1.5, -0.4): in range of 105 places, faced from 26, clear from 26
+INFO: room 0 [The lobby] Mirror wall/Mirror nameplate at (0.0, 2.7, -0.1): in range of 39 places, faced from 35, clear from 35, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe heading at (-1.5, 2.1, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.9, -0.2): in range of 10 places, faced from 8, clear from 8, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 0 label at (-1.9, 1.8, -0.2): in range of 56 places, faced from 47, clear from 47
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 0 label at (-1.1, 1.8, -0.2): in range of 62 places, faced from 52, clear from 52
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 0 at (-1.5, 1.8, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.7, -0.2): in range of 10 places, faced from 8, clear from 8, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 1 label at (-1.9, 1.5, -0.2): in range of 56 places, faced from 47, clear from 44
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 1 label at (-1.1, 1.5, -0.2): in range of 62 places, faced from 52, clear from 48
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 1 at (-1.5, 1.5, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.4, -0.2): in range of 10 places, faced from 8, clear from 8, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 2 label at (-1.9, 1.3, -0.2): in range of 56 places, faced from 47, clear from 42
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 2 label at (-1.1, 1.3, -0.2): in range of 62 places, faced from 52, clear from 46
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 2 at (-1.5, 1.3, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (-1.5, 1.1, -0.2): in range of 10 places, faced from 8, clear from 8, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 3 label at (-1.9, 1.0, -0.2): in range of 55 places, faced from 45, clear from 40
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 3 label at (-1.1, 1.0, -0.2): in range of 62 places, faced from 52, clear from 46
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 3 at (-1.5, 1.0, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Still to find at (-1.5, 0.5, -0.2): in range of 14 places, faced from 12, clear from 12, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe heading at (1.6, 2.1, -0.2): in range of 29 places, faced from 25, clear from 25, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.9, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 4 label at (1.1, 1.8, -0.2): in range of 73 places, faced from 63, clear from 63
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 4 label at (2.0, 1.8, -0.2): in range of 78 places, faced from 67, clear from 67
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 4 at (1.6, 1.8, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.7, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.5, -0.2): in range of 73 places, faced from 63, clear from 60
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.5, -0.2): in range of 78 places, faced from 67, clear from 65
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 5 at (1.6, 1.5, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.4, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.3, -0.2): in range of 72 places, faced from 62, clear from 58
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.3, -0.2): in range of 78 places, faced from 67, clear from 65
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 6 at (1.6, 1.3, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.1, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2): in range of 72 places, faced from 61, clear from 56
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2): in range of 78 places, faced from 67, clear from 65
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2): in range of 21 places, faced from 18, clear from 18, outlined
+INFO: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0): in range of 9 places, faced from 9, clear from 9, outlined
+INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
+INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
+INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Distance at (0.0, 1.2, 1.8): in range of 9 places, faced from 9, clear from 9, outlined
+INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Accessible rowing label at (0.0, 0.9, 1.5): in range of 9 places, faced from 7, clear from 7
+INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Rowing instruction at (-2.6, 2.3, 3.4): in range of 9 places, faced from 9, clear from 9, outlined
+INFO: room 2 [Heavy things] 02 - Heavy things/Chapter at (0.0, 4.4, 15.8): in range of 108 places, faced from 95, clear from 73, outlined
+INFO: room 2 [Heavy things] 02 - Heavy things/Room title at (0.0, 4.0, 15.8): in range of 148 places, faced from 136, clear from 85, outlined
+INFO: room 2 [Heavy things] 02 - Heavy things/Room subtitle at (0.0, 3.6, 15.8): in range of 148 places, faced from 137, clear from 73, outlined
+INFO: room 2 [Heavy things] 02 - Heavy things/Room progress at (0.0, 3.3, 15.8): in range of 94 places, faced from 83, clear from 60, outlined
+INFO: room 2 [Heavy things] ANGER/ANGER tag at (0.0, 0.0, -0.5): in range of 95 places, faced from 26, clear from 26
+INFO: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5): in range of 104 places, faced from 30, clear from 26
+INFO: room 2 [Heavy things] RELIEF/RELIEF tag at (0.0, 0.0, -0.5): in range of 99 places, faced from 28, clear from 28
+INFO: room 2 [Heavy things] GRIEF/GRIEF tag at (0.0, 0.0, -0.5): in range of 104 places, faced from 30, clear from 27
+INFO: room 2 [Heavy things] UNCERTAINTY/UNCERTAINTY tag at (0.0, 0.0, -0.5): in range of 96 places, faced from 26, clear from 26
+INFO: room 2 [Heavy things] 02 - Heavy things/Truck message at (0.0, 1.5, 4.5): in range of 148 places, faced from 64, clear from 58, outlined
+INFO: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5): in range of 146 places, faced from 64, clear from 59, outlined
+INFO: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): in range of 82 places, faced from 67, clear from 65, outlined
+INFO: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): in range of 86 places, faced from 72, clear from 69, outlined
+INFO: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): in range of 86 places, faced from 72, clear from 67, outlined
+INFO: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7): in range of 73 places, faced from 60, clear from 49, outlined
+INFO: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): in range of 86 places, faced from 52, clear from 52
+INFO: room 3 [A small spill] 03 - A small spill/Machine display at (-0.2, 1.8, 4.5): in range of 50 places, faced from 25, clear from 25, outlined
+INFO: room 3 [A small spill] 03 - A small spill/Ask for support label at (2.1, 1.4, 4.4): in range of 86 places, faced from 52, clear from 52
+INFO: room 3 [A small spill] 03 - A small spill/Help permission at (2.1, 1.9, 4.4): in range of 81 places, faced from 47, clear from 47, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): in range of 193 places, faced from 83, clear from 71, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): in range of 419 places, faced from 89, clear from 71, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): in range of 207 places, faced from 89, clear from 65, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/Room progress at (0.0, 2.9, 7.4): in range of 171 places, faced from 77, clear from 49, outlined
+INFO: room 4 [The infinite archive] My job ended./My job ended. tag at (0.0, 0.0, -0.5): in range of 140 places, faced from 41, clear from 41
+INFO: room 4 [The infinite archive] I lost my routine./I lost my routine. tag at (0.0, 0.0, -0.5): in range of 142 places, faced from 42, clear from 42
+INFO: room 4 [The infinite archive] I will never work again./I will never work again. tag at (0.0, 0.0, -0.5): in range of 142 places, faced from 42, clear from 42
+INFO: room 4 [The infinite archive] Everyone must think I failed./Everyone must think I failed. tag at (0.0, 0.0, -0.5): in range of 142 places, faced from 43, clear from 43
+INFO: room 4 [The infinite archive] My skills still exist./My skills still exist. tag at (0.0, 0.0, -0.5): in range of 142 places, faced from 42, clear from 42
+INFO: room 4 [The infinite archive] I can ask for support./I can ask for support. tag at (0.0, 0.0, -0.5): in range of 141 places, faced from 41, clear from 41
+INFO: room 4 [The infinite archive] 04 - The infinite archive/FACT sign at (-2.3, 2.1, 5.0): in range of 269 places, faced from 69, clear from 61, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/FACT description at (-2.3, 1.7, 5.0): in range of 159 places, faced from 64, clear from 55, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/FEAR sign at (0.0, 2.1, 5.0): in range of 269 places, faced from 71, clear from 65, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/FEAR description at (0.0, 1.7, 5.0): in range of 165 places, faced from 69, clear from 61, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE sign at (2.3, 2.1, 5.0): in range of 269 places, faced from 69, clear from 59, outlined
+INFO: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE description at (2.3, 1.7, 5.0): in range of 159 places, faced from 64, clear from 55, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): in range of 145 places, faced from 107, clear from 106, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): in range of 145 places, faced from 108, clear from 107, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): in range of 145 places, faced from 108, clear from 102, outlined
+INFO: room 6 [The old résumé] 06 - The old résumé/Chapter at (0.0, 4.1, 9.6): in range of 73 places, faced from 65, clear from 65, outlined
+INFO: room 6 [The old résumé] 06 - The old résumé/Room title at (0.0, 3.5, 9.6): in range of 81 places, faced from 73, clear from 73, outlined
+INFO: room 6 [The old résumé] 06 - The old résumé/Room subtitle at (0.0, 2.9, 9.6): in range of 79 places, faced from 71, clear from 71, outlined
+INFO: room 6 [The old résumé] 06 - The old résumé/Room progress at (0.0, 2.5, 9.6): in range of 65 places, faced from 59, clear from 59, outlined
+INFO: room 6 [The old résumé] Page face/Page heading at (0.0, 0.2, 0.0): in range of 11 places, faced from 5, clear from 5
+INFO: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0): in range of 33 places, faced from 15, clear from 15
+INFO: room 6 [The old résumé] 06 - The old résumé/Shredder label at (0.0, 1.3, 2.9): in range of 81 places, faced from 39, clear from 39, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): in range of 59 places, faced from 52, clear from 51, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Room title at (0.0, 3.8, 6.8): in range of 59 places, faced from 52, clear from 52, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Room subtitle at (0.0, 3.2, 6.8): in range of 59 places, faced from 53, clear from 53, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Room progress at (0.0, 2.8, 6.8): in range of 59 places, faced from 54, clear from 54, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Spray paint at (-2.5, 1.9, 6.8): in range of 59 places, faced from 55, clear from 55
+INFO: room 7 [The rage room] 07 - The rage room/Spray paint at (2.2, 1.0, 6.8): in range of 59 places, faced from 55, clear from 55
+INFO: room 7 [The rage room] 07 - The rage room/Desk note at (0.0, 0.5, -0.6): in range of 46 places, faced from 19, clear from 19, outlined
+INFO: room 7 [The rage room] Monitor - pieces/Screen text at (0.0, 0.0, 0.0): in range of 19 places, faced from 10, clear from 10
+INFO: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): in range of 0 places, faced from 0, clear from 0
+INFO: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0): in range of 7 places, faced from 5, clear from 5
+INFO: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): in range of 42 places, faced from 18, clear from 16
+INFO: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2): in range of 31 places, faced from 10, clear from 10
+INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0): in range of 57 places, faced from 53, clear from 53, outlined
+INFO: 138 signs checked; 0 skinned meshes in the last scan were not counted as solid.

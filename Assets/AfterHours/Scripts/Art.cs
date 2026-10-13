@@ -15,6 +15,8 @@ namespace AfterHours
         // The avatar's skin tones and hair colours, in wardrobe order.
         public static Material[] Skins, Hairs;
         public static TMP_FontAsset Font;
+        // Outlined lettering. Light text gets a deep-blue outline and dark text an ivory one, so a sign stays readable over whatever is behind it.
+        public static Material TextHalo, TextHaloDark;
         public static Transform Root;
 
         public static GameObject Box(string name, Vector3 p, Vector3 s, Material mat, bool solid = true, Transform parent = null, float bevel = Geometry.Bevel)
@@ -52,12 +54,20 @@ namespace AfterHours
         {
             var t = new GameObject(name).transform; t.SetParent(parent ? parent : Root, false); t.localPosition = p; return t;
         }
-        public static TextMeshPro Text(string name, string value, Vector3 p, float size, Color color, float width = 6, Transform parent = null)
+        // Free-standing light text (not a label on a board or a button) is outlined by default. Dark text asks for it with Halo().
+        public static TextMeshPro Text(string name, string value, Vector3 p, float size, Color color, float width = 6, Transform parent = null, bool halo = true)
         {
             var t = new GameObject(name).AddComponent<TextMeshPro>(); t.transform.SetParent(parent ? parent : Root, false);
             t.transform.localPosition = p; t.font = Font; t.text = value; t.fontSize = size * 7; t.color = color;
             t.alignment = TextAlignmentOptions.Center; t.textWrappingMode = TextWrappingModes.Normal;
             t.rectTransform.sizeDelta = new Vector2(width, 3); t.richText = true;
+            if (halo && !parent && color.grayscale > .35f) Halo(t);
+            return t;
+        }
+        public static TextMeshPro Halo(TextMeshPro t)
+        {
+            var material = t.color.grayscale > .35f ? TextHalo : TextHaloDark;
+            if (material) t.fontSharedMaterial = material;
             return t;
         }
         public static GameObject Line(string name, Vector3 a, Vector3 b, float width, Material mat, Transform parent = null)
@@ -142,7 +152,7 @@ namespace AfterHours
         public static GameObject Button(string name, string label, Vector3 p, Vector3 size, Material color, ActionKind kind, GameDirector director, int value=0, Transform parent=null)
         {
             var go=Box(name,p,size,color,true,parent);var a=go.AddComponent<Interactable>();a.kind=kind;a.director=director;a.value=value;a.prompt=label;
-            var labelText=Text(name+" label",label,p+new Vector3(0,0,-size.z*.5f-.015f),.20f,Color.white,size.x*.92f,parent); labelText.rectTransform.sizeDelta=new Vector2(size.x*.9f,size.y*.8f);labelText.enableAutoSizing=true;labelText.fontSizeMin=.5f;labelText.fontSizeMax=1.6f;
+            var labelText=Text(name+" label",label,p+new Vector3(0,0,-size.z*.5f-.015f),.20f,Color.white,size.x*.92f,parent,false); labelText.rectTransform.sizeDelta=new Vector2(size.x*.9f,size.y*.8f);labelText.enableAutoSizing=true;labelText.fontSizeMin=.5f;labelText.fontSizeMax=1.6f;
             return go;
         }
     }

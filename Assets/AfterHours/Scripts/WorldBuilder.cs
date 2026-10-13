@@ -11,7 +11,7 @@ namespace AfterHours
         static Color ivory=new Color(.92f,.91f,.85f), muted=new Color(.61f,.76f,.77f), dark=new Color(.08f,.15f,.2f);
         public static void Build(GameDirector director)
         {
-            d=director;d.rooms=new MindRoom[8];
+            d=director;d.rooms=new MindRoom[8];backings.Clear();
             NewRoom(0,"The lobby",Vector3.zero,new Vector3(0,.05f,-4));Hub();
             NewRoom(1,"Ocean of shame",new Vector3(80,0,0),new Vector3(0,.3f,-1));Ocean();
             NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-2.4f));Warehouse();
@@ -23,8 +23,13 @@ namespace AfterHours
             Menu();
             // Signs that only guide or reassure can be switched off together (clean mode). Labels on buttons, doors and objects stay.
             foreach(var room in d.rooms)foreach(var t in room.root.GetComponentsInChildren<TextMeshPro>(true))if(GuidanceNames.Contains(t.name)&&!t.GetComponent<Guidance>())t.gameObject.AddComponent<Guidance>();
+            // A plate behind a guidance sign is part of that guidance, so clean mode removes both.
+            foreach(var (room,text,plate) in backings)foreach(var g in d.rooms[room].root.GetComponentsInChildren<Guidance>(true))if(g.name==text){var all=new List<GameObject>(g.backing??new GameObject[0]){plate};g.backing=all.ToArray();}
             for(int i=0;i<d.rooms.Length;i++)d.rooms[i].root.SetActive(i==0);
         }
+        static readonly List<(int room,string text,GameObject plate)> backings=new List<(int,string,GameObject)>();
+        // Registers a plate that backs the guidance sign of that name in that room.
+        static GameObject Backed(int room,string text,GameObject plate){backings.Add((room,text,plate));return plate;}
         static readonly string[] GuidanceNames={"Chapter","Room title","Room subtitle","Room progress","Brand eyebrow","Title","Tagline","Welcome","Journey progress","Move instructions","Small sessions","Comfort note","Desk note","Rules","Rowing instruction","Distance","Ocean title","Ocean intention","Help permission"};
         // Each room has its own soundscape. Sources play when their room is switched on.
         static AudioSource Sound(string clip,float volume,Transform parent=null)
@@ -63,12 +68,14 @@ namespace AfterHours
                 Art.Box("Skirting right",new Vector3(width/2-.13f,.14f,z),new Vector3(.06f,.1f,3.8f),Art.Gold,false);
             }
         }
-        static void Header(int room,string kicker,string title,string sub,Vector3 at,float width=8)
+        // The four lines of a room's heading. A heading that has to clear furniture can turn toward the player (yaw), pack its lines closer (spacing) and shrink (scale).
+        static void Header(int room,string kicker,string title,string sub,Vector3 at,float width=8,float yaw=0,float spacing=1,float scale=1,float subScale=1)
         {
-            Art.Text("Chapter",kicker,at+Vector3.up*.65f,.17f,muted,width);
-            Art.Text("Room title",title,at,.55f,ivory,width);
-            Art.Text("Room subtitle",sub,at+Vector3.down*.55f,.18f,muted,width);
-            d.rooms[room].progress=Art.Text("Room progress","TAKE YOUR TIME",at+Vector3.down*.93f,.15f,new Color(.9f,.66f,.38f),width);
+            var turn=Quaternion.Euler(0,yaw,0);
+            Art.Text("Chapter",kicker,at+Vector3.up*.65f*spacing,.17f*scale,muted,width).transform.localRotation=turn;
+            Art.Text("Room title",title,at,.55f*scale,ivory,width).transform.localRotation=turn;
+            Art.Text("Room subtitle",sub,at+Vector3.down*.55f*spacing,.18f*scale*subScale,muted,width).transform.localRotation=turn;
+            var progress=Art.Text("Room progress","TAKE YOUR TIME",at+Vector3.down*.93f*spacing,.15f*scale,new Color(.9f,.66f,.38f),width);progress.transform.localRotation=turn;d.rooms[room].progress=progress;
         }
         // Comfort, turning and room options in one panel that the menu button opens. It belongs to the player, not a room.
         static void Menu()
@@ -166,9 +173,10 @@ namespace AfterHours
             Shell(14,21,Art.Cream,true,-5,-.4f);
             Art.Box("Midnight runner",new Vector3(0,.012f,4.5f),new Vector3(3.5f,.025f,18),Art.Teal,false);
             for(int side=-1;side<=1;side+=2)Art.Box("Runner piping",new Vector3(side*1.74f,.032f,4.5f),new Vector3(.025f,.015f,18),Art.Gold,false);
-            Art.Text("Brand eyebrow","A WALK THROUGH THE OFFICE OF YOUR MIND",new Vector3(0,4.02f,13.8f),.2f,muted,11);
-            Art.Text("Title","AFTER HOURS",new Vector3(0,3.12f,13.7f),1.0f,ivory,11);
-            Art.Text("Tagline","A job ended. Your story did not.",new Vector3(0,2.38f,13.7f),.26f,muted,10);
+            // Everything on the far wall sits above the line of sight over the console (about 2.45 m at the arrival point), so nothing hides it.
+            Art.Text("Brand eyebrow","A WALK THROUGH THE OFFICE OF YOUR MIND",new Vector3(0,4.4f,13.7f),.28f,muted,12);
+            Art.Text("Title","AFTER HOURS",new Vector3(0,3.78f,13.7f),1.0f,ivory,11);
+            Art.Text("Tagline","A job ended. Your story did not.",new Vector3(0,3.22f,13.7f),.34f,muted,11);
             Door("01","Ocean of\nshame","A small boat.\nA light ahead.",new Vector3(-6.82f,0,1.1f),-90,Art.Teal,1);
             Door("02","Heavy\nthings","Give your feelings\na place to go.",new Vector3(6.82f,0,1.1f),90,Art.Coral,2);
             Door("03","A small\nspill","The machine is broken.\nYou are allowed help.",new Vector3(-6.82f,0,7),-90,Art.Gold,3);
@@ -177,18 +185,20 @@ namespace AfterHours
             Door("06","The rage\nroom","Break the old work\ncomputer. Let it out.",new Vector3(-6.82f,0,4.05f),-90,Art.Coral,RageRoom.Room);
             // A detailed, polished memory occupies the end of each side of the lobby.
             MemoryOffice(new Vector3(-4.6f,0,12));MemoryOffice(new Vector3(4.6f,0,12));
-            Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(2.35f,1.24f,.65f),Art.Navy);
-            Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(2.45f,.06f,.72f),Art.Gold);
-            Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.01f,-.64f),.18f,ivory,2.2f);
-            d.lobbyProgress=Art.Text("Journey progress","0 / 6   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.65f,-.645f),.145f,muted,2.15f);
-            Art.Box("Getting started board",new Vector3(3.5f,1.9f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy);
-            Words(Art.Text("Move instructions","",new Vector3(3.5f,1.9f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
-            var resume=Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(0,2.16f,-.3f),new Vector3(2.75f,.4f,.12f),Art.Teal,ActionKind.Resume,d);
+            Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(4f,1.24f,.65f),Art.Navy);
+            Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(4.1f,.06f,.72f),Art.Gold);
+            Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.07f,-.64f),.17f,ivory,3.4f);
+            d.lobbyProgress=Art.Text("Journey progress","0 / 6   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
+            // The board hangs above the lines of sight from the arrival point to the side doors (they pass between 1.1 and 2.4 m here).
+            Art.Box("Getting started board",new Vector3(3.5f,3.2f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy);
+            Words(Art.Text("Move instructions","",new Vector3(3.5f,3.2f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
+            // BEGIN and the mirror button stand side by side on the console, no higher than 1.65 m, so they never cover the far wall.
+            var resume=Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(-1.02f,1.47f,-.3f),new Vector3(1.9f,.36f,.12f),Art.Teal,ActionKind.Resume,d);
             d.resumeLabel=Art.Root.Find("Continue last room label").GetComponent<TextMeshPro>();
-            Art.Text("Small sessions","A FEW MINUTES IS ENOUGH\nEach small step saves. Return to the lobby to take a break.",new Vector3(0,2.65f,-.3f),.13f,muted,3.8f);
-            Words(Art.Text("Comfort note","",new Vector3(0,.24f,-.65f),.1f,muted,2.2f),"SITTING DOWN? OPEN THE MENU\nLeft palm pinch, then SEATED VIEW.\nThe menu's LOBBY button returns here from any room.","SITTING DOWN? OPEN THE MENU\nMenu button, then SEATED VIEW.\nB / Y returns here from any room.");
-            Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,1.1f,13.5f),new Vector3(4.2f,.65f,.16f),Art.Teal,ActionKind.Travel,d,5);
-            Art.Button("Mirror and wardrobe","MIRROR  /  YOUR WARDROBE",new Vector3(0,1.62f,-.3f),new Vector3(2f,.26f,.1f),Art.Coral,ActionKind.GoToMirror,d);
+            Art.Text("Small sessions","A FEW MINUTES IS ENOUGH\nEach small step saves. Return to the lobby to take a break.",new Vector3(0,.82f,-.64f),.105f,muted,4.4f);
+            Words(Art.Text("Comfort note","",new Vector3(0,.2f,-.65f),.095f,muted,3.4f),"SITTING DOWN? OPEN THE MENU\nLeft palm pinch, then SEATED VIEW.\nThe menu's LOBBY button returns here from any room.","SITTING DOWN? OPEN THE MENU\nMenu button, then SEATED VIEW.\nB / Y returns here from any room.");
+            Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,2.72f,13.5f),new Vector3(4.2f,.55f,.16f),Art.Teal,ActionKind.Travel,d,5);
+            Art.Button("Mirror and wardrobe","MIRROR  /  YOUR WARDROBE",new Vector3(1.02f,1.45f,-.3f),new Vector3(1.9f,.3f,.1f),Art.Coral,ActionKind.GoToMirror,d);
             d.mirrorLabel=Art.Root.Find("Mirror and wardrobe label").GetComponent<TextMeshPro>();
             // Door 06 stands between doors 01 and 03, so the left wall's plant moves on toward the memory office.
             Art.Plant(new Vector3(5.9f,0,4));Art.Plant(new Vector3(-6.2f,0,9.3f));
@@ -252,10 +262,10 @@ namespace AfterHours
             Art.Tiled("Reflected ceiling",new Vector3(3.375f,4.65f,7.05f),new Vector3(11.25f,.15f,13.9f),Art.Ink,new Vector3(3,0,3),false,null,.035f,false);
             foreach(float z in new[]{-2f,2f,6f})Art.Box("Reflected light",new Vector3(z+2.85f,4.5f,7),new Vector3(.08f,.035f,9.8f),Art.White,false);
             Art.Box("Reflected runner",new Vector3(3.675f,.012f,7),new Vector3(10.65f,.025f,3.5f),Art.Teal,false);
-            Art.Box("Reflected console",new Vector3(2.55f,.62f,7),new Vector3(.65f,1.24f,2.35f),Art.Navy,false);
-            Art.Box("Reflected console cap",new Vector3(2.55f,1.25f,7),new Vector3(.72f,.06f,2.45f),Art.Gold,false);
-            Art.Box("Reflected sign",new Vector3(2.55f,2.16f,7),new Vector3(.12f,.4f,2.75f),Art.Teal,false);
-            Art.Box("Reflected sign",new Vector3(2.55f,1.62f,7),new Vector3(.1f,.26f,2f),Art.Coral,false);
+            Art.Box("Reflected console",new Vector3(2.55f,.62f,7),new Vector3(.65f,1.24f,4f),Art.Navy,false);
+            Art.Box("Reflected console cap",new Vector3(2.55f,1.25f,7),new Vector3(.72f,.06f,4.1f),Art.Gold,false);
+            Art.Box("Reflected sign",new Vector3(2.55f,1.47f,5.98f),new Vector3(.12f,.36f,1.9f),Art.Teal,false);
+            Art.Box("Reflected sign",new Vector3(2.55f,1.45f,8.02f),new Vector3(.1f,.3f,1.9f),Art.Coral,false);
             Art.Box("Reflected board",new Vector3(5.7f,1.9f,10.5f),new Vector3(.08f,1.35f,2.9f),Art.Navy,false);
             foreach(var (x,accent) in new[]{(.25f,Art.Gold),(3.95f,Art.Coral)})
             {
@@ -513,7 +523,7 @@ namespace AfterHours
             Art.Box("Shredder top",new Vector3(0,top+.015f,z),new Vector3(1.02f,.03f,.8f),Art.Navy);
             Art.Box("Feed slot",new Vector3(0,top+.032f,z),new Vector3(.7f,.006f,.05f),Art.Ink,false,null,.001f);
             for(int s=-1;s<=1;s+=2)Art.Box("Slot rim",new Vector3(0,top+.033f,z+s*.037f),new Vector3(.75f,.008f,.014f),Art.Gold,false,null,.002f);
-            Art.Text("Shredder label","LET IT GO",new Vector3(0,top-.28f,z-.4f),.11f,ivory,.9f);
+            Art.Text("Shredder label","LET IT GO",new Vector3(0,top-.09f,z-.4f),.11f,ivory,.9f);
             Art.Shape("Ready light",PrimitiveType.Sphere,new Vector3(.38f,top-.1f,z-.39f),Vector3.one*.035f,Art.Mint,false);
             var piles=new GameObject[pages.Length];
             for(int i=0;i<piles.Length;i++)
@@ -930,7 +940,10 @@ namespace AfterHours
             var beamBack=Art.Beam("Lighthouse beam behind",Vector3.zero,70,9,Art.BeamGlow,beacon);beamBack.GetComponent<MeshFilter>().sharedMesh=beam.GetComponent<MeshFilter>().sharedMesh;beamBack.transform.localRotation=Quaternion.Euler(0,180,0)*Quaternion.Euler(2,0,0);
             ocean.beams=new[]{beam.GetComponent<MeshRenderer>(),beamBack.GetComponent<MeshRenderer>()};ocean.dayBeam=Art.BeamGlow;ocean.nightBeam=Art.BeamGlowNight;
             ocean.sun=Art.Shape("Sun",PrimitiveType.Sphere,new Vector3(-14,13,48),Vector3.one*7,Art.Gold,false,horizon);
-            Art.Text("Distant words","YOU ARE STILL WELCOME",new Vector3(0,1.25f,17),.24f,ivory,8,horizon);
+            // A sign standing in the sea in front of the shore, so its words never sit on the pale shore or the tower.
+            Art.Box("Welcome sign",new Vector3(0,1.25f,17.03f),new Vector3(2.1f,.46f,.05f),Art.Navy,false,horizon);
+            for(int side=-1;side<=1;side+=2)Art.Box("Welcome sign post",new Vector3(side*.9f,.55f,17.03f),new Vector3(.08f,1.4f,.08f),Art.Wood,false,horizon);
+            Art.Halo(Art.Text("Distant words","YOU ARE STILL WELCOME",new Vector3(0,1.25f,17),.24f,ivory,8,horizon));
             // Night: a moon and a dome of stars, switched on by the OCEAN AT NIGHT option. They stay put while the shore moves.
             var sky=Art.Group("Night sky",new Vector3(0,.3f,0));
             Art.Stars("Stars",260,66,Art.Star,sky);
@@ -963,11 +976,18 @@ namespace AfterHours
                 o.ResetPose();
             }
             ocean.oars=oars.ToArray();
-            Art.Text("Ocean title","01  /  OCEAN OF SHAME",new Vector3(0,3.9f,10),.5f,ivory,12);
-            Art.Text("Ocean intention","A feeling can be vast without being forever.",new Vector3(0,3.2f,10),.26f,muted,11);
+            // The lighthouse sails up the middle of the view as you row, so the heading stands off to one side, turned toward the boat, where it never passes behind the tower.
+            // It is on the right because the sun and the moon are on the left.
+            var oceanTurn=Quaternion.Euler(0,21,0);
+            Art.Text("Ocean title","01  /  OCEAN OF SHAME",new Vector3(4.3f,3.9f,10),.55f,ivory,7.2f).transform.localRotation=oceanTurn;
+            Art.Text("Ocean intention","A feeling can be vast without being forever.",new Vector3(4.3f,3.2f,10),.3f,ivory,7.2f).transform.localRotation=oceanTurn;
+            Backed(1,"Distance",Art.Box("Distance plate",new Vector3(0,1.2f,1.84f),new Vector3(1.55f,.26f,.03f),Art.Navy,false));
             ocean.distance=Art.Text("Distance","14   SMALL STROKES TO SHORE",new Vector3(0,1.2f,1.8f),.13f,ivory,2.6f);
             Art.Button("Accessible rowing","ROW",new Vector3(0,.85f,1.6f),new Vector3(.8f,.32f,.1f),Art.Teal,ActionKind.Row,d);
-            Art.Text("Rowing instruction","Hold an oar. Push it forward, then draw it back.\nOr point at ROW and select.\nBlink steps keep the boat steady.",new Vector3(0,2.9f,3.3f),.11f,muted,2.6f);
+            // The how-to-row note sits off to the left on its own plate, turned toward the boat. Straight ahead it would sail across the lighthouse and its beam.
+            var rowTurn=Quaternion.Euler(0,-30.7f,0);
+            var rowPlate=Backed(1,"Rowing instruction",Art.Box("Rowing plate",new Vector3(-2.6f,2.3f,3.45f),new Vector3(2.9f,.72f,.03f),Art.Navy,false));rowPlate.transform.localRotation=rowTurn;
+            Art.Text("Rowing instruction","Hold an oar. Push it forward, then draw it back.\nOr point at ROW and select.\nBlink steps keep the boat steady.",new Vector3(-2.577f,2.3f,3.411f),.105f,ivory,2.7f).transform.localRotation=rowTurn;
             // The sea itself: swell, lapping at the hull and wind, with gulls by day and a bell buoy at night (see SeaSounds).
             var sea=ocean.gameObject.AddComponent<SeaSounds>();ocean.sea=sea;
             sea.swell=Sound("Ambience - Ocean",.6f);sea.lapping=Sound("Ambience - Sea lapping",.3f);sea.wind=Sound("Ambience - Night sea",0f);
@@ -1000,7 +1020,8 @@ namespace AfterHours
         static void Warehouse()
         {
             Shell(16,21,Art.Cream);d.rooms[2].total=5;
-            Header(2,"02 / HEAVY THINGS","Processing, not erasing.","Pick up each feeling. Point at the truck and let go, or throw it in.",new Vector3(0,3.25f,11));
+            // The heading hangs on the back wall above the truck's cab, high enough that its lowest line clears the cab from the arrival point.
+            Header(2,"02 / HEAVY THINGS","Processing, not erasing.","Pick up each feeling. Point at the truck and let go, or throw it in.",new Vector3(0,3.95f,15.75f),10,0,.7f,1.2f,1.25f);
             for(int side=-1;side<=1;side+=2)
             {
                 for(int z=0;z<3;z++)
@@ -1026,15 +1047,18 @@ namespace AfterHours
             Art.Box("Loading ramp",new Vector3(0,.17f,-2.55f),new Vector3(3.2f,.25f,1.5f),Art.Gold,true,truck);
             var bay=Zone("Processing bay",new Vector3(0,1.25f,6.1f),new Vector3(2.8f,1.7f,2.8f),2,"",5);
             Target(bay.gameObject,2,new Vector3(0,.2f,0),1.3f,"Point at the truck and let go.",Outline("Truck bay highlight",new Vector3(0,1.42f,4.62f),new Vector2(2.95f,1.85f),true));
-            Art.Text("Truck message","ROOM TO CARRY ON",new Vector3(0,2.7f,8.23f),.25f,ivory,3);
-            Art.Text("Bay sign","SEND BOXES HERE",new Vector3(0,.65f,4.53f),.16f,dark,3);
+            // One sign at the truck's open end carries both lines. Anything higher would stand between the player and the heading on the back wall.
+            Art.Box("Bay sign plate",new Vector3(0,1.27f,4.58f),new Vector3(2f,.8f,.04f),Art.Navy,false);
+            Art.Text("Truck message","ROOM TO CARRY ON",new Vector3(0,1.47f,4.53f),.22f,ivory,3);
+            Art.Text("Bay sign","SEND BOXES HERE",new Vector3(0,1.07f,4.53f),.16f,ivory,3);
             for(int i=0;i<5;i++)Art.Box("Loading floor line",new Vector3(0,.015f,1.3f+i*.6f),new Vector3(.45f,.02f,.15f),Art.Gold,false);
             Sound("Ambience - Warehouse",.55f);
         }
         static void Kitchen()
         {
             Shell(13,15,Art.Cream);var k=d.rooms[3].root.AddComponent<KitchenRoom>();d.kitchen=k;k.director=d;
-            Header(3,"03 / A SMALL SPILL","Everyone is watching.","At least, that is how it feels. Make a cup of coffee at your own pace.",new Vector3(0,3.5f,8.7f));
+            // Packed close and high, so the espresso machine and backsplash never cut into a line.
+            Header(3,"03 / A SMALL SPILL","Everyone is watching.","At least, that is how it feels. Make a cup of coffee at your own pace.",new Vector3(0,3.95f,8.7f),8,0,.7f);
             var seat=d.rooms[3].spawn.localPosition;
             Art.Box("Kitchen cabinets",new Vector3(0,.48f,5),new Vector3(8,.96f,1.1f),Art.Teal);
             Art.Box("Detailed stone worktop",new Vector3(0,1,5),new Vector3(8.2f,.08f,1.22f),Art.Cream);
@@ -1052,7 +1076,8 @@ namespace AfterHours
             Art.Button("Brew coffee","BREW",new Vector3(.56f,1.65f,4.52f),new Vector3(.42f,.3f,.08f),Art.Coral,ActionKind.Brew,d);
             k.display=Art.Text("Machine display","READY?\nOne ordinary task.",new Vector3(-.24f,1.82f,4.549f),.078f,ivory,.82f);
             Art.Button("Ask for support","ASK FOR HELP",new Vector3(2.12f,1.42f,4.48f),new Vector3(1.7f,.5f,.14f),Art.Teal,ActionKind.Help,d);
-            Art.Text("Help permission","Available from the start.\nYou do not have to earn it.",new Vector3(2.12f,1.89f,4.44f),.12f,dark,2.1f);
+            Backed(3,"Help permission",Art.Box("Help plate",new Vector3(2.12f,1.89f,4.475f),new Vector3(1.4f,.46f,.03f),Art.Navy,false));
+            Art.Text("Help permission","Available from the start.\nYou do not have to earn it.",new Vector3(2.12f,1.89f,4.44f),.12f,ivory,2.1f);
             var cup=Art.Shape("Your cup",PrimitiveType.Cylinder,new Vector3(-1.7f,1.23f,4.6f),new Vector3(.25f,.17f,.25f),Art.White);var rb=cup.AddComponent<Rigidbody>();rb.mass=.2f;rb.interpolation=RigidbodyInterpolation.Interpolate;rb.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;k.cup=cup.AddComponent<Grabbable>();k.cup.label="Your cup";k.cup.room=3;k.cup.upright=true;
             // A flat-bottomed collider that matches the faceted cup. The primitive's capsule has a round base and tips over.
             Object.DestroyImmediate(cup.GetComponent<Collider>());var cupCollider=cup.AddComponent<MeshCollider>();cupCollider.sharedMesh=cup.GetComponent<MeshFilter>().sharedMesh;cupCollider.convex=true;
@@ -1077,7 +1102,9 @@ namespace AfterHours
         static void Archive()
         {
             Shell(18,53,Art.Navy,false);d.rooms[4].total=6;
-            Header(4,"04 / THE INFINITE ARCHIVE","Not every thought is a fact.","Pick up a note, point at its tray, and let go. You do not need to sort the whole room.",new Vector3(0,3.55f,7.4f),9);
+            // The archive has no ceiling, so beams and light strips cross the sky behind the heading. A deep-blue plate gives its letters a clean ground.
+            Backed(4,"Room title",Art.Box("Heading plate",new Vector3(0,3.7f,7.52f),new Vector3(7.6f,2.1f,.06f),Art.Navy,false));
+            Header(4,"04 / THE INFINITE ARCHIVE","Not every thought is a fact.","Pick up a note, point at its tray, and let go. You do not need to sort the whole room.",new Vector3(0,3.85f,7.4f),9);
             for(int x=-3;x<=3;x++)for(int z=0;z<13;z++)
             {
                 if(x==0||Mathf.Abs(x)==1&&z<3)continue;
@@ -1097,8 +1124,10 @@ namespace AfterHours
             {
                 string name=new[]{"FACT","FEAR","STILL TRUE"}[i];Vector3 p=new Vector3(-2.3f+i*2.3f,0,4.45f);
                 Art.Box(name+" plinth",p+Vector3.up*.45f,new Vector3(1.8f,.9f,1.15f),i==1?Art.Coral:Art.Teal);
-                Art.Text(name+" sign",name,p+new Vector3(0,1.5f,-.2f),.25f,ivory,2.1f);
-                Art.Text(name+" description",new[]{"What happened","What my mind predicts","What I still carry"}[i],p+new Vector3(0,1.13f,-.59f),.13f,muted,2);
+                // Each tray's name hangs above it on a plate behind the tray (cards stand in front of it), clear of the cabinets and under the heading.
+                Art.Box(name+" sign plate",p+new Vector3(0,1.9f,.6f),new Vector3(1.9f,.7f,.05f),Art.Navy,false);
+                Art.Text(name+" sign",name,p+new Vector3(0,2.06f,.55f),.3f,ivory,2.1f);
+                Art.Text(name+" description",new[]{"What happened","What my mind predicts","What I still carry"}[i],p+new Vector3(0,1.7f,.55f),.15f,muted,1.9f);
                 var tray=Zone(name+" tray",p+new Vector3(0,1.13f,0),new Vector3(1.65f,.6f,1.04f),4,name,2);
                 Target(tray.gameObject,4,new Vector3(0,.12f,0),.75f,"Point at a tray and let go.",Outline(name+" tray highlight",p+new Vector3(0,.93f,0),new Vector2(1.84f,1.19f),false));
             }
@@ -1110,9 +1139,14 @@ namespace AfterHours
             Floor(new Vector3(0,-.15f,3),new Vector3(17,.3f,19),Art.Cream);
             for(int s=-1;s<=1;s+=2)Art.Box("Rooftop parapet",new Vector3(s*8.5f,.6f,3),new Vector3(.3f,1.2f,19),Art.Teal);
             Art.Box("Rooftop edge",new Vector3(0,.6f,12.5f),new Vector3(17,1.2f,.3f),Art.Teal);
-            d.ending=Art.Text("Ending","You can rest\nbefore you are ready.",new Vector3(0,3.6f,9),.78f,dark,12);
-            Art.Text("Epilogue","The office is only one room in your life.",new Vector3(0,2.3f,9),.28f,dark,11);
-            Art.Text("Next step","For now: a glass of water. A message to someone. A little daylight.\nYou get to choose the next small thing.",new Vector3(0,1.45f,9),.19f,dark,10);
+            // The skyline is dark and the sky is pale, so the closing words stand on a deep-blue board in ivory, readable from anywhere on the roof.
+            var board=Art.Group("Rooftop message board",new Vector3(0,0,9.15f));
+            Art.Box("Board face",new Vector3(0,2.75f,0),new Vector3(7.6f,3.4f,.12f),Art.Navy,false,board);
+            Art.Box("Board trim",new Vector3(0,4.5f,-.02f),new Vector3(7.8f,.07f,.16f),Art.Gold,false,board);Art.Box("Board trim",new Vector3(0,1f,-.02f),new Vector3(7.8f,.07f,.16f),Art.Gold,false,board);
+            for(int side=-1;side<=1;side+=2)Art.Box("Board leg",new Vector3(side*3.3f,.5f,.1f),new Vector3(.14f,1f,.14f),Art.Metal,false,board);
+            d.ending=Art.Text("Ending","You can rest\nbefore you are ready.",new Vector3(0,3.6f,9),.78f,ivory,7);
+            Art.Text("Epilogue","The office is only one room in your life.",new Vector3(0,2.35f,9),.36f,muted,7);
+            Art.Text("Next step","For now: a glass of water. A message to someone. A little daylight.\nYou get to choose the next small thing.",new Vector3(0,1.55f,9),.25f,ivory,7);
             for(int i=0;i<26;i++){float x=-30+i*2.4f;float height=3+(i*7%9);Art.Box("Low poly city",new Vector3(x,-2+height*.5f,25+(i%3)*5),new Vector3(1.8f,height,2),i%2==0?Art.Teal:Art.Navy,false);}
             Art.Shape("Tomorrow's sun",PrimitiveType.Sphere,new Vector3(13,16,45),Vector3.one*9,Art.Gold,false);
             for(int side=-1;side<=1;side+=2){Art.Plant(new Vector3(side*5.5f,0,5));Art.Plant(new Vector3(side*5.8f,0,7));Art.Box("Bench seat",new Vector3(side*4,.5f,2.5f),new Vector3(2.3f,.15f,.65f),Art.Wood);for(int leg=-1;leg<=1;leg+=2)Art.Box("Bench leg",new Vector3(side*4+leg*.8f,.24f,2.5f),new Vector3(.1f,.48f,.55f),Art.Metal);}
