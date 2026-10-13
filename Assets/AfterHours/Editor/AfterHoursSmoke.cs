@@ -126,9 +126,11 @@ namespace AfterHours.Editor
                 Aim(slot.LandingPoint);yield return Delay(.25f);Check(slot.highlight.activeSelf,"Pointing at the shredder lights its slot");
                 Press(false);yield return Delay(2.6f);
                 Check(page.processed&&!page.gameObject.activeSelf,"The shredder takes \""+page.label+"\"");
+                if(page==d.shredder.pages[0]){int inAir=d.shredder.bits.Sum(x=>x.particleCount);Check(inAir>100,"A flurry of paper bits is in the air over the shredder ("+inAir+")");}
             }
             Check(d.rooms[6].accepted==5&&!d.rooms[6].complete,"Five pages shredded once each; the chapter waits for a true line");
-            yield return Delay(3.8f);Check(d.shredder.Offering,"A blank page offers four true lines");Capture("Old resume-Choice");
+            yield return Delay(3.8f);Check(d.shredder.Offering,"A blank page offers four true lines");
+            Check(d.shredder.litter.Length==5&&d.shredder.litter.All(x=>x.activeSelf),"Every shredded page has left its scraps on the floor, the desk and the shredder");Capture("Old resume-Choice");
             yield return Click(d.rooms[6].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.ChooseLine&&x.value==2));
             Check(d.rooms[6].complete&&d.shredder.line=="I keep going."&&d.wardrobe.State.line=="I keep going.","Choosing a line completes the chapter and keeps the line for the wardrobe");
             Check(d.CompletedCount==5,"Five chapters complete before the rage room");

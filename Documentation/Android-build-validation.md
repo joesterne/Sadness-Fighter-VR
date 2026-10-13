@@ -504,6 +504,50 @@ The release APK built with zero errors.
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 13 (night): paper everywhere when a résumé is shredded
+
+### What changed
+
+- **A flurry of loose bits.** Each shredded page now sends up a burst of loose paper bits (two particle systems, white and ivory, about 160 bits each) that fountain out of the shredder's head, tumble on noise and drift down across the room, and rest on a floor plane until their time is up. There is no world collision, so it costs next to nothing.
+- **Scraps that stay.** Once the bits have come down (1.8 seconds after the page is gone), that page's set of scraps appears: about 260 thin flecks and strips, thickest around the shredder and the desk, with more across the whole floor, on the desk either side of the page rack, on the shredder's top clear of the slot, and on the window sill. Five pages leave 1,300 scraps in all over 10.9 by 14.4 m. Each set is merged into two meshes (white and ivory) with no colliders, and sits hidden until its page is shredded, so it is two draws a set.
+- **Fuller bins.** Each heap in the bin is now 56 strips and chips merged into two meshes, in place of ten long strips that were each an object of their own.
+- **They keep.** If the app is closed midway, the scraps of every page already shredded are there when it reopens, and a page that is restored is restored once. Resetting the room clears every set and the flurry.
+- Version 0.6.4.
+
+### Tests
+
+The gameplay journey has 2 new checks (110 in all): a flurry of paper bits (326 in the air) is over the shredder after the first page, and every shredded page has left its scraps on the floor, the desk and the shredder. The menu and seated suite has 3 new checks (49 in all, one existing check now also covers the scraps): a shredded résumé restores exactly once with its paper in the bin and on the floor, every page leaves at least 100 scraps (1,300 in all), the scraps lie across the room, on the desk, the shredder's top and the window sill (10.9 by 14.4 m), and they have no colliders and cost two draws a set. On one early run the gameplay journey failed its first check (keyboard movement in the lobby), long before any paper is involved, and the cause was not found; the same suite passed when run again on its own and in the full run after the final changes.
+
+### Results
+
+All eight suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 110 |
+| Navigation | 131 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 49 |
+| Mirror and wardrobe | 56 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 71 |
+| Text visibility | 138 signs, 11 plates |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 74.3 MB (74,300,877 bytes) |
+| SHA-256 of the APK | `0e8669bbef2c0a8c791c14eee70929764426ff854cc4a8b9b4aa5d7eb4dd8b92` |
+| Version | 0.6.4, version code 411613 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.6.4, versionCode 411613, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. No private-network address and no session data in any file (the only matches for an address pattern are version numbers and encoding identifiers in the .NET libraries, and Meta's own debugger classes appear as code and type names in the SDK, as before). 106 KB larger than 0.6.3: the paper scraps, which are part of the scene, and the new code. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -515,6 +559,7 @@ These still need a physical headset playtest (see `Playtest.md`):
 - hands-only play from start to finish
 - sound levels on the headset's speakers, including the new waves and surf
 - whether the moving water and the wave sound feel in step on the headset, and how the moving water looks and feels in the lenses (the editor run had no sound playing)
+- how the paper looks and feels in the headset: the flurry of thin bits (flicker or shimmer in the lenses), how thick the scraps look on the floor, whether you can see a set pop in, and the frame rate with all five sets on screen (the editor only counts them)
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

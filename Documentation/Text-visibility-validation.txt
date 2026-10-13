@@ -1,4 +1,4 @@
-2026-10-13 17:51:14Z
+2026-10-13 20:11:49Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'

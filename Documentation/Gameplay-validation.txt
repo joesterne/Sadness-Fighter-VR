@@ -1,4 +1,4 @@
-2026-10-13 17:44:27Z
+2026-10-13 20:05:04Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -54,6 +54,7 @@ PASS: Portal input reaches room 6
 PASS: Input picks up the résumé "SENIOR COORDINATOR since 2016"
 PASS: Pointing at the shredder lights its slot
 PASS: The shredder takes "SENIOR COORDINATOR since 2016"
+PASS: A flurry of paper bits is in the air over the shredder (326)
 PASS: Input picks up the résumé "Always available. Nights and weekends."
 PASS: Pointing at the shredder lights its slot
 PASS: The shredder takes "Always available. Nights and weekends."
@@ -68,6 +69,7 @@ PASS: Pointing at the shredder lights its slot
 PASS: The shredder takes "Reason for leaving: __________"
 PASS: Five pages shredded once each; the chapter waits for a true line
 PASS: A blank page offers four true lines
+PASS: Every shredded page has left its scraps on the floor, the desk and the shredder
 PASS: Choosing a line completes the chapter and keeps the line for the wardrobe
 PASS: Five chapters complete before the rage room
 PASS: Menu key opens the comfort menu in room 6
@@ -95,9 +97,9 @@ PASS: Every hit throws pieces: 19 hits threw all 210, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
 PASS: All 210 pieces stay inside the room, above the floor
-PASS: 194 of 210 pieces have come to rest by the end of the quiet
+PASS: 190 of 210 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose key along the desk (180 cm)
+PASS: A swing knocks a loose key along the desk (18 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place

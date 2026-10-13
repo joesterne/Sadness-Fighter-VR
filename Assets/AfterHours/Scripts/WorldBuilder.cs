@@ -604,11 +604,18 @@ namespace AfterHours
             for(int s=-1;s<=1;s+=2)Art.Box("Slot rim",new Vector3(0,top+.033f,z+s*.037f),new Vector3(.75f,.008f,.014f),Art.Gold,false,null,.002f);
             Art.Text("Shredder label","LET IT GO",new Vector3(0,top-.09f,z-.4f),.11f,ivory,.9f);
             Art.Shape("Ready light",PrimitiveType.Sphere,new Vector3(.38f,top-.1f,z-.39f),Vector3.one*.035f,Art.Mint,false);
+            // Paper in the bin: each page adds a heap of strips and chips. A heap is two meshes (white and ivory), not dozens of small objects.
             var piles=new GameObject[pages.Length];
             for(int i=0;i<piles.Length;i++)
             {
                 var pile=Art.Group("Paper pile "+(i+1),new Vector3(0,.05f+i*.095f,z));
-                for(int k=0;k<10;k++)Art.Box("Paper strip",new Vector3(R()*.4f-.2f,R()*.05f,R()*.24f-.12f),new Vector3(.022f,.013f,.3f),k%2==0?Art.White:Art.Paper,false,pile,.002f).transform.localRotation=Quaternion.Euler(0,R()*360,R()*20-10);
+                var heapWhite=new List<CombineInstance>();var heapPaper=new List<CombineInstance>();
+                for(int k=0;k<56;k++)
+                {
+                    bool chip=k%4==3;float length=chip?.03f+R()*.035f:.09f+R()*.13f,width=chip?.02f+R()*.025f:.012f+R()*.012f;
+                    Piece(k%2==0?heapWhite:heapPaper,new Vector3(R()*.44f-.22f,R()*.06f,R()*.28f-.14f),new Vector3(width,.012f,length),Quaternion.Euler(R()*16-8,R()*360,R()*16-8));
+                }
+                Scraps("Paper strips white",pile,heapWhite,Art.White);Scraps("Paper strips",pile,heapPaper,Art.Paper);
                 pile.gameObject.SetActive(false);piles[i]=pile.gameObject;
             }
             var fall=Art.Group("Paper strips falling",new Vector3(0,.74f,z));fall.localRotation=Quaternion.Euler(90,0,0);
@@ -617,10 +624,45 @@ namespace AfterHours
             main.startSize3D=true;main.startSizeX=.018f;main.startSizeY=.013f;main.startSizeZ=.14f;main.startRotation3D=true;main.startRotationY=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);
             var emission=strips.emission;emission.rateOverTime=26;var shape=strips.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(.6f,.08f,.01f);
             var stripRenderer=strips.GetComponent<ParticleSystemRenderer>();stripRenderer.renderMode=ParticleSystemRenderMode.Mesh;stripRenderer.mesh=Geometry.Get(PrimitiveType.Cube);stripRenderer.sharedMaterial=Art.Paper;
+            // Each page also sends a flurry of loose bits up out of the head. They tumble down across the room and come to rest on the floor...
+            var floorPlane=Art.Group("Paper floor",new Vector3(0,.012f,0));
+            var flurry=new[]{Flurry("Paper bits flying",new Vector3(0,top+.05f,z),Art.White,floorPlane),Flurry("Paper bits flying",new Vector3(0,top+.05f,z),Art.Paper,floorPlane)};
+            // ...and leaves a set of scraps behind (they appear once the flurry has come down): over the floor, thickest around the shredder,
+            // on the desk, on the shredder's top and on the window sill. Each page adds a set, so the room fills with paper as the pages go.
+            float Gauss()=>Mathf.Sqrt(-2*Mathf.Log(Mathf.Max(R(),.0001f)))*Mathf.Cos(2*Mathf.PI*R());
+            bool OnFloor(float x,float zz)
+            {
+                if(Mathf.Abs(x)<.6f&&zz>2.85f&&zz<3.75f)return false;                                                  // inside the shredder's bin
+                if(x>-5.1f&&x<-4.1f&&zz>2.6f&&zz<3.5f)return false;if(x>4f&&x<5f&&zz>2.2f&&zz<3f)return false;       // under the archive boxes
+                return Mathf.Abs(Mathf.Abs(x)-4.9f)>.5f||Mathf.Abs(zz-8.4f)>.5f;                                       // and the plants
+            }
+            var litter=new GameObject[pages.Length];
+            for(int i=0;i<litter.Length;i++)
+            {
+                var scraps=Art.Group("Paper scraps "+(i+1),Vector3.zero);
+                var scrapWhite=new List<CombineInstance>();var scrapPaper=new List<CombineInstance>();
+                void Drop(float x,float y,float zz)
+                {
+                    bool chip=R()<.45f;float length=chip?.034f+R()*.04f:.09f+R()*.16f,width=chip?.026f+R()*.03f:.013f+R()*.012f;
+                    Piece(R()<.5f?scrapWhite:scrapPaper,new Vector3(x,y,zz),new Vector3(width,.003f,length),Quaternion.Euler(R()*10-5,R()*360,R()*10-5));
+                }
+                for(int k=0;k<210;k++)
+                {
+                    // Three in five fall near the shredder, the rest anywhere on the floor.
+                    float x=k%5<3?Gauss()*1.9f:R()*11f-5.5f,zz=k%5<3?1.6f+Gauss()*2.2f:R()*13.8f-4.4f;
+                    x=Mathf.Clamp(x,-5.5f,5.5f);zz=Mathf.Clamp(zz,-4.4f,9.4f);
+                    if(OnFloor(x,zz))Drop(x,.004f+R()*.006f,zz);
+                }
+                for(int k=0;k<20;k++)Drop(R()*4.2f-2.1f,.783f+R()*.003f,k%2==0?.03f+R()*.27f:.6f+R()*.27f);                  // on the desk, either side of the page rack
+                for(int k=0;k<9;k++)Drop(R()*.9f-.45f,1.434f+R()*.004f,k%2==0?3f+R()*.22f:3.38f+R()*.24f);                    // on the shredder's top, clear of the slot
+                for(int k=0;k<7;k++)Drop(R()*5.8f-2.9f,.809f+R()*.003f,9.72f+R()*.12f);                                      // on the window sill
+                Scraps("Paper scraps white",scraps,scrapWhite,Art.White);Scraps("Paper scraps",scraps,scrapPaper,Art.Paper);
+                scraps.gameObject.SetActive(false);litter[i]=scraps.gameObject;
+            }
             // The slot's trigger runs the shredder. Pointing at the slot while holding a page lights its outline.
             var slot=Art.Box("Shredder slot",new Vector3(0,top+.23f,z),new Vector3(.9f,.4f,.45f),Art.Teal,false);
             Object.DestroyImmediate(slot.GetComponent<Renderer>());slot.AddComponent<BoxCollider>().isTrigger=true;
-            var shredder=slot.AddComponent<Shredder>();d.shredder=shredder;shredder.director=d;shredder.pages=pages;shredder.farewells=farewells;shredder.piles=piles;shredder.strips=strips;
+            var shredder=slot.AddComponent<Shredder>();d.shredder=shredder;shredder.director=d;shredder.pages=pages;shredder.farewells=farewells;shredder.piles=piles;shredder.strips=strips;shredder.bits=flurry;shredder.litter=litter;
             // A page stands in the slot, then sinks out of sight into the head.
             shredder.feed=Art.Group("Feed point",new Vector3(0,top+.305f,z));
             Target(slot,6,new Vector3(0,.09f,0),.55f,"Point at the shredder and let go.",Outline("Shredder highlight",new Vector3(0,top+.045f,z),new Vector2(1.15f,.88f),false));
@@ -643,6 +685,48 @@ namespace AfterHours
             for(int i=0;i<2;i++)Art.Box("Archive box",new Vector3(4.5f,.2f+i*.4f,2.6f),new Vector3(.8f,.38f,.55f),Art.Paper);
             Art.Plant(new Vector3(-4.9f,0,8.4f));Art.Plant(new Vector3(4.9f,0,8.4f));
             Sound("Ambience - Print room",.55f);
+        }
+        // ---- Loose paper. Every scrap is one box, stretched and turned, and each heap or set of scraps is merged into one mesh.
+        static Mesh unitBox;
+        static Mesh UnitBox()
+        {
+            if(unitBox)return unitBox;
+            var v=new List<Vector3>();var n=new List<Vector3>();var t=new List<int>();
+            void Face(Vector3 normal,Vector3 up)
+            {
+                var right=Vector3.Cross(up,normal);int b=v.Count;
+                v.Add(normal*.5f-right*.5f-up*.5f);v.Add(normal*.5f-right*.5f+up*.5f);v.Add(normal*.5f+right*.5f+up*.5f);v.Add(normal*.5f+right*.5f-up*.5f);
+                for(int k=0;k<4;k++)n.Add(normal);
+                if(Vector3.Dot(Vector3.Cross(v[b+1]-v[b],v[b+2]-v[b]),normal)>0)t.AddRange(new[]{b,b+1,b+2,b,b+2,b+3});else t.AddRange(new[]{b,b+2,b+1,b,b+3,b+2});
+            }
+            Face(Vector3.right,Vector3.up);Face(Vector3.left,Vector3.up);Face(Vector3.forward,Vector3.up);Face(Vector3.back,Vector3.up);Face(Vector3.up,Vector3.forward);Face(Vector3.down,Vector3.forward);
+            unitBox=new Mesh{name="Paper scrap box"};unitBox.SetVertices(v);unitBox.SetNormals(n);unitBox.SetTriangles(t,0);return unitBox;
+        }
+        static void Piece(List<CombineInstance> into,Vector3 at,Vector3 size,Quaternion rotation){into.Add(new CombineInstance{mesh=UnitBox(),transform=Matrix4x4.TRS(at,rotation,size)});}
+        static void Scraps(string name,Transform parent,List<CombineInstance> pieces,Material material)
+        {
+            if(pieces.Count==0)return;
+            var mesh=new Mesh{name=name};mesh.CombineMeshes(pieces.ToArray(),true,true);
+            var go=new GameObject(name,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(parent,false);go.GetComponent<MeshFilter>().sharedMesh=mesh;
+            var renderer=go.GetComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        // A flurry of loose paper bits: a fountain out of the shredder's head that tumbles and drifts down, spreading across the room, and rests on the floor plane
+        // until its time is up. About 160 bits a page from each of two systems. The plane keeps the cost low (no world collision).
+        static ParticleSystem Flurry(string name,Vector3 at,Material material,Transform floor)
+        {
+            var group=Art.Group(name,at);group.localRotation=Quaternion.Euler(-90,0,0);
+            var ps=group.gameObject.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main=ps.main;main.playOnAwake=false;main.loop=false;main.duration=1.3f;main.startLifetime=new ParticleSystem.MinMaxCurve(2.8f,4.4f);main.startSpeed=new ParticleSystem.MinMaxCurve(1.4f,4.8f);
+            main.gravityModifier=.32f;main.maxParticles=300;main.simulationSpace=ParticleSystemSimulationSpace.World;
+            main.startSize3D=true;main.startSizeX=new ParticleSystem.MinMaxCurve(.02f,.07f);main.startSizeY=new ParticleSystem.MinMaxCurve(.012f,.04f);main.startSizeZ=.003f;
+            var anyTurn=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);main.startRotation3D=true;main.startRotationX=anyTurn;main.startRotationY=anyTurn;main.startRotationZ=anyTurn;
+            var emission=ps.emission;emission.rateOverTime=80;emission.SetBursts(new[]{new ParticleSystem.Burst(0,(short)60)});
+            var shape=ps.shape;shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=62;shape.radius=.24f;
+            var tumble=ps.rotationOverLifetime;tumble.enabled=true;tumble.separateAxes=true;var turning=new ParticleSystem.MinMaxCurve(-4,4);tumble.x=turning;tumble.y=turning;tumble.z=turning;
+            var noise=ps.noise;noise.enabled=true;noise.strength=.8f;noise.frequency=.5f;noise.quality=ParticleSystemNoiseQuality.Low;
+            var collision=ps.collision;collision.enabled=true;collision.type=ParticleSystemCollisionType.Planes;collision.AddPlane(floor);collision.dampen=1;collision.bounce=0;collision.lifetimeLoss=0;collision.radiusScale=.05f;
+            var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Cube);renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            return ps;
         }
         // The rage room: the old work computer on a desk, a bat on its rack, and a quiet moment once it is all broken.
         // Every part that breaks is within a short bat swing of the arrival point, so the room plays from an airplane seat.
