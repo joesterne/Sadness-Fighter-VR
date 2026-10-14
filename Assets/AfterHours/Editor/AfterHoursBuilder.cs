@@ -132,6 +132,8 @@ namespace AfterHours.Editor
             Art.XrayVeil=Fade("26 X-ray backdrop",Hex("#02050B"),.94f);Art.XrayHalo=Glow("25 X-ray glow",Hex("#8FD3FF"),.15f);
             Art.XrayBone=Glow("24 X-ray bone",Color.white,1f);Art.XrayHollow=Fade("27 X-ray hollow",Hex("#02050B"),1f);
             Art.ConfettiPaper=Tint("28 Confetti paper");
+            // A vivid orange for the hidden mug. It glows a little of its own, so it stays easy to spot inside a shadowed cupboard.
+            Art.Orange=Mat("30 Orange mug",Hex("#F2681C"),0,.45f);Art.Orange.EnableKeyword("_EMISSION");Art.Orange.SetColor("_EmissionColor",Hex("#F2681C")*.3f);
             Art.Font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             if(!Art.Font)Art.Font=TMP_Settings.defaultFontAsset;
             // Lettering with an outline: light text gets a deep-blue one, dark text an ivory one, so a sign stays readable over whatever is behind it.
@@ -227,7 +229,7 @@ namespace AfterHours.Editor
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.6.6";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.7.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
@@ -275,10 +277,11 @@ namespace AfterHours.Editor
         // is inactive while the scene is built, so these checks must include inactive objects.
         static bool Dynamic(Transform t,Transform room,GameDirector d)
         {
-            if(t.GetComponentInParent<Grabbable>(true)||t.GetComponentInParent<MirrorAvatar>(true)||t.GetComponentInParent<Breakable>(true))return true;
+            if(t.GetComponentInParent<Grabbable>(true)||t.GetComponentInParent<MirrorAvatar>(true)||t.GetComponentInParent<Breakable>(true)||t.GetComponentInParent<CabinetDoor>(true))return true;
             for(var p=t;p&&p!=room;p=p.parent)if(!p.gameObject.activeSelf)return true;
             if(t.IsChildOf(d.ocean.horizon))return true;
             foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;
+            if(d.kitchen.lever&&t.IsChildOf(d.kitchen.lever))return true;
             foreach(var c in d.kitchen.spills)if(t.IsChildOf(c.transform))return true;
             return false;
         }

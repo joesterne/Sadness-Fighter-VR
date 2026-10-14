@@ -1,4 +1,4 @@
-2026-10-14 00:27:09Z
+2026-10-14 02:25:22Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -20,7 +20,7 @@ PASS: Two boxes can be held at once, one in each hand
 PASS: Slamming two boxes together bursts both
 PASS: The burst is in the air: 1 flash, 70 sparks, 9 smoke, 110 chips in 7 colours
 PASS: The burst is where the boxes met
-PASS: The chips fall and land on the floor, not through it: 110 chips, lowest at 0.014 m
+PASS: The chips fall and land on the floor, not through it: 110 chips, lowest at 0.013 m
 PASS: Both boxes are back on their stands
 PASS: Nothing was counted, and neither box is held
 PASS: The player's own hand holds a box
@@ -51,7 +51,15 @@ PASS: Menu key opens the comfort menu in room 3
 PASS: Menu CLOSE closes the menu
 PASS: Help input releases machine pressure
 PASS: Input grabs the coffee cup
+PASS: Pointing at the lever brews, and the lever pulls down
 PASS: Cup placement and three pours complete kitchen
+PASS: The lever goes back up
+PASS: Pointing at the steam wand blows steam
+PASS: Nothing orange has been found yet
+PASS: Pointing at a cupboard opens its door, and the orange mug is inside
+PASS: Input takes the orange mug from the open cupboard
+PASS: The orange mug glides to the spout and the mug that was there goes back to the counter; nothing breaks
+PASS: Brewing into the orange mug earns the orange mug pin, and still counts as nothing more than a little warmth
 PASS: Menu key opens the comfort menu in room 3
 PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 4
@@ -125,9 +133,9 @@ PASS: Every hit throws pieces: 19 hits threw all 210, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
 PASS: All 210 pieces stay inside the room, above the floor
-PASS: 199 of 210 pieces have come to rest by the end of the quiet
+PASS: 196 of 210 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose key along the desk (133 cm)
+PASS: A swing knocks a loose key along the desk (13 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place

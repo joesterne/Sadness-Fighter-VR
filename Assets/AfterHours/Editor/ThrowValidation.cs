@@ -284,7 +284,7 @@ namespace AfterHours.Editor
             VRPlayer.ThrowOnDesktop=true;
             D.Travel(6);yield return .95f;
             var egg=D.shredder.egg;var sheet=D.shredder.pages[1];var sheetHome=sheet.transform.position;int popped=egg.bursts;
-            Check(D.shredder.pages.All(p=>p.tossable&&!p.throwable)&&everything.Count(g=>g.tossable)==5&&everything.Count(g=>g.throwable)==5,"Only the five résumé pages can be tossed, and a toss is never helped toward the shredder");
+            Check(D.shredder.pages.All(p=>p.tossable&&!p.throwable)&&everything.Count(g=>g.tossable&&!g.GetComponent<Mug>())==5&&everything.Count(g=>g.tossable&&g.GetComponent<Mug>())==5&&everything.Count(g=>g.throwable)==5,"Only the five résumé pages and the five kitchen mugs can be tossed, and a toss is never helped toward the shredder");
             foreach(var t in Take(sheet))yield return t;
             Check(!P.hint.text.Contains("Or throw it."),"Picking up a page does not mention throwing");
             // Stand clear of the desk with the page in hand, and flick it down at the floor.
@@ -308,6 +308,70 @@ namespace AfterHours.Editor
             Release();
             foreach(var t in Watch(sheet,5,()=>sheet.processed&&!sheet.sending))yield return t;
             Check(!flight.thrown&&sheet.processed&&egg.bursts==popped+1,"A page let go while pointing at the shredder is sent in, not tossed");
+
+            // ---- Mugs in the kitchen: thrown or dropped from carrying height they break and come back; set down gently, or sent under the spout, they never do
+            D.Travel(3);yield return .95f;
+            var kit=D.kitchen;var kitchenRoot=D.rooms[3].root.transform;
+            var tealMug=kit.mugs.First(m=>m.item.label=="Teal mug");var coralMug=kit.mugs.First(m=>m.item.label=="Coral mug");
+            var tealItem=tealMug.item;var coralItem=coralMug.item;var tealHome=tealItem.transform.position;var coralHome=coralItem.transform.position;
+            var spoutPoint=D.Targets.First(x=>x.category=="mug"&&x.room==3);
+            var clearSpot=kitchenRoot.TransformPoint(new Vector3(-.3f,.04f,.8f));
+            Check(kit.mugs.Length==5&&kit.mugs.All(m=>m.item.tossable&&!m.item.throwable&&m.item.category=="mug")&&kit.mugs.Count(m=>m.orange)==1,"The kitchen has five mugs that can be carried, sent and tossed, and exactly one is the orange one");
+            Check(kit.mugs.All(m=>m.item.Body&&m.item.Body.maxDepenetrationVelocity<=1.5f),"Mugs pressed into each other part gently ("+string.Join(", ",kit.mugs.Select(m=>m.item.Body.maxDepenetrationVelocity.ToString("0.0")))+")");
+            int shattersBefore=kit.shatters;
+            // 1. Picking a mug up warns about it, and a flick at the floor breaks it.
+            foreach(var t in Take(tealItem))yield return t;
+            Check(P.hint.text.Contains("a mug will break"),"Picking up a mug says that throwing it will break it");
+            P.Shift(new Vector3(clearSpot.x,.04f,clearSpot.z)-P.transform.position);P.Head.rotation=Quaternion.Euler(20,-90,0);yield return .3f;
+            Check(tealItem.held,"The mug stays in hand when the player steps clear of the counter");
+            foreach(var t in Fling(new Vector3(0,-.6f,1f),4f,.2f))yield return t;
+            Release();
+            foreach(var t in Watch(tealItem,3,()=>kit.shatters>shattersBefore))yield return t;
+            lines.Add("INFO: the mug flick: thrown seen "+flight.thrown+", peak "+flight.peak.ToString("0.0")+" m/s, shatters "+(kit.shatters-shattersBefore)+", active "+tealItem.gameObject.activeSelf+", room "+D.currentRoom);
+            Check(flight.thrown&&kit.shatters==shattersBefore+1&&tealMug.breaks==1,"A mug flicked at the floor flies off the hand and breaks, once");
+            Check(!tealItem.gameObject.activeSelf&&kit.IsAway(tealMug)&&!tealItem.held,"The broken mug is out of the room for a moment and out of the hand");
+            Check((kit.shardsFloor.isPlaying||kit.shardsCounter.isPlaying)&&kit.dust.isPlaying,"It bursts into shards and a puff of dust");
+            yield return KitchenRoom.ReturnAfter+.6f;
+            Check(tealItem.gameObject.activeSelf&&!kit.IsAway(tealMug)&&tealMug.level==0&&!tealItem.held&&Vector3.Distance(tealItem.transform.position,tealHome)<.15f,"A moment later the mug is back, whole, on its shelf");
+            int broken=kit.shatters;
+            // 2. A mug put down from a hand's height does not break.
+            var dropAt=coralHome+Vector3.up*.1f;
+            coralItem.Body.position=dropAt;coralItem.transform.position=dropAt;coralItem.Body.linearVelocity=Vector3.zero;coralItem.Body.angularVelocity=Vector3.zero;
+            yield return 1.5f;
+            Check(kit.shatters==broken&&coralItem.gameObject.activeSelf&&Vector3.Distance(coralItem.transform.position,coralHome)<.15f,"A mug set down from a hand's height does not break");
+            // 3. Lifting a mug and letting go while pointing at the spout sends it there, even with the hand moving; it does not break.
+            foreach(var t in Take(tealItem))yield return t;
+            P.Head.rotation=Quaternion.LookRotation(spoutPoint.LandingPoint-P.Head.position);yield return .4f;
+            foreach(var t in Fling(Vector3.up,4f,.2f))yield return t;
+            Release();
+            foreach(var t in Watch(tealItem,6,()=>flight.sending&&!tealItem.sending))yield return t;
+            yield return 1.2f;
+            lines.Add("INFO: the mug sent to the spout rests at "+tealItem.transform.position.ToString("0.00")+" ("+Vector3.Distance(tealItem.transform.position,spoutPoint.LandingPoint).ToString("0.00")+" m from the landing point), thrown seen "+flight.thrown+", sending seen "+flight.sending);
+            Check(!flight.thrown&&flight.sending&&kit.shatters==broken&&tealItem.gameObject.activeSelf,"A mug let go while pointing at the spout is sent, not thrown, and does not break");
+            Check(Vector3.Distance(tealItem.transform.position,spoutPoint.LandingPoint)<.25f&&kit.UnderSpout()==tealMug,"The sent mug rests under the spout");
+            // 4. A second mug sent to the spout sends the first one home, so two never end up in each other.
+            foreach(var t in Take(coralItem))yield return t;
+            P.Head.rotation=Quaternion.LookRotation(spoutPoint.LandingPoint-P.Head.position);yield return .4f;
+            foreach(var t in Fling(Vector3.up,4f,.2f))yield return t;
+            Release();
+            foreach(var t in Watch(coralItem,6,()=>flight.sending&&!coralItem.sending))yield return t;
+            yield return 2f;
+            Check(kit.shatters==broken&&kit.UnderSpout()==coralMug&&Vector3.Distance(coralItem.transform.position,spoutPoint.LandingPoint)<.25f,"The second mug takes the place under the spout");
+            Check(!tealItem.sending&&tealItem.gameObject.activeSelf&&Vector3.Distance(tealItem.transform.position,tealHome)<.15f,"The first mug went back to where it started, unbroken");
+            // 5. The pour goes into the mug that was sent, and a full mug let go of at carrying height breaks, splashes, and comes back empty. Nothing is counted against anyone.
+            kit.AskForHelp();yield return .2f;
+            kit.Brew();yield return .3f;
+            Check(coralMug.level==1&&kit.fills==1&&kit.mistakes==0,"The pour goes into the mug that was sent under the spout");
+            foreach(var t in Take(coralItem))yield return t;
+            P.Shift(new Vector3(clearSpot.x,.04f,clearSpot.z)-P.transform.position);P.Head.rotation=Quaternion.Euler(20,-90,0);yield return .3f;
+            Check(coralItem.held,"The full mug stays in hand when the player steps clear of the counter");
+            Release();
+            foreach(var t in Watch(coralItem,3,()=>kit.shatters>broken))yield return t;
+            Check(kit.shatters==broken+1&&coralMug.breaks==1&&!coralItem.gameObject.activeSelf,"A full mug let go of at carrying height breaks");
+            Check(kit.splashes.Any(sp=>sp&&sp.gameObject.activeSelf),"A full mug leaves a splash of coffee where it broke");
+            yield return KitchenRoom.ReturnAfter+.6f;
+            Check(coralItem.gameObject.activeSelf&&coralMug.level==0&&Vector3.Distance(coralItem.transform.position,coralHome)<.15f,"The broken mug comes back empty on its shelf");
+            Check(kit.fills==1&&kit.mistakes==0&&D.rooms[3].accepted==0,"Breaking a mug takes nothing away and counts as no mistake");
             VRPlayer.ThrowOnDesktop=false;yield return .5f;
 
             // ---- Quest 2

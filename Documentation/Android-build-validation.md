@@ -644,6 +644,54 @@ The release APK built with zero errors.
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 13 (night): mugs, cupboards and a better espresso machine
+
+### What changed
+
+- **Five mugs that break.** The kitchen has five mugs: your cup, a teal, a coral and a navy mug on the counter, and an orange one hidden in a cupboard. Any of them can be carried, sent under the spout by pointing (the spout takes any mug, and a second mug sent there sends the first one back where it started) or thrown. A thrown mug, or one let go of at carrying height, breaks: it hits something at 2.6 m/s or more, which is a fall of about a third of a metre or more, so setting one down gently never breaks it. It bursts into shards (34 chips over the counter or the floor, in the mug's colour and white), a puff of dust and, if it held coffee, a splash that lies flat where it landed, with a crash (`SFX - Shatter`). It is back on its shelf, whole and empty, 2.5 seconds later, and nothing is counted: the pours, the mistakes and the chapter are untouched. A hand sweeping through a mug, one mug gliding in beside another and the first 0.4 s after a mug lands from a send are never knocks.
+- **Cupboards, and an orange mug.** The six cupboards under the counter are hollow now, and each door hangs from a hinge on its outer edge and swings open when pointed at and pressed (`SFX - Cabinet`, a creak and a knock). Five hold plates, jars, bowls, tins, a kettle and cloths and say so. The fifth from the left hides an orange mug. Putting it under the spout and brewing earns the **Orange mug pin**, an eleventh piece to wear (it shows as a brass disc with a tiny orange mug and a dab of coffee on the reflection's chest). After the three pours it can still be filled once, and nothing is counted for it.
+- **The machine has a lever and a steam wand.** A lever on its side pulls down as the machine brews (and gives a short jerk when the pressure is faulty); pointing at it brews exactly as BREW does. There is also a gauge, a portafilter handle, a steam valve and a steam wand with a nozzle: pointing at the wand or the valve blows a plume of steam with a hiss (`SFX - Steam`), even while the pressure is faulty. Three sounds were added at the end of `Tools/make_audio.py` (47 WAV files in all), so every earlier sound regenerates as it was.
+- `Mug` sets its own physics limit for pushing apart from another mug (1.5 m/s) when it wakes, because the editor does not save it with the scene.
+- Version 0.7.0.
+
+### Bugs the tests caught
+
+Most of the first failures were in the new checks, not the game. A comfort check expected every coffee disc hidden, but a saved partial-progress fixture legitimately fills your cup. The wardrobe check looked for the new pin's announcement too soon: announcements are queued four seconds apart, and the kind scarf comes first. A test expected ten earnable pieces, and there are now eleven. One check read the mugs' physics limit while their room was still hidden, where it always reads 0, which showed that nothing was setting it in the game: that is now set when a mug wakes, and the throwing suite checks it in the live kitchen (1.5 m/s). Twice the gameplay journey failed at its first step (movement input moving the player) on the first run after a scene rebuild or a recompile, and passed on the next run with nothing changed; it is a start-up timing issue in the test that was not tracked down. The mug throws, the shatter, the send under the spout and the cupboards all passed the first time they were run.
+
+### Tests
+
+The gameplay journey has 8 new checks (146 in all): the lever brews and pulls down, the cup placement and three pours (the second with the lever) complete the kitchen, the lever goes back up, the steam wand blows steam, nothing orange has been found yet, a cupboard opens and the orange mug is inside, the mug is taken from the open cupboard, it glides to the spout while the mug already there goes back to the counter and nothing breaks, and brewing into it earns the pin and still counts as nothing more than a little warmth. The menu and seated suite has 14 new checks (71 in all) on how the kitchen is wired: five mugs and their settings, one spout that takes any mug, six doors on their outer edges, the orange mug in the fifth cupboard, the eleventh piece, the lever and steam wand, the shard, dust and splash systems, and effects that share the flat paper material, cast no shadows and never hold more than 300 bits (224). The mirror and wardrobe suite has 7 new checks (63 in all): the pin waits for the hidden mug, opening the cupboard only shows it, brewing into it earns the pin and it is announced after the scarf, and the pin can be worn at the mirror. The throwing suite has 24 new checks (102 in all): a mug picked up says that throwing it will break it, one flicked at the floor flies off the hand and breaks once, bursts into shards and dust, is out of the room for a moment and comes back whole on its shelf; one set down from a hand's height does not break; one let go while pointing at the spout is sent and not thrown; a second mug sent to the spout sends the first one home unbroken; the pour goes into the mug that was sent; and a full mug let go of at carrying height breaks, splashes coffee and comes back empty with no mistake counted. Three new stills are saved: the whole machine, the open orange cupboard and the mirror with the new pin (`Documentation/Previews/`).
+
+### Results
+
+All eight suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 146 |
+| Navigation | 131 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 71 |
+| Mirror and wardrobe | 63 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 102 |
+| Text visibility | 138 signs, 11 plates |
+
+Navigation, the ocean suite and the text visibility suite last ran before one small late change (`Mug` setting its own physics limit), which touches only the kitchen's mugs; the other five suites ran after it. The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 74.5 MB (74,495,119 bytes) |
+| SHA-256 of the APK | `c2592395ce9b1a9c06f11c7ce8158a8a55b4d598f5adbd91903ac9af3b80396e` |
+| Version | 0.7.0, version code 411989 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.7.0, versionCode 411989, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. The new code and content are in the build: the `Mug` and `CabinetDoor` classes, the three new sounds (`SFX - Shatter`, `SFX - Cabinet`, `SFX - Steam`), the orange mug material, the machine lever and steam wand, the mug breaking effects, and the Orange mug pin. No private-network address and no session data in any file (the only matches for an address pattern are version numbers and encoding identifiers in the .NET libraries, and Meta's own debugger classes appear as code and type names in the SDK, as before). The account name appears once, beside the project name in the player's global settings. 133 KB larger than 0.6.6: the three sounds and the new code. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -658,6 +706,7 @@ These still need a physical headset playtest (see `Playtest.md`):
 - how the paper looks and feels in the headset: the flurry of thin bits (flicker or shimmer in the lenses), how thick the scraps look on the floor, whether you can see a set pop in, and the frame rate with all five sets on screen (the editor only counts them)
 - how the confetti looks and feels in the headset: whether the thin flat bits flicker or shimmer in the lenses, whether the burst and the shower read well, how loud the pop is on the headset's speakers, the frame rate during a burst (about 400 bits at once), and whether a real hand toss reliably counts as a throw (the editor test simulates the hand's speed)
 - how the box blast looks and feels in the headset: whether the flash (a cream ball up to about 0.6 m across for a fifth of a second) and the smoke puffs are comfortable so close to the face, whether the stretched sparks and the thin chips flicker in the lenses, how loud the boom is on the headset's speakers, the frame rate during a blast (about 190 bits at once), and whether a real two-handed slam reliably bursts the boxes while a gentle tap or two boxes carried side by side do not (the editor test drives stand-in hands at set speeds; tracked hands and controllers jitter, so 2.4 m/s may turn out too easy or too hard)
+- how the new kitchen looks and feels in the headset: whether throwing a mug feels like a throw and a shatter is satisfying rather than startling (the crash is a sharp sound close to the head), whether the shards, the dust and the steam plume are comfortable and legible in the lenses, the frame rate while they play (at most 224 bits at once) and in the kitchen generally with five physics mugs, whether the mugs and the cupboard doors are easy to point at and open from a seat, whether the orange mug can be seen on its shelf from a seated eye height, and how the Orange mug pin reads on the avatar's chest
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

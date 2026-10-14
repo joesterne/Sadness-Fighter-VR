@@ -174,8 +174,30 @@ namespace AfterHours.Editor
             yield return Click(Button(ActionKind.Help));Check(d.kitchen.helped,"Help input releases machine pressure");
             var cup=d.kitchen.cup;d.player.Place(new Vector3(238.3f,.04f,2.9f),0);yield return Delay();Aim(cup.transform.position);Press(true);yield return Delay();Check(cup.held,"Input grabs the coffee cup");
             d.player.Shift(new Vector3(240,.04f,2.96f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay();Press(false);yield return Delay(.7f);
-            for(int i=0;i<3;i++){yield return Click(Button(ActionKind.Brew));yield return Delay(1);}
+            // The middle pour is made with the machine's lever, which pulls down as it brews.
+            var kitchen=d.kitchen;var lever=kitchen.lever.GetComponentInChildren<Interactable>();float leverRest=kitchen.lever.localEulerAngles.z;
+            for(int i=0;i<3;i++)
+            {
+                yield return Click(i==1?lever:Button(ActionKind.Brew));
+                if(i==1)Check(Mathf.Abs(Mathf.DeltaAngle(kitchen.lever.localEulerAngles.z,leverRest))>20&&kitchen.fills==2,"Pointing at the lever brews, and the lever pulls down");
+                yield return Delay(1);
+            }
             Check(d.rooms[3].complete&&d.kitchen.fills==3,"Cup placement and three pours complete kitchen");
+            yield return Delay(.7f);
+            Check(Mathf.Abs(Mathf.DeltaAngle(kitchen.lever.localEulerAngles.z,leverRest))<5,"The lever goes back up");
+            // The steam wand blows a plume, even though the machine was faulty.
+            yield return Click(Button(ActionKind.Steam));Check(kitchen.steams==1&&kitchen.steam.particleCount>0,"Pointing at the steam wand blows steam");
+            // A cupboard opens by pointing at it. The fifth hides an orange mug, which can be carried to the spout like any other cup and filled for a pin.
+            d.player.Place(new Vector3(241.9f,.04f,2.9f),0);yield return Delay();
+            Check(!d.wardrobe.Has("orange-pin")&&!kitchen.orangeSeen,"Nothing orange has been found yet");
+            yield return Click(Button(ActionKind.Cabinet,KitchenRoom.OrangeCabinet));yield return Delay(.9f);
+            var cupboard=kitchen.doors[KitchenRoom.OrangeCabinet];
+            Check(cupboard.open&&cupboard.Settled&&Mathf.Abs(cupboard.angle)>=90&&kitchen.orangeSeen&&kitchen.opens==1,"Pointing at a cupboard opens its door, and the orange mug is inside");Capture("Kitchen-Cupboard");
+            var hidden=kitchen.orangeMug.item;Aim(hidden.transform.position);Press(true);yield return Delay();Check(hidden.held,"Input takes the orange mug from the open cupboard");
+            d.player.Shift(new Vector3(240,.04f,2.96f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay();Press(false);yield return Delay(1.4f);
+            Check(Vector3.Distance(hidden.transform.position,kitchen.nozzle.position)<.44f&&Vector3.Distance(kitchen.cup.transform.position,kitchen.transform.TransformPoint(new Vector3(-1.7f,1.23f,4.6f)))<.4f&&kitchen.mugs.All(m=>m.breaks==0),"The orange mug glides to the spout and the mug that was there goes back to the counter; nothing breaks");
+            yield return Click(Button(ActionKind.Brew));
+            Check(kitchen.orangeFilled&&kitchen.orangeMug.level==1&&kitchen.fills==3&&d.wardrobe.Has("orange-pin"),"Brewing into the orange mug earns the orange mug pin, and still counts as nothing more than a little warmth");
             yield return Visit(4);Capture("Archive");
             var notes=d.rooms[4].root.GetComponentsInChildren<Grabbable>();var zones=d.rooms[4].root.GetComponentsInChildren<DropZone>();
             foreach(var note in notes)
@@ -287,7 +309,7 @@ namespace AfterHours.Editor
             yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
             Check(!bat.held&&!d.player.IsHolding(bat)&&Vector3.Distance(bat.transform.position,batHome)<.05f,"PUT THE BAT BACK returns the bat to its rack");
             Check(d.CompletedCount==6,"All six chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==222,"Completion saved as all six chapter flags");
-            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","jacket","step-pin","scarf"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
+            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","jacket","step-pin","scarf","orange-pin"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
             Status="Passed";
         }

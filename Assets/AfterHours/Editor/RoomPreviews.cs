@@ -35,6 +35,11 @@ namespace AfterHours.Editor
                 saved+=Shot(d,2,cam,"Heavy things - boxes",warehouse+new Vector3(.4f,1.55f,-2.2f),warehouse+new Vector3(0,.95f,.2f))?1:0;
                 var kitchen=d.rooms[3].root.transform.position;
                 saved+=Shot(d,3,cam,"A small spill - counter",kitchen+new Vector3(-1,1.6f,1.6f),kitchen+new Vector3(-.3f,1.3f,4.8f))?1:0;
+                // The machine with its lever, gauge and steam wand, and the fifth cupboard open on the orange mug.
+                saved+=Shot(d,3,cam,"A small spill - the machine",kitchen+new Vector3(.2f,1.5f,2.2f),kitchen+new Vector3(-.1f,1.6f,4.5f))?1:0;
+                var cupboard=d.kitchen.doors[KitchenRoom.OrangeCabinet];cupboard.Snap(true);
+                try{saved+=Shot(d,3,cam,"A small spill - the orange cupboard",kitchen+new Vector3(1.2f,1.3f,2f),kitchen+new Vector3(1.9f,.4f,4.7f))?1:0;}
+                finally{cupboard.Snap(false);}
                 var lobby=d.rooms[0].root.transform.position;
                 saved+=Shot(d,0,cam,"The lobby - memory office",lobby+new Vector3(-2.2f,1.6f,7.5f),lobby+new Vector3(-4.6f,1,12))?1:0;
                 // The comfort menu as it opens for a seated player, and the walking vignette at full stick.
@@ -63,6 +68,7 @@ namespace AfterHours.Editor
                 saved+=MirrorShot(d,cam,"Starter look",new WardrobeState())?1:0;
                 saved+=MirrorShot(d,cam,"Earned look",new WardrobeState{skin=4,hair=2,hairColour=2,build=1,top="jumper",head="beanie",neck="scarf",pin="step-pin"})?1:0;
                 saved+=MirrorShot(d,cam,"Lanyard and cap",new WardrobeState{skin=0,hair=1,hairColour=3,build=2,top="cardigan",head="cap",neck="lanyard",pin="true-pin"})?1:0;
+                saved+=MirrorShot(d,cam,"Orange mug pin",new WardrobeState{skin=2,hair=0,hairColour=1,build=1,top="shirt",head="no-hat",neck="no-neck",pin="orange-pin"})?1:0;
                 saved+=MirrorShot(d,cam,"Let it out pin",new WardrobeState{skin=5,hair=4,hairColour=0,build=1,top="jacket",head="no-hat",neck="no-neck",pin="letitout-pin"})?1:0;
             }
             finally

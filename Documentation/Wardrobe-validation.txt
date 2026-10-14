@@ -1,4 +1,4 @@
-2026-10-14 00:31:11Z
+2026-10-14 02:28:28Z
 Passed
 The mirror, the avatar and the wardrobe: pointer input at the mirror, the real unlock events, and a scene reload.
 PASS: A new player owns only the starter pieces: two tops and no hat
@@ -35,6 +35,11 @@ PASS: With no hats earned, HAT stays on no hat
 PASS: One oar stroke, a first small step, earns the small step pin
 PASS: The new piece is announced
 PASS: Asking for help earns the kind scarf
+PASS: The orange mug pin waits for the hidden mug
+PASS: Opening the cupboard only shows the mug
+PASS: Brewing into the orange mug earns the orange mug pin
+PASS: A new piece is announced
+PASS: The orange mug pin is announced, after the scarf
 PASS: The ocean's piece waits until the ocean is finished
 PASS: Reaching the shore earns the harbour jumper
 PASS: Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin
@@ -45,7 +50,7 @@ PASS: The let it out pin waits for the quiet after the last break
 PASS: The quiet after the whole computer earns the let it out pin, and finishing all six chapters the sunrise jacket
 PASS: Ten seconds on the rooftop is not yet a rest
 PASS: Resting on the rooftop earns the evening beanie: every piece found
-PASS: The desk's MIRROR sign counts the new pieces (10)
+PASS: The desk's MIRROR sign counts the new pieces (11)
 PASS: The mirror's nameplate shows the line you kept
 PASS: TOP > reaches the harbour jumper, and it is no longer new
 PASS: The jumper has long sleeves
@@ -54,6 +59,8 @@ PASS: Curls tuck under the cap
 PASS: NECK > twice: past the scarf to your own lanyard
 PASS: PIN > pins on the small step pin
 PASS: PIN > twice more reaches the let it out pin
+PASS: PIN > once more reaches the orange mug pin
+PASS: PIN < steps back to the let it out pin
 PASS: TRY AGAIN in a chapter keeps every piece
 PASS: After a reload: every piece, everything you wore and how you look
 PASS: After a reload the reflection is dressed the same and the nameplate keeps your line

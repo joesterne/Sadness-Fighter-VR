@@ -30,6 +30,7 @@ namespace AfterHours
             P("step-pin","Small step pin",OutfitSlot.Pin,"Take one small step in any chapter"),
             P("true-pin","Still true pin",OutfitSlot.Pin,"Finish The infinite archive"),
             P("letitout-pin","Let it out pin",OutfitSlot.Pin,"Finish The rage room"),
+            P("orange-pin","Orange mug pin",OutfitSlot.Pin,"Something orange is hiding in the kitchen"),
         };
         public static Piece Get(string id)=>All.FirstOrDefault(p=>p.id==id);
         public static bool Exists(string id)=>All.Any(p=>p.id==id);

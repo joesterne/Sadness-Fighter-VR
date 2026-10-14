@@ -162,6 +162,15 @@ namespace AfterHours.Editor
             yield return 4.2f;Check(Announced("Small step pin"),"The new piece is announced");
             D.Travel(3);yield return 1f;D.kitchen.AskForHelp();
             Check(W.Has("scarf"),"Asking for help earns the kind scarf");
+            // The kitchen's hidden orange mug: open the fifth cupboard, put the mug under the spout and brew into it.
+            Check(!W.Has("orange-pin"),"The orange mug pin waits for the hidden mug");
+            D.kitchen.ToggleCabinet(KitchenRoom.OrangeCabinet);yield return .3f;
+            Check(D.kitchen.orangeSeen&&!W.Has("orange-pin"),"Opening the cupboard only shows the mug");
+            var hiddenMug=D.kitchen.orangeMug;hiddenMug.item.Initialize();hiddenMug.transform.position=D.kitchen.nozzle.position+Vector3.up*.09f;hiddenMug.item.Body.position=hiddenMug.transform.position;hiddenMug.item.Body.linearVelocity=Vector3.zero;yield return .6f;
+            D.kitchen.Brew();yield return .3f;
+            Check(D.kitchen.orangeFilled&&hiddenMug.level==1&&W.Has("orange-pin"),"Brewing into the orange mug earns the orange mug pin");
+            yield return 4.2f;Check(Announced("Kind scarf")||Announced("Orange mug pin"),"A new piece is announced");
+            yield return 4.2f;Check(Announced("Orange mug pin"),"The orange mug pin is announced, after the scarf");
             Check(!W.Has("jumper"),"The ocean's piece waits until the ocean is finished");
             D.ocean.RestoreProgress(13);D.Travel(1);yield return 1f;D.ocean.Stroke();yield return 1.2f;
             Check(D.rooms[1].complete&&W.Has("jumper"),"Reaching the shore earns the harbour jumper");
@@ -200,6 +209,10 @@ namespace AfterHours.Editor
             Check(W.State.pin=="step-pin"&&avatar.Wearing("step-pin"),"PIN > pins on the small step pin");
             foreach(var t in Step(7,2))yield return t;
             Check(W.State.pin=="letitout-pin"&&avatar.Wearing("letitout-pin")&&!avatar.Wearing("step-pin"),"PIN > twice more reaches the let it out pin");
+            foreach(var t in Step(7))yield return t;
+            Check(W.State.pin=="orange-pin"&&avatar.Wearing("orange-pin")&&!avatar.Wearing("letitout-pin"),"PIN > once more reaches the orange mug pin");
+            foreach(var t in Click(Lobby(ActionKind.WardrobePrev,7)))yield return t;
+            Check(W.State.pin=="letitout-pin"&&avatar.Wearing("letitout-pin")&&!avatar.Wearing("orange-pin"),"PIN < steps back to the let it out pin");
 
             // Nothing is lost: TRY AGAIN keeps pieces, and a reload keeps everything.
             D.Travel(2);yield return 1f;D.RestartCurrentRoom();

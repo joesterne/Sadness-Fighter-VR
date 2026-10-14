@@ -1,4 +1,4 @@
-2026-10-14 00:34:02Z
+2026-10-14 02:02:27Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -74,7 +74,7 @@ PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.1, -0.2) 'PIN'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2) '<'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2) '>'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2) 'No pin'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 10 PIECES FOUND'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 11 PIECES FOUND'
 PASS: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0) 'YOU ARE STILL WELCOME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0) '01  /  OCEAN OF SHAME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0) 'A feeling can be vast without bein...'
@@ -184,6 +184,7 @@ NOTE: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): part
 NOTE: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): partly blocked from 3 of 72 places, by 03 - A small spill/Batched geometry - 08 Warm porcelain near (-4.5, 2.0, 5.5)
 NOTE: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): partly blocked from 5 of 72 places, by 03 - A small spill/Help plate
 NOTE: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7): partly blocked from 11 of 60 places, by 03 - A small spill/Batched geometry - 07 Polished limestone near (-3.5, 2.5, 5.5)
+NOTE: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): partly blocked from 2 of 52 places, by 03 - A small spill/Batched geometry - 06 Brass and daylight near (0.0, 1.5, 4.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): partly blocked from 10 of 79 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-7.0, 2.0, 2.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): partly blocked from 16 of 89 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (-6.0, 2.5, 3.0)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): partly blocked from 22 of 87 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 2.5, 2.5)
@@ -295,7 +296,7 @@ INFO: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): in r
 INFO: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): in range of 86 places, faced from 72, clear from 69, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): in range of 86 places, faced from 72, clear from 67, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7): in range of 73 places, faced from 60, clear from 49, outlined
-INFO: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): in range of 86 places, faced from 52, clear from 52
+INFO: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): in range of 86 places, faced from 52, clear from 50
 INFO: room 3 [A small spill] 03 - A small spill/Machine display at (-0.2, 1.8, 4.5): in range of 50 places, faced from 25, clear from 25, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Ask for support label at (2.1, 1.4, 4.4): in range of 86 places, faced from 52, clear from 52
 INFO: room 3 [A small spill] 03 - A small spill/Help permission at (2.1, 1.9, 4.4): in range of 85 places, faced from 51, clear from 51, outlined

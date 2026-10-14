@@ -289,7 +289,7 @@ namespace AfterHours
                     letGo.Throw(Throwing.Launch(flick,from,thrownAt?(Vector3?)thrownAt.LandingPoint:null,out _));
                     var d=GameDirector.Instance;d.PlayAt(d.send,from,.7f);Pulse(controller);
                 }
-                else if(sendTo){letGo.SendTo(sendTo.LandingPoint,Quaternion.Euler(0,letGo.transform.eulerAngles.y,0));var d=GameDirector.Instance;d.PlayAt(d.send,letGo.transform.position,.7f);Pulse(controller);}
+                else if(sendTo){sendTo.Clear(letGo);letGo.SendTo(sendTo.LandingPoint,Quaternion.Euler(0,letGo.transform.eulerAngles.y,0));var d=GameDirector.Instance;d.PlayAt(d.send,letGo.transform.position,.7f);Pulse(controller);}
                 else letGo.Release();
             }
             wasSelect[index]=select;wasGrip[index]=grab;
@@ -306,7 +306,7 @@ namespace AfterHours
         {
             if(item.paddle)return "The oar turns at its lock. Push the handle forward to drive the blade back through the water, then draw it toward you. Or press ROW.";
             if(item.tool)return "The bat stays in your hand. Swing at the old computer: short swings count. Point at the rack and "+Wording.PutBack+" to put it back.";
-            string toss=item.throwable&&CanThrow?" Or throw it.":"";
+            string toss=item.throwable&&CanThrow?" Or throw it.":item.tossable&&item.GetComponent<Mug>()&&CanThrow?" Or throw it: a mug will break.":"";
             foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt+toss;
             return item.label.Replace("\n"," ")+"  /  Let go to place it.";
         }

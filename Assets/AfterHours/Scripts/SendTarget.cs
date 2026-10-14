@@ -15,7 +15,17 @@ namespace AfterHours
         public GameObject highlight;
         public string prompt="Point here and let go.";
         public Vector3 LandingPoint=>transform.position+landing;
-        public bool Accepts(Grabbable item)=>item&&!item.paddle&&!item.processed&&item.room==room&&(!only||only==item);
+        // When set, anything of this kind can be sent here (the espresso spout takes any mug).
+        public string category;
+        public bool Accepts(Grabbable item)=>item&&!item.paddle&&!item.processed&&item.room==room&&(!only||only==item)&&(string.IsNullOrEmpty(category)||category==item.category);
+        // Something is being sent here. For a target that takes a kind of object, whatever of that kind already rests at the spot goes back where it started,
+        // so two never end up in each other.
+        public void Clear(Grabbable incoming)
+        {
+            var d=GameDirector.Instance;if(!d||string.IsNullOrEmpty(category))return;
+            foreach(var g in d.Grabbables)
+                if(g&&g!=incoming&&g.isActiveAndEnabled&&Accepts(g)&&!g.held&&!g.sending&&Vector3.Distance(g.transform.position,LandingPoint)<.32f)g.ReturnHome();
+        }
         public void Show(bool on){if(highlight&&highlight.activeSelf!=on)highlight.SetActive(on);}
     }
 }

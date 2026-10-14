@@ -625,6 +625,42 @@ def sfx_blast():
     return fade_edges(normalise(reverb(x, 0.8, 0.16), -4))
 
 
+# ---------- the kitchen: a mug breaking, a cupboard door, the steam wand ----------
+def sfx_shatter():
+    # A mug breaking on something hard: a sharp crack and a hollow knock, a handful of bright ringing pieces, then shards skittering and settling.
+    n = int(1.6 * SR)
+    crack = highpass(white(n), 1800, 2) * decay(n, 0.02) * 1.0
+    knock = thump(n, 180, 0.05) * 0.8 + bandpass(white(n), 500, 2200, 2) * decay(n, 0.06) * 0.6
+    ring = np.zeros(n)
+    for _ in range(7):
+        f = rng.uniform(2200, 5200); i = int(rng.uniform(0.0, 0.18) * SR); b = bell(f, 0.28) * rng.uniform(0.06, 0.2)
+        ring[i:i + len(b)] += b[:n - i]
+    shards = clicks(1.6, 45, 1800, 9000, 0.95) * np.exp(-np.arange(n) / (0.45 * SR)) * 0.7
+    x = crack + knock + ring + shards
+    return fade_edges(normalise(reverb(x, 0.5, 0.12), -4))
+
+
+def sfx_cabinet():
+    # A cupboard door: a short wooden creak as it swings, then a soft knock where the hinge stops it.
+    n = int(0.9 * SR); tt = np.arange(n) / SR
+    pitch = 220 + 90 * np.sin(2 * np.pi * 3.2 * tt) + 160 * tt
+    creak = bandpass(signal.sawtooth(2 * np.pi * np.cumsum(pitch) / SR), 500, 2400, 2) * env_adsr(n, 0.04, 0.3, 2) * (tt < 0.5) * 0.35
+    k = int(0.4 * SR); i = int(0.5 * SR)
+    knock = np.zeros(n)
+    knock[i:i + k] = thump(k, 130, 0.05) * 0.9 + bandpass(white(k), 300, 1800, 2) * decay(k, 0.02) * 0.7
+    x = creak + knock
+    return fade_edges(normalise(reverb(x, 0.35, 0.1), -6))
+
+
+def sfx_steam():
+    # A steam wand opened: a hiss that rises quickly and holds with a little gurgle of water, then sighs out.
+    n = int(2.4 * SR)
+    hiss = bandpass(white(n), 2500, 11000, 2) * (0.75 + 0.25 * smooth_noise(n, 14)) * env_adsr(n, 0.12, 0.9, 2)
+    gurgle = lowpass(white(n), 500, 2) * (0.5 + 0.5 * smooth_noise(n, 9)) * env_adsr(n, 0.3, 0.8, 2) * 0.25
+    x = hiss + gurgle
+    return fade_edges(normalise(reverb(x, 0.3, 0.08), -9))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -645,6 +681,7 @@ def main(folder):
         'Ambience - Waves': amb_waves, 'Ambience - Surf': amb_surf,
         'SFX - Confetti': sfx_confetti,
         'SFX - Blast': sfx_blast,
+        'SFX - Shatter': sfx_shatter, 'SFX - Cabinet': sfx_cabinet, 'SFX - Steam': sfx_steam,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

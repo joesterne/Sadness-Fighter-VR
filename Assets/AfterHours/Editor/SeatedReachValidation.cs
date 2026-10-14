@@ -101,7 +101,7 @@ namespace AfterHours.Editor
             Check(D.kitchen.murmur&&D.kitchen.murmur.volume>0,"A small spill: the murmur grows with the crowd");
             foreach(var t in Click(Button(ActionKind.Help)))yield return t;
             Check(D.kitchen.helped&&D.kitchen.murmur.volume==0,"A small spill: asking for help quiets the room");
-            var spout=Target(x=>x.only==D.kitchen.cup);
+            var spout=Target(x=>x.category=="mug");
             foreach(var t in Send(D.kitchen.cup,spout))yield return t;
             Check(Vector3.Distance(D.kitchen.cup.transform.position,D.kitchen.nozzle.position)<.44f&&Vector3.Angle(D.kitchen.cup.transform.up,Vector3.up)<10,"A small spill: the cup lands upright under the spout");
             for(int i=0;i<3;i++){foreach(var t in Click(Button(ActionKind.Brew)))yield return t;yield return 1.1f;}

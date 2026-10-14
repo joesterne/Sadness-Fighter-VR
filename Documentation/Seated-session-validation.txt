@@ -1,4 +1,4 @@
-2026-10-14 00:27:34Z
+2026-10-14 02:21:12Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -40,7 +40,7 @@ PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
 PASS: A shredded résumé restores exactly once, and the paper stays in the bin and on the floor
-PASS: Each page leaves at least 100 scraps (1205 in all)
+PASS: Each page leaves at least 100 scraps (1300 in all)
 PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (10.9 by 14.4 m)
 PASS: Scraps have no colliders, and each set is two draws
 PASS: The résumé room carries its confetti: a burst, a shower and a pop sound
@@ -51,6 +51,20 @@ PASS: The heavy room carries its box blast: the five boxes, a flash, sparks, smo
 PASS: The blast plays once when asked: a flash, 70 sparks, 9 puffs of smoke and 110 chips, each a single burst
 PASS: The chips land on a floor plane in seven colours, and the sparks are stretched along their flight
 PASS: The blast shares the flat unlit paper material, casts no shadows and never holds more than 300 bits (270)
+PASS: The kitchen has five mugs, each with a grabbable
+PASS: The mugs are tossed like the résumé pages: tossable, never helped to a target, upright, kind 'mug', in the kitchen
+PASS: Every mug has its coffee disc, shown only while there is coffee in it, and only your cup carries a saved pour
+PASS: Every mug belongs to the kitchen
+PASS: One mug is the orange one
+PASS: Your cup is the first mug
+PASS: Only the hidden mug is orange
+PASS: One spout target takes any mug
+PASS: Six cupboard doors hang on their outer edges, shut, each opened by pointing at it
+PASS: The orange mug waits inside the fifth cupboard, and nothing else is hidden there
+PASS: The orange mug pin is an eleventh piece to earn, and its hint is a gentle one
+PASS: The machine has a lever that brews, a steam wand and valve that blow steam, and the BREW button besides
+PASS: A breaking mug has shards over the counter and over the floor, a puff of dust and four coffee splashes, each waiting to be played
+PASS: The kitchen's effects share the flat paper material, cast no shadows, never hold more than 300 bits (224) and have their three sounds
 PASS: A broken mouse restores exactly once, still in pieces
 PASS: Continue button names the last room
 PASS: Continue input returns to the saved room
