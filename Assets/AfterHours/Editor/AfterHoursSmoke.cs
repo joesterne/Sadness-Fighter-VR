@@ -66,6 +66,16 @@ namespace AfterHours.Editor
         // Puts a loose object somewhere new, and its body there too, so physics does not draw it back to where it was.
         static void Put(Grabbable item,Vector3 point){item.Initialize();item.transform.position=point;item.Body.position=point;if(!item.Body.isKinematic){item.Body.linearVelocity=Vector3.zero;item.Body.angularVelocity=Vector3.zero;}}
         static void Press(bool down){Queue(mouse,new MouseState().WithButton(MouseButton.Left,down));}
+        // Moves stand-in hands each frame, so a box in each is as fast as asked. The second hand may be missing. Ends after the time, or as soon as it is done.
+        static IEnumerator Sweep(Transform first,Transform second,Vector3 firstWay,Vector3 secondWay,float speed,float seconds,Func<bool> done=null)
+        {
+            for(float end=Time.time+seconds;Time.time<end;)
+            {
+                first.position+=firstWay.normalized*speed*Time.deltaTime;if(second)second.position+=secondWay.normalized*speed*Time.deltaTime;
+                yield return null;
+                if(done!=null&&done())yield break;
+            }
+        }
         static IEnumerator Click(Interactable button)
         {Aim(button.transform.position);yield return Delay(.06f);Press(true);yield return Delay(.12f);Press(false);yield return Delay(.25f);}
         static Interactable Button(ActionKind kind,int value=-1)
@@ -94,6 +104,61 @@ namespace AfterHours.Editor
             Check(d.rooms[1].complete&&d.ocean.strokes==14,"Fourteen rowing actions complete ocean");Capture("Ocean-Complete");
             yield return Visit(2);Capture("Warehouse");
             var boxes=d.rooms[2].root.GetComponentsInChildren<Grabbable>();var bay=d.rooms[2].root.GetComponentInChildren<DropZone>();
+            // A quiet easter egg: hold a box in each hand and slam them together, and both burst. Nothing is counted, and both are back on their stands.
+            // Stand-in hands carry the boxes, so each scene is exactly as fast as it is written; the last one uses the player's own hand too.
+            {
+                var blast=d.boxBlast;var room=d.rooms[2].root.transform;var across=room.right;var centre=room.TransformPoint(new Vector3(0,1.35f,-1.6f));
+                Check(blast&&blast.director==d&&blast.flash&&blast.sparks&&blast.smoke&&blast.chips&&blast.sound&&blast.boxes.Length==5&&boxes.All(x=>x.throwable&&blast.boxes.Contains(x)),"The heavy room has its box blast, and all five boxes are in it");
+                var first=boxes[0];var second=boxes[1];var homeFirst=first.transform.position;var homeSecond=second.transform.position;
+                var handA=new GameObject("Test hand A").transform;var handB=new GameObject("Test hand B").transform;
+                d.player.Place(room.TransformPoint(new Vector3(0,.04f,-3.8f)),0);yield return Delay();
+                // Both boxes into the stand-in hands, the given distance either side of the middle, and left there a moment so being picked up is not a slam.
+                IEnumerator Grip(float half)
+                {
+                    first.Release();second.Release();handA.position=centre-across*half;handB.position=centre+across*half;Put(first,handA.position);Put(second,handB.position);
+                    Check(first.Take(handA)&&second.Take(handB),"Two boxes can be held at once, one in each hand");yield return Delay(.4f);
+                }
+                yield return Grip(1.2f);Check(blast.blasts==0&&first.held&&second.held,"Two boxes held apart do nothing");
+                yield return Sweep(handA,handB,across,-across,.8f,3f,()=>Vector3.Distance(handA.position,handB.position)<.4f);
+                Check(blast.blasts==0&&first.held&&second.held&&Vector3.Distance(first.transform.position,second.transform.position)<.45f,"Pressing two boxes gently together does nothing");
+                yield return Grip(.275f);yield return Sweep(handA,handB,across,across,4f,.5f);
+                Check(blast.blasts==0&&first.held&&second.held&&Vector3.Distance(first.transform.position,second.transform.position)<.7f,"Two boxes carried side by side at speed do nothing");
+                yield return Grip(1.2f);int blasted=blast.blasts,returned=blast.returns;
+                yield return Sweep(handA,handB,across,-across,3.5f,1.5f,()=>blast.blasts>blasted);
+                Check(blast.blasts==blasted+1&&!first.gameObject.activeSelf&&!second.gameObject.activeSelf&&blast.IsAway(first)&&blast.IsAway(second)&&!first.held&&!second.held,"Slamming two boxes together bursts both");
+                yield return Delay(.06f);
+                var bits=new ParticleSystem.Particle[400];int chipBits=blast.chips.GetParticles(bits);
+                int shades=bits.Take(chipBits).Select(p=>ColorUtility.ToHtmlStringRGB(p.GetCurrentColor(blast.chips))).Distinct().Count();
+                Check(blast.flash.particleCount>=1&&blast.sparks.particleCount>=50&&blast.smoke.particleCount>=6&&chipBits>=100&&shades>=5,"The burst is in the air: "+blast.flash.particleCount+" flash, "+blast.sparks.particleCount+" sparks, "+blast.smoke.particleCount+" smoke, "+chipBits+" chips in "+shades+" colours");
+                Check(Vector3.Distance(blast.lastAt,centre)<.7f,"The burst is where the boxes met");
+                Aim(blast.lastAt);Capture("Warehouse-Blast");
+                while(Time.time<blast.blastTime+1.2f)yield return null;
+                int settled=blast.chips.GetParticles(bits);float lowest=settled>0?bits.Take(settled).Min(p=>p.position.y):0;
+                Check(settled>80&&lowest>-.03f,"The chips fall and land on the floor, not through it: "+settled+" chips, lowest at "+lowest.ToString("0.000")+" m");
+                float wait=Time.time+4;while(blast.returns<returned+2&&Time.time<wait)yield return null;yield return Delay(.1f);
+                Check(blast.returns==returned+2&&first.gameObject.activeSelf&&second.gameObject.activeSelf&&!blast.IsAway(first)&&!blast.IsAway(second)&&Vector3.Distance(first.transform.position,homeFirst)<.3f&&Vector3.Distance(second.transform.position,homeSecond)<.3f,"Both boxes are back on their stands");
+                Check(!first.processed&&!second.processed&&!first.held&&!second.held&&d.rooms[2].accepted==0,"Nothing was counted, and neither box is held");
+                // The player's own hand holds one box and a stand-in sweeps the other into it.
+                var third=boxes[2];var fourth=boxes[3];var homeThird=third.transform.position;var homeFourth=fourth.transform.position;
+                d.player.Place(third.transform.position+new Vector3(0,-third.transform.position.y+.04f,-1.8f),0);yield return Delay();Aim(third.transform.position);Press(true);yield return Delay(.5f);
+                Check(third.held&&d.player.IsHolding(third),"The player's own hand holds a box");
+                handB.position=third.transform.position+across*1.8f;Put(fourth,handB.position);Check(fourth.Take(handB),"A second box goes into the other hand");yield return Delay(.4f);
+                blasted=blast.blasts;returned=blast.returns;
+                yield return Sweep(handB,null,-across,Vector3.zero,4f,1.5f,()=>blast.blasts>blasted);
+                Check(blast.blasts==blasted+1&&blast.IsAway(third)&&blast.IsAway(fourth)&&!d.player.IsHolding(third)&&!third.held,"A box in the player's hand and a box in the other hand burst together, and the player's hand lets go");
+                Press(false);yield return Delay(.3f);
+                var fifth=boxes[4];d.player.Place(fifth.transform.position+new Vector3(0,-fifth.transform.position.y+.04f,-1.8f),0);yield return Delay();Aim(fifth.transform.position);Press(true);yield return Delay(.4f);
+                Check(fifth.held&&d.player.IsHolding(fifth),"The player's hand can pick up another box straight after");
+                Press(false);yield return Delay(.2f);d.player.Drop(fifth);fifth.BringBack();
+                wait=Time.time+4;while(blast.returns<returned+2&&Time.time<wait)yield return null;yield return Delay(.1f);
+                Check(blast.returns==returned+2&&Vector3.Distance(third.transform.position,homeThird)<.3f&&Vector3.Distance(fourth.transform.position,homeFourth)<.3f&&!third.held&&!third.processed&&d.rooms[2].accepted==0,"Both boxes are back, and nothing was counted");
+                // TRY AGAIN during a blast puts the boxes back at once and clears the smoke.
+                blast.Blast(boxes[0],boxes[1],centre);yield return Delay(.2f);
+                Check(blast.IsAway(boxes[0])&&blast.IsAway(boxes[1])&&blast.chips.particleCount>50,"A burst can be made by hand, and the chips fly");
+                d.RestartCurrentRoom();yield return Delay(.1f);
+                Check(boxes.All(x=>x.gameObject.activeSelf&&!blast.IsAway(x)&&!x.held&&!x.processed)&&blast.chips.particleCount==0&&blast.sparks.particleCount==0&&blast.smoke.particleCount==0,"TRY AGAIN brings the boxes back at once and clears the smoke");
+                UnityEngine.Object.Destroy(handA.gameObject);UnityEngine.Object.Destroy(handB.gameObject);
+            }
             foreach(var box in boxes)
             {
                 d.player.Place(box.transform.position+new Vector3(0,-box.transform.position.y+.04f,-1.8f),0);yield return Delay();Aim(box.transform.position);Press(true);yield return Delay(.2f);Check(box.held,"Input grabs "+box.label);

@@ -20,6 +20,8 @@ namespace AfterHours
         // It is never helped toward a target, and it stays wherever it lands (a box that misses goes back to its stand). A page tossed onto the floor bursts into confetti.
         public bool tossable;
         public Transform Holder { get; private set; }
+        // When the hand last closed on it (game clock). A box drawn in from across the room is moving fast for a moment; that is not a slam.
+        public float TakenAt { get; private set; } = -10;
         // Gliding to a send target (or back home after a wrong tray). Drop zones wait until it lands.
         public bool sending { get; private set; }
         // In the air or rolling after a throw, until it is caught, picked up again or sent home.
@@ -43,7 +45,7 @@ namespace AfterHours
         {
             if(held || processed) return false;
             if(sending){StopAllCoroutines();sending=false;}
-            thrown=false;trailCount=0;
+            thrown=false;trailCount=0;TakenAt=Time.time;
             Holder=holder;held=true;if(!Body.isKinematic)Body.linearVelocity=Vector3.zero;Body.isKinematic=true;IgnorePlayer(true);
             var inverse=Quaternion.Inverse(holder.rotation);holdRotation=inverse*(worldRotation??transform.rotation);holdPosition=inverse*(worldOffset??transform.position-holder.position);
             // A held tool must never catch the hand's own pointer ray.
@@ -133,12 +135,19 @@ namespace AfterHours
             if(d&&Time.time>nextMissMessage){d.Say("Not quite. That one is back on its stand. There is no penalty, and you can still point and let go.");nextMissMessage=Time.time+12;}
             ReturnHome();
         }
-        // For the confetti: gone at once, in flight or lying on the floor. ResetObject brings it back to its stand.
+        // For the easter eggs: gone at once, in flight, in the hand or lying on the floor. BringBack puts it on its stand again.
         public void Vanish()
         {
-            Initialize();StopAllCoroutines();sending=false;thrown=false;pullStart=-1;trailCount=0;
+            Initialize();StopAllCoroutines();sending=false;thrown=false;held=false;Holder=null;pullStart=-1;trailCount=0;
             if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}
             Body.isKinematic=true;gameObject.SetActive(false);
+        }
+        // The easter eggs' way home: back on its stand after Vanish, set down gently. The body wakes where the thing last lay, so it is told where the stand
+        // is as well, or it springs back to where it lay for a moment.
+        public void BringBack()
+        {
+            gameObject.SetActive(true);ResetObject();
+            if(Body){Body.position=transform.position;Body.rotation=transform.rotation;if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}}
         }
         // A thrown box that reaches the truck is drawn into its place in a moment, rather than snapping there.
         public void Catch(Transform slot)

@@ -27,7 +27,7 @@ namespace AfterHours
         public TextMeshPro resumeLabel;
         public ComfortMenu menu;
         public IntroGuide intro;
-        public Shredder shredder;
+        public Shredder shredder; public BoxBlast boxBlast;
         public RageRoom rage;
         public Wardrobe wardrobe;
         public TextMeshPro mirrorLabel;
@@ -147,7 +147,7 @@ namespace AfterHours
             if(!IsChapter(currentRoom))return;
             player.ReleaseAll();foreach(var g in rooms[currentRoom].root.GetComponentsInChildren<Grabbable>(true))g.ResetObject();
             foreach(var z in rooms[currentRoom].root.GetComponentsInChildren<DropZone>(true))z.ResetZone();
-            rooms[currentRoom].accepted=0;if(currentRoom==1)ocean.ResetRoom();if(currentRoom==3)kitchen.ResetRoom();if(currentRoom==Shredder.Room&&shredder)shredder.ResetRoom();if(currentRoom==RageRoom.Room&&rage)rage.ResetComputer();RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
+            rooms[currentRoom].accepted=0;if(currentRoom==1)ocean.ResetRoom();if(currentRoom==3)kitchen.ResetRoom();if(currentRoom==Shredder.Room&&shredder)shredder.ResetRoom();if(currentRoom==BoxBlast.Room&&boxBlast)boxBlast.ResetRoom();if(currentRoom==RageRoom.Room&&rage)rage.ResetComputer();RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
         }
         public void RefreshComfort(){if(menu)menu.Refresh();}
         // Clean mode: every sign that only guides or reassures goes, along with spoken lines and the first-visit guide.

@@ -596,6 +596,54 @@ The release APK built with zero errors.
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 13 (evening): two boxes slammed together burst
+
+### What changed
+
+- **An easter egg.** In the heavy room, hold a box in each hand and slam them together and both burst: a flash, a spray of sparks, a puff of smoke and a shower of chips in the boxes' own colours, with a boom. A held box is carried by the hand and is not a physics body, so two held boxes never collide. A new component, `BoxBlast`, watches each carried box instead: it works out how fast each is moving (smoothed over about 50 ms, after every box has followed its hand for the frame, so the speed is the hand's speed between the last two frames divided by the time between them) and bursts a pair when they are in different hands, their colliders overlap, and they are closing on each other at 2.4 m/s or more. A box must have been in the hand 0.3 s first, so one drawn in from across the room is never a slam.
+- **The burst.** Four one-shot particle systems are moved to the midpoint and played: a flash (one warm cream ball, a fifth of a second), 70 sparks (four fire colours, stretched along their flight), 9 puffs of dust-grey smoke and 110 chips of box (seven colours, taken from the boxes, the tape and the plinth wood) that fall, bounce on a floor plane and lie there before they shrink away. 190 bits at once, no more than 300 in all, one shared flat unlit material, no shadows. A boom (`SFX - Blast`, 2.2 seconds: a crack, a low boom, a rumble, a spray of sparks and a rattle of debris) plays where they met; it is generated at the end of the list in `Tools/make_audio.py`, so every earlier sound regenerates as it was. 44 WAV files in all.
+- **Nothing is lost.** Both boxes are back on their stands two seconds later, set down gently, and nothing is counted. Leaving the room mid-blast brings them back as soon as it reopens, and TRY AGAIN in the room brings them back at once and clears the smoke. Boxes held apart, pressed gently together, or carried side by side at speed do nothing.
+- A box that vanishes from a hand is now cleared of its holder as well (`Grabbable.Vanish`), and a new `Grabbable.BringBack` sets a returning box's physics pose as well as its transform (the confetti page uses it too).
+- Version 0.6.6.
+
+### Bugs the tests caught
+
+The chips were gone too soon. After 1.2 seconds only 9 of the 110 were left: each bounce on the floor plane cost a quarter of a chip's life, so they died after a few bounces rather than lying there. Bouncing no longer costs any life, and all 110 are still there after 1.2 seconds, resting on the floor (0.014 m at the lowest). One structure check also looked for the floor plane under the wrong object. The first run of the full set was cut short when the editor ended Play Mode on its own (it left a scene-recovery copy, which git ignores), so the whole set was run again from a rebuilt scene.
+
+### Tests
+
+The gameplay journey has 20 new checks (138 in all): the room has its blast and all five boxes are in it; two boxes can be held at once, one in each hand; held apart does nothing; pressed gently together does nothing; carried side by side at speed does nothing; a slam bursts both; the burst is in the air (1 flash, 70 sparks, 9 smoke, 110 chips in 7 colours) and where the boxes met; the chips land on the floor and none fall through it; both boxes are back on their stands and neither is held or counted; with the player's own hand holding one box and a stand-in hand sweeping the other in, both burst and the player's hand lets go, and it can pick up another box straight after; both are back and nothing is counted; a burst made by hand sends chips flying; and TRY AGAIN brings the boxes back at once and clears the smoke. Stand-in hands move at set speeds, so a slam is exactly as fast as it is written. The menu and seated suite has 4 new checks (57 in all) on how the blast is wired: the boxes, the sound and the four systems, a single burst of 1, 70, 9 and 110, one floor plane and seven colours, and one shared material with no shadows and no more than 300 bits. A picture of the burst is saved as `Documentation/Previews/Warehouse-Blast.png`. The throwing suite is unchanged (79 checks).
+
+### Results
+
+All eight suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 138 |
+| Navigation | 131 |
+| Airplane-seat checks | 98 |
+| Menu and seated checks | 57 |
+| Mirror and wardrobe | 56 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 79 |
+| Text visibility | 138 signs, 11 plates |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 74.4 MB (74,362,089 bytes) |
+| SHA-256 of the APK | `df4659e622ab534fea7350ef9e7353beec003a6a1d9cd2ee9071124c798c7bf5` |
+| Version | 0.6.6, version code 411875 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.6.6, versionCode 411875, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. The box blast code, its four particle systems and its sound are in the build. No private-network address and no session data in any file (the only matches for an address pattern are version numbers and encoding identifiers in the .NET libraries, and Meta's own debugger classes appear as code and type names in the SDK, as before). The account name appears once, beside the project name in the player's global settings. 25 KB larger than 0.6.5: the boom and the new code. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -609,6 +657,7 @@ These still need a physical headset playtest (see `Playtest.md`):
 - whether the moving water and the wave sound feel in step on the headset, and how the moving water looks and feels in the lenses (the editor run had no sound playing)
 - how the paper looks and feels in the headset: the flurry of thin bits (flicker or shimmer in the lenses), how thick the scraps look on the floor, whether you can see a set pop in, and the frame rate with all five sets on screen (the editor only counts them)
 - how the confetti looks and feels in the headset: whether the thin flat bits flicker or shimmer in the lenses, whether the burst and the shower read well, how loud the pop is on the headset's speakers, the frame rate during a burst (about 400 bits at once), and whether a real hand toss reliably counts as a throw (the editor test simulates the hand's speed)
+- how the box blast looks and feels in the headset: whether the flash (a cream ball up to about 0.6 m across for a fifth of a second) and the smoke puffs are comfortable so close to the face, whether the stretched sparks and the thin chips flicker in the lenses, how loud the boom is on the headset's speakers, the frame rate during a blast (about 190 bits at once), and whether a real two-handed slam reliably bursts the boxes while a gentle tap or two boxes carried side by side do not (the editor test drives stand-in hands at set speeds; tracked hands and controllers jitter, so 2.4 m/s may turn out too easy or too hard)
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

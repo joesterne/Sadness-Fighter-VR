@@ -770,6 +770,59 @@ namespace AfterHours
             renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;
             return ps;
         }
+        // The easter egg in the heavy room: hold a box in each hand and slam them together, and both burst. See BoxBlast.
+        static void Blast(Grabbable[] boxes)
+        {
+            var group=Art.Group("Box blast",Vector3.zero);var blast=group.gameObject.AddComponent<BoxBlast>();
+            blast.director=d;blast.boxes=boxes;blast.sound=SoundBank.Get("SFX - Blast");d.boxBlast=blast;
+            var floor=Art.Group("Blast floor",new Vector3(0,.012f,0));
+            Color Hex(string h){ColorUtility.TryParseHtmlString(h,out var c);return c;}
+            var cube=Geometry.Get(PrimitiveType.Cube);var ball=Geometry.Get(PrimitiveType.Sphere);
+            // Chips come in the boxes' own colours, the tape and the plinth wood; sparks and smoke are fire and dust. All of it is flat, unlit and opaque.
+            var scrap=new[]{Art.Coral.color,Art.Navy.color,Art.Teal.color,Art.Gold.color,Art.Metal.color,Art.Cream.color,Art.Wood.color};
+            var fire=new[]{Hex("#FFF3B0"),Hex("#FFD23F"),Hex("#FF9F1C"),Hex("#FF6B1A")};
+            var dust=new[]{Hex("#3A3F47"),Hex("#565C66"),Hex("#2B2F36"),Hex("#6B717A")};
+            var flat=new AnimationCurve(new Keyframe(0,1),new Keyframe(.75f,1),new Keyframe(1,0));
+            // A small flash where they met, over in a fifth of a second. Brief and warm, so it never fills the view.
+            blast.flash=BlastSystem("Blast flash",group,ball,new[]{Hex("#FFE9A8")},1,new Vector2(.2f,.22f),Vector2.zero,.01f,0,0,new Vector2(.55f,.6f),new AnimationCurve(new Keyframe(0,.2f),new Keyframe(.25f,1),new Keyframe(1,0)));
+            blast.sparks=BlastSystem("Blast sparks",group,cube,fire,70,new Vector2(.45f,.9f),new Vector2(5,11),.05f,.5f,.4f,new Vector2(.03f,.06f),flat,stretch:true);
+            blast.smoke=BlastSystem("Blast smoke",group,ball,dust,9,new Vector2(1,1.5f),new Vector2(.6f,1.8f),.1f,-.05f,1.6f,new Vector2(.18f,.34f),new AnimationCurve(new Keyframe(0,.45f),new Keyframe(.3f,1),new Keyframe(1,0)));
+            blast.chips=BlastSystem("Blast chips",group,cube,scrap,110,new Vector2(1.6f,2.6f),new Vector2(2.5f,7.5f),.12f,1.1f,.8f,new Vector2(.05f,.11f),flat,floor,chip:true);
+        }
+        // One one-shot system for the blast: count bits thrown out of a small ball, each in a colour taken at random from the list, slowed by drag, shrinking away at the end.
+        // Chips tumble and bounce on the floor plane (no world collision) and keep their full life however often they bounce, so they lie there a moment before they shrink away; sparks are stretched along their flight. The shared flat unlit material tints each bit, so each is one draw.
+        static ParticleSystem BlastSystem(string name,Transform parent,Mesh mesh,Color[] colours,int count,Vector2 life,Vector2 speed,float radius,float gravity,float drag,Vector2 size,AnimationCurve shrink,Transform floor=null,bool chip=false,bool stretch=false)
+        {
+            var group=Art.Group(name,Vector3.zero,parent);
+            var ps=group.gameObject.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main=ps.main;main.playOnAwake=false;main.loop=false;main.duration=.1f;
+            main.startLifetime=new ParticleSystem.MinMaxCurve(life.x,life.y);main.startSpeed=new ParticleSystem.MinMaxCurve(speed.x,speed.y);
+            main.gravityModifier=gravity;main.maxParticles=count+20;main.simulationSpace=ParticleSystemSimulationSpace.World;
+            if(chip)
+            {
+                main.startSize3D=true;main.startSizeX=new ParticleSystem.MinMaxCurve(size.x,size.y);main.startSizeY=new ParticleSystem.MinMaxCurve(size.x*.6f,size.y*.6f);main.startSizeZ=new ParticleSystem.MinMaxCurve(size.x*.35f,size.y*.35f);
+                var anyTurn=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);main.startRotation3D=true;main.startRotationX=anyTurn;main.startRotationY=anyTurn;main.startRotationZ=anyTurn;
+            }
+            else main.startSize=new ParticleSystem.MinMaxCurve(size.x,size.y);
+            var gradient=new Gradient{mode=GradientMode.Fixed};var keys=new GradientColorKey[colours.Length];
+            for(int i=0;i<colours.Length;i++)keys[i]=new GradientColorKey(colours[i],(i+1f)/colours.Length);
+            gradient.SetKeys(keys,new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(1,1)});
+            var pick=new ParticleSystem.MinMaxGradient(gradient);pick.mode=ParticleSystemGradientMode.RandomColor;main.startColor=pick;
+            var emission=ps.emission;emission.rateOverTime=0;emission.SetBursts(new[]{new ParticleSystem.Burst(0,(short)count)});
+            var shape=ps.shape;shape.shapeType=ParticleSystemShapeType.Sphere;shape.radius=radius;
+            if(drag>0){var slow=ps.limitVelocityOverLifetime;slow.enabled=true;slow.limit=new ParticleSystem.MinMaxCurve(50f);slow.drag=new ParticleSystem.MinMaxCurve(drag);slow.multiplyDragByParticleSize=false;slow.multiplyDragByParticleVelocity=false;}
+            var fade=ps.sizeOverLifetime;fade.enabled=true;fade.size=new ParticleSystem.MinMaxCurve(1,shrink);
+            if(chip)
+            {
+                var tumble=ps.rotationOverLifetime;tumble.enabled=true;tumble.separateAxes=true;var turning=new ParticleSystem.MinMaxCurve(-8,8);tumble.x=turning;tumble.y=turning;tumble.z=turning;
+                var collision=ps.collision;collision.enabled=true;collision.type=ParticleSystemCollisionType.Planes;collision.AddPlane(floor);collision.dampen=.5f;collision.bounce=.35f;collision.lifetimeLoss=0;collision.radiusScale=.05f;
+            }
+            var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.sharedMaterial=Art.ConfettiPaper;
+            if(stretch){renderer.renderMode=ParticleSystemRenderMode.Stretch;renderer.velocityScale=.035f;renderer.lengthScale=1;renderer.cameraVelocityScale=0;}
+            else{renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=mesh;}
+            renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;
+            return ps;
+        }
         // The rage room: the old work computer on a desk, a bat on its rack, and a quiet moment once it is all broken.
         // Every part that breaks is within a short bat swing of the arrival point, so the room plays from an airplane seat.
         static void Rage()
@@ -1239,14 +1292,16 @@ namespace AfterHours
                 }
             }
             string[] names={"ANGER","FEAR","RELIEF","GRIEF","UNCERTAINTY"};Material[] colors={Art.Coral,Art.Navy,Art.Teal,Art.Gold,Art.Metal};
+            var packed=new Grabbable[5];
             for(int i=0;i<5;i++)
             {
                 // Rest each box on its plinth (top at 0.72 m). Starting inside the plinth made physics shove the boxes askew.
                 Vector3 p=new Vector3(-2.8f+i*1.4f,1.008f,-.3f+(i%2)*.4f);
                 Art.Box("Packing plinth",new Vector3(p.x,.36f,p.z),new Vector3(.95f,.72f,.95f),Art.Wood);
-                var item=Item(names[i],"",2,p,new Vector3(.6f,.57f,.6f),colors[i]);item.throwable=true;
+                var item=Item(names[i],"",2,p,new Vector3(.6f,.57f,.6f),colors[i]);item.throwable=true;packed[i]=item;
                 Art.Box("Packing tape",new Vector3(0,.503f,0),new Vector3(.14f,.02f,1.01f),Art.Cream,false,item.transform);
             }
+            Blast(packed);
             var truck=Art.Group("Feelings processing truck",new Vector3(0,0,6.6f));
             Art.Box("Truck bed",new Vector3(0,.35f,0),new Vector3(3.2f,.3f,4),Art.Metal,true,truck);
             for(int s=-1;s<=1;s+=2){Art.Box("Truck side",new Vector3(s*1.6f,1.5f,.2f),new Vector3(.15f,2.2f,3.6f),Art.Teal,true,truck);for(int z=-1;z<=1;z+=2){var wheel=Art.Shape("Wheel",PrimitiveType.Cylinder,new Vector3(s*1.6f,.36f,z*1.2f),new Vector3(.73f,.17f,.73f),Art.Ink,true,truck);wheel.transform.localRotation=Quaternion.Euler(0,0,90);}}

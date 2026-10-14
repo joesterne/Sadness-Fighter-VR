@@ -1,4 +1,4 @@
-2026-10-13 23:09:52Z
+2026-10-14 00:27:34Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -40,13 +40,17 @@ PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
 PASS: A shredded résumé restores exactly once, and the paper stays in the bin and on the floor
-PASS: Each page leaves at least 100 scraps (1195 in all)
-PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (10.8 by 14.3 m)
+PASS: Each page leaves at least 100 scraps (1205 in all)
+PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (10.9 by 14.4 m)
 PASS: Scraps have no colliders, and each set is two draws
 PASS: The résumé room carries its confetti: a burst, a shower and a pop sound
 PASS: Every page can be tossed, is never thrown with help, and tells the confetti when it hits something
 PASS: The confetti comes in seven colours, rests on the floor plane and plays once when asked
 PASS: Both systems share one flat unlit paper material and cast no shadows
+PASS: The heavy room carries its box blast: the five boxes, a flash, sparks, smoke, chips and a boom
+PASS: The blast plays once when asked: a flash, 70 sparks, 9 puffs of smoke and 110 chips, each a single burst
+PASS: The chips land on a floor plane in seven colours, and the sparks are stretched along their flight
+PASS: The blast shares the flat unlit paper material, casts no shadows and never holds more than 300 bits (270)
 PASS: A broken mouse restores exactly once, still in pieces
 PASS: Continue button names the last room
 PASS: Continue input returns to the saved room

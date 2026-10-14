@@ -1,4 +1,4 @@
-2026-10-13 23:06:48Z
+2026-10-14 00:27:09Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -10,6 +10,26 @@ PASS: Fourteen rowing actions complete ocean
 PASS: Menu key opens the comfort menu in room 1
 PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 2
+PASS: The heavy room has its box blast, and all five boxes are in it
+PASS: Two boxes can be held at once, one in each hand
+PASS: Two boxes held apart do nothing
+PASS: Pressing two boxes gently together does nothing
+PASS: Two boxes can be held at once, one in each hand
+PASS: Two boxes carried side by side at speed do nothing
+PASS: Two boxes can be held at once, one in each hand
+PASS: Slamming two boxes together bursts both
+PASS: The burst is in the air: 1 flash, 70 sparks, 9 smoke, 110 chips in 7 colours
+PASS: The burst is where the boxes met
+PASS: The chips fall and land on the floor, not through it: 110 chips, lowest at 0.014 m
+PASS: Both boxes are back on their stands
+PASS: Nothing was counted, and neither box is held
+PASS: The player's own hand holds a box
+PASS: A second box goes into the other hand
+PASS: A box in the player's hand and a box in the other hand burst together, and the player's hand lets go
+PASS: The player's hand can pick up another box straight after
+PASS: Both boxes are back, and nothing was counted
+PASS: A burst can be made by hand, and the chips fly
+PASS: TRY AGAIN brings the boxes back at once and clears the smoke
 PASS: Input grabs ANGER
 PASS: Truck accepts released ANGER
 PASS: Input grabs FEAR
@@ -107,7 +127,7 @@ PASS: The room's hum fades to silence
 PASS: All 210 pieces stay inside the room, above the floor
 PASS: 199 of 210 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose key along the desk (53 cm)
+PASS: A swing knocks a loose key along the desk (133 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place

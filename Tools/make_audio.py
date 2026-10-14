@@ -613,6 +613,18 @@ def sfx_confetti():
     return fade_edges(normalise(reverb(x, 0.5, 0.12), -5))
 
 
+def sfx_blast():
+    # Two boxes slammed together and bursting: a sharp crack, a deep boom that falls away, a rush of sparks, and bits of box clattering down.
+    n = int(2.2 * SR)
+    crack = lowpass(white(n), 5200, 2) * decay(n, 0.03) * 1.0
+    boom = thump(n, 52, 0.34) * 1.1 + thump(n, 96, 0.14) * 0.5
+    rumble = lowpass(brown(n), 260, 2) * decay(n, 0.5) * 0.5
+    sparks = bandpass(white(n), 2500, 8500, 2) * decay(n, 0.28) * 0.45
+    debris = clicks(2.2, 90, 900, 7000, 0.9) * np.exp(-np.arange(n) / (0.7 * SR)) * 0.8
+    x = crack + boom + rumble + sparks + debris
+    return fade_edges(normalise(reverb(x, 0.8, 0.16), -4))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -632,6 +644,7 @@ def main(folder):
         'SFX - X-ray on': lambda: sfx_xray(True), 'SFX - X-ray off': lambda: sfx_xray(False),
         'Ambience - Waves': amb_waves, 'Ambience - Surf': amb_surf,
         'SFX - Confetti': sfx_confetti,
+        'SFX - Blast': sfx_blast,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

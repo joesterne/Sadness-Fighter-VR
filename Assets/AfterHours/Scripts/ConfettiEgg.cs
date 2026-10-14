@@ -58,10 +58,7 @@ namespace AfterHours
             away.Remove(page);
             if(!page||page.gameObject.activeSelf)return;
             returns++;returnTime=Time.time;
-            page.gameObject.SetActive(true);page.ResetObject();
-            // The body wakes where the page landed, so it is told where its stand is as well, or it springs back to the landing for a moment.
-            var body=page.Body;
-            if(body){body.position=page.transform.position;body.rotation=page.transform.rotation;if(!body.isKinematic){body.linearVelocity=Vector3.zero;body.angularVelocity=Vector3.zero;}}
+            page.BringBack();
             if(director&&isActiveAndEnabled)director.PlayAt(director.place,page.transform.position,.4f);
         }
         // Leaving the room mid-burst stops the wait, so the page is brought back when the room next opens.
