@@ -52,6 +52,7 @@ namespace AfterHours.Editor
                 saved+=TargetShot(d,cam,3,"A small spill - send the cup")?1:0;
                 saved+=TargetShot(d,cam,4,"The infinite archive - send to a tray")?1:0;
                 saved+=TargetShot(d,cam,6,"The old résumé - send to the shredder")?1:0;
+                saved+=TargetShot(d,cam,Greenhouse.Room,"The greenhouse - send to the bed")?1:0;
                 // The boat's oars in their locks, the turning lighthouse light, and the same view at night.
                 saved+=OceanShots(d,cam);
                 // The rage room's computer and bat as a seated player sees them on arrival.

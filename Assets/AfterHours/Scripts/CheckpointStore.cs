@@ -16,11 +16,14 @@ namespace AfterHours
             public string line="";
             // How broken each part of the rage room's computer is.
             public int[] rage=Array.Empty<int>();
+            // The greenhouse: which seed packet is in each pot (-1 for an empty pot), and how far each pot has grown.
+            public int[] sown=Array.Empty<int>(),garden=Array.Empty<int>();
         }
         static string Id(Grabbable item)=>item.room+"|"+item.label;
         public static void Save(GameDirector d)
         {
             var state=new State{lastRoom=d.lastRoom,strokes=d.ocean.strokes,mistakes=d.kitchen.mistakes,fills=d.kitchen.fills,helped=d.kitchen.helped,gentleAudience=d.gentleAudience,smoothMotion=d.player.smoothMotion,line=d.shredder?d.shredder.line:"",rage=d.rage?d.rage.Damage():Array.Empty<int>(),
+                sown=d.greenhouse&&d.greenhouse.sown!=null?d.greenhouse.sown.ToArray():Array.Empty<int>(),garden=d.greenhouse&&d.greenhouse.stage!=null?d.greenhouse.stage.ToArray():Array.Empty<int>(),
                 processed=d.rooms.SelectMany(r=>r.root.GetComponentsInChildren<Grabbable>(true)).Where(g=>g.processed).Select(Id).ToArray()};
             PlayerPrefs.SetString(Key,JsonUtility.ToJson(state));PlayerPrefs.Save();
         }
@@ -45,6 +48,7 @@ namespace AfterHours
             }
             if(d.shredder)d.shredder.Restore(item=>processed.Contains(Id(item)),state.line);
             if(d.rage)d.rage.Restore(state.rage??Array.Empty<int>());
+            if(d.greenhouse)d.greenhouse.Restore(state.sown,state.garden);
             if(d.ocean.strokes>=d.ocean.requiredStrokes)d.rooms[1].complete=true;
             if(d.kitchen.fills>=3)d.rooms[3].complete=true;
             int mask=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);foreach(int i in GameDirector.Chapters)if(d.rooms[i].complete)mask|=1<<i;

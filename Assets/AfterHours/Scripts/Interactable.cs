@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AfterHours
 {
-    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam }
+    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam, Water }
     public class Interactable : MonoBehaviour
     {
         public ActionKind kind;
@@ -43,6 +43,7 @@ namespace AfterHours
                 case ActionKind.MirrorTap: if(director.wardrobe&&director.wardrobe.avatar)director.wardrobe.avatar.Tap();break;
                 case ActionKind.Cabinet: if(director.kitchen)director.kitchen.ToggleCabinet(value);break;
                 case ActionKind.Steam: if(director.kitchen)director.kitchen.Steam();break;
+                case ActionKind.Water: if(director.greenhouse)director.greenhouse.Water();break;
             }
             if(kind==ActionKind.SmoothMotion||kind==ActionKind.GentleAudience)director.SaveCheckpoint();
             if(director.menu&&director.menu.IsOpen)director.menu.Refresh();

@@ -56,7 +56,7 @@ namespace AfterHours.Editor
             // Reopen from disk so the editor shows exactly what ships. Meshes rewritten in place during the build can otherwise draw stale data in the editor.
             EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);var saved=Object.FindAnyObjectByType<GameDirector>();if(saved)Selection.activeGameObject=saved.gameObject;
             if(SceneView.lastActiveSceneView)SceneView.lastActiveSceneView.LookAt(new Vector3(0,1.8f,3),Quaternion.Euler(12,0,0),13);
-            Debug.Log("After Hours: scene authored, eight rooms (the lobby, six chapters and the rooftop), hands/controllers, Quest build settings ready.");
+            Debug.Log("After Hours: scene authored, nine rooms (the lobby, seven chapters and the rooftop), hands/controllers, Quest build settings ready.");
         }
         static Material Mat(string name,Color color,float metallic=0,float smoothness=.15f,Texture texture=null)
         {

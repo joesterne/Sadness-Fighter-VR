@@ -308,8 +308,45 @@ namespace AfterHours.Editor
             Check(rage.Everything.All(x=>x.damage==0)&&RageTesting.Pieces.All(b=>b.isKinematic&&b.transform.parent!=roomRoot),"WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place");
             yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
             Check(!bat.held&&!d.player.IsHolding(bat)&&Vector3.Distance(bat.transform.position,batHome)<.05f,"PUT THE BAT BACK returns the bat to its rack");
-            Check(d.CompletedCount==6,"All six chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==222,"Completion saved as all six chapter flags");
-            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","jacket","step-pin","scarf","orange-pin"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
+            // The greenhouse: plant five small intentions with real input, water them, then come back and watch them grow.
+            yield return Visit(Greenhouse.Room);Capture("Greenhouse");
+            {
+                var garden=d.greenhouse;var bed=d.Targets.First(x=>x.GetComponent<Greenhouse>());var gardenRoot=d.rooms[Greenhouse.Room].root;
+                var water=gardenRoot.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.Water&&x.name=="Water the seeds");
+                var can=gardenRoot.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.Water&&x!=water);
+                Check(garden&&garden.director==d&&garden.packets.Length==5&&garden.packets.All(x=>x.room==Greenhouse.Room&&x.upright&&!x.throwable&&!x.tossable)&&garden.growth.Length==5*Greenhouse.Bloom&&garden.growth.All(x=>x&&!x.activeSelf),"The greenhouse has five seed packets and five empty pots");
+                yield return Click(water);
+                Check(garden.Planted==0&&garden.waterings==1&&!d.rooms[Greenhouse.Room].complete&&d.player.hint.text.Contains("Plant a seed first"),"Watering an empty bed only says to plant a seed first");
+                foreach(var packet in garden.packets)
+                {
+                    d.player.Place(d.rooms[Greenhouse.Room].spawn.position,0);yield return Delay();Aim(packet.transform.position);yield return Delay(.06f);Press(true);yield return Delay(.3f);
+                    Check(packet.held,"Input picks up the seed packet \""+packet.label+"\"");
+                    Aim(bed.LandingPoint);yield return Delay(.25f);Check(bed.highlight.activeSelf,"Pointing at the planting bed lights it");
+                    Press(false);yield return Delay(1.4f);
+                    Check(packet.processed&&!packet.gameObject.activeSelf,"The bed plants \""+packet.label+"\"");
+                    if(packet!=garden.packets[0])continue;
+                    yield return Delay(1.6f);yield return Click(water);yield return Delay(2.6f);
+                    Check(garden.stage[0]==Greenhouse.Sprout&&garden.growth[0].activeSelf&&garden.growth[0].transform.localScale.x>.95f&&!d.rooms[Greenhouse.Room].complete,"Watering the first seed brings up a sprout; the chapter waits for the rest");
+                }
+                Check(garden.Planted==5&&d.rooms[Greenhouse.Room].accepted==5&&!d.rooms[Greenhouse.Room].complete,"Five packets planted once each; the chapter waits for water");
+                Check(garden.stakes.All(x=>x.transform.parent.gameObject.activeSelf)&&garden.stakes.Select(x=>x.text).Distinct().Count()==5&&garden.packets.All(p=>garden.stakes.Any(x=>x.text==p.label)),"Every pot carries its own intention on a stake");
+                yield return Delay(1.6f);yield return Click(can);yield return Delay(2.8f);
+                Check(d.rooms[Greenhouse.Room].complete&&garden.stage.All(s=>s==Greenhouse.Sprout),"Pointing at the watering can brings every seed up and completes the chapter");
+                Aim(bed.LandingPoint+Vector3.up*.2f);yield return Delay(.1f);Capture("Greenhouse-Sprouts");
+                yield return Delay(1.6f);yield return Click(water);yield return Delay(.4f);
+                Check(garden.stage.All(s=>s==Greenhouse.Sprout)&&garden.returns==0,"Watering again does not hurry anything");
+                yield return Visit(Greenhouse.Room);yield return Delay(2.8f);
+                Check(garden.returns==1&&garden.stage.All(s=>s==2)&&garden.growth.Where((x,i)=>i%Greenhouse.Bloom==1).All(x=>x.activeSelf&&x.transform.localScale.x>.95f)&&d.player.hint.text.Contains("You came back"),"Coming back grows every watered plant a stage, and the room says so");
+                yield return Visit(Greenhouse.Room);yield return Delay(3f);
+                Check(garden.returns==2&&garden.stage.All(s=>s==Greenhouse.Bloom)&&garden.growth.All(x=>x.activeSelf)&&d.player.hint.text.Contains("in flower"),"A second return brings every plant into flower");
+                Aim(bed.LandingPoint+Vector3.up*.3f);yield return Delay(.1f);Capture("Greenhouse-Flowers");
+                yield return Visit(Greenhouse.Room);yield return Delay(.6f);
+                Check(garden.returns==2&&garden.stage.All(s=>s==Greenhouse.Bloom)&&garden.growth.All(x=>x.activeSelf),"A plant in flower stays in flower; nothing wilts");
+                d.RestartCurrentRoom();yield return Delay(.2f);
+                Check(garden.Planted==0&&garden.packets.All(p=>p.gameObject.activeSelf&&!p.processed)&&garden.growth.All(x=>!x.activeSelf)&&d.rooms[Greenhouse.Room].complete,"TRY AGAIN empties the pots and puts the packets back; the chapter stays complete");
+            }
+            Check(d.CompletedCount==7,"All seven chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==478,"Completion saved as all seven chapter flags");
+            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","sprout-pin","jacket","step-pin","scarf","orange-pin"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
             Status="Passed";
         }

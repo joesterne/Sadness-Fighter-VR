@@ -114,9 +114,9 @@ namespace AfterHours.Editor
             Check(mouse.Broken&&D.rooms[RageRoom.Room].accepted==1&&!D.rooms[RageRoom.Room].complete,"Short rage room session breaks the mouse");
             D.Travel(4);yield return .8f;
             var note=D.rooms[4].root.GetComponentsInChildren<Grabbable>().First();var tray=D.rooms[4].root.GetComponentsInChildren<DropZone>().First(x=>x.category==note.category);
-            tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.SaveCheckpoint();
+            tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.greenhouse.PlantNow(D.greenhouse.packets[2]);D.SaveCheckpoint();
             var saved=JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
-            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2,"Checkpoint stores partial progress in all six chapters");
+            Check(saved.strokes==4&&saved.processed.Length==4&&saved.sown!=null&&saved.sown.Count(x=>x>=0)==1&&saved.sown[0]==2&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2,"Checkpoint stores partial progress in all seven chapters");
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return .8f;
             Check(D.player.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Seated mode and eye-height preference survive reload");
             Check(!P.comfortVignette,"Vignette preference survives reload");
@@ -125,6 +125,9 @@ namespace AfterHours.Editor
             Check(D.rooms[4].accepted==1&&D.rooms[4].root.GetComponentsInChildren<Grabbable>(true).Count(x=>x.processed)==1,"Sorted note restores exactly once");
             Check(D.kitchen.helped&&D.kitchen.fills==1,"Kitchen help and partial coffee restore");
             Check(D.rooms[6].accepted==1&&D.shredder.pages.Count(x=>x.processed)==1&&!D.shredder.pages[0].gameObject.activeSelf&&D.shredder.piles[0].activeSelf&&D.shredder.litter[0].activeSelf&&!D.shredder.litter[1].activeSelf,"A shredded résumé restores exactly once, and the paper stays in the bin and on the floor");
+            var garden=D.greenhouse;
+            Check(D.rooms[Greenhouse.Room].accepted==1&&garden.Planted==1&&garden.sown[0]==2&&garden.packets[2].processed&&!garden.packets[2].gameObject.activeSelf&&garden.mounds[0].activeSelf&&garden.stakes[0].text==garden.packets[2].label,"A planted seed restores exactly once, in its own pot with its stake");
+            Check(garden.director==D&&garden.packets.Length==5&&garden.soil.Length==5&&garden.growth.Length==5*Greenhouse.Bloom&&garden.growth.All(x=>x)&&garden.water&&garden.plantSound&&garden.plantSound.name=="SFX - Plant"&&garden.waterSound&&garden.growSound&&garden.transform.IsChildOf(D.rooms[Greenhouse.Room].root.transform),"The greenhouse carries five packets, five pots each with a sprout, leaves and a flower, a watering shower and its sounds");
             var scrapMeshes=D.shredder.litter.SelectMany(g=>g.GetComponentsInChildren<MeshFilter>(true)).Select(f=>f.sharedMesh).ToArray();var scrapSpots=scrapMeshes.SelectMany(m=>m.vertices).ToArray();
             Check(D.shredder.litter.All(g=>g.GetComponentsInChildren<MeshFilter>(true).Sum(f=>f.sharedMesh.vertexCount)/24>=100),"Each page leaves at least 100 scraps ("+scrapMeshes.Sum(m=>m.vertexCount)/24+" in all)");
             Check(scrapSpots.Max(v=>v.x)-scrapSpots.Min(v=>v.x)>9f&&scrapSpots.Max(v=>v.z)-scrapSpots.Min(v=>v.z)>11f&&scrapSpots.Any(v=>v.y>.77f&&v.y<.8f)&&scrapSpots.Any(v=>v.y>1.43f&&v.y<1.46f)&&scrapSpots.Any(v=>v.y>.8f&&v.y<.82f),"The scraps lie right across the room, on the desk, on the shredder's top and on the window sill ("+(scrapSpots.Max(v=>v.x)-scrapSpots.Min(v=>v.x)).ToString("0.0")+" by "+(scrapSpots.Max(v=>v.z)-scrapSpots.Min(v=>v.z)).ToString("0.0")+" m)");
