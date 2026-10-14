@@ -661,6 +661,50 @@ def sfx_steam():
     return fade_edges(normalise(reverb(x, 0.3, 0.08), -9))
 
 
+# ---------- the greenhouse ----------
+def amb_greenhouse(seconds=32, fade=4):
+    # A glasshouse on a soft day: light rain pattering on the glass, a warm low room tone, and now and then a small bird outside.
+    n = int((seconds + fade) * SR)
+    room = lowpass(brown(n), 180, 2) * 0.5
+    patter = clicks(seconds + fade, int(14 * (seconds + fade)), 1800, 7000, 1.0) * (0.6 + 0.4 * smooth_noise(n, 0.2)) * 0.35
+    hush = bandpass(pink(n), 900, 5000, 2) * (0.5 + 0.5 * smooth_noise(n, 0.15)) * 0.12
+    birds = np.zeros(n)
+    for _ in range(int((seconds + fade) / 5)):
+        m = int(rng.uniform(0.08, 0.16) * SR); tt = np.arange(m) / SR; base = rng.uniform(2600, 3800)
+        f = base * (1 + 0.25 * np.sin(2 * np.pi * rng.uniform(14, 26) * tt))
+        chirp = np.sin(2 * np.pi * np.cumsum(f) / SR) * env_adsr(m, 0.01, 0.05)
+        for k in range(int(rng.integers(2, 4))):
+            i = int(rng.uniform(0, seconds + fade - 1) * SR) if k == 0 else i + int(rng.uniform(0.12, 0.2) * SR)
+            if i + m < n: birds[i:i + m] += chirp * rng.uniform(0.04, 0.09)
+    x = room + patter + hush + reverb(birds, 1.2, 0.4)
+    return normalise(make_loop(x, fade), -9, rms_db=-31)
+
+
+def sfx_plant():
+    # A seed packet going into a pot: a soft pat of soil, a little crumble, and a dry rustle of paper.
+    n = int(0.7 * SR)
+    pat = thump(n, 120, 0.05) * 0.8 + lowpass(white(n), 700, 2) * decay(n, 0.04) * 0.7
+    crumble = clicks(0.7, 18, 400, 2500, 0.5) * decay(n, 0.25) * 0.5
+    rustle = bandpass(white(n), 2500, 8000, 2) * env_adsr(n, 0.03, 0.2) * decay(n, 0.15) * 0.25
+    x = pat + crumble + rustle
+    return fade_edges(normalise(reverb(x, 0.3, 0.08), -7))
+
+
+def sfx_water():
+    # A watering can over soil and leaves: a soft shower that swells and falls away, with drops ticking on the leaves.
+    n = int(1.8 * SR)
+    shower = bandpass(white(n), 1200, 7000, 2) * (0.8 + 0.2 * smooth_noise(n, 12)) * env_adsr(n, 0.2, 0.6, 2)
+    drops = clicks(1.8, 60, 1500, 6000, 0.9) * env_adsr(n, 0.15, 0.7, 2) * 0.6
+    soak = lowpass(white(n), 600, 2) * env_adsr(n, 0.3, 0.8, 2) * 0.25
+    x = shower + drops + soak
+    return fade_edges(normalise(reverb(x, 0.4, 0.1), -9))
+
+
+def sfx_grow():
+    # Something coming up: a soft rising chime, quiet and warm.
+    return chime([hz('G', 5), hz('B', 5), hz('D', 6)], gap=0.16, seconds=1.4)
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -682,6 +726,7 @@ def main(folder):
         'SFX - Confetti': sfx_confetti,
         'SFX - Blast': sfx_blast,
         'SFX - Shatter': sfx_shatter, 'SFX - Cabinet': sfx_cabinet, 'SFX - Steam': sfx_steam,
+        'Ambience - Greenhouse': amb_greenhouse, 'SFX - Plant': sfx_plant, 'SFX - Water': sfx_water, 'SFX - Grow': sfx_grow,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

@@ -19,7 +19,7 @@ namespace AfterHours
             P("shirt","Work shirt",OutfitSlot.Top),
             P("jumper","Harbour jumper",OutfitSlot.Top,"Reach the shore in Ocean of shame"),
             P("cardigan","Warm cardigan",OutfitSlot.Top,"Finish A small spill"),
-            P("jacket","Sunrise jacket",OutfitSlot.Top,"Finish all six chapters"),
+            P("jacket","Sunrise jacket",OutfitSlot.Top,"Finish all seven chapters"),
             P("no-hat","No hat",OutfitSlot.Head),
             P("cap","Mover's cap",OutfitSlot.Head,"Finish Heavy things"),
             P("beanie","Evening beanie",OutfitSlot.Head,"Rest on the rooftop for a little while"),
@@ -31,12 +31,13 @@ namespace AfterHours
             P("true-pin","Still true pin",OutfitSlot.Pin,"Finish The infinite archive"),
             P("letitout-pin","Let it out pin",OutfitSlot.Pin,"Finish The rage room"),
             P("orange-pin","Orange mug pin",OutfitSlot.Pin,"Something orange is hiding in the kitchen"),
+            P("sprout-pin","Seedling pin",OutfitSlot.Pin,"Finish The greenhouse"),
         };
         public static Piece Get(string id)=>All.FirstOrDefault(p=>p.id==id);
         public static bool Exists(string id)=>All.Any(p=>p.id==id);
         public static int Earnable=>All.Count(p=>!p.starter);
         // The piece each chapter gives the first time it is finished.
-        public static string ForChapter(int room)=>room switch{1=>"jumper",2=>"cap",3=>"cardigan",4=>"true-pin",6=>"lanyard",7=>"letitout-pin",_=>null};
+        public static string ForChapter(int room)=>room switch{1=>"jumper",2=>"cap",3=>"cardigan",4=>"true-pin",6=>"lanyard",7=>"letitout-pin",8=>"sprout-pin",_=>null};
     }
 
     [Serializable] public class WardrobeState

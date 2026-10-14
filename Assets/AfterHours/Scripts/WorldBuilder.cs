@@ -11,7 +11,7 @@ namespace AfterHours
         static Color ivory=new Color(.92f,.91f,.85f), muted=new Color(.61f,.76f,.77f), dark=new Color(.08f,.15f,.2f);
         public static void Build(GameDirector director)
         {
-            d=director;d.rooms=new MindRoom[8];backings.Clear();fits.Clear();
+            d=director;d.rooms=new MindRoom[9];backings.Clear();fits.Clear();
             NewRoom(0,"The lobby",Vector3.zero,new Vector3(0,.05f,-4));Hub();
             NewRoom(1,"Ocean of shame",new Vector3(80,0,0),new Vector3(0,.3f,-1));Ocean();
             NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-2.4f));Warehouse();
@@ -20,6 +20,7 @@ namespace AfterHours
             NewRoom(5,"Room for tomorrow",new Vector3(400,0,0),new Vector3(0,.04f,-4));Rooftop();
             NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
             NewRoom(7,"The rage room",new Vector3(560,0,0),new Vector3(0,.04f,-1.25f));Rage();
+            NewRoom(8,"The greenhouse",new Vector3(640,0,0),new Vector3(0,.04f,-1.2f));Garden();
             Menu();
             FitPlates();
             // Signs that only guide or reassure can be switched off together (clean mode). Labels on buttons, doors and objects stay.
@@ -262,12 +263,13 @@ namespace AfterHours
             Door("04","The infinite\narchive","A fact, a fear,\nand what is still true.",new Vector3(6.82f,0,7),90,Art.Teal,4);
             Door("05","The old\nrésumé","Let go of who you\nwere for them.",new Vector3(6.82f,0,-2.6f),90,Art.Gold,6);
             Door("06","The rage\nroom","Break the old work\ncomputer. Let it out.",new Vector3(-6.82f,0,4.05f),-90,Art.Coral,RageRoom.Room);
+            Door("07","The\ngreenhouse","Plant something small.\nCome back to it.",new Vector3(6.82f,0,4.05f),90,Art.Teal,Greenhouse.Room);
             // A detailed, polished memory occupies the end of each side of the lobby.
             MemoryOffice(new Vector3(-4.6f,0,12));MemoryOffice(new Vector3(4.6f,0,12));
             Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(4f,1.24f,.65f),Art.Navy);
             Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(4.1f,.06f,.72f),Art.Gold);
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.07f,-.64f),.17f,ivory,3.4f);
-            d.lobbyProgress=Art.Text("Journey progress","0 / 6   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
+            d.lobbyProgress=Art.Text("Journey progress","0 / 7   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
             // The board hangs above the lines of sight from the arrival point to the side doors (they pass between 1.1 and 2.4 m here).
             Backed(0,"Move instructions",Fitted(Art.Box("Getting started board",new Vector3(3.5f,3.2f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy),.14f,1.4f));
             Words(Art.Text("Move instructions","",new Vector3(3.5f,3.2f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
@@ -279,8 +281,8 @@ namespace AfterHours
             Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,2.72f,13.5f),new Vector3(4.2f,.55f,.16f),Art.Teal,ActionKind.Travel,d,5);
             Art.Button("Mirror and wardrobe","MIRROR  /  YOUR WARDROBE",new Vector3(1.02f,1.45f,-.3f),new Vector3(1.9f,.3f,.1f),Art.Coral,ActionKind.GoToMirror,d);
             d.mirrorLabel=Art.Root.Find("Mirror and wardrobe label").GetComponent<TextMeshPro>();
-            // Door 06 stands between doors 01 and 03, so the left wall's plant moves on toward the memory office.
-            Art.Plant(new Vector3(5.9f,0,4));Art.Plant(new Vector3(-6.2f,0,9.3f));
+            // Doors 06 and 07 stand between the other doors on each side, so the plants move on toward the memory offices.
+            Art.Plant(new Vector3(6.2f,0,9.3f));Art.Plant(new Vector3(-6.2f,0,9.3f));
             for(int side=-1;side<=1;side+=2)Art.Plant(new Vector3(side*2.8f,0,10));
             Mirror();
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
@@ -459,6 +461,11 @@ namespace AfterHours
             Art.Shape("Pin mug",PrimitiveType.Cylinder,new Vector3(-.098f,.15f,.11f),new Vector3(.036f,.02f,.036f),Art.Orange,false,orangePin);
             Art.Box("Pin mug handle",new Vector3(-.071f,.152f,.11f),new Vector3(.014f,.022f,.008f),Art.Orange,false,orangePin,.002f);
             Art.Shape("Pin coffee",PrimitiveType.Cylinder,new Vector3(-.098f,.1695f,.11f),new Vector3(.028f,.002f,.028f),Art.Wood,false,orangePin);
+            // The greenhouse's pin: a seedling with two leaves on a brass disc.
+            var sproutPin=Look("sprout-pin",m.torso).group.transform;
+            Art.Shape("Pin disc",PrimitiveType.Cylinder,new Vector3(-.095f,.15f,.104f),new Vector3(.06f,.004f,.06f),Art.Gold,false,sproutPin).transform.localRotation=Quaternion.Euler(90,0,0);
+            Art.Box("Pin stem",new Vector3(-.095f,.143f,.109f),new Vector3(.005f,.03f,.004f),Art.Teal,false,sproutPin,.001f);
+            for(int s=-1;s<=1;s+=2)Art.Shape("Pin leaf",PrimitiveType.Sphere,new Vector3(-.095f+s*.011f,.16f,.11f),new Vector3(.02f,.01f,.006f),Art.Teal,false,sproutPin).transform.localRotation=Quaternion.Euler(0,0,s*30);
             // Arms are two fixed-length segments each, bent by the pose; hands follow tracked hands or controllers.
             for(int i=0;i<2;i++)
             {
@@ -1519,6 +1526,142 @@ namespace AfterHours
             for(int i=0;i<26;i++){float x=-30+i*2.4f;float height=3+(i*7%9);Art.Box("Low poly city",new Vector3(x,-2+height*.5f,25+(i%3)*5),new Vector3(1.8f,height,2),i%2==0?Art.Teal:Art.Navy,false);}
             Art.Shape("Tomorrow's sun",PrimitiveType.Sphere,new Vector3(13,16,45),Vector3.one*9,Art.Gold,false);
             for(int side=-1;side<=1;side+=2){Art.Plant(new Vector3(side*5.5f,0,5));Art.Plant(new Vector3(side*5.8f,0,7));Art.Box("Bench seat",new Vector3(side*4,.5f,2.5f),new Vector3(2.3f,.15f,.65f),Art.Wood);for(int leg=-1;leg<=1;leg+=2)Art.Box("Bench leg",new Vector3(side*4+leg*.8f,.24f,2.5f),new Vector3(.1f,.48f,.55f),Art.Metal);}
+        }
+        // ----- The greenhouse of small beginnings -----
+        // A potting bench of seed packets in front of the arrival point, a long planting bed of five pots beyond it, and a watering station
+        // at the bed's right-hand end. The roof is open glass, so the sky shows through the rafters.
+        static void Garden()
+        {
+            Shell(12,15,Art.Cream,false);d.rooms[Greenhouse.Room].total=5;
+            Header(Greenhouse.Room,"07 / THE GREENHOUSE","Small beginnings.","Plant one small intention at a time. Water it. Come back when you like.",new Vector3(0,3.45f,9.6f));
+            // A daylight window on the back wall, under the heading.
+            Art.Box("Garden window",new Vector3(0,1.55f,9.86f),new Vector3(6,1.5f,.05f),Art.Mint,false);
+            for(int i=0;i<4;i++)Art.Box("Window mullion",new Vector3(-3+i*2f,1.55f,9.82f),new Vector3(.06f,1.56f,.04f),Art.White,false);
+            Art.Box("Window sill",new Vector3(0,.78f,9.78f),new Vector3(6.2f,.05f,.18f),Art.Wood,false);
+            Art.Box("Window head",new Vector3(0,2.32f,9.82f),new Vector3(6.1f,.05f,.04f),Art.White,false);
+            // The glass roof: a ridge beam and white rafters over the walls, open to the sky.
+            Art.Box("Roof ridge",new Vector3(0,5.6f,2.5f),new Vector3(.12f,.12f,15),Art.White,false);
+            for(float z=-4.5f;z<10;z+=1.5f)for(int side=-1;side<=1;side+=2)Art.Line("Roof rafter",new Vector3(side*6,4.6f,z),new Vector3(0,5.6f,z),.07f,Art.White);
+            for(int side=-1;side<=1;side+=2)Art.Box("Roof plate",new Vector3(side*5.95f,4.62f,2.5f),new Vector3(.12f,.08f,15),Art.White,false);
+            // The potting bench, with a rack the seed packets stand in.
+            Art.Box("Potting bench",new Vector3(0,.74f,.45f),new Vector3(4.4f,.08f,.9f),Art.Wood);
+            for(int s=-1;s<=1;s+=2)Art.Box("Bench leg",new Vector3(s*2.05f,.36f,.45f),new Vector3(.08f,.72f,.8f),Art.Metal);
+            Art.Box("Packet rack",new Vector3(0,.795f,.45f),new Vector3(4.1f,.03f,.2f),Art.Navy);
+            for(int s=-1;s<=1;s+=2)Art.Box("Rack lip",new Vector3(0,.835f,.45f+s*.06f),new Vector3(4.1f,.05f,.02f),Art.Navy);
+            string[] seeds={"A glass of\nwater","Five minutes\noutside","A message\nto a friend","One simple\nmeal","Something\nnew to learn"};
+            string[] replies={"Planted. Looking after your body counts as a beginning.","Planted. Daylight is not a reward you have to earn.","Planted. People want to hear from you, job or not.","Planted. Feeding yourself is a real thing done.","Planted. Your curiosity was yours long before any job."};
+            Material[] bands={Art.Coral,Art.Gold,Art.Teal,Art.Coral,Art.Gold};
+            var packets=new Grabbable[seeds.Length];for(int i=0;i<seeds.Length;i++)packets[i]=Packet(seeds[i],new Vector3(-1.44f+i*.72f,.98f,.45f),bands[i]);
+            // The planting bed: a long wooden box of soil with five clay pots along it. Its trigger runs the greenhouse, so a packet that is sent,
+            // dropped or carried in is planted, and pointing at the bed while holding a packet lights its outline.
+            const float bed=2.7f,rim=1.09f;
+            Art.Box("Planting bed",new Vector3(0,.4f,bed),new Vector3(4.6f,.8f,.9f),Art.Wood);
+            Art.Box("Bed soil",new Vector3(0,.81f,bed),new Vector3(4.4f,.03f,.75f),Art.Ink,false);
+            for(int s=-1;s<=1;s+=2)Art.Box("Bed trim",new Vector3(0,.8f,bed+s*.44f),new Vector3(4.62f,.04f,.04f),Art.Gold,false);
+            var zone=Art.Box("Planting bed trigger",new Vector3(0,1.3f,bed),new Vector3(4.6f,.5f,1f),Art.Teal,false);
+            Object.DestroyImmediate(zone.GetComponent<Renderer>());zone.AddComponent<BoxCollider>().isTrigger=true;
+            var g=zone.AddComponent<Greenhouse>();d.greenhouse=g;g.director=d;g.packets=packets;g.replies=replies;
+            Target(zone,Greenhouse.Room,new Vector3(0,-.05f,0),1.7f,"Point at the planting bed and let go.",Outline("Planting bed highlight",new Vector3(0,rim+.02f,bed),new Vector2(4.7f,1f),false));
+            int pots=seeds.Length;g.soil=new Transform[pots];g.mounds=new GameObject[pots];g.stakes=new TextMeshPro[pots];g.growth=new GameObject[pots*Greenhouse.Bloom];
+            g.sown=Enumerable.Repeat(-1,pots).ToArray();g.stage=new int[pots];
+            Material[] petals={Art.Coral,Art.Gold,Art.White,Art.Coral,Art.Gold};
+            for(int i=0;i<pots;i++)
+            {
+                float x=-1.76f+i*.88f;
+                Art.Shape("Clay pot",PrimitiveType.Cylinder,new Vector3(x,.96f,bed),new Vector3(.34f,.13f,.34f),Art.Coral);
+                Art.Shape("Pot rim",PrimitiveType.Cylinder,new Vector3(x,1.075f,bed),new Vector3(.38f,.02f,.38f),Art.Coral,false);
+                Art.Shape("Pot soil",PrimitiveType.Cylinder,new Vector3(x,1.08f,bed),new Vector3(.3f,.01f,.3f),Art.Ink,false);
+                g.soil[i]=Art.Group("Planting point "+(i+1),new Vector3(x,1.1f,bed));
+                var mound=Art.Shape("Fresh soil",PrimitiveType.Sphere,new Vector3(x,rim,bed),new Vector3(.2f,.06f,.2f),Art.Ink,false);mound.SetActive(false);g.mounds[i]=mound;
+                // The intention goes on a stake at the front of the pot, facing the bench, clear of the plant behind it.
+                var stake=Art.Group("Seed stake "+(i+1),new Vector3(x+.15f,rim,bed-.14f));
+                Art.Box("Stake post",new Vector3(0,.12f,0),new Vector3(.014f,.24f,.014f),Art.Wood,false,stake,.002f);
+                Art.Box("Stake label",new Vector3(0,.25f,0),new Vector3(.22f,.1f,.008f),Art.White,false,stake,.002f);
+                var words=Art.Text("Stake text","",new Vector3(0,.25f,-.006f),.025f,dark,.2f,stake);
+                words.rectTransform.sizeDelta=new Vector2(.2f,.085f);words.enableAutoSizing=true;words.fontSizeMin=.06f;words.fontSizeMax=.2f;
+                g.stakes[i]=words;stake.gameObject.SetActive(false);
+                // The plant, in three parts that come up one after another: a sprout, then leaves on a taller stem, then a flower.
+                var plant=Art.Group("Seedling "+(i+1),new Vector3(x,rim,bed));
+                var sprout=Art.Group("Sprout",Vector3.zero,plant);
+                Art.Box("Sprout stem",new Vector3(0,.07f,0),new Vector3(.014f,.14f,.014f),Art.Teal,false,sprout,.003f);
+                for(int s=-1;s<=1;s+=2)Art.Shape("Sprout leaf",PrimitiveType.Sphere,new Vector3(s*.035f,.14f,0),new Vector3(.07f,.025f,.04f),Art.Teal,false,sprout).transform.localRotation=Quaternion.Euler(0,0,s*25);
+                var leaves=Art.Group("Leaves",Vector3.zero,plant);
+                Art.Box("Stem",new Vector3(0,.2f,0),new Vector3(.016f,.24f,.016f),Art.Teal,false,leaves,.003f);
+                for(int k=0;k<4;k++){float a=k*Mathf.PI*.5f+i;var leaf=Art.Facet("Paper leaf",new Vector3(Mathf.Sin(a)*.06f,.2f+k*.035f,Mathf.Cos(a)*.06f),new Vector3(.1f,.13f,.06f),Art.Teal,5,leaves);leaf.transform.localEulerAngles=new Vector3(25,k*90+i*20,25);}
+                var flower=Art.Group("Flower",new Vector3(0,.36f,0),plant);
+                for(int k=0;k<5;k++){float a=k*Mathf.PI*.4f;Art.Shape("Petal",PrimitiveType.Sphere,new Vector3(Mathf.Sin(a)*.04f,0,Mathf.Cos(a)*.04f),new Vector3(.055f,.02f,.055f),petals[i],false,flower);}
+                Art.Shape("Flower centre",PrimitiveType.Sphere,new Vector3(0,.008f,0),Vector3.one*.035f,Art.Gold,false,flower);
+                var parts=new[]{sprout,leaves,flower};
+                for(int k=0;k<parts.Length;k++)
+                {
+                    foreach(var r in parts[k].GetComponentsInChildren<Renderer>(true))r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+                    g.growth[i*Greenhouse.Bloom+k]=parts[k].gameObject;parts[k].gameObject.SetActive(false);
+                }
+            }
+            // The watering station at the right-hand end of the bed: a watering can on a little table, and WATER on a post above it.
+            // Pointing at the can waters the bed just as WATER does.
+            const float stationX=2.95f,stationZ=2.35f;
+            Art.Box("Garden table",new Vector3(stationX,.62f,stationZ),new Vector3(.7f,.05f,.55f),Art.Wood);
+            for(int s=-1;s<=1;s+=2)for(int t=-1;t<=1;t+=2)Art.Box("Table leg",new Vector3(stationX+s*.3f,.3f,stationZ+t*.22f),new Vector3(.04f,.6f,.04f),Art.Metal,false);
+            var can=Art.Group("Watering can",new Vector3(stationX,.645f,stationZ+.05f));
+            Art.Shape("Can body",PrimitiveType.Cylinder,new Vector3(0,.13f,0),new Vector3(.22f,.13f,.22f),Art.Teal,false,can);
+            Art.Line("Can spout",new Vector3(-.09f,.1f,0),new Vector3(-.3f,.3f,0),.025f,Art.Teal,can);
+            Art.Shape("Can rose",PrimitiveType.Cylinder,new Vector3(-.31f,.31f,0),new Vector3(.06f,.012f,.06f),Art.Gold,false,can).transform.localRotation=Quaternion.Euler(0,0,50);
+            Art.Line("Can handle",new Vector3(.02f,.27f,0),new Vector3(.11f,.2f,0),.022f,Art.Gold,can);
+            Art.Line("Can handle",new Vector3(.11f,.2f,0),new Vector3(.12f,.08f,0),.022f,Art.Gold,can);
+            var canPointer=Art.Box("Watering can pointer",new Vector3(-.05f,.17f,0),new Vector3(.5f,.36f,.3f),Art.Teal,true,can);Object.DestroyImmediate(canPointer.GetComponent<MeshRenderer>());Object.DestroyImmediate(canPointer.GetComponent<MeshFilter>());
+            var canAction=canPointer.AddComponent<Interactable>();canAction.kind=ActionKind.Water;canAction.director=d;canAction.prompt="WATER";
+            Art.Box("Water sign post",new Vector3(stationX+.28f,.95f,stationZ+.2f),new Vector3(.05f,.7f,.05f),Art.Metal,false);
+            Art.Button("Water the seeds","WATER",new Vector3(stationX,1.32f,stationZ+.2f),new Vector3(.75f,.26f,.08f),Art.Teal,ActionKind.Water,d);
+            // The water: a soft shower of drops over the whole bed, played once each time it is watered.
+            var rainAt=Art.Group("Watering",new Vector3(0,1.9f,bed));rainAt.localRotation=Quaternion.Euler(90,0,0);
+            var rain=rainAt.gameObject.AddComponent<ParticleSystem>();rain.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            var rainMain=rain.main;rainMain.playOnAwake=false;rainMain.loop=false;rainMain.duration=1.4f;rainMain.startLifetime=new ParticleSystem.MinMaxCurve(.42f,.5f);rainMain.startSpeed=.6f;
+            rainMain.gravityModifier=1;rainMain.maxParticles=200;rainMain.simulationSpace=ParticleSystemSimulationSpace.World;
+            rainMain.startSize3D=true;rainMain.startSizeX=.012f;rainMain.startSizeY=.012f;rainMain.startSizeZ=.05f;
+            var rainEmission=rain.emission;rainEmission.rateOverTime=110;
+            var rainShape=rain.shape;rainShape.shapeType=ParticleSystemShapeType.Box;rainShape.scale=new Vector3(4.2f,.6f,.01f);
+            var rainRenderer=rain.GetComponent<ParticleSystemRenderer>();rainRenderer.renderMode=ParticleSystemRenderMode.Stretch;rainRenderer.lengthScale=2;rainRenderer.velocityScale=.04f;rainRenderer.sharedMaterial=Art.Water;
+            rainRenderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;rainRenderer.receiveShadows=false;
+            g.water=rain;
+            g.plantSound=SoundBank.Get("SFX - Plant");g.waterSound=SoundBank.Get("SFX - Water");g.growSound=SoundBank.Get("SFX - Grow");
+            // The rest of the greenhouse: shelves of potted plants along the walls, stacked pots, and a bag of compost.
+            for(int side=-1;side<=1;side+=2)
+            {
+                for(int z=0;z<3;z++)
+                {
+                    Vector3 at=new Vector3(side*5.3f,0,1.5f+z*2.6f);
+                    for(int level=0;level<2;level++)
+                    {
+                        Art.Box("Plant shelf",at+new Vector3(0,.55f+level*.7f,0),new Vector3(.8f,.05f,2),Art.Wood);
+                        for(int k=0;k<3;k++)
+                        {
+                            var pot=at+new Vector3(0,.67f+level*.7f,-.6f+k*.6f);
+                            Art.Shape("Shelf pot",PrimitiveType.Cylinder,pot,new Vector3(.22f,.08f,.22f),(k+level+z)%2==0?Art.Coral:Art.Cream,false);
+                            Art.Facet("Shelf leaves",pot+new Vector3(0,.16f,0),new Vector3(.24f,.28f,.24f),Art.Teal,5).transform.localEulerAngles=new Vector3(0,k*40+z*25,0);
+                        }
+                    }
+                    for(int s=-1;s<=1;s+=2)Art.Box("Shelf upright",at+new Vector3(0,.65f,s*.95f),new Vector3(.06f,1.3f,.06f),Art.Metal,false);
+                }
+            }
+            for(int i=0;i<4;i++)Art.Shape("Stacked pot",PrimitiveType.Cylinder,new Vector3(-3.6f,.1f+i*.12f,4.6f),new Vector3(.3f-i*.01f,.06f,.3f-i*.01f),Art.Coral,false);
+            Art.Box("Compost bag",new Vector3(-3.2f,.25f,5.4f),new Vector3(.55f,.5f,.3f),Art.Paper);
+            Art.Plant(new Vector3(-4.9f,0,8.4f));Art.Plant(new Vector3(4.9f,0,8.4f));
+            Sound("Ambience - Greenhouse",.5f);
+        }
+        static Grabbable Packet(string text,Vector3 p,Material band)
+        {
+            var packet=Art.Box("Seed packet",p,new Vector3(.26f,.34f,.025f),Art.Paper,true,null,.004f);
+            var rb=packet.AddComponent<Rigidbody>();rb.mass=.08f;rb.interpolation=RigidbodyInterpolation.Interpolate;rb.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;
+            var g=packet.AddComponent<Grabbable>();g.label=text.Replace("\n"," ");g.category="seed";g.room=Greenhouse.Room;g.upright=true;
+            // The face is laid out in metres: its group cancels the packet's own scale.
+            var face=Art.Group("Packet face",new Vector3(0,0,-.52f),packet.transform);face.localScale=new Vector3(1/.26f,1/.34f,1/.025f);
+            Art.Box("Packet band",new Vector3(0,.115f,0),new Vector3(.24f,.08f,.002f),band,false,face,.001f);
+            Art.Shape("Packet flower",PrimitiveType.Sphere,new Vector3(0,.115f,-.002f),new Vector3(.045f,.045f,.004f),Art.White,false,face);
+            Art.Text("Packet heading","SEEDS",new Vector3(0,.052f,0),.026f,dark,.22f,face);
+            var line=Art.Text("Packet line",text,new Vector3(0,-.055f,0),.05f,dark,.22f,face);
+            line.rectTransform.sizeDelta=new Vector2(.22f,.15f);line.enableAutoSizing=true;line.fontSizeMin=.15f;line.fontSizeMax=.32f;
+            return g;
         }
     }
 }

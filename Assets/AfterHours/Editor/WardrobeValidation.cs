@@ -176,17 +176,22 @@ namespace AfterHours.Editor
             Check(D.rooms[1].complete&&W.Has("jumper"),"Reaching the shore earns the harbour jumper");
             foreach(int room in new[]{2,3,4})D.CompleteRoom(room);
             Check(W.Has("cap")&&W.Has("cardigan")&&W.Has("true-pin"),"Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin");
-            Check(!W.Has("jacket"),"The jacket waits for all six chapters");
+            Check(!W.Has("jacket"),"The jacket waits for all seven chapters");
             D.Travel(Shredder.Room);yield return 1f;
             foreach(var page in D.shredder.pages)D.shredder.ShredNow(page);
             Check(D.shredder.Offering&&!W.Has("lanyard"),"The lanyard waits for a true line");
             D.shredder.Choose(1);
             Check(W.Has("lanyard")&&W.State.line=="I care about people."&&!W.Has("jacket"),"Choosing a line earns the lanyard; the jacket still waits for the rage room");
+            D.Travel(Greenhouse.Room);yield return 1f;
+            foreach(var packet in D.greenhouse.packets)D.greenhouse.PlantNow(packet);
+            Check(!W.Has("sprout-pin"),"The seedling pin waits for the water");
+            D.greenhouse.Water();yield return .2f;
+            Check(W.Has("sprout-pin")&&!W.Has("jacket"),"Watering the planted greenhouse earns the seedling pin; the jacket still waits for the rage room");
             D.Travel(RageRoom.Room);yield return 1f;
             foreach(var part in D.rage.parts)while(!part.Broken){D.rage.HitNow(part);yield return .05f;}
             Check(!W.Has("letitout-pin"),"The let it out pin waits for the quiet after the last break");
             yield return 11.5f;
-            Check(W.Has("letitout-pin")&&W.Has("jacket"),"The quiet after the whole computer earns the let it out pin, and finishing all six chapters the sunrise jacket");
+            Check(W.Has("letitout-pin")&&W.Has("jacket"),"The quiet after the whole computer earns the let it out pin, and finishing all seven chapters the sunrise jacket");
             D.Travel(5);yield return 10f;
             Check(!W.Has("beanie"),"Ten seconds on the rooftop is not yet a rest");
             yield return 12f;

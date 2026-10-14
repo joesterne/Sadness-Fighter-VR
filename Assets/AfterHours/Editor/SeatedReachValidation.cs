@@ -162,7 +162,17 @@ namespace AfterHours.Editor
             foreach(var t in Click(Button(ActionKind.PutBatBack)))yield return t;yield return 1f;
             Check(!rage.bat.held,"The rage room: PUT THE BAT BACK can be chosen from the seat");
             Check(Moved(seat)<.05f,"The rage room: done without leaving the seat");
-            Check(D.CompletedCount==6,"All six chapters completed seated, without moving");
+            D.Travel(Greenhouse.Room);yield return 1f;seat=P.transform.position;
+            var bed=Target(x=>x.GetComponent<Greenhouse>());
+            foreach(var packet in D.greenhouse.packets)
+            {
+                foreach(var t in Send(packet,bed))yield return t;
+                Check(packet.processed&&!packet.gameObject.activeSelf,"The greenhouse: \""+packet.label+"\" planted from the seat");
+            }
+            foreach(var t in Click(D.rooms[Greenhouse.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.Water&&x.name=="Water the seeds")))yield return t;yield return 2.5f;
+            Check(D.rooms[Greenhouse.Room].complete&&D.greenhouse.AllWatered,"The greenhouse: WATER from the seat brings every seed up and completes the chapter");
+            Check(Moved(seat)<.05f,"The greenhouse: done without leaving the seat");
+            Check(D.CompletedCount==7,"All seven chapters completed seated, without moving");
 
             // The mirror: MIRROR on the desk brings a seated player to it, and every wardrobe button is in reach from there.
             D.Travel(0);yield return 1f;
