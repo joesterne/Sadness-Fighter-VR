@@ -64,6 +64,8 @@ namespace AfterHours.Editor
                     try{saved+=Shot(d,RageRoom.Room,cam,"The rage room - the quiet",rage.spawn.position+Vector3.up*1.6f,rage.root.transform.TransformPoint(new Vector3(0,1.45f,1.35f)),"Seated - ")?1:0;}
                     finally{d.rage.calm.SetActive(false);}
                 }
+                // The ambush: the clowns at full size, a third of the way down, once everything is named, after standing up, and in the gentle version.
+                saved+=AmbushShots(d,cam);
                 // The mirror from where MIRROR on the desk puts you: the starter look, then a look made of earned pieces.
                 saved+=MirrorShot(d,cam,"Starter look",new WardrobeState())?1:0;
                 saved+=MirrorShot(d,cam,"Earned look",new WardrobeState{skin=4,hair=2,hairColour=2,build=1,top="jumper",head="beanie",neck="scarf",pin="step-pin"})?1:0;
@@ -99,6 +101,31 @@ namespace AfterHours.Editor
                 n+=Shot(d,1,cam,"Ocean at night - the right oar",root+new Vector3(.25f,1.65f,-1.25f),root+new Vector3(1.8f,.5f,.6f),"Night - ")?1:0;
             }
             finally{ocean.Preview(false);if(spin)spin.transform.localRotation=home;}
+            return n;
+        }
+        static int AmbushShots(GameDirector d,Camera cam)
+        {
+            var a=d.ambush;if(!a){Debug.LogError("[RoomPreviews] The scene has no ambush room.");return 0;}
+            int n=0;int room=AmbushRoom.Room;var root=d.rooms[room].root.transform;var eye=d.rooms[room].spawn.position+Vector3.up*1.6f;
+            Vector3 At(float x,float y,float z)=>root.TransformPoint(new Vector3(x,y,z));
+            try
+            {
+                a.Preview(0,false,false);
+                n+=Shot(d,room,cam,"The ambush - looming",eye,At(0,3.4f,5),"Cool - ")?1:0;
+                n+=Shot(d,room,cam,"The ambush - the table",eye,At(.3f,.95f,.7f),"Cool - ")?1:0;
+                n+=Shot(d,room,cam,"The ambush - the left clown",eye,At(-2.6f,4.6f,5.5f),"Cool - ")?1:0;
+                n+=Shot(d,room,cam,"The ambush - the paperwork",eye,At(1.9f,.9f,.7f),"Cool - ")?1:0;
+                a.Preview(3,false,false);
+                n+=Shot(d,room,cam,"The ambush - three named",eye,At(0,2.6f,4.5f),"Cool - ")?1:0;
+                a.Preview(6,false,false);
+                n+=Shot(d,room,cam,"The ambush - all named",eye,At(0,1.5f,3.4f),"Cool - ")?1:0;
+                a.Preview(6,true,false);
+                n+=Shot(d,room,cam,"The ambush - standing up",eye+Vector3.back*.9f,At(0,1.5f,3.4f),"Warm - ")?1:0;
+                n+=Shot(d,room,cam,"The ambush - the way out",eye+Vector3.back*.9f,At(-3.6f,1.5f,9.5f),"Warm - ")?1:0;
+                a.Preview(0,false,true);
+                n+=Shot(d,room,cam,"The ambush - gentle",eye,At(0,2.6f,4.8f),"Cool - ")?1:0;
+            }
+            finally{a.EndPreview();}
             return n;
         }
         static bool MenuShot(GameDirector d,Camera cam,int room,string name)

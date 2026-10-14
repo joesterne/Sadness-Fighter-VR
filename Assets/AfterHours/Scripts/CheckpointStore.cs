@@ -11,6 +11,9 @@ namespace AfterHours
         {
             public int version=1,lastRoom,strokes,mistakes,fills;
             public bool helped,gentleAudience,smoothMotion=true;
+            // The ambush: which of the six feelings are named (one bit each), and its two options.
+            public int ambush;
+            public bool gentleAmbush,darkOpening=true;
             public string[] processed=Array.Empty<string>();
             // The line chosen at the end of The old résumé.
             public string line="";
@@ -20,7 +23,7 @@ namespace AfterHours
         static string Id(Grabbable item)=>item.room+"|"+item.label;
         public static void Save(GameDirector d)
         {
-            var state=new State{lastRoom=d.lastRoom,strokes=d.ocean.strokes,mistakes=d.kitchen.mistakes,fills=d.kitchen.fills,helped=d.kitchen.helped,gentleAudience=d.gentleAudience,smoothMotion=d.player.smoothMotion,line=d.shredder?d.shredder.line:"",rage=d.rage?d.rage.Damage():Array.Empty<int>(),
+            var state=new State{lastRoom=d.lastRoom,strokes=d.ocean.strokes,mistakes=d.kitchen.mistakes,fills=d.kitchen.fills,helped=d.kitchen.helped,gentleAudience=d.gentleAudience,smoothMotion=d.player.smoothMotion,ambush=d.ambush?d.ambush.namedMask:0,gentleAmbush=d.gentleAmbush,darkOpening=d.darkOpening,line=d.shredder?d.shredder.line:"",rage=d.rage?d.rage.Damage():Array.Empty<int>(),
                 processed=d.rooms.SelectMany(r=>r.root.GetComponentsInChildren<Grabbable>(true)).Where(g=>g.processed).Select(Id).ToArray()};
             PlayerPrefs.SetString(Key,JsonUtility.ToJson(state));PlayerPrefs.Save();
         }
@@ -29,7 +32,7 @@ namespace AfterHours
             if(!PlayerPrefs.HasKey(Key))return;
             State state;try{state=JsonUtility.FromJson<State>(PlayerPrefs.GetString(Key));}catch(ArgumentException){return;}
             if(state==null||state.version!=1)return;
-            d.lastRoom=Mathf.Clamp(state.lastRoom,0,d.rooms.Length-1);d.gentleAudience=state.gentleAudience;d.player.smoothMotion=state.smoothMotion;
+            d.lastRoom=Mathf.Clamp(state.lastRoom,0,d.rooms.Length-1);d.gentleAudience=state.gentleAudience;d.gentleAmbush=state.gentleAmbush;d.darkOpening=state.darkOpening;d.player.smoothMotion=state.smoothMotion;
             d.ocean.RestoreProgress(state.strokes);d.kitchen.RestoreProgress(state.helped,state.mistakes,state.fills);
             var processed=state.processed??Array.Empty<string>();
             foreach(int room in new[]{2,4})
@@ -45,6 +48,7 @@ namespace AfterHours
             }
             if(d.shredder)d.shredder.Restore(item=>processed.Contains(Id(item)),state.line);
             if(d.rage)d.rage.Restore(state.rage??Array.Empty<int>());
+            if(d.ambush)d.ambush.Restore(state.ambush);
             if(d.ocean.strokes>=d.ocean.requiredStrokes)d.rooms[1].complete=true;
             if(d.kitchen.fills>=3)d.rooms[3].complete=true;
             int mask=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);foreach(int i in GameDirector.Chapters)if(d.rooms[i].complete)mask|=1<<i;

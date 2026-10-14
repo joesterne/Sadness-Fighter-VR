@@ -42,6 +42,11 @@ namespace AfterHours.Editor
             if(!Physics.Raycast(P.Head.position,P.Head.forward,out var hit,14,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)||!hit.collider.transform.IsChildOf(target.transform))
                 throw new Exception("Pointer target obstructed from the seat: "+target.name+" by "+(hit.collider?hit.collider.name:"nothing"));
         }
+        static bool Reachable(Component target)
+        {
+            Look(target.transform.position);
+            return Physics.Raycast(P.Head.position,P.Head.forward,out var hit,14,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)&&hit.collider.transform.IsChildOf(target.transform);
+        }
         static IEnumerable<float> Click(Component button){AimAt(button);Press(true);yield return .12f;Press(false);yield return .25f;}
         static IEnumerable<float> Key(Key key){Queue(keyboard,new KeyboardState(key));yield return .1f;Queue(keyboard,new KeyboardState());yield return .15f;}
         static Interactable Button(ActionKind kind)=>D.rooms[D.currentRoom].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==kind);
@@ -60,6 +65,8 @@ namespace AfterHours.Editor
         static IEnumerator<float> Checks()
         {
             SceneManager.LoadScene("AfterHours");yield return 1f;
+            // The ambush opens in the dark by default; its own suite covers that. Here the lights are on from the start.
+            D.darkOpening=false;
             // First visit: the guide is taught by doing.
             Check(D.intro&&D.intro.IsShowing&&D.intro.Step==0,"A first visit opens the guide with its content note");
             foreach(var t in Click(D.intro.next.GetComponentInChildren<Interactable>()))yield return t;
@@ -162,7 +169,41 @@ namespace AfterHours.Editor
             foreach(var t in Click(Button(ActionKind.PutBatBack)))yield return t;yield return 1f;
             Check(!rage.bat.held,"The rage room: PUT THE BAT BACK can be chosen from the seat");
             Check(Moved(seat)<.05f,"The rage room: done without leaving the seat");
-            Check(D.CompletedCount==6,"All six chapters completed seated, without moving");
+
+            D.Travel(AmbushRoom.Room);yield return 1f;seat=P.transform.position;var amb=D.ambush;
+            Check(amb.lightsOn&&!amb.dark&&Moved(seat)<.01f,"The ambush: the lights are on when you arrive, and you are sat at the table");
+            var ambushRoot=D.rooms[AmbushRoom.Room].root.GetComponentsInChildren<Interactable>();
+            Check(ambushRoot.Count(x=>x.kind==ActionKind.AmbushFeeling)==6&&ambushRoot.Count(x=>x.kind==ActionKind.AmbushReply)==5&&ambushRoot.Count(x=>x.kind==ActionKind.AmbushBalloon)==6&&ambushRoot.Count(x=>x.kind==ActionKind.AmbushNose)==2,"The ambush: six feeling cards, five replies, six balloons and two noses");
+            foreach(var b in ambushRoot.Where(x=>x.kind!=ActionKind.Travel&&x.kind!=ActionKind.AmbushBalloon))AimAt(b);
+            lines.Add("PASS: The ambush: every card, reply and nose can be pointed at from the seat");
+            // Balloons float in two clusters of three, so one can hide another from the pointer: it is enough that the pointer reaches at least one in each cluster.
+            var balloons=ambushRoot.Where(x=>x.kind==ActionKind.AmbushBalloon).ToArray();
+            Check(balloons.Where(x=>x.value<3).Any(Reachable)&&balloons.Where(x=>x.value>=3).Any(Reachable),"The ambush: the pointer reaches a balloon in each cluster from the seat");
+            foreach(var t in Click(ambushRoot.First(x=>x.kind==ActionKind.AmbushReply&&x.value==3)))yield return t;
+            Check(amb.replies==1,"The ambush: a reply can be said from the seat");
+            foreach(var t in Click(balloons.First(Reachable)))yield return t;
+            Check(amb.balloonsPopped==1,"The ambush: a balloon can be popped from the seat");
+            foreach(var t in Click(ambushRoot.First(x=>x.kind==ActionKind.AmbushNose&&x.value==1)))yield return t;
+            Check(amb.honks==1,"The ambush: a nose can be honked from the seat");
+            var clownChest=Target(x=>x==amb.clowns[0].aim);
+            foreach(var t in Send(amb.papers[0],clownChest))yield return t;
+            Check(amb.hits==1,"The ambush: a page is sent at the left clown from the seat, 8 metres away, and hits");
+            yield return 2.6f;
+            for(int i=0;i<AmbushRoom.Feelings;i++)
+            {
+                foreach(var t in Click(ambushRoot.First(x=>x.kind==ActionKind.AmbushFeeling&&x.value==i)))yield return t;
+                Check(amb.named==i+1,"The ambush: feeling "+(i+1)+" of 6 named from the seat");
+            }
+            yield return 2.4f;
+            Check(amb.standUpButton.activeSelf&&!D.rooms[AmbushRoom.Room].complete,"The ambush: STAND UP appears");
+            foreach(var t in Click(Button(ActionKind.StandUp)))yield return t;yield return .5f;
+            Check(amb.standing&&D.rooms[AmbushRoom.Room].complete,"The ambush: STAND UP completes the chapter from the seat");
+            Check(Moved(seat)<.05f,"The ambush: done without leaving the seat");
+            yield return 1.5f;
+            var wayOut=amb.exitDoor.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.Travel);
+            foreach(var t in Click(wayOut))yield return t;yield return 1f;
+            Check(D.currentRoom==0,"The ambush: the way out can be chosen from the seat");
+            Check(D.CompletedCount==7,"All seven chapters completed seated, without moving");
 
             // The mirror: MIRROR on the desk brings a seated player to it, and every wardrobe button is in reach from there.
             D.Travel(0);yield return 1f;

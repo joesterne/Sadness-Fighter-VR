@@ -1,4 +1,4 @@
-2026-10-14 02:02:27Z
+2026-10-14 18:09:33Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -28,10 +28,14 @@ PASS: room 0 [The lobby] The rage room doorway/Chapter number at (0.0, 2.6, -0.1
 PASS: room 0 [The lobby] The rage room doorway/Destination at (0.0, 2.1, -0.1) 'The rage room'
 PASS: room 0 [The lobby] The rage room doorway/Intention at (0.0, 1.5, -0.1) 'Break the old work computer. Let i...'
 PASS: room 0 [The lobby] The rage room doorway/Enter The rage room label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] The ambush doorway/Chapter number at (0.0, 2.6, -0.1) '07'
+PASS: room 0 [The lobby] The ambush doorway/Destination at (0.0, 2.1, -0.1) 'The ambush'
+PASS: room 0 [The lobby] The ambush doorway/Intention at (0.0, 1.5, -0.1) 'Starts in the dark. Name what happ...'
+PASS: room 0 [The lobby] The ambush doorway/Enter The ambush label at (0.0, 1.0, -0.1) 'ENTER'
 PASS: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2) 'MONDAY 09:00'
 PASS: room 0 [The lobby] BEFORE - remembered office/Memory caption at (0.0, 2.8, -1.9) 'BEFORE  /  THE WAY YOU REMEMBER IT'
 PASS: room 0 [The lobby] 00 - The lobby/Welcome at (0.0, 1.1, -0.6) 'YOU CAN BEGIN ANYWHERE'
-PASS: room 0 [The lobby] 00 - The lobby/Journey progress at (0.0, 0.6, -0.6) '0 / 6   ROOMS EXPLORED Your pace. ...'
+PASS: room 0 [The lobby] 00 - The lobby/Journey progress at (0.0, 0.6, -0.6) '0 / 7   ROOMS EXPLORED Your pace. ...'
 PASS: room 0 [The lobby] 00 - The lobby/Move instructions at (3.5, 3.2, 2.8) 'POINT AND PINCH TO CHOOSE Pinch an...'
 PASS: room 0 [The lobby] 00 - The lobby/Continue last room label at (-1.0, 1.5, -0.4) 'BEGIN / OCEAN OF SHAME'
 PASS: room 0 [The lobby] 00 - The lobby/Small sessions at (0.0, 0.8, -0.6) 'A FEW MINUTES IS ENOUGH Each small...'
@@ -74,7 +78,7 @@ PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.1, -0.2) 'PIN'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2) '<'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2) '>'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2) 'No pin'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 11 PIECES FOUND'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 12 PIECES FOUND'
 PASS: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0) 'YOU ARE STILL WELCOME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0) '01  /  OCEAN OF SHAME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0) 'A feeling can be vast without bein...'
@@ -139,26 +143,57 @@ PASS: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0) 'SENIOR ASSOCI
 PASS: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0) 'PUT THE BAT BACK'
 PASS: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2) 'MY THINGS'
 PASS: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0) 'RAGE ROOM RULES 1. Break things, n...'
+PASS: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1) 'WE ARE A FAMILY'
+PASS: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7) 'THERE IS NO 'I' IN TEAM'
+PASS: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5) 'PEOPLE ARE OUR GREATEST ASSET'
+PASS: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0) '07 / THE AMBUSH'
+PASS: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0) 'It was sudden.'
+PASS: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0) 'Name what happened. Say what you n...'
+PASS: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0) '0 / 6   NAMED'
+PASS: room 8 [The ambush] 08 - The ambush/Ambush feelings sign at (0.0, 0.8, -0.6) 'NAME HOW YOU FEEL Point at a card....'
+PASS: room 8 [The ambush] 08 - The ambush/Ambush replies sign at (-2.1, 0.8, -0.6) 'SAY IT BACK Point at a reply.'
+PASS: room 8 [The ambush] 08 - The ambush/Ambush paperwork sign at (2.1, 0.8, -0.5) 'THE PAPERWORK Carry it. Send it at...'
+PASS: room 8 [The ambush] Feeling card 1/Feeling 1 label at (0.0, 0.0, 0.0) 'CONFUSED'
+PASS: room 8 [The ambush] Feeling card 2/Feeling 2 label at (0.0, 0.0, 0.0) 'BLINDSIDED'
+PASS: room 8 [The ambush] Feeling card 3/Feeling 3 label at (0.0, 0.0, 0.0) 'HURT'
+PASS: room 8 [The ambush] Feeling card 4/Feeling 4 label at (0.0, 0.0, 0.0) 'ANGRY'
+PASS: room 8 [The ambush] Feeling card 5/Feeling 5 label at (0.0, 0.0, 0.0) 'I WANT A REASON'
+PASS: room 8 [The ambush] Feeling card 6/Feeling 6 label at (0.0, 0.0, 0.0) 'WORRIED ABOUT WHAT'S NEXT'
+PASS: room 8 [The ambush] 08 - The ambush/Clown board text at (0.0, 2.3, 2.0) 'FEELINGS NAMED  0 / 6 LEFT  Thank ...'
+PASS: room 8 [The ambush] Reply strip 1/Reply 1 label at (0.0, 0.0, 0.0) 'WAIT. WHAT JUST HAPPENED?'
+PASS: room 8 [The ambush] Reply strip 2/Reply 2 label at (0.0, 0.0, 0.0) 'CAN YOU EXPLAIN THAT?'
+PASS: room 8 [The ambush] Reply strip 3/Reply 3 label at (0.0, 0.0, 0.0) 'I GAVE YOU YEARS.'
+PASS: room 8 [The ambush] Reply strip 4/Reply 4 label at (0.0, 0.0, 0.0) 'THAT IS NOT OKAY.'
+PASS: room 8 [The ambush] Reply strip 5/Reply 5 label at (0.0, 0.0, 0.0) 'I AM FURIOUS.'
+PASS: room 8 [The ambush] Termination notice/Paper text at (0.0, 0.0, 0.0) 'TERMINATION NOTICE Effective today...'
+PASS: room 8 [The ambush] Exit interview/Paper text at (0.0, 0.0, 0.0) 'EXIT INTERVIEW Please be brief.'
+PASS: room 8 [The ambush] Confidentiality agreement/Paper text at (0.0, 0.0, 0.0) 'CONFIDENTIALITY AGREEMENT Please d...'
+PASS: room 8 [The ambush] Restructuring plan/Paper text at (0.0, 0.0, 0.0) 'RESTRUCTURING PLAN Your role is no...'
+PASS: room 8 [The ambush] Benefits ending/Paper text at (0.0, 0.0, 0.0) 'BENEFITS ENDING As of this afterno...'
+PASS: room 8 [The ambush] Severance packet/Paper text at (0.0, 0.0, 0.0) 'SEVERANCE PACKET Sign here. And he...'
 NOTE: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): partly blocked from 3 of 107 places, by text 'BEFORE  /  THE WAY YOU REMEMBER IT'
 NOTE: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): partly blocked from 14 of 107 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 3.0, 13.5)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 109 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 3 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, -0.5)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Enter Ocean of shame label at (0.0, 1.0, -0.1): partly blocked from 11 of 108 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 9.5)
 NOTE: room 0 [The lobby] Heavy things doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 117 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
-NOTE: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 4 of 68 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (5.5, 1.5, 4.0)
-NOTE: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): partly blocked from 17 of 113 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (5.5, 1.0, 4.0)
+NOTE: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 2 of 68 places, by 00 - The lobby/Batched geometry - 05 Burnt coral near (0.0, 1.5, -0.5)
+NOTE: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): partly blocked from 11 of 113 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (3.0, 1.5, 10.0)
 NOTE: room 0 [The lobby] A small spill doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 110 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.5, 1.5, 13.0)
 NOTE: room 0 [The lobby] A small spill doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 8 of 71 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
 NOTE: room 0 [The lobby] A small spill doorway/Enter A small spill label at (0.0, 1.0, -0.1): partly blocked from 26 of 110 places, by 00 - The lobby/Batched geometry - 05 Burnt coral near (0.5, 1.5, -0.5)
 NOTE: room 0 [The lobby] The infinite archive doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 2 of 117 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
-NOTE: room 0 [The lobby] The infinite archive doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 9 of 73 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
-NOTE: room 0 [The lobby] The infinite archive doorway/Enter The infinite archive label at (0.0, 1.0, -0.1): partly blocked from 26 of 115 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.0, 10.0)
+NOTE: room 0 [The lobby] The infinite archive doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 7 of 73 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
+NOTE: room 0 [The lobby] The infinite archive doorway/Enter The infinite archive label at (0.0, 1.0, -0.1): partly blocked from 24 of 115 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.0, 10.0)
 NOTE: room 0 [The lobby] The old résumé doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 110 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
 NOTE: room 0 [The lobby] The old résumé doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 3 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
 NOTE: room 0 [The lobby] The old résumé doorway/Enter The old résumé label at (0.0, 1.0, -0.1): partly blocked from 11 of 99 places, by 00 - The lobby/Batched geometry - 06 Brass and daylight near (0.0, 1.5, 0.0)
 NOTE: room 0 [The lobby] The rage room doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 111 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
 NOTE: room 0 [The lobby] The rage room doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 4 of 75 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, -0.5)
 NOTE: room 0 [The lobby] The rage room doorway/Enter The rage room label at (0.0, 1.0, -0.1): partly blocked from 18 of 111 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.5, 1.5, 10.0)
+NOTE: room 0 [The lobby] The ambush doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 118 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.5, 1.5, 13.0)
+NOTE: room 0 [The lobby] The ambush doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 2 of 75 places, by 00 - The lobby/Batched geometry - 05 Burnt coral near (1.0, 1.5, -0.5)
+NOTE: room 0 [The lobby] The ambush doorway/Enter The ambush label at (0.0, 1.0, -0.1): partly blocked from 18 of 115 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-0.5, 1.5, -0.5)
 NOTE: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2): partly blocked from 2 of 27 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0); partly blocked from 3 of 25 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
 NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 1 label at (-1.9, 1.5, -0.2): partly blocked from 3 of 47 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
 NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 1 label at (-1.1, 1.5, -0.2): partly blocked from 4 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
@@ -201,6 +236,15 @@ NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 
 NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 52 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
 NOTE: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): out of reading range from everywhere sampled (letters about 0.7 cm tall)
 NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 18 places, by Monitor - pieces/Monitor body
+NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): partly blocked from 17 of 80 places, by Clown B/Clown B - 06 Brass and daylight
+NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): partly blocked from 20 of 85 places, by Clown B/Clown B - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): partly blocked from 18 of 78 places, by Clown B/Clown B - 03 Quiet teal
+NOTE: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): partly blocked from 13 of 61 places, by Clown A/Clown A - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): partly blocked from 30 of 87 places, by Clown A/Clown A - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0): partly blocked from 24 of 70 places, by Clown A/Clown A - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0): partly blocked from 9 of 51 places, by Clown A/Clown A - 05 Burnt coral
+NOTE: room 8 [The ambush] Feeling card 4/Feeling 4 label at (0.0, 0.0, 0.0): partly blocked from 3 of 35 places, by 08 - The ambush/Batched geometry - 02 Deep blue near (-2.0, 1.0, 0.5)
+NOTE: room 8 [The ambush] Feeling card 5/Feeling 5 label at (0.0, 0.0, 0.0): partly blocked from 1 of 36 places, by 08 - The ambush/Batched geometry - 06 Brass and daylight near (-2.5, 1.0, 0.0)
 INFO: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): in range of 126 places, faced from 107, clear from 104, outlined
 INFO: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): in range of 126 places, faced from 107, clear from 107, outlined
 INFO: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): in range of 126 places, faced from 107, clear from 93, outlined
@@ -210,16 +254,16 @@ INFO: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1): i
 INFO: room 0 [The lobby] Ocean of shame doorway/Enter Ocean of shame label at (0.0, 1.0, -0.1): in range of 125 places, faced from 108, clear from 97
 INFO: room 0 [The lobby] Heavy things doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 116, clear from 116, outlined
 INFO: room 0 [The lobby] Heavy things doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 117, clear from 116, outlined
-INFO: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): in range of 73 places, faced from 68, clear from 64, outlined
-INFO: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): in range of 125 places, faced from 113, clear from 96
+INFO: room 0 [The lobby] Heavy things doorway/Intention at (0.0, 1.5, -0.1): in range of 73 places, faced from 68, clear from 66, outlined
+INFO: room 0 [The lobby] Heavy things doorway/Enter Heavy things label at (0.0, 1.0, -0.1): in range of 125 places, faced from 113, clear from 102
 INFO: room 0 [The lobby] A small spill doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 110, clear from 110, outlined
 INFO: room 0 [The lobby] A small spill doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 110, clear from 109, outlined
 INFO: room 0 [The lobby] A small spill doorway/Intention at (0.0, 1.5, -0.1): in range of 86 places, faced from 71, clear from 63, outlined
 INFO: room 0 [The lobby] A small spill doorway/Enter A small spill label at (0.0, 1.0, -0.1): in range of 126 places, faced from 110, clear from 84
 INFO: room 0 [The lobby] The infinite archive doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 117, clear from 117, outlined
 INFO: room 0 [The lobby] The infinite archive doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 117, clear from 115, outlined
-INFO: room 0 [The lobby] The infinite archive doorway/Intention at (0.0, 1.5, -0.1): in range of 81 places, faced from 73, clear from 64, outlined
-INFO: room 0 [The lobby] The infinite archive doorway/Enter The infinite archive label at (0.0, 1.0, -0.1): in range of 126 places, faced from 115, clear from 89
+INFO: room 0 [The lobby] The infinite archive doorway/Intention at (0.0, 1.5, -0.1): in range of 81 places, faced from 73, clear from 66, outlined
+INFO: room 0 [The lobby] The infinite archive doorway/Enter The infinite archive label at (0.0, 1.0, -0.1): in range of 126 places, faced from 115, clear from 91
 INFO: room 0 [The lobby] The old résumé doorway/Chapter number at (0.0, 2.6, -0.1): in range of 122 places, faced from 106, clear from 106, outlined
 INFO: room 0 [The lobby] The old résumé doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 110, clear from 109, outlined
 INFO: room 0 [The lobby] The old résumé doorway/Intention at (0.0, 1.5, -0.1): in range of 58 places, faced from 52, clear from 49, outlined
@@ -228,6 +272,10 @@ INFO: room 0 [The lobby] The rage room doorway/Chapter number at (0.0, 2.6, -0.1
 INFO: room 0 [The lobby] The rage room doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 111, clear from 110, outlined
 INFO: room 0 [The lobby] The rage room doorway/Intention at (0.0, 1.5, -0.1): in range of 89 places, faced from 75, clear from 71, outlined
 INFO: room 0 [The lobby] The rage room doorway/Enter The rage room label at (0.0, 1.0, -0.1): in range of 126 places, faced from 111, clear from 93
+INFO: room 0 [The lobby] The ambush doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 118, clear from 118, outlined
+INFO: room 0 [The lobby] The ambush doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 118, clear from 117, outlined
+INFO: room 0 [The lobby] The ambush doorway/Intention at (0.0, 1.5, -0.1): in range of 83 places, faced from 75, clear from 73, outlined
+INFO: room 0 [The lobby] The ambush doorway/Enter The ambush label at (0.0, 1.0, -0.1): in range of 126 places, faced from 115, clear from 97
 INFO: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2): in range of 49 places, faced from 27, clear from 25, outlined
 INFO: room 0 [The lobby] BEFORE - remembered office/Memory caption at (0.0, 2.8, -1.9): in range of 87 places, faced from 49, clear from 49, outlined
 INFO: room 0 [The lobby] 00 - The lobby/Welcome at (0.0, 1.1, -0.6): in range of 107 places, faced from 24, clear from 24, outlined
@@ -339,6 +387,34 @@ INFO: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0): in range of 7
 INFO: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): in range of 42 places, faced from 18, clear from 16
 INFO: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2): in range of 31 places, faced from 10, clear from 10
 INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0): in range of 59 places, faced from 55, clear from 55, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): in range of 93 places, faced from 80, clear from 63
+INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): in range of 97 places, faced from 85, clear from 65
+INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): in range of 92 places, faced from 78, clear from 60
+INFO: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): in range of 74 places, faced from 61, clear from 48, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): in range of 99 places, faced from 87, clear from 57, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0): in range of 82 places, faced from 70, clear from 46, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0): in range of 63 places, faced from 51, clear from 42, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Ambush feelings sign at (0.0, 0.8, -0.6): in range of 31 places, faced from 10, clear from 10, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Ambush replies sign at (-2.1, 0.8, -0.6): in range of 25 places, faced from 10, clear from 10, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Ambush paperwork sign at (2.1, 0.8, -0.5): in range of 27 places, faced from 11, clear from 11, outlined
+INFO: room 8 [The ambush] Feeling card 1/Feeling 1 label at (0.0, 0.0, 0.0): in range of 99 places, faced from 33, clear from 33
+INFO: room 8 [The ambush] Feeling card 2/Feeling 2 label at (0.0, 0.0, 0.0): in range of 99 places, faced from 34, clear from 34
+INFO: room 8 [The ambush] Feeling card 3/Feeling 3 label at (0.0, 0.0, 0.0): in range of 99 places, faced from 33, clear from 33
+INFO: room 8 [The ambush] Feeling card 4/Feeling 4 label at (0.0, 0.0, 0.0): in range of 99 places, faced from 35, clear from 32
+INFO: room 8 [The ambush] Feeling card 5/Feeling 5 label at (0.0, 0.0, 0.0): in range of 99 places, faced from 36, clear from 35
+INFO: room 8 [The ambush] Feeling card 6/Feeling 6 label at (0.0, 0.0, 0.0): in range of 89 places, faced from 35, clear from 35
+INFO: room 8 [The ambush] 08 - The ambush/Clown board text at (0.0, 2.3, 2.0): in range of 30 places, faced from 13, clear from 13, outlined
+INFO: room 8 [The ambush] Reply strip 1/Reply 1 label at (0.0, 0.0, 0.0): in range of 49 places, faced from 22, clear from 22
+INFO: room 8 [The ambush] Reply strip 2/Reply 2 label at (0.0, 0.0, 0.0): in range of 48 places, faced from 21, clear from 21
+INFO: room 8 [The ambush] Reply strip 3/Reply 3 label at (0.0, 0.0, 0.0): in range of 50 places, faced from 21, clear from 21
+INFO: room 8 [The ambush] Reply strip 4/Reply 4 label at (0.0, 0.0, 0.0): in range of 51 places, faced from 22, clear from 22
+INFO: room 8 [The ambush] Reply strip 5/Reply 5 label at (0.0, 0.0, 0.0): in range of 54 places, faced from 22, clear from 22
+INFO: room 8 [The ambush] Termination notice/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 6, clear from 6
+INFO: room 8 [The ambush] Exit interview/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 7, clear from 7
+INFO: room 8 [The ambush] Confidentiality agreement/Paper text at (0.0, 0.0, 0.0): in range of 4 places, faced from 4, clear from 4
+INFO: room 8 [The ambush] Restructuring plan/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 7, clear from 7
+INFO: room 8 [The ambush] Benefits ending/Paper text at (0.0, 0.0, 0.0): in range of 5 places, faced from 5, clear from 5
+INFO: room 8 [The ambush] Severance packet/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 7, clear from 7
 INFO: plate room 0 [The lobby] Getting started board: 2.93 by 0.73 m, 1 sign on it, smallest margin 17.4 cm
 INFO: plate room 1 [Ocean of shame] Distance plate: 1.55 by 0.22 m, 1 sign on it, smallest margin 6.0 cm
 INFO: plate room 1 [Ocean of shame] Rowing plate: 2.65 by 0.60 m, 1 sign on it, smallest margin 10.0 cm
@@ -350,4 +426,4 @@ INFO: plate room 4 [The infinite archive] FEAR sign plate: 1.34 by 0.70 m, 2 sig
 INFO: plate room 4 [The infinite archive] Heading plate: 4.86 by 2.10 m, 4 signs on it, smallest margin 20.0 cm
 INFO: plate room 4 [The infinite archive] STILL TRUE sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
 INFO: plate room 7 [The rage room] Rules board: 1.32 by 0.61 m, 1 sign on it, smallest margin 10.0 cm
-INFO: 138 signs checked; 0 skinned meshes in the last scan were not counted as solid.
+INFO: 170 signs checked; 0 skinned meshes in the last scan were not counted as solid.

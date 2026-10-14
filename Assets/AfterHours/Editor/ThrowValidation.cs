@@ -284,7 +284,7 @@ namespace AfterHours.Editor
             VRPlayer.ThrowOnDesktop=true;
             D.Travel(6);yield return .95f;
             var egg=D.shredder.egg;var sheet=D.shredder.pages[1];var sheetHome=sheet.transform.position;int popped=egg.bursts;
-            Check(D.shredder.pages.All(p=>p.tossable&&!p.throwable)&&everything.Count(g=>g.tossable&&!g.GetComponent<Mug>())==5&&everything.Count(g=>g.tossable&&g.GetComponent<Mug>())==5&&everything.Count(g=>g.throwable)==5,"Only the five résumé pages and the five kitchen mugs can be tossed, and a toss is never helped toward the shredder");
+            Check(D.shredder.pages.All(p=>p.tossable&&!p.throwable)&&D.ambush.papers.Length==6&&D.ambush.papers.All(p=>p.tossable&&!p.throwable)&&everything.Count(g=>g.tossable&&!g.GetComponent<Mug>()&&!D.ambush.papers.Contains(g))==5&&everything.Count(g=>g.tossable&&g.GetComponent<Mug>())==5&&everything.Count(g=>g.throwable)==5,"Only the five résumé pages, the six ambush papers and the five kitchen mugs can be tossed, and a toss is never helped toward the shredder");
             foreach(var t in Take(sheet))yield return t;
             Check(!P.hint.text.Contains("Or throw it."),"Picking up a page does not mention throwing");
             // Stand clear of the desk with the page in hand, and flick it down at the floor.

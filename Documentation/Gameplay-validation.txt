@@ -1,4 +1,4 @@
-2026-10-14 02:25:22Z
+2026-10-14 18:14:52Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -20,7 +20,7 @@ PASS: Two boxes can be held at once, one in each hand
 PASS: Slamming two boxes together bursts both
 PASS: The burst is in the air: 1 flash, 70 sparks, 9 smoke, 110 chips in 7 colours
 PASS: The burst is where the boxes met
-PASS: The chips fall and land on the floor, not through it: 110 chips, lowest at 0.013 m
+PASS: The chips fall and land on the floor, not through it: 110 chips, lowest at 0.014 m
 PASS: Both boxes are back on their stands
 PASS: Nothing was counted, and neither box is held
 PASS: The player's own hand holds a box
@@ -133,17 +133,37 @@ PASS: Every hit throws pieces: 19 hits threw all 210, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
 PASS: All 210 pieces stay inside the room, above the floor
-PASS: 196 of 210 pieces have come to rest by the end of the quiet
+PASS: 197 of 210 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose key along the desk (13 cm)
+PASS: A swing knocks a loose glass shard along the desk (115 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place
 PASS: PUT THE BAT BACK returns the bat to its rack
-PASS: All six chapters complete
-PASS: Completion saved as all six chapter flags
-PASS: Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf
+PASS: Six chapters complete before the ambush, and the sunrise jacket waits for the seventh
 PASS: Menu key opens the comfort menu in room 7
+PASS: Menu LOBBY returns to the lobby
+PASS: Portal input reaches room 8
+PASS: The ambush opens with two clowns far too large across the table
+PASS: Talking back is answered, and does not count toward the chapter
+PASS: Pointing at a balloon pops it
+PASS: Naming a feeling counts it: 1 of 6
+PASS: Naming a feeling counts it: 2 of 6
+PASS: Naming a feeling counts it: 3 of 6
+PASS: Naming a feeling counts it: 4 of 6
+PASS: Naming a feeling counts it: 5 of 6
+PASS: Naming a feeling counts it: 6 of 6
+PASS: Six feelings named: STAND UP appears and the chapter waits for it
+PASS: Both clowns have shrunk to 0.80 times a person
+PASS: Input picks up the termination notice
+PASS: Pointing at a clown lights its outline
+PASS: A page let go while pointing at a clown flies to it and hits
+PASS: And is back on the table a moment later
+PASS: STAND UP completes the chapter and opens the way out
+PASS: All seven chapters complete
+PASS: Completion saved as all seven chapter flags
+PASS: Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf
+PASS: Menu key opens the comfort menu in room 8
 PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 5
 PASS: Completed journey changes rooftop ending

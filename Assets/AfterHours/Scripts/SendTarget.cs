@@ -13,6 +13,8 @@ namespace AfterHours
         // How forgiving the aim is: the radius around the landing point, in metres, that still counts.
         public float radius=.6f;
         public GameObject highlight;
+        // A target that is a long way off over props (the ambush's clowns, across a table of cards and papers) is not hidden by them: only walls and furniture block the aim.
+        public bool seeThrough;
         public string prompt="Point here and let go.";
         public Vector3 LandingPoint=>transform.position+landing;
         // When set, anything of this kind can be sent here (the espresso spout takes any mug).

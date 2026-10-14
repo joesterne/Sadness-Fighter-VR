@@ -5,13 +5,13 @@ using UnityEngine;
 namespace AfterHours
 {
     // Original geometry is authored into the scene by the editor builder.
-    public static class WorldBuilder
+    public static partial class WorldBuilder
     {
         static GameDirector d;
         static Color ivory=new Color(.92f,.91f,.85f), muted=new Color(.61f,.76f,.77f), dark=new Color(.08f,.15f,.2f);
         public static void Build(GameDirector director)
         {
-            d=director;d.rooms=new MindRoom[8];backings.Clear();fits.Clear();
+            d=director;d.rooms=new MindRoom[9];backings.Clear();fits.Clear();
             NewRoom(0,"The lobby",Vector3.zero,new Vector3(0,.05f,-4));Hub();
             NewRoom(1,"Ocean of shame",new Vector3(80,0,0),new Vector3(0,.3f,-1));Ocean();
             NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-2.4f));Warehouse();
@@ -20,6 +20,7 @@ namespace AfterHours
             NewRoom(5,"Room for tomorrow",new Vector3(400,0,0),new Vector3(0,.04f,-4));Rooftop();
             NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
             NewRoom(7,"The rage room",new Vector3(560,0,0),new Vector3(0,.04f,-1.25f));Rage();
+            NewRoom(8,"The ambush",new Vector3(640,0,0),new Vector3(0,.04f,-1.9f));Ambush();
             Menu();
             FitPlates();
             // Signs that only guide or reassure can be switched off together (clean mode). Labels on buttons, doors and objects stay.
@@ -109,7 +110,7 @@ namespace AfterHours
             }
             fits.Clear();
         }
-        static readonly string[] GuidanceNames={"Chapter","Room title","Room subtitle","Room progress","Brand eyebrow","Title","Tagline","Welcome","Journey progress","Move instructions","Small sessions","Comfort note","Desk note","Rules","Rowing instruction","Distance","Ocean title","Ocean intention","Help permission"};
+        static readonly string[] GuidanceNames={"Chapter","Room title","Room subtitle","Room progress","Brand eyebrow","Title","Tagline","Welcome","Journey progress","Move instructions","Small sessions","Comfort note","Desk note","Rules","Rowing instruction","Distance","Ocean title","Ocean intention","Help permission","Ambush feelings sign","Ambush replies sign","Ambush paperwork sign"};
         // Each room has its own soundscape. Sources play when their room is switched on.
         static AudioSource Sound(string clip,float volume,Transform parent=null)
         {
@@ -162,7 +163,7 @@ namespace AfterHours
             var root=Art.Group("Comfort menu",Vector3.zero,d.player.transform);
             var menu=root.gameObject.AddComponent<ComfortMenu>();menu.director=d;d.menu=menu;d.player.menu=menu;
             // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view.
-            Art.Box("Menu panel",new Vector3(0,-.068f,.014f),new Vector3(.53f,.636f,.012f),Art.Ink,true,root,.006f);
+            Art.Box("Menu panel",new Vector3(0,-.1105f,.014f),new Vector3(.53f,.721f,.012f),Art.Ink,true,root,.006f);
             Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.222f,-.002f),.019f,muted,.36f,root);
             menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.19f,-.002f),.027f,ivory,.36f,root);
             MenuButton(root,"Menu close","CLOSE",.19f,.205f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
@@ -177,9 +178,11 @@ namespace AfterHours
             MenuButton(root,"Menu face forward","FACE FORWARD",.12f,-.13f,Art.Teal,ActionKind.FaceForward);
             menu.clean=MenuButton(root,"Menu clean mode","CLEAN MODE",-.12f,-.215f,Art.Navy,ActionKind.CleanMode);
             menu.night=MenuButton(root,"Menu ocean at night","OCEAN AT NIGHT",.12f,-.215f,Art.Navy,ActionKind.NightOcean);
-            MenuButton(root,"Menu try again","TRY AGAIN",-.12f,-.30f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
-            MenuButton(root,"Menu lobby","LOBBY",.12f,-.30f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
-            Words(Art.Text("Menu tip","",new Vector3(0,-.348f,-.002f),.016f,muted,.5f,root),"Palm pinch again closes everything.  LOBBY: back to the start.\nTeleports turn you to face where you point.","Menu button again closes everything.  B / Y: lobby.\nRight stick turns; pull it back to turn around.");
+            menu.gentle=MenuButton(root,"Menu gentle ambush","GENTLE AMBUSH",-.12f,-.30f,Art.Navy,ActionKind.GentleAmbush);
+            menu.dark=MenuButton(root,"Menu dark opening","DARK OPENING",.12f,-.30f,Art.Navy,ActionKind.DarkOpening);
+            MenuButton(root,"Menu try again","TRY AGAIN",-.12f,-.385f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
+            MenuButton(root,"Menu lobby","LOBBY",.12f,-.385f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
+            Words(Art.Text("Menu tip","",new Vector3(0,-.433f,-.002f),.016f,muted,.5f,root),"Palm pinch again closes everything.  LOBBY: back to the start.\nTeleports turn you to face where you point.","Menu button again closes everything.  B / Y: lobby.\nRight stick turns; pull it back to turn around.");
             // A panel floating at arm's length should not throw a shadow onto the room.
             foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
             menu.Refresh();root.gameObject.SetActive(false);
@@ -262,12 +265,13 @@ namespace AfterHours
             Door("04","The infinite\narchive","A fact, a fear,\nand what is still true.",new Vector3(6.82f,0,7),90,Art.Teal,4);
             Door("05","The old\nrésumé","Let go of who you\nwere for them.",new Vector3(6.82f,0,-2.6f),90,Art.Gold,6);
             Door("06","The rage\nroom","Break the old work\ncomputer. Let it out.",new Vector3(-6.82f,0,4.05f),-90,Art.Coral,RageRoom.Room);
+            Door("07","The\nambush","Starts in the dark.\nName what happened.",new Vector3(6.82f,0,4.05f),90,Art.Gold,AmbushRoom.Room);
             // A detailed, polished memory occupies the end of each side of the lobby.
             MemoryOffice(new Vector3(-4.6f,0,12));MemoryOffice(new Vector3(4.6f,0,12));
             Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(4f,1.24f,.65f),Art.Navy);
             Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(4.1f,.06f,.72f),Art.Gold);
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.07f,-.64f),.17f,ivory,3.4f);
-            d.lobbyProgress=Art.Text("Journey progress","0 / 6   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
+            d.lobbyProgress=Art.Text("Journey progress","0 / 7   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
             // The board hangs above the lines of sight from the arrival point to the side doors (they pass between 1.1 and 2.4 m here).
             Backed(0,"Move instructions",Fitted(Art.Box("Getting started board",new Vector3(3.5f,3.2f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy),.14f,1.4f));
             Words(Art.Text("Move instructions","",new Vector3(3.5f,3.2f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
@@ -279,8 +283,8 @@ namespace AfterHours
             Art.Button("Rooftop passage","ROOM FOR TOMORROW  /  ROOFTOP",new Vector3(0,2.72f,13.5f),new Vector3(4.2f,.55f,.16f),Art.Teal,ActionKind.Travel,d,5);
             Art.Button("Mirror and wardrobe","MIRROR  /  YOUR WARDROBE",new Vector3(1.02f,1.45f,-.3f),new Vector3(1.9f,.3f,.1f),Art.Coral,ActionKind.GoToMirror,d);
             d.mirrorLabel=Art.Root.Find("Mirror and wardrobe label").GetComponent<TextMeshPro>();
-            // Door 06 stands between doors 01 and 03, so the left wall's plant moves on toward the memory office.
-            Art.Plant(new Vector3(5.9f,0,4));Art.Plant(new Vector3(-6.2f,0,9.3f));
+            // Doors 06 and 07 stand between the doors on each wall, so the plants move on toward the memory offices.
+            Art.Plant(new Vector3(6.2f,0,9.3f));Art.Plant(new Vector3(-6.2f,0,9.3f));
             for(int side=-1;side<=1;side+=2)Art.Plant(new Vector3(side*2.8f,0,10));
             Mirror();
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
@@ -459,6 +463,11 @@ namespace AfterHours
             Art.Shape("Pin mug",PrimitiveType.Cylinder,new Vector3(-.098f,.15f,.11f),new Vector3(.036f,.02f,.036f),Art.Orange,false,orangePin);
             Art.Box("Pin mug handle",new Vector3(-.071f,.152f,.11f),new Vector3(.014f,.022f,.008f),Art.Orange,false,orangePin,.002f);
             Art.Shape("Pin coffee",PrimitiveType.Cylinder,new Vector3(-.098f,.1695f,.11f),new Vector3(.028f,.002f,.028f),Art.Wood,false,orangePin);
+            // The ambush's pin: a brass disc with a small teal figure standing up.
+            var standPin=Look("standup-pin",m.torso).group.transform;
+            Art.Shape("Pin disc",PrimitiveType.Cylinder,new Vector3(-.095f,.15f,.104f),new Vector3(.06f,.004f,.06f),Art.Gold,false,standPin).transform.localRotation=Quaternion.Euler(90,0,0);
+            Art.Box("Pin figure",new Vector3(-.095f,.145f,.109f),new Vector3(.012f,.03f,.006f),Art.Teal,false,standPin,.002f);
+            Art.Shape("Pin head",PrimitiveType.Sphere,new Vector3(-.095f,.166f,.109f),Vector3.one*.013f,Art.Teal,false,standPin);
             // Arms are two fixed-length segments each, bent by the pose; hands follow tracked hands or controllers.
             for(int i=0;i<2;i++)
             {

@@ -176,7 +176,7 @@ namespace AfterHours.Editor
             Check(D.rooms[1].complete&&W.Has("jumper"),"Reaching the shore earns the harbour jumper");
             foreach(int room in new[]{2,3,4})D.CompleteRoom(room);
             Check(W.Has("cap")&&W.Has("cardigan")&&W.Has("true-pin"),"Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin");
-            Check(!W.Has("jacket"),"The jacket waits for all six chapters");
+            Check(!W.Has("jacket"),"The jacket waits for all seven chapters");
             D.Travel(Shredder.Room);yield return 1f;
             foreach(var page in D.shredder.pages)D.shredder.ShredNow(page);
             Check(D.shredder.Offering&&!W.Has("lanyard"),"The lanyard waits for a true line");
@@ -186,7 +186,12 @@ namespace AfterHours.Editor
             foreach(var part in D.rage.parts)while(!part.Broken){D.rage.HitNow(part);yield return .05f;}
             Check(!W.Has("letitout-pin"),"The let it out pin waits for the quiet after the last break");
             yield return 11.5f;
-            Check(W.Has("letitout-pin")&&W.Has("jacket"),"The quiet after the whole computer earns the let it out pin, and finishing all six chapters the sunrise jacket");
+            Check(W.Has("letitout-pin")&&!W.Has("jacket"),"The quiet after the whole computer earns the let it out pin; the jacket still waits for the ambush");
+            D.darkOpening=false;D.Travel(AmbushRoom.Room);yield return 1f;
+            for(int i=0;i<AmbushRoom.Feelings;i++)D.ambush.Feel(i);
+            Check(D.ambush.named==6&&!W.Has("standup-pin")&&!W.Has("jacket"),"Naming all six feelings is not yet standing up: the stood-up pin and the jacket wait");
+            D.ambush.StandUp();
+            Check(W.Has("standup-pin")&&W.Has("jacket"),"Standing up earns the stood-up pin, and finishing all seven chapters the sunrise jacket");
             D.Travel(5);yield return 10f;
             Check(!W.Has("beanie"),"Ten seconds on the rooftop is not yet a rest");
             yield return 12f;
@@ -213,6 +218,10 @@ namespace AfterHours.Editor
             Check(W.State.pin=="orange-pin"&&avatar.Wearing("orange-pin")&&!avatar.Wearing("letitout-pin"),"PIN > once more reaches the orange mug pin");
             foreach(var t in Click(Lobby(ActionKind.WardrobePrev,7)))yield return t;
             Check(W.State.pin=="letitout-pin"&&avatar.Wearing("letitout-pin")&&!avatar.Wearing("orange-pin"),"PIN < steps back to the let it out pin");
+            foreach(var t in Step(7,2))yield return t;
+            Check(W.State.pin=="standup-pin"&&avatar.Wearing("standup-pin")&&!avatar.Wearing("orange-pin"),"PIN > twice more reaches the stood-up pin");
+            foreach(var t in Click(Lobby(ActionKind.WardrobePrev,7)))yield return t;foreach(var t in Click(Lobby(ActionKind.WardrobePrev,7)))yield return t;
+            Check(W.State.pin=="letitout-pin"&&avatar.Wearing("letitout-pin"),"PIN < twice returns to the let it out pin");
 
             // Nothing is lost: TRY AGAIN keeps pieces, and a reload keeps everything.
             D.Travel(2);yield return 1f;D.RestartCurrentRoom();

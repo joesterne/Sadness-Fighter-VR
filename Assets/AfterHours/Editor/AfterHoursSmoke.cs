@@ -28,7 +28,7 @@ namespace AfterHours.Editor
     {
         static GameDirector d;static Mouse mouse;static Keyboard keyboard;static List<string> results;
         static bool running;static double next;static int oldSave;static bool hadSave;static string failure;
-        static string oldCheckpoint,oldWardrobe;static bool hadCheckpoint,hadWardrobe;
+        static string oldCheckpoint,oldWardrobe;static bool hadCheckpoint,hadWardrobe,oldDark;
         public static string Status="Not run";
         public static void Start()
         {
@@ -37,6 +37,8 @@ namespace AfterHours.Editor
             hadSave=PlayerPrefs.HasKey("AfterHours.Progress.v1");oldSave=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);
             hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);oldCheckpoint=PlayerPrefs.GetString(CheckpointStore.Key);
             hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);oldWardrobe=PlayerPrefs.GetString(Wardrobe.Key);
+            // The ambush opens in the dark by default; its own suite covers that. Here the lights are on from the start.
+            oldDark=d.darkOpening;d.darkOpening=false;
             foreach(var room in d.rooms){room.complete=false;room.accepted=0;}d.RefreshProgress();if(d.intro)d.intro.Hide();
             mouse=InputSystem.AddDevice<Mouse>("AfterHoursTestMouse");keyboard=InputSystem.AddDevice<Keyboard>("AfterHoursTestKeyboard");TestInput.Claim(mouse,keyboard);
             running=true;Status="Running";EditorApplication.playModeStateChanged+=OnPlayState;EditorApplication.update+=Pump;Application.logMessageReceived+=OnLog;
@@ -308,8 +310,34 @@ namespace AfterHours.Editor
             Check(rage.Everything.All(x=>x.damage==0)&&RageTesting.Pieces.All(b=>b.isKinematic&&b.transform.parent!=roomRoot),"WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place");
             yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
             Check(!bat.held&&!d.player.IsHolding(bat)&&Vector3.Distance(bat.transform.position,batHome)<.05f,"PUT THE BAT BACK returns the bat to its rack");
-            Check(d.CompletedCount==6,"All six chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==222,"Completion saved as all six chapter flags");
-            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","jacket","step-pin","scarf","orange-pin"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
+            Check(d.CompletedCount==6&&!d.wardrobe.Has("jacket"),"Six chapters complete before the ambush, and the sunrise jacket waits for the seventh");
+            yield return Visit(AmbushRoom.Room);Capture("Ambush");
+            var amb=d.ambush;
+            Check(amb.lightsOn&&!amb.dark&&Mathf.Abs(amb.size-AmbushRoom.StartSize)<.05f&&amb.clowns.Length==2,"The ambush opens with two clowns far too large across the table");
+            Aim(d.rooms[AmbushRoom.Room].root.transform.TransformPoint(new Vector3(0,2.6f,4)));yield return Delay(.2f);Capture("Ambush-Looming");
+            yield return Click(Button(ActionKind.AmbushReply,2));
+            Check(amb.replies==1&&amb.youLine.Contains("YEARS")&&!d.rooms[AmbushRoom.Room].complete,"Talking back is answered, and does not count toward the chapter");
+            yield return Click(Button(ActionKind.AmbushBalloon,0));
+            Check(amb.balloonsPopped==1,"Pointing at a balloon pops it");
+            for(int i=0;i<AmbushRoom.Feelings;i++)
+            {
+                yield return Click(Button(ActionKind.AmbushFeeling,i));
+                Check(amb.named==i+1&&d.rooms[AmbushRoom.Room].accepted==i+1,"Naming a feeling counts it: "+amb.named+" of 6");
+            }
+            Check(!d.rooms[AmbushRoom.Room].complete&&amb.standUpButton.activeSelf,"Six feelings named: STAND UP appears and the chapter waits for it");
+            yield return Delay(2.2f);Aim(d.rooms[AmbushRoom.Room].root.transform.TransformPoint(new Vector3(0,1.6f,4)));yield return Delay(.2f);Capture("Ambush-Smaller");
+            Check(Mathf.Abs(amb.size-AmbushRoom.EndSize)<.03f,"Both clowns have shrunk to "+amb.size.ToString("0.00")+" times a person");
+            var notice=amb.papers[0];Aim(notice.transform.position);yield return Delay(.06f);Press(true);yield return Delay(.4f);
+            Check(notice.held,"Input picks up the termination notice");
+            Aim(amb.clowns[0].aim.LandingPoint);yield return Delay(.3f);Check(amb.clowns[0].aim.highlight.activeSelf,"Pointing at a clown lights its outline");
+            Press(false);yield return Delay(1.5f);
+            Check(amb.hits==1&&amb.IsAway(notice),"A page let go while pointing at a clown flies to it and hits");
+            yield return Delay(2.6f);Check(!amb.IsAway(notice)&&notice.gameObject.activeSelf,"And is back on the table a moment later");
+            yield return Click(Button(ActionKind.StandUp));yield return Delay(.5f);
+            Check(amb.standing&&d.rooms[AmbushRoom.Room].complete&&amb.exitDoor.activeSelf,"STAND UP completes the chapter and opens the way out");
+            yield return Delay(3.2f);Aim(d.rooms[AmbushRoom.Room].root.transform.TransformPoint(new Vector3(0,1.5f,4)));yield return Delay(.2f);Capture("Ambush-Standing");
+            Check(d.CompletedCount==7,"All seven chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==478,"Completion saved as all seven chapter flags");
+            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","standup-pin","jacket","step-pin","scarf","orange-pin"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
             Status="Passed";
         }
@@ -321,7 +349,7 @@ namespace AfterHours.Editor
         {
             if(!running)return;running=false;EditorApplication.playModeStateChanged-=OnPlayState;EditorApplication.update-=Pump;Application.logMessageReceived-=OnLog;
             TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
-            if(d)d.saveEnabled=false;
+            if(d){d.saveEnabled=false;d.darkOpening=oldDark;}
             if(hadCheckpoint)PlayerPrefs.SetString(CheckpointStore.Key,oldCheckpoint);else PlayerPrefs.DeleteKey(CheckpointStore.Key);
             if(hadSave)PlayerPrefs.SetInt("AfterHours.Progress.v1",oldSave);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");
             if(hadWardrobe)PlayerPrefs.SetString(Wardrobe.Key,oldWardrobe);else PlayerPrefs.DeleteKey(Wardrobe.Key);PlayerPrefs.Save();

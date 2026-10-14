@@ -1,0 +1,204 @@
+2026-10-14 18:11:01Z
+Passed
+The dark opening, the two giant clowns and how they shrink, naming six feelings, the five replies, balloons and noses, the paperwork (sent, thrown, torn), standing up, the way out, GENTLE AMBUSH and DARK OPENING, TRY AGAIN, and saving.
+PASS: The game has nine rooms, and room 8 is The ambush
+PASS: The ambush is the seventh chapter, with six feelings to name
+PASS: Two clowns, each with a nose, three balloons, a chest to aim at, a propeller beanie and a bowtie
+PASS: Six papers, six feeling cards, a chair, the screen, the stand-up button, the way out, warm lights and two particle systems
+PASS: All five of the room's sounds are loaded
+PASS: The lobby has a seventh door, and counts seven rooms
+PASS: The ambush is closed until you walk in, with the clowns full size and the dark on
+PASS: Walking in, the room is dark
+PASS: The view is held black, not just fading in
+PASS: It stays dark for the first few seconds
+PASS: Then the lights come on
+PASS: They flicker first: the view flashes clear and goes black again before they stay on
+PASS: The dark lasts about four seconds (4.4 s)
+PASS: Once the lights are on the view is clear
+PASS: The room says what to do as the lights come up
+PASS: The room is lit cool and harsh, unlike the lobby
+INFO: the room has 110 renderers and 37 colliders
+PASS: The clowns start 2.8 times life size
+PASS: Each clown's head is over five metres up, far above the seat (7.2 m)
+PASS: One stands each side of the head of the room, across the table
+PASS: They lean in over the table (11 degrees)
+PASS: They face the player
+PASS: At first they wear nothing silly and every balloon is up
+PASS: The screen shows what each clown says, and 0 of 6 feelings
+PASS: Leaving puts the lobby's light back
+PASS: Back in, the room is dark again
+PASS: Opening the menu in the dark brings the lights up at once
+PASS: A card cannot be named in the dark
+PASS: But trying ends the dark, and nothing is named yet
+PASS: The menu offers DARK OPENING (on) and GENTLE AMBUSH (off)
+PASS: The button to press exists
+PASS: DARK OPENING switches off
+PASS: With the dark off, the lights are on as soon as you arrive
+PASS: And the room says what to do
+PASS: The button to press exists
+PASS: DARK OPENING switches back on, from inside the room
+PASS: Nothing has been said yet
+PASS: The button to press exists
+PASS: "Wait. What just happened?" is answered by the left clown with the kind of thing a company says
+PASS: Only the clown who was spoken to flinches
+PASS: The screen shows what you said
+PASS: The button to press exists
+PASS: Reply 2 of 5: CAN YOU EXPLAIN THAT?
+PASS: The button to press exists
+PASS: Reply 3 of 5: I GAVE YOU YEARS.
+PASS: The button to press exists
+PASS: Reply 4 of 5: THAT IS NOT OKAY.
+PASS: The button to press exists
+PASS: Reply 5 of 5: I AM FURIOUS.
+PASS: All five replies can be said, and none of them counts toward the chapter
+PASS: Both clowns answer the angriest reply with the kind of thing a company says
+PASS: Saying something is a small step
+PASS: The button to press exists
+PASS: Pointing at a balloon pops it, in a burst of bits
+PASS: A popped balloon is gone from the room
+PASS: While balloons are up, the pointer can always reach one (5 left)
+PASS: The button to press exists
+PASS: While balloons are up, the pointer can always reach one (4 left)
+PASS: The button to press exists
+PASS: While balloons are up, the pointer can always reach one (3 left)
+PASS: The button to press exists
+PASS: While balloons are up, the pointer can always reach one (2 left)
+PASS: The button to press exists
+PASS: While balloons are up, the pointer can always reach one (1 left)
+PASS: The button to press exists
+PASS: All six balloons can be popped, and the clowns look relieved
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: Each clown's nose can be honked
+PASS: Pointing at "Termination notice" and pinching picks it up
+PASS: Pointing at the left clown with a page in hand lights its outline, and only its
+PASS: Let go, the page flies to the clown's chest, hits it, and the clown flinches
+PASS: The hit is at the clown's chest
+PASS: A moment later the page is back on the table, as if nothing had happened
+PASS: A page thrown toward a clown hits it too
+PASS: And comes back
+PASS: A page that ends up in a clown's chest counts as a hit
+PASS: And comes back
+PASS: A page dropped off the table lies on the floor
+PASS: Four seconds later it glides back to the table, out of a seated player's reach
+PASS: A hand takes hold of a page
+PASS: Moving a page quickly up and down does not tear it
+PASS: Moving it slowly from side to side does not tear it
+PASS: Shaking it hard from side to side tears it
+PASS: It bursts into bits of paper, and the room says what happened
+PASS: A torn page is back on the table a moment later
+PASS: Pointing at "Severance packet" and pinching picks it up
+PASS: Pointing at the right clown with the severance packet lights its outline instead
+PASS: The packet hits the right clown
+PASS: And comes back
+PASS: No feeling is named, and there is nothing to stand up from yet
+PASS: The heading counts feelings named: 0 / 6
+PASS: The button to press exists
+PASS: Naming "CONFUSED" counts it (1 of 6)
+PASS: The card changes colour and says NAMED
+PASS: The room answers with a kind line
+PASS: The screen counts 1 of 6
+PASS: Both clowns shrink: 2.80 to 2.47
+PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
+PASS: The chapter is not complete yet
+PASS: The button to press exists
+PASS: Naming the same feeling again does not count twice
+PASS: The button to press exists
+PASS: Naming "BLINDSIDED" counts it (2 of 6)
+PASS: The card changes colour and says NAMED
+PASS: The room answers with a kind line
+PASS: The screen counts 2 of 6
+PASS: Both clowns shrink: 2.47 to 2.13
+PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
+PASS: The chapter is not complete yet
+PASS: The button to press exists
+PASS: Naming "HURT" counts it (3 of 6)
+PASS: The card changes colour and says NAMED
+PASS: The room answers with a kind line
+PASS: The screen counts 3 of 6
+PASS: Both clowns shrink: 2.13 to 1.80
+PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
+PASS: The chapter is not complete yet
+PASS: The button to press exists
+PASS: Naming "ANGRY" counts it (4 of 6)
+PASS: The card changes colour and says NAMED
+PASS: The room answers with a kind line
+PASS: The screen counts 4 of 6
+PASS: Both clowns shrink: 1.80 to 1.47
+PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
+PASS: The chapter is not complete yet
+PASS: The button to press exists
+PASS: Naming "I WANT A REASON" counts it (5 of 6)
+PASS: The card changes colour and says NAMED
+PASS: The room answers with a kind line
+PASS: The screen counts 5 of 6
+PASS: Both clowns shrink: 1.47 to 1.13
+PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
+PASS: The chapter is not complete yet
+PASS: The button to press exists
+PASS: Naming "WORRIED ABOUT WHAT'S NEXT" counts it (6 of 6)
+PASS: The card changes colour and says NAMED
+PASS: The room answers with a kind line
+PASS: The screen counts 6 of 6
+PASS: Both clowns shrink: 1.13 to 0.80
+PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
+PASS: The chapter is not complete yet
+PASS: All six named: the clowns are smaller than a person (0.80 times, head at 2.1 m)
+PASS: They stand upright and have come in close [lean 0.0, x -1.30, size 0.80, hit -0.60]
+PASS: They have nothing left to say
+PASS: STAND UP appears, and the chapter waits for it
+PASS: The room says so
+PASS: The button to press exists
+PASS: Once everything is named, even the angriest reply gets only quiet
+PASS: The button to press exists
+PASS: STAND UP finishes the chapter
+PASS: Completion is saved as chapter 8's flag
+PASS: The button goes, the way out opens, and the warm lights come on
+PASS: The screen says you stood up
+PASS: The chair rolls back to let you stand
+PASS: The light turns warm
+PASS: Finishing the chapter earns the stood-up pin
+PASS: The lobby counts one of seven rooms
+PASS: The way out leads to the lobby
+PASS: The button to press exists
+PASS: The way out returns to the lobby, in the lobby's own light
+PASS: Coming back to a finished chapter: lights on at once, no dark
+PASS: The clowns are small and quiet, the door is open and the chair is back
+PASS: The room is warm again, and says it is quiet
+PASS: The button to press exists
+PASS: TRY AGAIN un-names everything
+PASS: The finished chapter stays finished
+PASS: And the room opens in the dark once more
+PASS: Then the lights come up on full-size clowns
+PASS: Every card is open again
+PASS: The beanies and bowties are gone and every balloon is back
+PASS: Every page is back where it started
+PASS: The door is shut, the lamps are off, the chair is back and the light is cold
+PASS: The counts start again
+PASS: The button to press exists
+PASS: GENTLE AMBUSH switches on
+PASS: The clowns shrink to 1.9 times and stand upright, head at 4.9 m
+PASS: They keep their distance
+PASS: Arriving again, the gentle size is there from the first moment
+PASS: The button to press exists
+PASS: Naming a feeling still shrinks them, from the gentle size (1.72)
+PASS: The button to press exists
+PASS: GENTLE AMBUSH switches off and they grow back, leaning in again
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: Two feelings named (ANGRY, BLINDSIDED), gentle on, dark off
+PASS: The named feelings and both options come back after a restart
+PASS: The chapter is still finished, but this attempt is not
+PASS: A half-named room opens lit, with the clowns where you left them
+PASS: The right cards say NAMED, and the propeller is on
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: The other four can still be named
+PASS: The button to press exists
+PASS: And STAND UP finishes it again
+PASS: A finished chapter is finished after a restart
+PASS: It opens on the warm ending: small clowns, a lamp, an open door
+PASS: The pin is kept
+PASS: Back in the lobby, in the lobby's own light

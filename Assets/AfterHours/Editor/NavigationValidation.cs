@@ -60,12 +60,14 @@ namespace AfterHours.Editor
             SceneManager.LoadScene("AfterHours");yield return 1f;D.saveEnabled=false;if(D.intro)D.intro.Hide();
             // Let the test's input devices settle before the first key press.
             yield return .5f;
+            // The ambush opens in the dark by default; the dedicated ambush suite covers that, so the view is clear here.
+            D.darkOpening=false;
             if(D.currentRoom!=0){D.Travel(0);yield return .8f;}P.smoothMotion=true;
             var key=MenuKey(true);while(key.MoveNext())yield return key.Current;
             Check(!D.menu.lobby.activeSelf&&!D.menu.tryAgain.activeSelf,"The lobby menu has no LOBBY or TRY AGAIN");
             key=MenuKey(false);while(key.MoveNext())yield return key.Current;
             // Every ENTER sign and menu return route, including the rooftop (last, returning with the lobby key).
-            foreach(int room in new[]{1,2,3,4,6,RageRoom.Room,5})
+            foreach(int room in new[]{1,2,3,4,6,RageRoom.Room,AmbushRoom.Room,5})
             {
                 var entry=Button(ActionKind.Travel,room);Approach(entry);yield return .2f;Aim(entry.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;Arrived(room);
                 key=MenuKey(true);while(key.MoveNext())yield return key.Current;

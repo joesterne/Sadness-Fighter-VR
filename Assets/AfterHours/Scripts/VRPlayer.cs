@@ -345,19 +345,20 @@ namespace AfterHours
                 // The cone widens for large targets nearby and never shrinks below a few degrees far away.
                 float angle=Vector3.Angle(direction,to),allowed=Mathf.Max(5f,Mathf.Atan2(t.radius,distance)*Mathf.Rad2Deg);
                 if(angle>allowed||angle>=bestAngle)continue;
-                if(Blocked(origin,t.LandingPoint,item.transform,t.transform))continue;
+                if(Blocked(origin,t.LandingPoint,item.transform,t.transform,t.seeThrough))continue;
                 best=t;bestAngle=angle;
             }
             return best;
         }
         // True when solid scenery stands between the pointer and a point, ignoring the player, the object and the target.
-        bool Blocked(Vector3 from,Vector3 to,Transform item,Transform target)
+        bool Blocked(Vector3 from,Vector3 to,Transform item,Transform target,bool seeThrough=false)
         {
             var path=to-from;float distance=path.magnitude;if(distance<.01f)return false;
             foreach(var hit in Physics.RaycastAll(from,path/distance,distance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
             {
                 var t=hit.collider.transform;
                 if(t.IsChildOf(transform)||(item&&t.IsChildOf(item))||(target&&t.IsChildOf(target)))continue;
+                if(seeThrough&&(t.GetComponentInParent<Interactable>()||t.GetComponentInParent<Grabbable>()))continue;
                 if(hit.distance<distance-.25f)return true;
             }
             return false;

@@ -56,7 +56,7 @@ namespace AfterHours.Editor
             // Reopen from disk so the editor shows exactly what ships. Meshes rewritten in place during the build can otherwise draw stale data in the editor.
             EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);var saved=Object.FindAnyObjectByType<GameDirector>();if(saved)Selection.activeGameObject=saved.gameObject;
             if(SceneView.lastActiveSceneView)SceneView.lastActiveSceneView.LookAt(new Vector3(0,1.8f,3),Quaternion.Euler(12,0,0),13);
-            Debug.Log("After Hours: scene authored, eight rooms (the lobby, six chapters and the rooftop), hands/controllers, Quest build settings ready.");
+            Debug.Log("After Hours: scene authored, nine rooms (the lobby, seven chapters and the rooftop), hands/controllers, Quest build settings ready.");
         }
         static Material Mat(string name,Color color,float metallic=0,float smoothness=.15f,Texture texture=null)
         {
@@ -229,7 +229,7 @@ namespace AfterHours.Editor
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.7.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.8.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
@@ -281,6 +281,8 @@ namespace AfterHours.Editor
             for(var p=t;p&&p!=room;p=p.parent)if(!p.gameObject.activeSelf)return true;
             if(t.IsChildOf(d.ocean.horizon))return true;
             foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;
+            // The ambush: clowns, cards, chair, lamps and the like change while playing.
+            if(d.ambush&&d.ambush.changing&&t.IsChildOf(d.ambush.changing))return true;
             if(d.kitchen.lever&&t.IsChildOf(d.kitchen.lever))return true;
             foreach(var c in d.kitchen.spills)if(t.IsChildOf(c.transform))return true;
             return false;

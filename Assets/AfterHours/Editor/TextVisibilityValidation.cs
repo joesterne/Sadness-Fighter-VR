@@ -77,6 +77,8 @@ namespace AfterHours.Editor
         {
             PlayerPrefs.DeleteKey(CheckpointStore.Key);PlayerPrefs.DeleteKey("AfterHours.Progress.v1");
             SceneManager.LoadScene("AfterHours");yield return 1f;D.saveEnabled=false;if(D.intro)D.intro.Hide();yield return .5f;
+            // The ambush opens in the dark by default; its signs are checked with the lights on.
+            D.darkOpening=false;
             for(int room=0;room<D.rooms.Length;room++)
             {
                 for(int wait=0;wait<40&&P.busy;wait++)yield return .1f;

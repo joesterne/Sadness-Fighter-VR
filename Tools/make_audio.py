@@ -661,6 +661,78 @@ def sfx_steam():
     return fade_edges(normalise(reverb(x, 0.3, 0.08), -9))
 
 
+# ---------- the ambush: a boardroom, its lights, a squeaking nose, a balloon, paper torn, a chair pushed back ----------
+def amb_boardroom(seconds=30, fade=4):
+    # A meeting room with the lights on: a low ventilation rumble, the hum of fluorescent tubes and a wall clock ticking once a second. Cold and a little too quiet.
+    n = int((seconds + fade) * SR); tt = np.arange(n) / SR
+    room = lowpass(brown(n), 170, 2) * 0.55 + lowpass(pink(n), 1300, 1) * 0.05
+    hum = (np.sin(2 * np.pi * 100 * tt) * 0.5 + np.sin(2 * np.pi * 200 * tt) * 0.24 + np.sin(2 * np.pi * 300 * tt) * 0.1) * 0.014
+    vent = bandpass(white(n), 600, 3200, 1) * 0.03 * (0.6 + 0.4 * smooth_noise(n, 0.08))
+    ticks = np.zeros(n)
+    for k in range(int(seconds) + 1):
+        m = int(0.02 * SR); i = int(k * SR)
+        tick = bandpass(white(m), 1800, 5200, 1) * decay(m, 0.004) * (0.55 if k % 2 == 0 else 0.4)
+        ticks[i:i + m] += tick[:max(0, n - i)]
+    x = room + hum + vent + ticks * 0.1
+    return normalise(make_loop(x, fade), -10, rms_db=-33)
+
+def sfx_lights():
+    # The lights coming on: a breaker thunk, then fluorescent tubes stuttering (the same pattern as the flicker on screen) and settling to a steady hum.
+    n = int(3.2 * SR)
+    x = thump(n, 62, 0.25) * 0.5
+    for start, length in [(0.0, 0.07), (0.21, 0.06), (0.57, 0.45)]:
+        i = int(start * SR); m = int(length * SR); tt = np.arange(m) / SR
+        buzz = np.sin(2 * np.pi * 120 * tt) + 0.5 * np.sin(2 * np.pi * 240 * tt) + 0.3 * white(m)
+        x[i:i + m] += lowpass(buzz, 3000, 1) * 0.35 * env_adsr(m, 0.004, 0.02, 1)
+        k = int(0.02 * SR); tick = bandpass(white(k), 1500, 6000, 1) * decay(k, 0.004)
+        x[i:i + k] += tick * 0.6
+    i = int(1.11 * SR); m = n - i; tt = np.arange(m) / SR
+    hum = (np.sin(2 * np.pi * 100 * tt) * 0.5 + np.sin(2 * np.pi * 200 * tt) * 0.22) * np.exp(-np.arange(m) / (1.3 * SR)) * 0.3 * env_adsr(m, 0.15, 0.6, 2)
+    k = int(0.03 * SR); click = bandpass(white(k), 1200, 5000, 1) * decay(k, 0.006)
+    x[i:i + m] += hum; x[i:i + k] += click * 0.7
+    return fade_edges(normalise(reverb(x, 0.9, 0.14), -6))
+
+def sfx_squeak():
+    # A clown nose: a rubber squeak that rises and falls.
+    n = int(0.42 * SR); tt = np.arange(n) / SR
+    f = 620 + 950 * np.sin(np.pi * np.clip(tt / 0.4, 0, 1)) + 25 * np.sin(2 * np.pi * 28 * tt)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    x = (np.sin(ph) + 0.5 * np.sin(2 * ph) + 0.2 * np.sin(3 * ph)) * env_adsr(n, 0.01, 0.14, 2)
+    x = bandpass(x, 400, 4600, 1) + highpass(white(n), 3000, 1) * decay(n, 0.01) * 0.1
+    return fade_edges(normalise(x, -7))
+
+def sfx_balloon():
+    # A balloon popping: a sharp crack, a papery snap, a puff of air and a few scraps of rubber flapping.
+    n = int(0.7 * SR)
+    crack = highpass(white(n), 1500, 2) * decay(n, 0.012) * 1.0
+    snap = thump(n, 240, 0.02) * 0.7 + bandpass(white(n), 800, 4000, 2) * decay(n, 0.05) * 0.5
+    puff = lowpass(white(n), 1800, 2) * decay(n, 0.12) * env_adsr(n, 0.005, 0.3, 2) * 0.35
+    flap = clicks(0.7, 6, 1200, 5000, 0.6) * 0.3
+    x = crack + snap + puff + flap
+    return fade_edges(normalise(reverb(x, 0.4, 0.1), -4))
+
+def sfx_tear():
+    # Paper torn: a long ripping rasp with fibres snapping, and a dull thud where it gave way.
+    n = int(0.8 * SR)
+    rasp = bandpass(white(n), 1200, 7500, 2) * (0.5 + 0.5 * smooth_noise(n, 60)) * env_adsr(n, 0.02, 0.18, 2)
+    grit = clicks(0.8, 55, 2500, 9000, 0.85) * 0.55
+    x = rasp * 0.7 + grit + thump(n, 130, 0.03) * 0.15
+    return fade_edges(normalise(reverb(x, 0.3, 0.08), -6))
+
+def sfx_stand():
+    # Standing up: a chair rolling back across carpet, a soft knock where it stops, and a slow low chord like a held breath let go.
+    n = int(3.4 * SR); m = int(0.9 * SR); k = int(0.25 * SR); j = int(0.6 * SR)
+    roll = np.zeros(n)
+    roll[:m] = (lowpass(brown(m), 420, 2) * 0.5 + bandpass(white(m), 900, 3200, 1) * 0.06) * env_adsr(m, 0.05, 0.5, 2)
+    knock = np.zeros(n); knock[m:m + k] = thump(k, 120, 0.05) * 0.5
+    chord = np.zeros(n)
+    for f in [hz('D', 3), hz('A', 3), hz('F#', 4)]:
+        chord[j:] += pad_note(f, n - j) * (0.5 if f < 200 else 0.3)
+    chord = lowpass(chord * env_adsr(n, 1.2, 1.4, 2), 2000, 1)
+    x = roll + knock + chord * 0.5
+    return fade_edges(normalise(reverb(x, 1.6, 0.3), -8))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -682,6 +754,7 @@ def main(folder):
         'SFX - Confetti': sfx_confetti,
         'SFX - Blast': sfx_blast,
         'SFX - Shatter': sfx_shatter, 'SFX - Cabinet': sfx_cabinet, 'SFX - Steam': sfx_steam,
+        'Ambience - Boardroom': amb_boardroom, 'SFX - Lights': sfx_lights, 'SFX - Squeak': sfx_squeak, 'SFX - Balloon': sfx_balloon, 'SFX - Tear': sfx_tear, 'SFX - Stand': sfx_stand,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

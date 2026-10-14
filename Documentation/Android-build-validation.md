@@ -692,6 +692,55 @@ Navigation, the ocean suite and the text visibility suite last ran before one sm
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 14: the ambush
+
+### What changed
+- **A seventh chapter, The ambush.** A boardroom, a table nine metres long and you in a chair at the end of it. You arrive in complete darkness; after about four seconds the lights flicker on and two clowns, nearly three times life size, are leaning in across the table. Six feeling cards, each of which makes both clowns smaller and sillier when named; five replies, from confused to furious, that the clowns answer like a company; six pieces of paperwork that can be sent at a clown, tossed or shaken hard to tear (they always come back); six balloons to pop and two noses to honk; and STAND UP, which appears when all six feelings are named, rolls the chair back, turns the room warm and opens a door. It is the seventh room (room 8) and counts toward finishing the journey, so the sunrise jacket and the rooftop ending now wait for all seven chapters (the saved progress number for all seven is 478). A new pin, the Stood up pin, is a twelfth piece to earn. The lobby has a seventh door.
+- **Two menu options.** **GENTLE AMBUSH** starts the clowns at 1.9 times life size and upright, like KITCHEN CROWD for the kitchen, and **DARK OPENING** (on by default) can be switched off so the lights are on at arrival. Both are saved. The menu gained a row, so its panel is a little lower (the drop went from 0.20 to 0.16 metres) and its bottom row is still within 42 degrees of straight ahead (all 14 buttons shown in the lobby within 39).
+- **Six new sounds** at the end of `Tools/make_audio.py` (53 WAV files in all, every earlier sound regenerating as it was): `Ambience - Boardroom`, `SFX - Lights`, `SFX - Squeak`, `SFX - Balloon`, `SFX - Tear` and `SFX - Stand`.
+- The pointer can look through one thing: a `SendTarget` can be marked `seeThrough`, so a clown's chest can be aimed at across the table's screen. The player's own aim code (`VRPlayer.FindTarget`) and its obstruction check honour it.
+- A new `Dynamic()` rule in the scene builder keeps everything under the room's moving parts out of the merged meshes, so the clowns, cards, papers, chair and lamps can move.
+- Version 0.8.0.
+
+### Bugs the tests caught
+
+The first compile failed on one line that declared three properties together, which C# does not allow, and a duplicate variable name in the gameplay journey. Most of the other first failures were in the new checks, not the game. The checks for popping balloons expected every balloon to be reachable one by one, but balloons float in clusters and the pointer reaches the nearest first (the ambush suite now pops the nearest reachable one each time, and the airplane-seat suite only asks for one reachable balloon in each cluster). A check that a slow wave does not tear a page found that the tear detector measured speed from single-frame jumps, which spike when frames are uneven, so a steady wave could count as a shake: the room now measures the speed over the last tenth of a second. The same check also revealed that the test's stand-in hand moved twice per frame when the editor ticked twice, doubling its speed. One check measured the clowns' lean a fifth of a second after a feeling was named, while they were still flinching from the kind line. The throwing suite counts what can be tossed and had to learn that six ambush papers join the five résumé pages and five mugs. The text visibility suite found eight problem signs in the new room (three wall posters standing behind the wall's columns, the tissue box hiding the paperwork sign, and reply strips on stairs too low to clear one another); they were fixed in the room, not in the test, and the stairs are steeper, the posters hang between the columns and the tissue box moved to the end of the table. The menu check on how low its bottom row sits failed at 47 degrees with the new row, which is why the panel was lowered. Once, Unity froze as Play Mode started, inside Meta's XR operator layer shutting down (nothing in the game was running yet); it needed the editor restarted, and the run was repeated. As on earlier runs, the gameplay journey failed its first check (movement input) on the first run after the scene was rebuilt and passed when run again with nothing changed.
+
+### Tests
+
+The ambush has its own suite with 200 checks (`Documentation/Ambush-validation.txt`): the structure, the dark opening and its flicker, the menu ending the dark, DARK OPENING, the clowns' size, lean and facing, the replies, balloons and noses, the paperwork sent, thrown, dropped, torn and returned, naming six feelings, standing up, the way out, revisiting, TRY AGAIN, GENTLE AMBUSH and saving. The gameplay journey has 20 new checks (166 in all): every chapter's journey now ends with the ambush played with real input and all seven chapters complete. The menu and seated suite has 4 new checks (75 in all), including the dark-opening choice and two named feelings surviving a scene reload. Navigation has 11 more (142), the airplane-seat suite 20 more (118), the wardrobe suite 4 more (67) and the text visibility suite 32 more signs (170 in all).
+
+### Results
+
+All nine suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 166 |
+| Navigation | 142 |
+| Airplane-seat checks | 118 |
+| Menu and seated checks | 75 |
+| Mirror and wardrobe | 67 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 102 |
+| Text visibility | 170 signs, 11 plates |
+| The ambush | 200 |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 75.2 MB (75,212,507 bytes) |
+| SHA-256 of the APK | `58455ac70c1a30c0af7aaebc2e51f8cf7475fe478b14c11d24f4d4edd0a9bb7f` |
+| Version | 0.8.0, version code 412936 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.8.0, versionCode 412936, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. The new code and content are in the build: the `AmbushRoom` class, the six new sounds (`Ambience - Boardroom`, `SFX - Lights`, `SFX - Squeak`, `SFX - Balloon`, `SFX - Tear`, `SFX - Stand`), the two clowns and their parts, the STAND UP button, the GENTLE AMBUSH and DARK OPENING menu buttons and the Stood up pin. No private-network address and no session data in any file (the only matches for an address pattern are version numbers and encoding identifiers in the .NET libraries, and Meta's own debugger classes appear as code and type names in the SDK, as before). The account name appears once, beside the project name in the player's global settings. 717 KB larger than 0.7.0: the six sounds and the new code. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -707,6 +756,7 @@ These still need a physical headset playtest (see `Playtest.md`):
 - how the confetti looks and feels in the headset: whether the thin flat bits flicker or shimmer in the lenses, whether the burst and the shower read well, how loud the pop is on the headset's speakers, the frame rate during a burst (about 400 bits at once), and whether a real hand toss reliably counts as a throw (the editor test simulates the hand's speed)
 - how the box blast looks and feels in the headset: whether the flash (a cream ball up to about 0.6 m across for a fifth of a second) and the smoke puffs are comfortable so close to the face, whether the stretched sparks and the thin chips flicker in the lenses, how loud the boom is on the headset's speakers, the frame rate during a blast (about 190 bits at once), and whether a real two-handed slam reliably bursts the boxes while a gentle tap or two boxes carried side by side do not (the editor test drives stand-in hands at set speeds; tracked hands and controllers jitter, so 2.4 m/s may turn out too easy or too hard)
 - how the new kitchen looks and feels in the headset: whether throwing a mug feels like a throw and a shatter is satisfying rather than startling (the crash is a sharp sound close to the head), whether the shards, the dust and the steam plume are comfortable and legible in the lenses, the frame rate while they play (at most 224 bits at once) and in the kitchen generally with five physics mugs, whether the mugs and the cupboard doors are easy to point at and open from a seat, whether the orange mug can be seen on its shelf from a seated eye height, and how the Orange mug pin reads on the avatar's chest
+- how the ambush looks and feels in the headset: whether the dark opening and its flicker (six flashes in about a second) are comfortable, and whether the lights coming on so close to the eyes after four seconds of black are too sudden; whether two clowns at 2.8 times life size read as towering and absurd rather than frightening from a seated eye height (GENTLE AMBUSH starts them at 1.9), how the lean and sway look in the lenses, whether the cards, the replies on their staircase and the two lines on the screen are easy to read and point at from a seat, whether a page flying across the table to a clown and a real hand's hard shake that tears one feel like the player's own, how the balloons, noses, paper bits and the new sounds (lights, balloon, tear, stand) sound and look at that distance, and the frame rate in a large room with two big clowns, balloons and particles
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

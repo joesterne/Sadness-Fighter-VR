@@ -1,4 +1,4 @@
-2026-10-14 02:27:02Z
+2026-10-14 18:04:38Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note
@@ -92,7 +92,27 @@ PASS: The rage room: the quiet comes, and the chapter completes
 PASS: The rage room: WHEEL IN A NEW ONE can be chosen from the seat
 PASS: The rage room: PUT THE BAT BACK can be chosen from the seat
 PASS: The rage room: done without leaving the seat
-PASS: All six chapters completed seated, without moving
+PASS: The ambush: the lights are on when you arrive, and you are sat at the table
+PASS: The ambush: six feeling cards, five replies, six balloons and two noses
+PASS: The ambush: every card, reply and nose can be pointed at from the seat
+PASS: The ambush: the pointer reaches a balloon in each cluster from the seat
+PASS: The ambush: a reply can be said from the seat
+PASS: The ambush: a balloon can be popped from the seat
+PASS: The ambush: a nose can be honked from the seat
+PASS: Pinch picks up Termination notice from the seat (2.8 m away)
+PASS: Pointing at the destination lights it up
+PASS: The ambush: a page is sent at the left clown from the seat, 8 metres away, and hits
+PASS: The ambush: feeling 1 of 6 named from the seat
+PASS: The ambush: feeling 2 of 6 named from the seat
+PASS: The ambush: feeling 3 of 6 named from the seat
+PASS: The ambush: feeling 4 of 6 named from the seat
+PASS: The ambush: feeling 5 of 6 named from the seat
+PASS: The ambush: feeling 6 of 6 named from the seat
+PASS: The ambush: STAND UP appears
+PASS: The ambush: STAND UP completes the chapter from the seat
+PASS: The ambush: done without leaving the seat
+PASS: The ambush: the way out can be chosen from the seat
+PASS: All seven chapters completed seated, without moving
 PASS: Mirror: MIRROR on the desk brings you to the glass, facing it
 PASS: Mirror: your reflection appears
 PASS: Mirror: all 16 wardrobe buttons can be pointed at from the mirror spot
