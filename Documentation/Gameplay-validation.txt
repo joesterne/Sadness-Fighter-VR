@@ -1,4 +1,4 @@
-2026-10-14 18:14:52Z
+2026-10-16 12:08:12Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -133,9 +133,9 @@ PASS: Every hit throws pieces: 19 hits threw all 210, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
 PASS: All 210 pieces stay inside the room, above the floor
-PASS: 197 of 210 pieces have come to rest by the end of the quiet
+PASS: 199 of 210 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose glass shard along the desk (115 cm)
+PASS: A swing knocks a loose key along the desk (30 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place
@@ -167,3 +167,9 @@ PASS: Menu key opens the comfort menu in room 8
 PASS: Menu LOBBY returns to the lobby
 PASS: Portal input reaches room 5
 PASS: Completed journey changes rooftop ending
+PASS: The rooftop shows its own sunrise sky
+PASS: The rooftop sets its own light, haze and ambient colour
+PASS: The rooftop has clouds to drift and a balloon to bob
+PASS: The clouds drift and the balloon bobs while you rest
+PASS: The lobby key leaves the rooftop
+PASS: Leaving the rooftop puts the day's sky, sun and haze back

@@ -1511,23 +1511,5 @@ namespace AfterHours
             }
             Sound("Ambience - Archive",.6f);
         }
-        static void Rooftop()
-        {
-            Sound("Ambience - Rooftop",.55f);Sound("Music - After hours theme",.2f);
-            Floor(new Vector3(0,-.15f,3),new Vector3(17,.3f,19),Art.Cream);
-            for(int s=-1;s<=1;s+=2)Art.Box("Rooftop parapet",new Vector3(s*8.5f,.6f,3),new Vector3(.3f,1.2f,19),Art.Teal);
-            Art.Box("Rooftop edge",new Vector3(0,.6f,12.5f),new Vector3(17,1.2f,.3f),Art.Teal);
-            // The skyline is dark and the sky is pale, so the closing words stand on a deep-blue board in ivory, readable from anywhere on the roof.
-            var board=Art.Group("Rooftop message board",new Vector3(0,0,9.15f));
-            Art.Box("Board face",new Vector3(0,2.75f,0),new Vector3(7.6f,3.4f,.12f),Art.Navy,false,board);
-            Art.Box("Board trim",new Vector3(0,4.5f,-.02f),new Vector3(7.8f,.07f,.16f),Art.Gold,false,board);Art.Box("Board trim",new Vector3(0,1f,-.02f),new Vector3(7.8f,.07f,.16f),Art.Gold,false,board);
-            for(int side=-1;side<=1;side+=2)Art.Box("Board leg",new Vector3(side*3.3f,.5f,.1f),new Vector3(.14f,1f,.14f),Art.Metal,false,board);
-            d.ending=Art.Text("Ending","You can rest\nbefore you are ready.",new Vector3(0,3.6f,9),.78f,ivory,7);
-            Art.Text("Epilogue","The office is only one room in your life.",new Vector3(0,2.35f,9),.36f,muted,7);
-            Art.Text("Next step","For now: a glass of water. A message to someone. A little daylight.\nYou get to choose the next small thing.",new Vector3(0,1.55f,9),.25f,ivory,7);
-            for(int i=0;i<26;i++){float x=-30+i*2.4f;float height=3+(i*7%9);Art.Box("Low poly city",new Vector3(x,-2+height*.5f,25+(i%3)*5),new Vector3(1.8f,height,2),i%2==0?Art.Teal:Art.Navy,false);}
-            Art.Shape("Tomorrow's sun",PrimitiveType.Sphere,new Vector3(13,16,45),Vector3.one*9,Art.Gold,false);
-            for(int side=-1;side<=1;side+=2){Art.Plant(new Vector3(side*5.5f,0,5));Art.Plant(new Vector3(side*5.8f,0,7));Art.Box("Bench seat",new Vector3(side*4,.5f,2.5f),new Vector3(2.3f,.15f,.65f),Art.Wood);for(int leg=-1;leg<=1;leg+=2)Art.Box("Bench leg",new Vector3(side*4+leg*.8f,.24f,2.5f),new Vector3(.1f,.48f,.55f),Art.Metal);}
-        }
     }
 }

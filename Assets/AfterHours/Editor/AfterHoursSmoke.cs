@@ -98,6 +98,8 @@ namespace AfterHours.Editor
         }
         static IEnumerator Run()
         {
+            // The day's sky, light and haze, to check that the rooftop's sunrise comes and goes cleanly.
+            var daySky=RenderSettings.skybox;var daySun=RenderSettings.sun.intensity;var daySunTurn=RenderSettings.sun.transform.rotation;var dayHaze=RenderSettings.fogColor;var dayAmbient=RenderSettings.ambientSkyColor;
             yield return Delay(.1f);Check(!d.player.IsXR,"Desktop fallback is active");Check(d.player.Head.position.y>1.5f,"Desktop camera remains at eye height");
             var initial=d.player.transform.position;Queue(keyboard,new KeyboardState(Key.W));yield return Delay(.5f);Queue(keyboard,new KeyboardState());yield return Delay();Check(Vector3.Distance(initial,d.player.transform.position)>.25f,"Movement input moves player");
             d.player.Place(new Vector3(0,.04f,-3.5f),0);yield return Delay();Aim(new Vector3(2,.015f,-1.9f));Press(true);yield return Delay();Press(false);yield return Delay(.7f);Check(d.player.transform.position.x>1.3f,"Floor ray press/release teleports player");
@@ -339,6 +341,16 @@ namespace AfterHours.Editor
             Check(d.CompletedCount==7,"All seven chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==478,"Completion saved as all seven chapter flags");
             Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","standup-pin","jacket","step-pin","scarf","orange-pin"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
+            // The rooftop is a sunrise: its own gradient sky, golden light from low in front of the player, a warm haze and a lit-up ambient, all put back on leaving.
+            var rooftop=d.rooftop;
+            Check(rooftop&&rooftop.skybox&&RenderSettings.skybox==rooftop.skybox&&RenderSettings.skybox!=daySky,"The rooftop shows its own sunrise sky");
+            Check(!Mathf.Approximately(RenderSettings.sun.intensity,daySun)&&RenderSettings.fogColor!=dayHaze&&RenderSettings.ambientSkyColor!=dayAmbient&&RenderSettings.sun.transform.rotation!=daySunTurn,"The rooftop sets its own light, haze and ambient colour");
+            Check(rooftop.drifting.Length>=6&&rooftop.speeds.Length==rooftop.drifting.Length&&rooftop.balloon,"The rooftop has clouds to drift and a balloon to bob");
+            var cloud=rooftop.drifting[0];var cloudAt=cloud.localPosition;var balloonAt=rooftop.balloon.localPosition;yield return Delay(2.5f);
+            Check(cloud.localPosition.x>cloudAt.x&&rooftop.balloon.localPosition!=balloonAt,"The clouds drift and the balloon bobs while you rest");
+            Queue(keyboard,new KeyboardState(Key.Escape));yield return Delay(.1f);Queue(keyboard,new KeyboardState());yield return Delay(.9f);
+            Check(d.currentRoom==0,"The lobby key leaves the rooftop");
+            Check(RenderSettings.skybox==daySky&&Mathf.Approximately(RenderSettings.sun.intensity,daySun)&&RenderSettings.sun.transform.rotation==daySunTurn&&RenderSettings.fogColor==dayHaze&&RenderSettings.ambientSkyColor==dayAmbient,"Leaving the rooftop puts the day's sky, sun and haze back");
             Status="Passed";
         }
         static void Capture(string label)

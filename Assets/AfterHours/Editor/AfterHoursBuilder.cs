@@ -26,6 +26,7 @@ namespace AfterHours.Editor
         public const string ScenePath="Assets/AfterHours/Scenes/AfterHours.unity";
         const string Folder="Assets/AfterHours/Art/";
         const string VignetteShader="Assets/AfterHours/Shaders/ComfortVignette.shader";
+        const string SunriseShader="Assets/AfterHours/Shaders/SunriseSky.shader";
         const string AudioFolder="Assets/AfterHours/Audio";
         [MenuItem("After Hours/Build or rebuild the game scene")]
         public static void BuildScene()
@@ -134,6 +135,18 @@ namespace AfterHours.Editor
             Art.ConfettiPaper=Tint("28 Confetti paper");
             // A vivid orange for the hidden mug. It glows a little of its own, so it stays easy to spot inside a shadowed cupboard.
             Art.Orange=Mat("30 Orange mug",Hex("#F2681C"),0,.45f);Art.Orange.EnableKeyword("_EMISSION");Art.Orange.SetColor("_EmissionColor",Hex("#F2681C")*.3f);
+            // The rooftop at sunrise: bright, saturated toy colours up close, soft pastels for the skyline, and glowing clouds.
+            Art.Deck=Mat("31 Sunrise deck",Hex("#EFCB9E"),0,.1f);Art.ToyCream=Mat("31a Toy cream",Hex("#FFF1D8"),0,.14f);
+            Art.ToyTomato=Mat("31b Toy tomato",Hex("#F2533F"),0,.2f);Art.ToySun=Mat("31c Toy sunshine",Hex("#FFC62E"),0,.2f);
+            Art.ToySky=Mat("31d Toy sky blue",Hex("#3FA7EA"),0,.2f);Art.ToyLeaf=Mat("31e Toy leaf",Hex("#4CC46C"),0,.12f);
+            Art.ToyLeafDark=Mat("31f Toy deep leaf",Hex("#2E9F5B"),0,.12f);Art.ToyPink=Mat("31g Toy pink",Hex("#FF88B0"),0,.2f);
+            Art.ToyLilac=Mat("31h Toy lilac",Hex("#A58AEA"),0,.2f);Art.ToyWood=Mat("31i Toy wood",Hex("#EBA562"),0,.18f);
+            Art.ToyWoodDark=Mat("31j Toy dark wood",Hex("#B9703C"),0,.18f);Art.ToyBulb=Unlit("31k Toy bulb",Hex("#FFE9A6"));
+            Art.Skyline=new[]{"#FFB69E","#FFD37E","#9FDBCB","#8FC8F2","#CBA9F2","#F79DB8"}.Select((c,i)=>Mat("32 Skyline "+(i+1),Hex(c),0,.06f)).ToArray();
+            Art.SkylineCap=Mat("32a Skyline cap",Hex("#FFF3E2"),0,.06f);Art.SkylineWindowLit=Unlit("32b Skyline window lit",Hex("#FFE49A"));
+            Art.SkylineWindowGlass=Mat("32c Skyline window glass",Hex("#7FA2E4"),0,.5f);Art.SkylineWood=Mat("32d Skyline wood",Hex("#C9814E"),0,.1f);
+            Art.CloudWhite=Mat("33 Cloud white",Hex("#FFF5EC"),0,.05f);Art.CloudWhite.EnableKeyword("_EMISSION");Art.CloudWhite.SetColor("_EmissionColor",Hex("#FFD9D2")*.28f);
+            Art.CloudPink=Mat("33a Cloud pink",Hex("#FFD3D9"),0,.05f);Art.CloudPink.EnableKeyword("_EMISSION");Art.CloudPink.SetColor("_EmissionColor",Hex("#FFB5C0")*.24f);
             Art.Font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             if(!Art.Font)Art.Font=TMP_Settings.defaultFontAsset;
             // Lettering with an outline: light text gets a deep-blue one, dark text an ivory one, so a sign stays readable over whatever is behind it.
@@ -226,10 +239,25 @@ namespace AfterHours.Editor
             var night=AssetDatabase.LoadAssetAtPath<Material>(Folder+"15b Night sky.mat");if(!night){night=new Material(Shader.Find("Skybox/Procedural"));AssetDatabase.CreateAsset(night,Folder+"15b Night sky.mat");}
             night.SetColor("_SkyTint",Hex("#1B2A55"));night.SetColor("_GroundColor",Hex("#0B1426"));night.SetFloat("_Exposure",.45f);night.SetFloat("_AtmosphereThickness",.45f);night.SetFloat("_SunSize",0f);EditorUtility.SetDirty(night);
             var oceanRoom=Object.FindAnyObjectByType<OceanRoom>(FindObjectsInactive.Include);if(oceanRoom)oceanRoom.nightSkybox=night;
+            // The rooftop's sunrise sky, which the rooftop swaps in while the player is there.
+            var rooftopRoom=Object.FindAnyObjectByType<RooftopRoom>(FindObjectsInactive.Include);if(rooftopRoom)rooftopRoom.skybox=SunriseSky();
+        }
+        // A gradient sky with a flat, glowing sun, drawn by a small shader (no texture, so nothing to band or stream).
+        static Material SunriseSky()
+        {
+            var shader=AssetDatabase.LoadAssetAtPath<Shader>(SunriseShader);
+            if(!shader||!shader.isSupported){Debug.LogError("After Hours: "+SunriseShader+" is missing or does not compile, so the rooftop keeps the daytime sky.");return null;}
+            string path=Folder+"15c Sunrise sky.mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
+            if(!m){m=new Material(shader);AssetDatabase.CreateAsset(m,path);}
+            m.shader=shader;
+            m.SetColor("_Zenith",Hex("#4F7CE6"));m.SetColor("_High",Hex("#86A9F0"));m.SetColor("_Mid",Hex("#E7B3DA"));m.SetColor("_Low",Hex("#FFB398"));m.SetColor("_Horizon",Hex("#FFD890"));m.SetColor("_Ground",Hex("#F0B8A0"));
+            m.SetColor("_SunColor",Hex("#FFF9D0"));m.SetColor("_GlowColor",Hex("#FFB64A"));
+            var sun=RooftopRoom.SunDirection;m.SetVector("_SunDir",new Vector4(sun.x,sun.y,sun.z,0));m.SetFloat("_SunRadius",RooftopRoom.SunRadius*Mathf.Deg2Rad);
+            EditorUtility.SetDirty(m);return m;
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.8.0";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.8.1";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
@@ -283,6 +311,8 @@ namespace AfterHours.Editor
             foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;
             // The ambush: clowns, cards, chair, lamps and the like change while playing.
             if(d.ambush&&d.ambush.changing&&t.IsChildOf(d.ambush.changing))return true;
+            // The rooftop's drifting clouds and balloon.
+            if(d.rooftop&&d.rooftop.moving&&t.IsChildOf(d.rooftop.moving))return true;
             if(d.kitchen.lever&&t.IsChildOf(d.kitchen.lever))return true;
             foreach(var c in d.kitchen.spills)if(t.IsChildOf(c.transform))return true;
             return false;

@@ -28,6 +28,8 @@ namespace AfterHours.Editor
             {
                 for(int i=0;i<d.rooms.Length;i++)
                 {
+                    // The rooftop is shown with its sunrise light, so it has its own shots below.
+                    if(i==RooftopRoom.Room)continue;
                     var spawn=d.rooms[i].spawn.position;float eyeHeight=i==1?1.25f:1.6f;
                     saved+=Shot(d,i,cam,d.rooms[i].title,spawn+Vector3.up*eyeHeight,spawn+new Vector3(0,1.2f,6))?1:0;
                 }
@@ -54,6 +56,8 @@ namespace AfterHours.Editor
                 saved+=TargetShot(d,cam,6,"The old résumé - send to the shredder")?1:0;
                 // The boat's oars in their locks, the turning lighthouse light, and the same view at night.
                 saved+=OceanShots(d,cam);
+                // The rooftop at sunrise: the arrival view, the sun, the skyline both ways, the deck and what stands behind the player.
+                saved+=RooftopShots(d,cam);
                 // The rage room's computer and bat as a seated player sees them on arrival.
                 var rage=d.rooms[RageRoom.Room];
                 saved+=Shot(d,RageRoom.Room,cam,"The rage room - the computer",rage.spawn.position+Vector3.up*1.6f,rage.root.transform.TransformPoint(new Vector3(-.15f,.95f,-.2f)),"Seated - ")?1:0;
@@ -101,6 +105,31 @@ namespace AfterHours.Editor
                 n+=Shot(d,1,cam,"Ocean at night - the right oar",root+new Vector3(.25f,1.65f,-1.25f),root+new Vector3(1.8f,.5f,.6f),"Night - ")?1:0;
             }
             finally{ocean.Preview(false);if(spin)spin.transform.localRotation=home;}
+            return n;
+        }
+        static int RooftopShots(GameDirector d,Camera cam)
+        {
+            var r=d.rooftop;if(!r){Debug.LogError("[RoomPreviews] The scene has no rooftop room.");return 0;}
+            int n=0;int room=RooftopRoom.Room;var origin=d.rooms[room].root.transform.position;var spawn=d.rooms[room].spawn.position;var eye=spawn+Vector3.up*1.6f;
+            Vector3 At(float x,float y,float z)=>origin+new Vector3(x,y,z);
+            try
+            {
+                r.Preview();
+                // The usual arrival view keeps its usual file name.
+                n+=Shot(d,room,cam,d.rooms[room].title,eye,spawn+new Vector3(0,1.2f,6))?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the sunrise",eye,eye+RooftopRoom.SunDirection*40,"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the skyline on the left",eye,At(-30,6,40),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the skyline on the right",eye,At(34,6,26),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the deck",eye+new Vector3(0,0,2),At(-1,.4f,8),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the board",At(0,1.6f,1),At(0,2.9f,9),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the chairs",At(1.5f,1.5f,1.4f),At(0,.5f,5.3f),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the hut",At(-1.5f,1.6f,-1.2f),At(-6.8f,1.5f,-4.6f),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the water tower",At(2.2f,1.6f,-1.8f),At(6.9f,3.2f,-4.6f),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the balloon",eye,At(33,25,52),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the bunting",At(0,1.6f,0),At(2,5,10),"Sunrise - ")?1:0;
+                n+=Shot(d,room,cam,"Rooftop - the sky",eye,At(-10,30,40),"Sunrise - ")?1:0;
+            }
+            finally{r.EndPreview();}
             return n;
         }
         static int AmbushShots(GameDirector d,Camera cam)

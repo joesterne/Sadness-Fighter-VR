@@ -741,6 +741,54 @@ The release APK built with zero errors.
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 16: the sunrise rooftop
+
+### What changed
+- **Room for tomorrow was restyled to be bright, saturated, chunky and toy-like.** Sky, sun and light first: a new skybox shader written for the project (`After Hours/Sunrise sky`, no texture) paints a gradient from gold at the horizon through peach and pink to morning blue, a dawn glow along the horizon and a flat glowing sun with a golden rim and two halos. The room sets its own warm sunlight, bright lilac, peach and terracotta ambient colours and a peach haze when the player arrives and puts the day's back when they leave. Then richer scenery: a skyline of four rings of chunky pastel buildings (lit windows, rooftop water towers, aerials), ten drifting clouds and a bobbing hot-air balloon, bunting over the deck, a striped rug, two benches, six potted plants, two deck chairs and a side table, flower boxes, a stairwell hut, a wooden water tower and four beanbags. The layout, the board and its three lines of text are unchanged.
+- New files: `RooftopRoom.cs`, `WorldBuilderRooftop.cs` (the old 18-line `Rooftop()` in `WorldBuilder.cs` was replaced) and `SunriseSky.shader`; new materials (a sunrise deck, a dozen toy colours, six skyline colours and window materials, white and pink clouds) in `Art` and the scene builder; the scene builder's `Dynamic()` rule now also keeps the room's moving group (clouds and balloon) out of the merged meshes.
+- The room-preview tool captures the rooftop twelve ways in its sunrise look (the arrival, the sun, the skyline each side, the deck, the board, the chairs, the bunting, the sky, the hut, the water tower and the balloon).
+- The gameplay journey gained six checks for the rooftop's look (sky, light, clouds, balloon, and the day look restored on leaving).
+- Version 0.8.1.
+
+### Problems found while looking at the pictures
+
+None of the tests failed on the new room; every change below came from reading the stills before running them. The first picture of the sun was a plain pale disc that washed out against the glow, so it now has a golden rim and a larger, softer halo. The water towers' domes looked like cakes, so they are cones. The foreground beside the rug was empty, so four beanbags were added (without colliders). The balloon hid behind the second ring of buildings, so it moved. Aerials near the sun looked like lollipops against it, so they are only built away from the sun. The "behind you" still was not useful and was replaced by the hut, the water tower and the balloon. A leftover still from the first pass, `Sunrise - Rooftop - behind you.png`, is still in `Documentation/Previews` (the tool does not delete old pictures). The gameplay journey failed its first check (movement input) on its first run after the scene was rebuilt and passed when run again with nothing changed, as on earlier runs. The first release build still reported version 0.8.0, because the edited builder script had not reached the computer when the build ran (a file-copy slip, found by reading the version in the build log); it was rebuilt after the file was checked on disk, and the version, version code and signature of the final APK were read back out of the file itself.
+
+### Tests
+
+The text visibility suite passed on its first run with the new room (170 signs, as before, since no sign was added): the board's three lines are clear from almost every place, and three notes record a line of the board partly hidden from a few floor places out of about a hundred: the two upper lines from two and four places by the gold door frame of the stairwell hut, and the lowest line from seven by a yellow flower on a plant. The gameplay journey has 6 new checks (172 in all). Every other suite has the same number of checks as in 0.8.0, and all passed.
+
+### Results
+
+All nine suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 172 |
+| Navigation | 142 |
+| Airplane-seat checks | 118 |
+| Menu and seated checks | 75 |
+| Mirror and wardrobe | 67 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 102 |
+| Text visibility | 170 signs, 11 plates |
+| The ambush | 200 |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 76.0 MB (76,043,025 bytes) |
+| SHA-256 of the APK | `af2321c2c3a2c4a844b8c615a672992b093486834303d9a20765d744c08a9c6d` |
+| Version | 0.8.1, version code 415478 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.8.1, versionCode 415478, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. The new code and content are in the build: the `RooftopRoom` class, the `After Hours/Sunrise sky` material and shader, the toy, skyline and cloud materials, and the beanbags, stairwell hut and water tower; the ambush's code and content are still there. No private-network address and no session data in any file (the only matches for an address pattern are version numbers and encoding identifiers in the .NET libraries; the word session_id appears only inside Meta's and Unity's own native libraries and code metadata, and Meta's own debugger classes appear as code and type names in the SDK, as before). The account name appears once, beside the project name in the player's global settings. 830 KB larger than 0.8.0: the new sky shader and the rooftop's meshes and materials. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
 ## Still unverified
 
 These still need a physical headset playtest (see `Playtest.md`):
@@ -757,6 +805,7 @@ These still need a physical headset playtest (see `Playtest.md`):
 - how the box blast looks and feels in the headset: whether the flash (a cream ball up to about 0.6 m across for a fifth of a second) and the smoke puffs are comfortable so close to the face, whether the stretched sparks and the thin chips flicker in the lenses, how loud the boom is on the headset's speakers, the frame rate during a blast (about 190 bits at once), and whether a real two-handed slam reliably bursts the boxes while a gentle tap or two boxes carried side by side do not (the editor test drives stand-in hands at set speeds; tracked hands and controllers jitter, so 2.4 m/s may turn out too easy or too hard)
 - how the new kitchen looks and feels in the headset: whether throwing a mug feels like a throw and a shatter is satisfying rather than startling (the crash is a sharp sound close to the head), whether the shards, the dust and the steam plume are comfortable and legible in the lenses, the frame rate while they play (at most 224 bits at once) and in the kitchen generally with five physics mugs, whether the mugs and the cupboard doors are easy to point at and open from a seat, whether the orange mug can be seen on its shelf from a seated eye height, and how the Orange mug pin reads on the avatar's chest
 - how the ambush looks and feels in the headset: whether the dark opening and its flicker (six flashes in about a second) are comfortable, and whether the lights coming on so close to the eyes after four seconds of black are too sudden; whether two clowns at 2.8 times life size read as towering and absurd rather than frightening from a seated eye height (GENTLE AMBUSH starts them at 1.9), how the lean and sway look in the lenses, whether the cards, the replies on their staircase and the two lines on the screen are easy to read and point at from a seat, whether a page flying across the table to a clown and a real hand's hard shake that tears one feel like the player's own, how the balloons, noses, paper bits and the new sounds (lights, balloon, tear, stand) sound and look at that distance, and the frame rate in a large room with two big clowns, balloons and particles
+- how the sunrise rooftop looks and runs in the headset: whether the sky shader renders correctly in both eyes on a Quest (it was written to the same stereo rules as the comfort vignette and checked only on the desktop), whether its gradient and sun show colour steps or shimmer in the lenses, whether the brighter, more saturated look and the sun low in the sky are comfortable, whether the board's lines read well against the warm sky and pastel buildings, and the frame rate with four rings of buildings, the bunting, the clouds and the balloon (the far buildings cast no shadows and use their own materials, but no frame-rate measurement has been made on a headset)
 - the left palm pinch that opens the menu
 - how the comfort vignette feels
 - switching between hands and controllers

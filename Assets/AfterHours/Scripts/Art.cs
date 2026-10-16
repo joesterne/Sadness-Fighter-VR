@@ -10,6 +10,11 @@ namespace AfterHours
         public static Material Ink, Navy, Teal, Mint, Coral, Gold, Cream, White, Wood, Glass, Metal, Paper, Water;
         // The orange mug hidden in the kitchen cabinet, and its pin: a bright orange nothing else in the game uses.
         public static Material Orange;
+        // The rooftop at sunrise. What you stand among is bright, saturated, toy-like colour. The skyline, its windows and the clouds have materials of their own,
+        // so far scenery never merges into the same mesh as the near props (which keeps every ray test near the signs short).
+        public static Material Deck, ToyCream, ToyTomato, ToySun, ToySky, ToyLeaf, ToyLeafDark, ToyPink, ToyLilac, ToyWood, ToyWoodDark, ToyBulb;
+        public static Material[] Skyline;
+        public static Material SkylineCap, SkylineWindowLit, SkylineWindowGlass, SkylineWood, CloudWhite, CloudPink;
         // The ocean at night: glowing lantern glass and moon, dark water, and soft additive light for the lighthouse beam and the stars.
         public static Material Lantern, Moon, NightWater, BeamGlow, BeamGlowNight, Star;
         // The mirror's X-ray: glowing white bones with a soft halo, dark hollows, and a dark veil behind the glass.

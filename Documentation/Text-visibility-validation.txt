@@ -1,4 +1,4 @@
-2026-10-14 18:09:33Z
+2026-10-16 12:02:25Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -230,9 +230,9 @@ NOTE: room 4 [The infinite archive] 04 - The infinite archive/FEAR sign at (0.0,
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/FEAR description at (0.0, 1.7, 5.0): partly blocked from 8 of 69 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-4.5, 1.5, 2.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE sign at (2.3, 2.1, 5.0): partly blocked from 10 of 69 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (4.5, 2.0, 2.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE description at (2.3, 1.7, 5.0): partly blocked from 9 of 64 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 1.5, 2.5)
-NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): partly blocked from 1 of 107 places, by 05 - Room for tomorrow/Batched geometry - 03 Quiet teal near (-6.0, 1.5, 5.0)
-NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): partly blocked from 1 of 108 places, by 05 - Room for tomorrow/Batched geometry - 03 Quiet teal near (-6.0, 1.5, 5.0)
-NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 6 of 108 places, by 05 - Room for tomorrow/Batched geometry - 03 Quiet teal near (-6.0, 1.5, 5.0)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): partly blocked from 2 of 105 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-5.5, 2.0, -4.5)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): partly blocked from 4 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-7.0, 1.5, -4.0)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 7 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-6.0, 1.5, 5.5)
 NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 52 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
 NOTE: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): out of reading range from everywhere sampled (letters about 0.7 cm tall)
 NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 18 places, by Monitor - pieces/Monitor body
@@ -364,9 +364,9 @@ INFO: room 4 [The infinite archive] 04 - The infinite archive/FEAR sign at (0.0,
 INFO: room 4 [The infinite archive] 04 - The infinite archive/FEAR description at (0.0, 1.7, 5.0): in range of 165 places, faced from 69, clear from 61, outlined
 INFO: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE sign at (2.3, 2.1, 5.0): in range of 269 places, faced from 69, clear from 59, outlined
 INFO: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE description at (2.3, 1.7, 5.0): in range of 159 places, faced from 64, clear from 55, outlined
-INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): in range of 145 places, faced from 107, clear from 106, outlined
-INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): in range of 145 places, faced from 108, clear from 107, outlined
-INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): in range of 145 places, faced from 108, clear from 102, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): in range of 130 places, faced from 105, clear from 103, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): in range of 130 places, faced from 106, clear from 102, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): in range of 130 places, faced from 106, clear from 99, outlined
 INFO: room 6 [The old résumé] 06 - The old résumé/Chapter at (0.0, 4.1, 9.6): in range of 73 places, faced from 65, clear from 65, outlined
 INFO: room 6 [The old résumé] 06 - The old résumé/Room title at (0.0, 3.5, 9.6): in range of 81 places, faced from 73, clear from 73, outlined
 INFO: room 6 [The old résumé] 06 - The old résumé/Room subtitle at (0.0, 2.9, 9.6): in range of 79 places, faced from 71, clear from 71, outlined

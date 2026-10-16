@@ -30,6 +30,7 @@ namespace AfterHours
         public Shredder shredder; public BoxBlast boxBlast;
         public RageRoom rage;
         public AmbushRoom ambush;
+        public RooftopRoom rooftop;
         public Wardrobe wardrobe;
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
