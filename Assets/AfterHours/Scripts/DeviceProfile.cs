@@ -11,7 +11,7 @@ namespace AfterHours
         public static Headset Current { get; private set; } = Headset.Unknown;
         public static bool Applied { get; private set; }
         // What was in force before a profile changed it, so it can be put back.
-        static float savedScale, savedShadow, savedFrequency; static UniversalRenderPipelineAsset saved;
+        static float savedScale, savedShadow, savedFrequency; static UniversalRenderPipelineAsset saved; static bool frequencyChanged;
         public const float Quest2RenderScale=.9f, Quest2ShadowDistance=20f, Quest2Frequency=72f;
 
         public static Headset Classify(OVRPlugin.SystemHeadset type)
@@ -51,15 +51,16 @@ namespace AfterHours
             {
                 // Only a rate the headset really offers is requested.
                 var display=OVRManager.display;var offered=display!=null?display.displayFrequenciesAvailable:null;
-                if(offered!=null&&System.Array.IndexOf(offered,Quest2Frequency)>=0){savedFrequency=display.displayFrequency;display.displayFrequency=Quest2Frequency;}
+                if(offered!=null&&System.Array.IndexOf(offered,Quest2Frequency)>=0){savedFrequency=display.displayFrequency;display.displayFrequency=Quest2Frequency;frequencyChanged=true;}
             }
             catch(System.Exception){}
             Debug.Log("[DeviceProfile] Quest 2 detected: render scale "+Quest2RenderScale+", shadows to "+Quest2ShadowDistance+" m, "+Quest2Frequency+" Hz.");
         }
-        // Puts the render settings back to what they were. Used by tests so the shared URP asset is never left changed.
+        // Puts the render settings and the refresh rate back to what they were. Used by tests so the shared URP asset is never left changed.
         public static void Undo()
         {
             if(saved){saved.renderScale=savedScale;saved.shadowDistance=savedShadow;saved=null;}
+            if(frequencyChanged){frequencyChanged=false;try{var display=OVRManager.display;if(display!=null)display.displayFrequency=savedFrequency;}catch(System.Exception){}}
             Applied=false;Current=Headset.Unknown;
         }
     }
