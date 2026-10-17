@@ -113,12 +113,13 @@ namespace AfterHours
         }
         // With controllers, the trigger holds an object just as a pinch does, and so does the grip.
         public static bool ControllerGrab(float grip,float trigger)=>grip>.65f||trigger>.65f;
-        // Which input the player is using, so every hint says the right thing, and which headset this is, so a Quest 2 gets a lighter picture.
-        // Both are asked every frame or two until the runtime answers, and never change how the game plays.
+        // Which input the player is using, so every hint says the right thing, and which headset this is, so a Quest 2 gets a lighter picture
+        // and every headset gets foveated rendering. Both are asked every frame or two (the headset every half second) until the runtime
+        // answers, and never change how the game plays.
         void ObserveHardware()
         {
             Wording.Observe(SeenInput(OVRInput.GetActiveController(),handSeen,controllerSeen),Time.unscaledTime);
-            if(!DeviceProfile.Applied&&Time.unscaledTime>nextProfileCheck){nextProfileCheck=Time.unscaledTime+.5f;DeviceProfile.TryApply();}
+            if(!DeviceProfile.Settled&&Time.unscaledTime>nextProfileCheck){nextProfileCheck=Time.unscaledTime+.5f;DeviceProfile.TryApply();}
         }
         void DesktopPose()
         {

@@ -259,7 +259,7 @@ namespace AfterHours.Editor
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.8.2";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.8.3";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
@@ -279,7 +279,7 @@ namespace AfterHours.Editor
                 {
                     settings.renderMode=OpenXRSettings.RenderMode.SinglePassInstanced;
                     foreach(var feature in settings.GetFeatures<UnityEngine.XR.OpenXR.Features.OpenXRFeature>())
-                    {string name=feature.GetType().Name;if(name=="OculusTouchControllerProximityProfile"||Array.IndexOf(UnusedMixedRealityFeatures,name)>=0)feature.enabled=false;if(name=="MetaXRFeature"||name=="OculusTouchControllerProfile"||name=="HandTracking"||name=="MetaHandTrackingAim"||name=="HandTrackingFeature")feature.enabled=true;}
+                    {string name=feature.GetType().Name;if(name=="OculusTouchControllerProximityProfile"||name=="FoveatedRenderingFeature"||name=="MetaXREyeTrackedFoveationFeature"||Array.IndexOf(UnusedMixedRealityFeatures,name)>=0)feature.enabled=false;if(name=="MetaXRFeature"||name=="MetaXRFoveationFeature"||name=="OculusTouchControllerProfile"||name=="HandTracking"||name=="MetaHandTrackingAim"||name=="HandTrackingFeature")feature.enabled=true;}
                     EditorUtility.SetDirty(settings);
                 }
             }
