@@ -45,6 +45,8 @@ namespace AfterHours
         // Send targets and movable objects in the current room, for pointing and aim assist.
         public SendTarget[] Targets=>targets!=null&&currentRoom<targets.Length?targets[currentRoom]:System.Array.Empty<SendTarget>();
         public Grabbable[] Grabbables=>grabbables!=null&&currentRoom<grabbables.Length?grabbables[currentRoom]:System.Array.Empty<Grabbable>();
+        // Every movable object in one room, as found when the scene woke. Saving walks these instead of searching the scene.
+        public Grabbable[] GrabbablesOf(int room)=>grabbables!=null&&room>=0&&room<grabbables.Length?grabbables[room]:System.Array.Empty<Grabbable>();
         public int lastRoom;
         bool ready;
         [NonSerialized] public bool saveEnabled=true;
@@ -55,7 +57,11 @@ namespace AfterHours
         public bool darkOpening=true;
         public AudioSource audioSource;
         public AudioClip acknowledge, completeSound;
-        const string SaveKey="AfterHours.Progress.v1";
+        const string SaveKey=CheckpointStore.ProgressKey;
+        // Saving happens by itself: as the player leaves a room, as they arrive in the next one, and now and then in between.
+        // The quiet saves show nothing. A room change shows a brief "Saved".
+        public const float AutosaveSeconds=45;
+        [NonSerialized] public float autosaveClock;
         void Awake()
         {
             Instance=this;
@@ -81,6 +87,8 @@ namespace AfterHours
         {
             // Resting on the rooftop for a little while earns the evening beanie.
             if(currentRoom==5&&!player.busy){restTime+=Time.deltaTime;if(restTime>=RestForBeanie)Earn("beanie");}else restTime=0;
+            // The quiet timer. Nothing is written unless something changed since the last save, so it never causes a hitch.
+            if(ready&&saveEnabled){autosaveClock+=Time.deltaTime;if(autosaveClock>=AutosaveSeconds&&!player.busy)Autosave(false);}
             // New pieces are announced one at a time, after whatever the room has just said.
             if(news.Count>0&&!player.busy&&Time.time>lastSay+4){Say(news.Dequeue());PlayUi(unlock,.6f);}
         }
@@ -118,6 +126,7 @@ namespace AfterHours
             if(room==1)ocean.OnArrive();
             if(room==AmbushRoom.Room&&ambush)ambush.OnArrive();
             yield return player.Fade(0,.35f,true);player.busy=false;
+            Autosave(true);
             string[] messages={"Your progress is saved. Continue when you want to, or stop here for today.","Hold either oar and push it forward through the water, then draw it back. Or press ROW. The horizon will wait.","These feelings can travel with you. "+Wording.Pick("Pinch","Squeeze the trigger on")+" a box to pick it up. Point at the truck and let go, or throw it. Five boxes.","Pick up a cup, point at the spout and let go. Then try BREW. You can ask for help at any point. The menu can hide the watching crowd.","Sort six notes into FACT, FEAR, and STILL TRUE: pick one up, point at its tray and let go. A thought does not have to become a verdict.","Stay as long as you like. Your next chapter does not need a title yet.","Pick up an old résumé, point at the shredder and let go. When they are gone, keep one true line.","Point at the bat and "+Wording.Pick("pinch","squeeze the trigger")+" to pick it up. It stays in your hand. Swing at the old computer: short swings count, and nothing here can be hurt.",""};
             if(room==AmbushRoom.Room&&ambush)ambush.Announce();else Say(messages[room]);
         }
@@ -165,7 +174,9 @@ namespace AfterHours
         }
         // The menu button's second job: clear every message at once, including announcements still waiting their turn.
         public void ClearMessages(){news.Clear();if(player)player.HideHint();}
-        public void SaveCheckpoint(){if(!ready||!saveEnabled)return;CheckpointStore.Save(this);RefreshProgress();}
+        public void SaveCheckpoint(){if(!ready||!saveEnabled)return;autosaveClock=0;CheckpointStore.Save(this);RefreshProgress();}
+        // A snapshot with nothing else to refresh. With cue set it also shows the player a faint "Saved".
+        public void Autosave(bool cue){if(!ready||!saveEnabled)return;autosaveClock=0;CheckpointStore.Save(this);if(cue&&player)player.ShowSaved();}
         void OnApplicationPause(bool paused){if(paused)SaveCheckpoint();}
         void OnApplicationFocus(bool focused){if(!focused)SaveCheckpoint();}
         void OnApplicationQuit(){SaveCheckpoint();}

@@ -1,4 +1,4 @@
-2026-10-16 12:02:25Z
+2026-10-16 16:13:25Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -237,10 +237,10 @@ NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): part
 NOTE: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): out of reading range from everywhere sampled (letters about 0.7 cm tall)
 NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 18 places, by Monitor - pieces/Monitor body
 NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): partly blocked from 17 of 80 places, by Clown B/Clown B - 06 Brass and daylight
-NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): partly blocked from 20 of 85 places, by Clown B/Clown B - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): partly blocked from 19 of 85 places, by Clown A/Clown A - 03 Quiet teal
 NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): partly blocked from 18 of 78 places, by Clown B/Clown B - 03 Quiet teal
 NOTE: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): partly blocked from 13 of 61 places, by Clown A/Clown A - 05 Burnt coral
-NOTE: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): partly blocked from 30 of 87 places, by Clown A/Clown A - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): partly blocked from 29 of 87 places, by Clown A/Clown A - 05 Burnt coral
 NOTE: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0): partly blocked from 24 of 70 places, by Clown A/Clown A - 05 Burnt coral
 NOTE: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0): partly blocked from 9 of 51 places, by Clown A/Clown A - 05 Burnt coral
 NOTE: room 8 [The ambush] Feeling card 4/Feeling 4 label at (0.0, 0.0, 0.0): partly blocked from 3 of 35 places, by 08 - The ambush/Batched geometry - 02 Deep blue near (-2.0, 1.0, 0.5)
@@ -388,10 +388,10 @@ INFO: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): in
 INFO: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2): in range of 31 places, faced from 10, clear from 10
 INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0): in range of 59 places, faced from 55, clear from 55, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): in range of 93 places, faced from 80, clear from 63
-INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): in range of 97 places, faced from 85, clear from 65
+INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): in range of 97 places, faced from 85, clear from 66
 INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): in range of 92 places, faced from 78, clear from 60
 INFO: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): in range of 74 places, faced from 61, clear from 48, outlined
-INFO: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): in range of 99 places, faced from 87, clear from 57, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): in range of 99 places, faced from 87, clear from 58, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0): in range of 82 places, faced from 70, clear from 46, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0): in range of 63 places, faced from 51, clear from 42, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Ambush feelings sign at (0.0, 0.8, -0.6): in range of 31 places, faced from 10, clear from 10, outlined

@@ -16,6 +16,9 @@ namespace AfterHours.Editor
         const string ReleaseApk="Builds/Quest/AfterHours-release.apk";
         const string DevelopmentApk="Builds/Quest/AfterHours.apk";
         const string Activity="com.unity3d.player.UnityPlayerGameActivity";
+        // The game keeps a second copy of the player's progress here (see SaveBackup). Android deletes the folder when the app is uninstalled,
+        // so a reinstall that needs an uninstall first carries the file across: pulled before, pushed back before the game starts.
+        const string BackupName=SaveBackup.FileName;
 
         [MenuItem("After Hours/Install release APK on connected Quest",false,2000)]
         public static void InstallRelease(){Install(ReleaseApk);}
@@ -37,13 +40,16 @@ namespace AfterHours.Editor
                 string path=Path.GetFullPath(apk);
                 EditorUtility.DisplayProgressBar("After Hours","Installing "+Path.GetFileName(apk)+" on the Quest…",.3f);
                 var install=Run(adb,"-s "+serial+" install -r \""+path+"\"",240);
+                string carried=null;
                 if(install.output.Contains("INSTALL_FAILED_UPDATE_INCOMPATIBLE")||install.output.Contains("INSTALL_FAILED_VERSION_DOWNGRADE"))
                 {
-                    Debug.LogWarning("[QuestInstall] The copy already on the headset was signed differently. Uninstalling it first; its saved progress is removed.\n"+install.output);
+                    carried=PullBackup(adb,serial,package);
+                    Debug.LogWarning("[QuestInstall] The copy already on the headset was signed differently. Uninstalling it first; "+(carried!=null?"its backup copy of the saved progress is kept and put back afterwards.":"it has no backup copy of the saved progress, so that progress is removed.")+"\n"+install.output);
                     Run(adb,"-s "+serial+" uninstall "+package,60);
                     install=Run(adb,"-s "+serial+" install -r \""+path+"\"",240);
                 }
-                if(!install.output.Contains("Success")){Debug.LogError("[QuestInstall] Install failed:\n"+install.output);return false;}
+                if(!install.output.Contains("Success")){Debug.LogError("[QuestInstall] Install failed:\n"+install.output+(carried!=null?"\nThe saved progress is kept at "+carried:""));return false;}
+                if(carried!=null)PushBackup(adb,serial,package,carried);
                 EditorUtility.DisplayProgressBar("After Hours","Starting After Hours on the Quest…",.9f);
                 Run(adb,"-s "+serial+" shell am force-stop "+package,30);
                 var start=Run(adb,"-s "+serial+" shell am start -n "+package+"/"+Activity,30);
@@ -52,6 +58,36 @@ namespace AfterHours.Editor
                 return true;
             }
             finally{EditorUtility.ClearProgressBar();}
+        }
+
+        static string RemoteFolder(string package)=>"/sdcard/Android/data/"+package+"/files";
+        // Copies the game's backup save off the headset. Returns the local file, or null when the headset has none.
+        static string PullBackup(string adb,string serial,string package)
+        {
+            string local=Path.Combine(Path.GetTempPath(),"AfterHours-save-"+Guid.NewGuid().ToString("N")+".json");
+            var pull=Run(adb,"-s "+serial+" pull \""+RemoteFolder(package)+"/"+BackupName+"\" \""+local+"\"",60);
+            if(!File.Exists(local)||new FileInfo(local).Length==0)
+            {
+                Debug.Log("[QuestInstall] The headset has no backup copy of the saved progress: "+pull.output.Trim());
+                try{if(File.Exists(local))File.Delete(local);}catch(Exception){}
+                return null;
+            }
+            Debug.Log("[QuestInstall] Copied the backup save ("+new FileInfo(local).Length+" bytes) off the headset.");
+            return local;
+        }
+        // Puts the backup save back in the freshly installed app's folder, before the game starts and looks for it.
+        static void PushBackup(string adb,string serial,string package,string local)
+        {
+            string remote=RemoteFolder(package)+"/"+BackupName;
+            Run(adb,"-s "+serial+" shell mkdir -p "+RemoteFolder(package),30);
+            var push=Run(adb,"-s "+serial+" push \""+local+"\" \""+remote+"\"",60);
+            var check=Run(adb,"-s "+serial+" shell ls -l "+remote,30);
+            if(check.output.Contains(BackupName)&&!check.output.Contains("No such file"))
+            {
+                Debug.Log("[QuestInstall] Put the backup save back on the headset: "+check.output.Trim());
+                try{File.Delete(local);}catch(Exception){}
+            }
+            else Debug.LogError("[QuestInstall] Could not put the backup save back on the headset ("+push.output.Trim()+"). It is kept at "+local+".");
         }
 
         static string FindHeadset(string adb)

@@ -192,7 +192,7 @@ namespace AfterHours.Editor
         }
         static void BuildRig(GameDirector d)
         {
-            var root=new GameObject("Player - hands and controllers");var player=root.AddComponent<VRPlayer>();d.player=player;
+            var root=new GameObject("Player - hands and controllers");var player=root.AddComponent<VRPlayer>();d.player=player;root.AddComponent<ThumbShortcuts>().player=player;
             var body=root.AddComponent<CharacterController>();body.radius=.24f;body.height=1.7f;body.center=new Vector3(0,.85f,0);body.stepOffset=.25f;body.skinWidth=.025f;
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.meta.xr.sdk.core/Prefabs/OVRCameraRig.prefab");
             var rig=(GameObject)PrefabUtility.InstantiatePrefab(prefab);rig.transform.SetParent(root.transform,false);player.rig=rig.GetComponent<OVRCameraRig>();
@@ -203,6 +203,8 @@ namespace AfterHours.Editor
             foreach(var camera in rig.GetComponentsInChildren<Camera>(true)){camera.nearClipPlane=.05f;camera.farClipPlane=85;camera.allowHDR=false;camera.backgroundColor=Hex("#9AB5B7");camera.clearFlags=CameraClearFlags.Skybox;}
             var cam=player.rig.centerEyeAnchor.GetComponent<Camera>();cam.tag="MainCamera";if(!cam.GetComponent<AudioListener>())cam.gameObject.AddComponent<AudioListener>();
             player.hint=Art.Text("A quiet thought","",new Vector3(0,-.38f,1.5f),.043f,Hex("#FFF5DB"),1.3f,player.rig.centerEyeAnchor);player.hint.rectTransform.sizeDelta=new Vector2(1.3f,.32f);player.hint.gameObject.SetActive(false);
+            // A faint "Saved" in the upper right of the view, shown for a moment after each room change. It sits well clear of the messages below.
+            player.savedCue=Art.Halo(Art.Text("Saved cue","Saved",new Vector3(.5f,.34f,1.5f),.03f,Hex("#E6EFEC"),.5f,player.rig.centerEyeAnchor));player.savedCue.rectTransform.sizeDelta=new Vector2(.5f,.1f);player.savedCue.gameObject.SetActive(false);
             player.rayMaterial=Mat("14 Interaction glow",Hex("#E4BD7E"));player.rayMaterial.EnableKeyword("_EMISSION");player.rayMaterial.SetColor("_EmissionColor",Hex("#E4BD7E")*.4f);
             var canvas=new GameObject("Comfort fade",typeof(Canvas));canvas.transform.SetParent(cam.transform,false);var c=canvas.GetComponent<Canvas>();c.renderMode=RenderMode.ScreenSpaceCamera;c.worldCamera=cam;c.planeDistance=.07f;c.sortingOrder=100;
             var veil=new GameObject("Fade",typeof(RectTransform),typeof(CanvasRenderer),typeof(Image));veil.transform.SetParent(canvas.transform,false);var rect=veil.GetComponent<RectTransform>();rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;player.fade=veil.GetComponent<Image>();player.fade.color=new Color(.025f,.04f,.07f,0);player.fade.raycastTarget=false;
@@ -257,7 +259,7 @@ namespace AfterHours.Editor
         }
         public static void ConfigureQuest()
         {
-            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.8.1";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
+            PlayerSettings.companyName="After Hours Studio";PlayerSettings.productName="After Hours";PlayerSettings.bundleVersion="0.8.2";PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.afterhours.mindoffice");
             // The Meta Quest Store (and the Developer Dashboard's release channels) expect Android API 34 as the target.
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android,ScriptingImplementation.IL2CPP);PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;PlayerSettings.Android.minSdkVersion=AndroidSdkVersions.AndroidApiLevel32;PlayerSettings.Android.targetSdkVersion=AndroidSdkVersions.AndroidApiLevel34;
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android,false);PlayerSettings.SetGraphicsAPIs(BuildTarget.Android,new[]{GraphicsDeviceType.Vulkan});PlayerSettings.runInBackground=true;PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;

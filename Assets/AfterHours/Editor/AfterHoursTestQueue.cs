@@ -23,6 +23,8 @@ namespace AfterHours.Editor
         {
             foreach(var key in new[]{CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,Wardrobe.Key})PlayerPrefs.DeleteKey(key);
             PlayerPrefs.SetInt(IntroGuide.Key,1);PlayerPrefs.Save();
+            // The editor never writes a backup copy, but a test that failed halfway might have left its temporary one.
+            SaveBackup.PathOverride=null;SaveBackup.Delete();
         }
         static void Pop(System.Collections.Generic.List<string> names)
         {

@@ -741,6 +741,49 @@ The release APK built with zero errors.
 
 Desktop XR start-up was switched off for the test run and switched back on before the build.
 
+## October 16: background saving and a thumb shortcut
+
+### What changed
+- **The game saves by itself between rooms.** A snapshot is taken as you leave a room (as before) and now also as you arrive in the next, and a quiet timer takes one every 45 seconds. Saving builds one JSON snapshot from the movable objects the director already holds for each room (the old code searched every room's hierarchy each time) and writes the preferences only when the snapshot differs from what is stored, so a save with nothing new costs no disk write. After a room change a faint "Saved" shows in the upper right of the view for about a second (`VRPlayer.ShowSaved`); the timed saves show nothing; the cue steps aside for the menu and clean mode never shows it.
+- **A second copy of the progress survives differently signed reinstalls.** `SaveBackup` keeps the checkpoint, the chapters finished, the wardrobe and the comfort settings as `AfterHours-save.json` in the app's external files folder (`Android/data/com.afterhours.mindoffice/files`), written only when something changed, through a temporary file. Before the first scene loads, a fresh install with no progress of its own restores from it; it never replaces existing progress and only restores the game's own keys. Android removes the folder on uninstall, so `QuestInstall` now copies the file off the headset before it uninstalls a differently signed copy and pushes it back before the game starts, and says in the Console what it did. Nothing is written or restored in the editor unless a test points the backup at a temporary file.
+- **Thumb microgestures take hands back to the lobby.** `ThumbShortcuts` reads `OVRHand.GetMicrogestureType()` on both hands: a thumb swipe back asks "Back to the lobby?", a thumb tap within four seconds goes, anything else stays. It is the hands-only version of the controller's B button, with the extra step so a stray swipe cannot send anyone anywhere. Each gesture it receives is logged on the headset. No manifest change was needed: hand tracking was already requested, and the permissions are still hand tracking and internet only.
+- New files: `SaveBackup.cs`, `ThumbShortcuts.cs`. Changed: `CheckpointStore.cs`, `GameDirector.cs`, `VRPlayer.cs`, the scene builder (the cue and the shortcut's component), `QuestInstall.cs`, the test queue's clearprefs job and the menu and seated checks. Version 0.8.2.
+
+### Tests
+The menu and seated suite gained 26 checks that cover every behaviour above except what only a headset can show: the backup is written once and holds exactly what is stored; saving twice with nothing changed writes nothing; a change is written once to both; the quiet timer saves after 45 seconds and shows nothing; a change made during a room change is saved on arrival; the cue shows after a room change, is gone within a couple of seconds, and stays away for the menu and for clean mode; a fresh install restores from the backup, never overwrites progress it already has, and ignores a damaged file and a file with foreign keys; the thumb shortcut asks, goes, stays, expires, and does nothing in the lobby, mid-move or on a tap alone. The editor has no hands and no headset, so the gestures are handed to the code, and the pull-and-push the installer does around an uninstall has not been exercised against a real differently signed install. The first run of the menu and seated suite failed one of the new checks because the cue from the previous room change was still showing when the timer test began; the test now waits for it to end. The gameplay journey failed once on a kitchen mug check before that and passed on its rerun with the same code.
+
+### Results
+
+All nine suites pass in desktop Play Mode:
+
+| Suite | Checks |
+|---|---|
+| Gameplay journey | 172 |
+| Navigation | 142 |
+| Airplane-seat checks | 118 |
+| Menu and seated checks | 101 |
+| Mirror and wardrobe | 67 |
+| Ocean, clean mode and night | 88 |
+| Throwing, controllers and Quest 2 | 102 |
+| Text visibility | 170 signs, 11 plates |
+| The ambush | 200 |
+
+The release APK built with zero errors.
+
+| | |
+|---|---|
+| Output | `Builds/Quest/AfterHours-release.apk`, 76.0 MB (76,043,473 bytes) |
+| SHA-256 of the APK | `13b0cd54feb5e68393d483c408d0747e8647bec1504df0f1f6bfbc80b4d2c5ae` |
+| Version | 0.8.2, version code 416362 |
+| Signing | APK Signature Scheme v2, the same release key (`CN=After Hours, O=After Hours Studio`, SHA-256 `33:A8:91:83:…:5E:CF:E3`), checked by reading the certificate out of the signing block. Not debuggable. |
+| Package | `com.afterhours.mindoffice`, minSdk 32, targetSdk 34 |
+| Devices | Quest 2, Quest Pro, Quest 3, Quest 3S and Stanley, as before; hand tracking stays optional |
+| Permissions | Hand tracking and internet only, unchanged |
+| Checks | Manifest read from the APK: versionName 0.8.2, versionCode 416362, minSdk 32, targetSdk 34, not debuggable, hand tracking and internet permissions only. The new code is in the build: the `SaveBackup` and `ThumbShortcuts` classes, `VRPlayer.ShowSaved`, the backup file name `AfterHours-save.json`, the "Saved" cue object and the thumb shortcut's question text and its "Thumb gesture" log line; the rooftop's and the ambush's code and content are still there. No private-network address and no session data in any file (the only matches for an address pattern are version numbers and encoding identifiers in the .NET libraries and the code metadata; the word session_id appears only inside Meta's and Unity's own native libraries and code metadata, and Meta's own debugger classes appear as code and type names in the SDK, as before). The account name appears once, beside the project name in the player's global settings. Only 448 bytes larger than 0.8.1: the new code is small. |
+
+Desktop XR start-up was switched off for the test run and switched back on before the build.
+
+
 ## October 16: the sunrise rooftop
 
 ### What changed
@@ -807,6 +850,9 @@ These still need a physical headset playtest (see `Playtest.md`):
 - how the ambush looks and feels in the headset: whether the dark opening and its flicker (six flashes in about a second) are comfortable, and whether the lights coming on so close to the eyes after four seconds of black are too sudden; whether two clowns at 2.8 times life size read as towering and absurd rather than frightening from a seated eye height (GENTLE AMBUSH starts them at 1.9), how the lean and sway look in the lenses, whether the cards, the replies on their staircase and the two lines on the screen are easy to read and point at from a seat, whether a page flying across the table to a clown and a real hand's hard shake that tears one feel like the player's own, how the balloons, noses, paper bits and the new sounds (lights, balloon, tear, stand) sound and look at that distance, and the frame rate in a large room with two big clowns, balloons and particles
 - how the sunrise rooftop looks and runs in the headset: whether the sky shader renders correctly in both eyes on a Quest (it was written to the same stereo rules as the comfort vignette and checked only on the desktop), whether its gradient and sun show colour steps or shimmer in the lenses, whether the brighter, more saturated look and the sun low in the sky are comfortable, whether the board's lines read well against the warm sky and pastel buildings, and the frame rate with four rings of buildings, the bunting, the clouds and the balloon (the far buildings cast no shadows and use their own materials, but no frame-rate measurement has been made on a headset)
 - the left palm pinch that opens the menu
+- whether the Quest reports thumb microgestures to the game, how reliably a thumb swipe back and a thumb tap are recognised from a seat, and whether a stray swipe ever asks about the lobby by accident (the editor has no hands; the headset's log shows a "Thumb gesture" line for each one received)
+- whether the backup copy of the save is written where the installer looks for it (`Android/data/com.afterhours.mindoffice/files/AfterHours-save.json`) and whether the installer's pull and push really carry it across a differently signed reinstall on a real Quest
+- how the faint "Saved" cue in the upper right of the view reads in the lenses
 - how the comfort vignette feels
 - switching between hands and controllers
 - the mirror reflection with real head and hand tracking, and how the avatar's arms look
