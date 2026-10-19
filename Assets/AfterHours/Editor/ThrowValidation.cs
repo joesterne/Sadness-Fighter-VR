@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 namespace AfterHours.Editor
 {
     // Regression test for throwing the boxes into the truck, for the hands-or-controllers wording that follows what the
-    // headset reports, and for the Quest 2 profile. The headset itself cannot be driven from here, so the throws are made
+    // headset reports, for the Quest 2 profile, and for foveated rendering. The headset itself cannot be driven from here, so the throws are made
     // with the same player code the headset uses (switched on for the desktop), moving the player quickly and letting go.
     public static class ThrowValidation
     {
@@ -390,6 +390,65 @@ namespace AfterHours.Editor
                 pipeline.renderScale=savedScale;pipeline.shadowDistance=savedShadow;
             }
             else lines.Add("SKIP: No Universal Render Pipeline asset is active, so the Quest 2 picture settings were not exercised.");
+
+            // ---- Foveated rendering: stand-ins take the place of the headset runtime, so the requests it would receive can be read back.
+            {
+                var fvAsked=new List<string>();bool fvOffered=true,fvBreaks=false;
+                Action fvStand=()=>
+                {
+                    DeviceProfile.FoveationSupported=()=>fvOffered;
+                    DeviceProfile.FoveationSetter=(fvLevel,fvDynamic)=>{if(fvBreaks)throw new InvalidOperationException("stand-in runtime failure");fvAsked.Add(fvLevel+(fvDynamic?" dynamic":" fixed"));};
+                };
+                Check(DeviceProfile.FoveationFor(Headset.Quest2)==OVRManager.FoveatedRenderingLevel.High&&DeviceProfile.FoveationFor(Headset.Quest3)==OVRManager.FoveatedRenderingLevel.Medium&&DeviceProfile.FoveationFor(Headset.Quest3S)==OVRManager.FoveatedRenderingLevel.Medium&&DeviceProfile.FoveationFor(Headset.QuestPro)==OVRManager.FoveatedRenderingLevel.Medium&&DeviceProfile.FoveationFor(Headset.Unknown)==OVRManager.FoveatedRenderingLevel.Off,"The Quest 2 gets the highest foveation ceiling, the newer headsets a middle one, and an unknown headset none");
+                DeviceProfile.Undo();fvStand();fvAsked.Clear();
+                DeviceProfile.Apply(Headset.Quest2);
+                Check(fvAsked.Count==1&&fvAsked[0]=="High dynamic"&&DeviceProfile.FoveationApplied&&DeviceProfile.FoveationDynamic&&DeviceProfile.Foveation==OVRManager.FoveatedRenderingLevel.High&&DeviceProfile.Settled,"A Quest 2 asks for foveated rendering up to High, adapted to the load by the headset: "+string.Join(", ",fvAsked));
+                foreach(var newer in new[]{Headset.Quest3,Headset.Quest3S,Headset.QuestPro})
+                {
+                    DeviceProfile.Undo();fvStand();fvAsked.Clear();
+                    DeviceProfile.Apply(newer);
+                    Check(fvAsked.Count==1&&fvAsked[0]=="Medium dynamic"&&DeviceProfile.FoveationApplied&&DeviceProfile.Settled,"A "+newer+" asks for foveated rendering up to Medium, adapted to the load: "+string.Join(", ",fvAsked));
+                }
+                DeviceProfile.Undo();fvStand();fvAsked.Clear();
+                DeviceProfile.Apply(Headset.Unknown);
+                Check(fvAsked.Count==0&&!DeviceProfile.FoveationApplied&&DeviceProfile.Settled,"A headset that is not recognised is left to the system: nothing is asked of the runtime");
+                // The runtime can take a moment to be ready: the request is repeated until it takes it.
+                DeviceProfile.Undo();fvStand();fvAsked.Clear();fvOffered=false;
+                DeviceProfile.Apply(Headset.Quest3);
+                Check(fvAsked.Count==0&&!DeviceProfile.FoveationApplied&&!DeviceProfile.Settled,"While the runtime does not offer foveation yet, nothing is asked and the question stays open");
+                fvOffered=true;DeviceProfile.TryApply();
+                Check(fvAsked.Count==1&&fvAsked[0]=="Medium dynamic"&&DeviceProfile.FoveationApplied&&DeviceProfile.Settled,"Foveation is applied as soon as the runtime offers it");
+                DeviceProfile.TryApply();
+                Check(fvAsked.Count==1,"Once applied it is not asked for again");
+                // A runtime that never offers it is given up on after a while, and then left alone.
+                DeviceProfile.Undo();fvStand();fvAsked.Clear();fvOffered=false;
+                DeviceProfile.Apply(Headset.Quest3);
+                for(int tries=2;tries<DeviceProfile.FoveationAttempts;tries++)DeviceProfile.TryApply();
+                Check(!DeviceProfile.Settled,"One check short of the limit, the question is still open");
+                DeviceProfile.TryApply();
+                fvOffered=true;DeviceProfile.TryApply();
+                Check(DeviceProfile.Settled&&!DeviceProfile.FoveationApplied&&fvAsked.Count==0,"A runtime that never offers foveation is given up on after "+DeviceProfile.FoveationAttempts+" checks and then left alone");
+                // A runtime that fails must never stop the game.
+                DeviceProfile.Undo();fvStand();fvAsked.Clear();fvBreaks=true;
+                DeviceProfile.Apply(Headset.Quest3);
+                Check(DeviceProfile.Settled&&!DeviceProfile.FoveationApplied&&fvAsked.Count==0,"A runtime that fails when foveation is requested is logged and left alone, and the game goes on");
+                // The editor and the tests never reach the real runtime.
+                DeviceProfile.Undo();
+                DeviceProfile.Apply(Headset.Quest3);
+                Check(!DeviceProfile.FoveationApplied&&DeviceProfile.Foveation==OVRManager.FoveatedRenderingLevel.Off,"Outside a headset build the real runtime is never asked for foveation");
+                DeviceProfile.Undo();
+                Check(!DeviceProfile.Applied&&!DeviceProfile.FoveationApplied&&!DeviceProfile.FoveationSettled&&DeviceProfile.Foveation==OVRManager.FoveatedRenderingLevel.Off,"Putting the profile back also puts foveation back");
+                // The project is set up to take the request: Meta's foveation feature is on for the headset, Unity's own is not (two would compete).
+                bool metaFoveation=false,unityFoveation=false;
+                var xrSettings=UnityEngine.XR.OpenXR.OpenXRSettings.GetSettingsForBuildTargetGroup(BuildTargetGroup.Android);
+                if(xrSettings!=null)foreach(var xrFeature in xrSettings.GetFeatures<UnityEngine.XR.OpenXR.Features.OpenXRFeature>())
+                {
+                    string xrFeatureName=xrFeature.GetType().Name;
+                    if(xrFeatureName=="MetaXRFoveationFeature")metaFoveation=xrFeature.enabled;
+                    else if(xrFeatureName=="FoveatedRenderingFeature"&&xrFeature.enabled)unityFoveation=true;
+                }
+                Check(xrSettings!=null&&metaFoveation&&!unityFoveation,"The headset build has Meta's foveation feature on and Unity's own foveation feature off");
+            }
         }
         static void Tick()
         {
@@ -407,7 +466,7 @@ namespace AfterHours.Editor
             if(D){D.saveEnabled=false;try{if(D.player)HandHome();}catch(Exception){}}
             TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
             for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else if(keys[i]==Wardrobe.Key)PlayerPrefs.SetString(keys[i],wardrobe);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
-            Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Throwing-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"Throwing the boxes into the truck, hands and controller wording that follows the headset, and the Quest 2 picture profile."}.Concat(lines));Debug.Log("Throwing, controllers and Quest 2 validation: "+Status);
+            Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Throwing-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"Throwing the boxes into the truck, hands and controller wording that follows the headset, the Quest 2 picture profile, and foveated rendering."}.Concat(lines));Debug.Log("Throwing, controllers and Quest 2 validation: "+Status);
         }
     }
 }
