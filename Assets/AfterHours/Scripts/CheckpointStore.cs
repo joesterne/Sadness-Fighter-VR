@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,6 +8,10 @@ namespace AfterHours
     public static class CheckpointStore
     {
         public const string Key="AfterHours.Checkpoint.v1";
+        // The chapters finished so far, one bit per room, written by the director.
+        public const string ProgressKey="AfterHours.Progress.v1";
+        // How many times the checkpoint has actually been written, for the tests.
+        public static int Writes;
         [Serializable] public class State
         {
             public int version=1,lastRoom,strokes,mistakes,fills;
@@ -21,11 +26,19 @@ namespace AfterHours
             public int[] rage=Array.Empty<int>();
         }
         static string Id(Grabbable item)=>item.room+"|"+item.label;
-        public static void Save(GameDirector d)
+        static readonly List<string> done=new List<string>();
+        // Takes a snapshot of the whole game. The preferences are written only when the snapshot differs from what is stored, so saving
+        // often costs a few microseconds of work and no disk write, and the backup copy is brought up to date at the same time.
+        public static bool Save(GameDirector d)
         {
-            var state=new State{lastRoom=d.lastRoom,strokes=d.ocean.strokes,mistakes=d.kitchen.mistakes,fills=d.kitchen.fills,helped=d.kitchen.helped,gentleAudience=d.gentleAudience,smoothMotion=d.player.smoothMotion,ambush=d.ambush?d.ambush.namedMask:0,gentleAmbush=d.gentleAmbush,darkOpening=d.darkOpening,line=d.shredder?d.shredder.line:"",rage=d.rage?d.rage.Damage():Array.Empty<int>(),
-                processed=d.rooms.SelectMany(r=>r.root.GetComponentsInChildren<Grabbable>(true)).Where(g=>g.processed).Select(Id).ToArray()};
-            PlayerPrefs.SetString(Key,JsonUtility.ToJson(state));PlayerPrefs.Save();
+            done.Clear();
+            for(int room=0;room<d.rooms.Length;room++)foreach(var item in d.GrabbablesOf(room))if(item&&item.processed)done.Add(Id(item));
+            var state=new State{lastRoom=d.lastRoom,strokes=d.ocean.strokes,mistakes=d.kitchen.mistakes,fills=d.kitchen.fills,helped=d.kitchen.helped,gentleAudience=d.gentleAudience,smoothMotion=d.player.smoothMotion,ambush=d.ambush?d.ambush.namedMask:0,gentleAmbush=d.gentleAmbush,darkOpening=d.darkOpening,line=d.shredder?d.shredder.line:"",rage=d.rage?d.rage.Damage():Array.Empty<int>(),processed=done.ToArray()};
+            string json=JsonUtility.ToJson(state);
+            bool changed=PlayerPrefs.GetString(Key,null)!=json;
+            if(changed){PlayerPrefs.SetString(Key,json);PlayerPrefs.Save();Writes++;}
+            SaveBackup.Write();
+            return changed;
         }
         public static void Load(GameDirector d)
         {
@@ -51,8 +64,8 @@ namespace AfterHours
             if(d.ambush)d.ambush.Restore(state.ambush);
             if(d.ocean.strokes>=d.ocean.requiredStrokes)d.rooms[1].complete=true;
             if(d.kitchen.fills>=3)d.rooms[3].complete=true;
-            int mask=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);foreach(int i in GameDirector.Chapters)if(d.rooms[i].complete)mask|=1<<i;
-            PlayerPrefs.SetInt("AfterHours.Progress.v1",mask);PlayerPrefs.Save();
+            int mask=PlayerPrefs.GetInt(ProgressKey,0);foreach(int i in GameDirector.Chapters)if(d.rooms[i].complete)mask|=1<<i;
+            PlayerPrefs.SetInt(ProgressKey,mask);PlayerPrefs.Save();
         }
     }
 }

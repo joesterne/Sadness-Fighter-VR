@@ -16,7 +16,7 @@ namespace AfterHours.Editor
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;static Keyboard keyboard;
         static readonly List<string> lines=new List<string>();
         static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,IntroGuide.Key,Wardrobe.Key};
-        static bool[] existed;static string checkpoint,wardrobe;static int[] values;
+        static bool[] existed;static string checkpoint,wardrobe;static int[] values;static string backupFile;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
         public static void Start()
@@ -42,6 +42,10 @@ namespace AfterHours.Editor
         static float EyeHeight=>D.player.Head.position.y-D.player.transform.position.y;
         static float Yaw=>D.player.transform.eulerAngles.y;
         static VRPlayer P=>D.player;
+        // Every saved value as text (null when absent), and putting such a set back exactly.
+        static string[] PrefsNow()=>keys.Select(k=>!PlayerPrefs.HasKey(k)?null:k==CheckpointStore.Key||k==Wardrobe.Key?PlayerPrefs.GetString(k):PlayerPrefs.GetInt(k).ToString()).ToArray();
+        static void PrefsPut(string[] set){for(int i=0;i<keys.Length;i++){if(set[i]==null)PlayerPrefs.DeleteKey(keys[i]);else if(keys[i]==CheckpointStore.Key||keys[i]==Wardrobe.Key)PlayerPrefs.SetString(keys[i],set[i]);else PlayerPrefs.SetInt(keys[i],int.Parse(set[i]));}PlayerPrefs.Save();}
+        static CheckpointStore.State Stored=>JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
         // Selects a menu button with the pointer, exactly as a player would.
         static IEnumerable<float> Click(ActionKind kind){Aim(D.menu.Button(kind));Press(true);yield return .12f;Press(false);yield return .2f;}
         static IEnumerable<float> Hold(Key key,float seconds){Queue(keyboard,new KeyboardState(key));yield return seconds;Queue(keyboard,new KeyboardState());yield return .15f;}
@@ -123,6 +127,50 @@ namespace AfterHours.Editor
             tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.SaveCheckpoint();
             var saved=JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
             Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2&&saved.ambush==17&&!saved.darkOpening&&!saved.gentleAmbush,"Checkpoint stores partial progress in all seven chapters");
+            // Autosave: a snapshot as a room is left, another on arriving in the next, and a quiet one now and then; nothing is rewritten when nothing changed.
+            string settled=PlayerPrefs.GetString(CheckpointStore.Key);
+            backupFile=Path.Combine(Path.GetTempPath(),"AfterHours-save-test-"+Guid.NewGuid().ToString("N")+".json");SaveBackup.PathOverride=backupFile;SaveBackup.Delete();
+            int stored=CheckpointStore.Writes,copied=SaveBackup.Writes;
+            D.SaveCheckpoint();
+            Check(File.Exists(backupFile)&&SaveBackup.Writes==copied+1&&CheckpointStore.Writes==stored,"Saving writes the backup copy once, and leaves an unchanged checkpoint alone");
+            var held=JsonUtility.FromJson<SaveBackup.Copy>(File.ReadAllText(backupFile)).entries.ToDictionary(e=>e.key);
+            Check(held.ContainsKey(CheckpointStore.Key)&&held[CheckpointStore.Key].value==settled&&held["AfterHours.Seated"].number==1&&held["AfterHours.Vignette"].number==0&&held[IntroGuide.Key].number==1,"The backup copy holds the checkpoint and the comfort settings, exactly as stored");
+            D.SaveCheckpoint();D.SaveCheckpoint();
+            Check(CheckpointStore.Writes==stored&&SaveBackup.Writes==copied+1,"Saving again with nothing changed writes nothing at all");
+            D.gentleAmbush=true;D.SaveCheckpoint();
+            Check(CheckpointStore.Writes==stored+1&&SaveBackup.Writes==copied+2&&Stored.gentleAmbush,"A change is written once, to the checkpoint and to the backup copy");
+            D.gentleAmbush=false;D.SaveCheckpoint();
+            Check(PlayerPrefs.GetString(CheckpointStore.Key)==settled,"Undoing the change gives back exactly the same checkpoint");
+            yield return 1.6f;
+            D.gentleAmbush=true;D.autosaveClock=GameDirector.AutosaveSeconds-.2f;yield return .6f;
+            Check(Stored.gentleAmbush&&D.autosaveClock<5&&!P.SavedVisible,"The quiet timer saves a change after "+GameDirector.AutosaveSeconds+" seconds, and shows nothing");
+            D.gentleAmbush=false;D.SaveCheckpoint();
+            D.Travel(0);yield return .1f;D.gentleAmbush=true;yield return .9f;
+            Check(D.currentRoom==0&&Stored.gentleAmbush,"Arriving in a room saves too: a change made during the move is kept");
+            Check(P.SavedVisible&&P.savedCue.text=="Saved"&&P.savedCue.transform.IsChildOf(P.Head),"A faint \"Saved\" shows after the room change");
+            yield return 1.6f;
+            Check(!P.SavedVisible,"And it is gone within a couple of seconds");
+            D.gentleAmbush=false;D.SaveCheckpoint();
+            P.ShowSaved();foreach(var t in MenuKey(true))yield return t;yield return .1f;
+            Check(D.menu.IsOpen&&!P.SavedVisible,"An open menu has the cue's place, so the cue steps aside");
+            foreach(var t in MenuKey(false))yield return t;
+            P.ToggleClean();D.Travel(4);yield return 1;
+            Check(P.cleanMode&&!P.SavedVisible,"Clean mode shows no cue after a room change");
+            P.ToggleClean();
+            Check(PlayerPrefs.GetString(CheckpointStore.Key)==settled&&D.currentRoom==4,"After all of that the saved game is exactly what it was");
+            // A fresh install finds the backup copy and takes the progress back; it never replaces progress it already has.
+            D.SaveCheckpoint();var before=PrefsNow();
+            foreach(var key in keys)PlayerPrefs.DeleteKey(key);
+            Check(SaveBackup.RestoreIfMissing()&&PrefsNow().SequenceEqual(before),"A fresh install takes the checkpoint, progress and settings back from the backup copy");
+            PlayerPrefs.SetString(CheckpointStore.Key,"{\"version\":1,\"lastRoom\":2}");
+            Check(!SaveBackup.RestoreIfMissing()&&PlayerPrefs.GetString(CheckpointStore.Key).Contains("\"lastRoom\":2"),"An install with progress of its own is never overwritten");
+            foreach(var key in keys)PlayerPrefs.DeleteKey(key);
+            File.WriteAllText(backupFile,"{ this is not a save");
+            Check(!SaveBackup.RestoreIfMissing()&&!PlayerPrefs.HasKey(CheckpointStore.Key),"A damaged backup copy is ignored");
+            File.WriteAllText(backupFile,JsonUtility.ToJson(new SaveBackup.Copy{entries=new[]{new SaveBackup.Entry{key="Not.Ours",number=7}}}));
+            Check(!SaveBackup.RestoreIfMissing()&&!PlayerPrefs.HasKey("Not.Ours"),"Only the game's own saved values are ever restored");
+            PrefsPut(before);SaveBackup.Delete();SaveBackup.PathOverride=null;
+            Check(PrefsNow().SequenceEqual(before),"The saved values are back as they were");
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return .8f;
             Check(D.player.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Seated mode and eye-height preference survive reload");
             Check(!P.comfortVignette,"Vignette preference survives reload");
@@ -176,6 +224,22 @@ namespace AfterHours.Editor
             Check(JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key)).strokes==0&&!D.menu.IsOpen,"Menu TRY AGAIN saves the reset and closes the menu");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.Rest))yield return t;yield return .8f;
             Check(D.currentRoom==0,"Menu LOBBY returns to the lobby");
+            // Thumb shortcuts. The editor has no hands, so the gestures are handed over directly.
+            var thumbs=P.GetComponent<ThumbShortcuts>();
+            Check(thumbs&&thumbs.player==P,"The player carries the thumb shortcuts");
+            Check(thumbs.Handle(OVRHand.MicrogestureType.SwipeBackward)==ThumbShortcuts.Outcome.Ignored&&!thumbs.Armed,"In the lobby a thumb swipe back has nowhere to go, so it asks nothing");
+            D.Travel(3);yield return .1f;
+            Check(P.busy&&thumbs.Handle(OVRHand.MicrogestureType.SwipeBackward)==ThumbShortcuts.Outcome.Ignored&&!thumbs.Armed,"Mid-move, thumb gestures wait");
+            yield return .9f;
+            Check(thumbs.Handle(OVRHand.MicrogestureType.ThumbTap)==ThumbShortcuts.Outcome.Ignored&&D.currentRoom==3,"A thumb tap on its own does nothing");
+            Check(thumbs.Handle(OVRHand.MicrogestureType.SwipeBackward)==ThumbShortcuts.Outcome.Asked&&thumbs.Armed&&P.HintVisible&&P.hint.text.Contains("Back to the lobby?")&&P.hint.text.Contains("Tap your thumb"),"A thumb swipe back asks whether to go back to the lobby");
+            Check(thumbs.Handle(OVRHand.MicrogestureType.SwipeLeft)==ThumbShortcuts.Outcome.Stayed&&!thumbs.Armed&&P.hint.text.Contains("Staying here")&&thumbs.Handle(OVRHand.MicrogestureType.ThumbTap)==ThumbShortcuts.Outcome.Ignored&&D.currentRoom==3,"Another swipe means stay, and the tap that follows does nothing");
+            thumbs.Handle(OVRHand.MicrogestureType.SwipeBackward);thumbs.armedUntil=Time.time-.1f;
+            Check(!thumbs.Armed&&thumbs.Handle(OVRHand.MicrogestureType.ThumbTap)==ThumbShortcuts.Outcome.Ignored&&D.currentRoom==3,"The question lapses on its own after "+ThumbShortcuts.Window+" seconds");
+            thumbs.Handle(OVRHand.MicrogestureType.SwipeBackward);
+            Check(thumbs.Handle(OVRHand.MicrogestureType.ThumbTap)==ThumbShortcuts.Outcome.Went&&!thumbs.Armed,"A thumb tap right after the question says yes");
+            yield return .9f;
+            Check(D.currentRoom==0&&D.lastRoom==3&&Stored.lastRoom==3,"Yes goes back to the lobby, with the room saved for CONTINUE");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.SeatedMode))yield return t;
             Check(!D.player.seatedMode&&Mathf.Abs(D.player.rig.transform.localPosition.y)<.01f,"Standing view removes the seated offset");
         }
@@ -190,6 +254,7 @@ namespace AfterHours.Editor
         static void Finish(string result)
         {
             if(run==null)return;run=null;Status=result;EditorApplication.update-=Tick;EditorApplication.playModeStateChanged-=OnPlay;EditorApplication.isPaused=false;
+            if(SaveBackup.PathOverride!=null){SaveBackup.Delete();SaveBackup.PathOverride=null;}
             if(D)D.saveEnabled=false;TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
             for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else if(keys[i]==Wardrobe.Key)PlayerPrefs.SetString(keys[i],wardrobe);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
             Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Seated-session-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload."}.Concat(lines));Debug.Log("Seated and session validation: "+Status);

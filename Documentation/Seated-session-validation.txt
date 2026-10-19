@@ -1,4 +1,4 @@
-2026-10-16 11:54:54Z
+2026-10-17 04:00:43Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -36,6 +36,23 @@ PASS: Short kitchen session records one pour and help
 PASS: Short rage room session breaks the mouse
 PASS: Short ambush session names two feelings
 PASS: Checkpoint stores partial progress in all seven chapters
+PASS: Saving writes the backup copy once, and leaves an unchanged checkpoint alone
+PASS: The backup copy holds the checkpoint and the comfort settings, exactly as stored
+PASS: Saving again with nothing changed writes nothing at all
+PASS: A change is written once, to the checkpoint and to the backup copy
+PASS: Undoing the change gives back exactly the same checkpoint
+PASS: The quiet timer saves a change after 45 seconds, and shows nothing
+PASS: Arriving in a room saves too: a change made during the move is kept
+PASS: A faint "Saved" shows after the room change
+PASS: And it is gone within a couple of seconds
+PASS: An open menu has the cue's place, so the cue steps aside
+PASS: Clean mode shows no cue after a room change
+PASS: After all of that the saved game is exactly what it was
+PASS: A fresh install takes the checkpoint, progress and settings back from the backup copy
+PASS: An install with progress of its own is never overwritten
+PASS: A damaged backup copy is ignored
+PASS: Only the game's own saved values are ever restored
+PASS: The saved values are back as they were
 PASS: Seated mode and eye-height preference survive reload
 PASS: Vignette preference survives reload
 PASS: Ocean count and horizon restore before first entry
@@ -43,8 +60,8 @@ PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
 PASS: A shredded résumé restores exactly once, and the paper stays in the bin and on the floor
-PASS: Each page leaves at least 100 scraps (1195 in all)
-PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (10.8 by 14.3 m)
+PASS: Each page leaves at least 100 scraps (1170 in all)
+PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (11.0 by 14.4 m)
 PASS: Scraps have no colliders, and each set is two draws
 PASS: The résumé room carries its confetti: a burst, a shower and a pop sound
 PASS: Every page can be tossed, is never thrown with help, and tells the confetti when it hits something
@@ -75,4 +92,13 @@ PASS: Continue input returns to the saved room
 PASS: First room activation preserves restored ocean position
 PASS: Menu TRY AGAIN saves the reset and closes the menu
 PASS: Menu LOBBY returns to the lobby
+PASS: The player carries the thumb shortcuts
+PASS: In the lobby a thumb swipe back has nowhere to go, so it asks nothing
+PASS: Mid-move, thumb gestures wait
+PASS: A thumb tap on its own does nothing
+PASS: A thumb swipe back asks whether to go back to the lobby
+PASS: Another swipe means stay, and the tap that follows does nothing
+PASS: The question lapses on its own after 4 seconds
+PASS: A thumb tap right after the question says yes
+PASS: Yes goes back to the lobby, with the room saved for CONTINUE
 PASS: Standing view removes the seated offset

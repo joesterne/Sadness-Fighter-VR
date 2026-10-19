@@ -1,4 +1,4 @@
-2026-10-16 12:03:52Z
+2026-10-17 04:09:05Z
 Passed
 The dark opening, the two giant clowns and how they shrink, naming six feelings, the five replies, balloons and noses, the paperwork (sent, thrown, torn), standing up, the way out, GENTLE AMBUSH and DARK OPENING, TRY AGAIN, and saving.
 PASS: The game has nine rooms, and room 8 is The ambush
@@ -13,7 +13,7 @@ PASS: The view is held black, not just fading in
 PASS: It stays dark for the first few seconds
 PASS: Then the lights come on
 PASS: They flicker first: the view flashes clear and goes black again before they stay on
-PASS: The dark lasts about four seconds (4.5 s)
+PASS: The dark lasts about four seconds (4.4 s)
 PASS: Once the lights are on the view is clear
 PASS: The room says what to do as the lights come up
 PASS: The room is lit cool and harsh, unlike the lobby

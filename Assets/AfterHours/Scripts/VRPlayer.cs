@@ -14,6 +14,8 @@ namespace AfterHours
         public bool smoothMotion=true;
         public float moveSpeed=1.7f;
         public TextMeshPro hint;
+        // A faint "Saved" in the corner of the view, shown for a moment after a room change. Clean mode never shows it.
+        public TextMeshPro savedCue;
         public Image fade;
         public Material rayMaterial;
         public ComfortMenu menu;
@@ -39,7 +41,7 @@ namespace AfterHours
         readonly bool[] teleportReady=new bool[2];
         readonly bool[] teleportGesture=new bool[2], inputBlocked=new bool[2];
         readonly GameObject[] controllerModels=new GameObject[2];
-        float turnReady, hintUntil; float pitch; bool wasHome;
+        float turnReady, hintUntil, savedUntil; float pitch; bool wasHome;
         // What the headset sees this frame, for choosing the wording, and when the headset model was last asked.
         bool handSeen, controllerSeen; float nextProfileCheck;
         // Throwing needs real hands or controllers. Tests switch it on to run the whole path from the desktop.
@@ -48,6 +50,9 @@ namespace AfterHours
         public void ShowHint(string text,float duration=6){if(cleanMode){HideHint();return;}hint.text=text;hintUntil=Time.time+duration;}
         public void HideHint(){hintUntil=0;if(hint)hint.gameObject.SetActive(false);}
         public bool HintVisible=>hint&&!cleanMode&&Time.time<hintUntil;
+        public const float SavedSeconds=1.4f;
+        public void ShowSaved(){if(cleanMode||!savedCue)return;savedUntil=Time.time+SavedSeconds;}
+        public bool SavedVisible=>savedCue&&savedCue.gameObject.activeSelf;
         void Awake()
         {
             // Interaction rays must never target the player's own capsule after a height change.
@@ -73,6 +78,8 @@ namespace AfterHours
             bool menuOpen=menu&&menu.IsOpen;
             // Messages move above the open menu so it never hides them.
             if(hint){hint.gameObject.SetActive(Time.time<hintUntil);hint.transform.localPosition=menuOpen?hintHome+Vector3.up*.52f:hintHome;}
+            // The "Saved" cue fades out over its last half second, and steps aside for the menu.
+            if(savedCue){bool cue=!cleanMode&&!menuOpen&&Time.time<savedUntil;if(cue!=savedCue.gameObject.activeSelf)savedCue.gameObject.SetActive(cue);if(cue)savedCue.alpha=Mathf.Clamp01((savedUntil-Time.time)/.5f)*.85f;}
             rig.enabled=IsXR; if(!IsXR) DesktopPose();
             if(!comfortReady&&(!IsXR||Head.localPosition.y>.3f))ApplyHeight();
             bool home=IsXR?OVRInput.Get(OVRInput.Button.Two):Keyboard.current!=null&&Keyboard.current.escapeKey.isPressed;
@@ -106,12 +113,13 @@ namespace AfterHours
         }
         // With controllers, the trigger holds an object just as a pinch does, and so does the grip.
         public static bool ControllerGrab(float grip,float trigger)=>grip>.65f||trigger>.65f;
-        // Which input the player is using, so every hint says the right thing, and which headset this is, so a Quest 2 gets a lighter picture.
-        // Both are asked every frame or two until the runtime answers, and never change how the game plays.
+        // Which input the player is using, so every hint says the right thing, and which headset this is, so a Quest 2 gets a lighter picture
+        // and every headset gets foveated rendering. Both are asked every frame or two (the headset every half second) until the runtime
+        // answers, and never change how the game plays.
         void ObserveHardware()
         {
             Wording.Observe(SeenInput(OVRInput.GetActiveController(),handSeen,controllerSeen),Time.unscaledTime);
-            if(!DeviceProfile.Applied&&Time.unscaledTime>nextProfileCheck){nextProfileCheck=Time.unscaledTime+.5f;DeviceProfile.TryApply();}
+            if(!DeviceProfile.Settled&&Time.unscaledTime>nextProfileCheck){nextProfileCheck=Time.unscaledTime+.5f;DeviceProfile.TryApply();}
         }
         void DesktopPose()
         {
