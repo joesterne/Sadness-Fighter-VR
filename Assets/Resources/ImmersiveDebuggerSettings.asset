@@ -21,9 +21,6 @@ MonoBehaviour:
     DebugTypes:
     - Meta.XR.MultiplayerBlocks.Shared.CustomMatchmaking
     - Meta.XR.MultiplayerBlocks.Shared.FriendsMatchmaking
-  - AssemblyName: Meta.XR.ImmersiveDebugger.DevAgent
-    DebugTypes:
-    - Meta.XR.ImmersiveDebugger.DevAgent.DictationController
   immersiveDebuggerEnabled: 1
   immersiveDebuggerDisplayAtStartup: 0
   enableOnlyInDebugBuild: 1
