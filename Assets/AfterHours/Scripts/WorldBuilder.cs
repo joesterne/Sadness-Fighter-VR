@@ -436,6 +436,11 @@ namespace AfterHours
             Art.Box("Jacket zip",new Vector3(0,-.01f,.103f),new Vector3(.014f,.54f,.01f),Art.Gold,false,jacket,.002f);
             for(int s=-1;s<=1;s+=2)Art.Box("Jacket collar",new Vector3(s*.06f,.285f,.06f),new Vector3(.09f,.08f,.06f),Art.Coral,false,jacket,.01f).transform.localRotation=Quaternion.Euler(-15,0,-s*15);
             Art.Box("Jacket band",new Vector3(0,-.27f,0),new Vector3(.37f,.05f,.21f),Art.Gold,false,jacket,.01f);
+            // The placeholder add-on: only worn once the store says it was bought (see AddOnShop).
+            var hoodie=Top("midnight-hoodie",Art.Navy,true);
+            Art.Shape("Hood",PrimitiveType.Sphere,new Vector3(0,.29f,-.07f),new Vector3(.3f,.13f,.15f),Art.Ink,false,hoodie);
+            Art.Box("Hoodie pocket",new Vector3(0,-.15f,.102f),new Vector3(.22f,.11f,.01f),Art.Ink,false,hoodie,.008f);
+            for(int s=-1;s<=1;s+=2)Art.Box("Drawstring",new Vector3(s*.035f,.18f,.104f),new Vector3(.012f,.13f,.01f),Art.Cream,false,hoodie,.002f);
             // Around the neck
             var scarf=Look("scarf",m.torso).group.transform;
             Art.Shape("Scarf",PrimitiveType.Cylinder,new Vector3(0,.31f,0),new Vector3(.21f,.045f,.2f),Art.Coral,false,scarf);

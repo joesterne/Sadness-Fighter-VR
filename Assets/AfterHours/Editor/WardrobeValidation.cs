@@ -30,6 +30,8 @@ namespace AfterHours.Editor
             intExisted=intKeys.Select(PlayerPrefs.HasKey).ToArray();intValues=intKeys.Select(k=>PlayerPrefs.GetInt(k)).ToArray();
             stringExisted=stringKeys.Select(PlayerPrefs.HasKey).ToArray();stringValues=stringKeys.Select(k=>PlayerPrefs.GetString(k)).ToArray();
             foreach(var key in intKeys.Concat(stringKeys))PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
+            // Nothing bought in the test store: the counts below are for a player with no add-ons.
+            TestAddOnStore.Reset();
             mouse=InputSystem.AddDevice<Mouse>("WardrobeValidationMouse");TestInput.Claim(mouse);
             lines.Clear();Status="Running";run=Checks();deadline=0;
             EditorApplication.update+=Tick;EditorApplication.playModeStateChanged+=OnPlay;

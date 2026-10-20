@@ -32,6 +32,8 @@ namespace AfterHours
         public AmbushRoom ambush;
         public RooftopRoom rooftop;
         public Wardrobe wardrobe;
+        // Outfit add-ons from the store. Started at launch, so the store's ownership check runs in the first seconds.
+        [NonSerialized] public AddOnShop shop;
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
         public AudioClip select, grab, send, place, menuOpen, menuClose, teleport, turn, row, spill, pour, shred, unlock;
@@ -68,6 +70,7 @@ namespace AfterHours
             targets=new SendTarget[rooms.Length][];grabbables=new Grabbable[rooms.Length][];guidance=new Guidance[rooms.Length][];
             for(int i=0;i<rooms.Length;i++){targets[i]=rooms[i].root.GetComponentsInChildren<SendTarget>(true);grabbables[i]=rooms[i].root.GetComponentsInChildren<Grabbable>(true);guidance[i]=rooms[i].root.GetComponentsInChildren<Guidance>(true);}
             if(wardrobe)wardrobe.Load();
+            shop=new AddOnShop(AddOnShop.ForThisDevice(),this);_=shop.Begin();
         }
         public void PlayUi(AudioClip clip,float volume){if(audioSource&&clip)audioSource.PlayOneShot(clip,volume);}
         public void PlayAt(AudioClip clip,Vector3 position,float volume){if(clip)AudioSource.PlayClipAtPoint(clip,position,volume);}
@@ -96,8 +99,9 @@ namespace AfterHours
         public void Earn(string id)
         {
             if(!wardrobe||!wardrobe.Unlock(id))return;
-            news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");
+            Announce(id);
         }
+        public void Announce(string id){news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");}
         // The first small step anywhere earns a pin. Every step still counts the same.
         public void SmallStep(){Earn("step-pin");}
         public void GoToMirror()
