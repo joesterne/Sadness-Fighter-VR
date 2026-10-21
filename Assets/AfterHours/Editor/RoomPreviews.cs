@@ -29,7 +29,7 @@ namespace AfterHours.Editor
                 for(int i=0;i<d.rooms.Length;i++)
                 {
                     // The rooftop is shown with its sunrise light, so it has its own shots below.
-                    if(i==RooftopRoom.Room)continue;
+                    if(i==RooftopRoom.Room||i==ArchiveRoom.Room)continue;
                     var spawn=d.rooms[i].spawn.position;float eyeHeight=i==1?1.25f:1.6f;
                     saved+=Shot(d,i,cam,d.rooms[i].title,spawn+Vector3.up*eyeHeight,spawn+new Vector3(0,1.2f,6))?1:0;
                 }
@@ -52,10 +52,14 @@ namespace AfterHours.Editor
                 saved+=GuideShot(d,cam)?1:0;
                 saved+=TargetShot(d,cam,2,"Heavy things - send to the truck")?1:0;
                 saved+=TargetShot(d,cam,3,"A small spill - send the cup")?1:0;
-                saved+=TargetShot(d,cam,4,"The infinite archive - send to a tray")?1:0;
+                if(d.archive)d.archive.Preview();
+                try{saved+=TargetShot(d,cam,4,"The infinite archive - send to a tray")?1:0;}
+                finally{if(d.archive)d.archive.EndPreview();}
                 saved+=TargetShot(d,cam,6,"The old résumé - send to the shredder")?1:0;
                 // The boat's oars in their locks, the turning lighthouse light, and the same view at night.
                 saved+=OceanShots(d,cam);
+                // The archive in its haze: the arrival view, and the stacks to each side, overhead, ahead and behind.
+                saved+=ArchiveShots(d,cam);
                 // The rooftop at sunrise: the arrival view, the sun, the skyline both ways, the deck and what stands behind the player.
                 saved+=RooftopShots(d,cam);
                 // The rage room's computer and bat as a seated player sees them on arrival.
@@ -130,6 +134,26 @@ namespace AfterHours.Editor
                 n+=Shot(d,room,cam,"Rooftop - the sky",eye,At(-10,30,40),"Sunrise - ")?1:0;
             }
             finally{r.EndPreview();}
+            return n;
+        }
+        static int ArchiveShots(GameDirector d,Camera cam)
+        {
+            var a=d.archive;if(!a){Debug.LogError("[RoomPreviews] The scene has no archive room.");return 0;}
+            int n=0;int room=ArchiveRoom.Room;var origin=d.rooms[room].root.transform.position;var spawn=d.rooms[room].spawn.position;var eye=spawn+Vector3.up*1.6f;
+            Vector3 At(float x,float y,float z)=>origin+new Vector3(x,y,z);
+            try
+            {
+                a.Preview();
+                // The usual arrival view keeps its usual file name.
+                n+=Shot(d,room,cam,d.rooms[room].title,eye,spawn+new Vector3(0,1.2f,6))?1:0;
+                n+=Shot(d,room,cam,"Archive - the stacks on the left",eye,At(-30,4,6),"Haze - ")?1:0;
+                n+=Shot(d,room,cam,"Archive - the stacks on the right",eye,At(30,6,14),"Haze - ")?1:0;
+                n+=Shot(d,room,cam,"Archive - looking up",eye,At(-4,30,16),"Haze - ")?1:0;
+                n+=Shot(d,room,cam,"Archive - behind",eye,At(0,3,-30),"Haze - ")?1:0;
+                n+=Shot(d,room,cam,"Archive - down the reading floor",At(0,1.6f,20),At(0,2.5f,60),"Haze - ")?1:0;
+                n+=Shot(d,room,cam,"Archive - at the rail",At(7.8f,1.6f,18),At(30,3,20),"Haze - ")?1:0;
+            }
+            finally{a.EndPreview();}
             return n;
         }
         static int AmbushShots(GameDirector d,Camera cam)

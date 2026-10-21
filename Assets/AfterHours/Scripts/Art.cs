@@ -23,6 +23,8 @@ namespace AfterHours
         public static Material[] Skins, Hairs;
         // Flat, unlit white that takes the colour of each particle: the confetti.
         public static Material ConfettiPaper;
+        // The infinite archive's far stacks: unlit, coloured per vertex, so the shade of each face is drawn into the mesh.
+        public static Material ArchiveStacks;
         public static TMP_FontAsset Font;
         // Outlined lettering. Light text gets a deep-blue outline and dark text an ivory one, so a sign stays readable over whatever is behind it.
         public static Material TextHalo, TextHaloDark;
