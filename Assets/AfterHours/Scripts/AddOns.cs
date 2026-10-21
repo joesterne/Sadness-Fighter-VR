@@ -25,7 +25,8 @@ namespace AfterHours
     }
 
     // Outfit add-ons: checks the player owns the game, fetches the add-on catalog, restores what was bought and buys more.
-    // Pieces with a SKU in Outfits.All are the add-ons; the wardrobe treats a bought one like any other piece.
+    // Pieces with a SKU in Outfits.All are the add-ons (Outfits.Bundles can sell several under one SKU); the wardrobe treats
+    // a bought one like any other piece. The game is free to play: nothing here gates any chapter, only extra outfits.
     public class AddOnShop
     {
         // Meta Horizon Store app id for After Hours (Quest). The add-on SKUs are created under it in the developer dashboard.
@@ -62,7 +63,7 @@ namespace AfterHours
         }
         public async Task LoadCatalog()
         {
-            var skus=Outfits.AddOns.Select(p=>p.sku).ToArray();if(skus.Length==0)return;
+            var skus=Outfits.Skus.ToArray();if(skus.Length==0)return;
             var found=await store.Catalog(skus);catalog.Clear();
             foreach(var a in found)catalog[a.sku]=a;
             var missing=skus.Where(s=>!catalog.ContainsKey(s)).ToList();
@@ -73,24 +74,37 @@ namespace AfterHours
         public async Task Restore()
         {
             var owned=await store.Owned();if(owned==null||!W)return;
-            var ids=owned.skus.Select(Outfits.ForSku).Where(id=>id!=null).ToList();
+            var ids=owned.skus.SelectMany(Outfits.ForSku).ToList();
             foreach(var id in W.SetBought(ids,!owned.fromCache))if(director)director.Announce(id);
             Changed?.Invoke();
         }
         public bool OnSale(string pieceId){var p=Outfits.Get(pieceId);return p.sku!=null&&catalog.ContainsKey(p.sku);}
+        // The store's price for a piece, formatted for the player's country (the dashboard sets it, never the game).
         public string Price(string pieceId){var p=Outfits.Get(pieceId);return p.sku!=null&&catalog.TryGetValue(p.sku,out var a)?a.price:null;}
-        // Opens the store's own checkout for one outfit piece. The piece is added to the wardrobe the moment the store confirms it.
-        public async Task<PurchaseResult> Buy(string pieceId)
+        public string BundlePrice(string bundleId){var b=Outfits.Bundles.FirstOrDefault(x=>x.id==bundleId);return b.sku!=null&&catalog.TryGetValue(b.sku,out var a)?a.price:null;}
+        // Opens the store's own checkout for one outfit piece. The piece is added to the wardrobe the moment the store confirms it;
+        // putting it on and saying so is up to the caller (GameDirector.BuyTryingOn).
+        public Task<PurchaseResult> Buy(string pieceId)
         {
             var piece=Outfits.Get(pieceId);
-            if(piece.sku==null)return PurchaseResult.Failed;
-            if(W&&W.Has(pieceId))return PurchaseResult.AlreadyOwned;
+            if(piece.sku==null)return Task.FromResult(PurchaseResult.Failed);
+            if(W&&W.Has(pieceId))return Task.FromResult(PurchaseResult.AlreadyOwned);
+            return BuySku(piece.sku);
+        }
+        // A bundle: every piece in it, under one SKU. Pieces the player already owns are simply kept.
+        public Task<PurchaseResult> BuyBundle(string bundleId)
+        {
+            var bundle=Outfits.Bundles.FirstOrDefault(b=>b.id==bundleId);
+            return bundle.sku==null?Task.FromResult(PurchaseResult.Failed):BuySku(bundle.sku);
+        }
+        async Task<PurchaseResult> BuySku(string sku)
+        {
             if(State!=StoreStart.Ready)return PurchaseResult.Unavailable;
             PurchaseResult result;
-            try{result=await store.Buy(piece.sku);}catch(Exception e){Debug.LogException(e);return PurchaseResult.Failed;}
+            try{result=await store.Buy(sku);}catch(Exception e){Debug.LogException(e);return PurchaseResult.Failed;}
             if(result==PurchaseResult.Bought||result==PurchaseResult.AlreadyOwned)
             {
-                if(W)foreach(var id in W.SetBought(new[]{pieceId},false))if(director)director.Announce(id);
+                if(W)W.SetBought(Outfits.ForSku(sku),false);
                 Changed?.Invoke();
             }
             return result;
@@ -158,20 +172,21 @@ namespace AfterHours
         }
     }
 
-    // A store that charges nothing, for the editor and the automated checks. What it sells is every add-on in Outfits.All.
+    // A store that charges nothing, for the editor and the automated checks. What it sells is every add-on and bundle in Outfits.
     // Purchases last until the editor closes, so a scene reload restores them the way a real store would.
     public class TestAddOnStore : IAddOnStore
     {
         public static readonly HashSet<string> Bought=new HashSet<string>();
-        // For the checks: answer as if the network were down, or as if the player closed the checkout.
-        public static bool Offline, CancelNext;
-        public static void Reset(){Bought.Clear();Offline=false;CancelNext=false;}
+        // For the checks: answer as if the network were down, as if the player closed the checkout, or as if nothing were on sale.
+        public static bool Offline, CancelNext, NothingForSale;
+        public static void Reset(){Bought.Clear();Offline=false;CancelNext=false;NothingForSale=false;}
+        static bool Sells(string sku)=>!NothingForSale&&Outfits.Skus.Contains(sku);
         public string Name=>"Test store";
         public async Task<StoreStart> Start(){await Task.Yield();return StoreStart.Ready;}
         public async Task<List<AddOn>> Catalog(string[] skus)
         {
             await Task.Yield();
-            return Outfits.AddOns.Where(p=>skus.Contains(p.sku)).Select(p=>new AddOn{sku=p.sku,name=p.name,price="$0.00 (test)",description="Test store item"}).ToList();
+            return skus.Where(Sells).Select(sku=>new AddOn{sku=sku,name=sku,price="$0.00",description="Test store item"}).ToList();
         }
         public async Task<OwnedAddOns> Owned(){await Task.Yield();return Offline?null:new OwnedAddOns{skus=Bought.ToList()};}
         public async Task<PurchaseResult> Buy(string sku)
@@ -179,7 +194,7 @@ namespace AfterHours
             await Task.Yield();
             if(Offline)return PurchaseResult.Unavailable;
             if(CancelNext){CancelNext=false;return PurchaseResult.Cancelled;}
-            if(!Outfits.AddOns.Any(p=>p.sku==sku))return PurchaseResult.Failed;
+            if(!Sells(sku))return PurchaseResult.Failed;
             return Bought.Add(sku)?PurchaseResult.Bought:PurchaseResult.AlreadyOwned;
         }
     }

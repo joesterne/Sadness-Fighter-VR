@@ -213,7 +213,7 @@ namespace AfterHours.Editor
             Check(D.wardrobe.avatar.reflection.gameObject.activeInHierarchy,"Mirror: your reflection appears");
             var wardrobeButtons=D.rooms[0].root.GetComponentsInChildren<Interactable>().Where(x=>x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext).ToArray();
             foreach(var b in wardrobeButtons)AimAt(b);
-            Check(wardrobeButtons.Length==16,"Mirror: all 16 wardrobe buttons can be pointed at from the mirror spot");
+            Check(wardrobeButtons.Length==Wardrobe.Rows.Length*2,"Mirror: all "+Wardrobe.Rows.Length*2+" wardrobe buttons can be pointed at from the mirror spot");
             Look(D.wardrobe.avatar.head.position);
             Check(Vector3.Angle(P.Head.forward,D.mirrorSpot.forward)<25,"Mirror: your reflection's face is straight ahead (within 25 degrees)");
             var top=wardrobeButtons.First(x=>x.kind==ActionKind.WardrobeNext&&x.value==4);

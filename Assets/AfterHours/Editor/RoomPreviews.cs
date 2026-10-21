@@ -76,6 +76,14 @@ namespace AfterHours.Editor
                 saved+=MirrorShot(d,cam,"Lanyard and cap",new WardrobeState{skin=0,hair=1,hairColour=3,build=2,top="cardigan",head="cap",neck="lanyard",pin="true-pin"})?1:0;
                 saved+=MirrorShot(d,cam,"Orange mug pin",new WardrobeState{skin=2,hair=0,hairColour=1,build=1,top="shirt",head="no-hat",neck="no-neck",pin="orange-pin"})?1:0;
                 saved+=MirrorShot(d,cam,"Let it out pin",new WardrobeState{skin=5,hair=4,hairColour=0,build=1,top="jacket",head="no-hat",neck="no-neck",pin="letitout-pin"})?1:0;
+                // Add-ons (sold on the store): every one of them appears in at least one of these looks.
+                saved+=MirrorShot(d,cam,"Add-ons - hoodie and jeans",new WardrobeState{skin=1,hair=0,hairColour=0,build=1,top="midnight-hoodie",head="bucket-hat",legs="jeans",hands="knit-gloves",feet="trainers"})?1:0;
+                saved+=MirrorShot(d,cam,"Add-ons - polo and pleated skirt",new WardrobeState{skin=3,hair=2,hairColour=3,build=0,top="polo",head="sun-hat",legs="pleated-skirt",hands="no-gloves",feet="loafers"})?1:0;
+                saved+=MirrorShot(d,cam,"Add-ons - flannel and cargo",new WardrobeState{skin=5,hair=1,hairColour=1,build=2,top="flannel",head="flat-cap",legs="cargo",hands="work-gloves",feet="boots"})?1:0;
+                saved+=MirrorShot(d,cam,"Add-ons - turtleneck and midi skirt",new WardrobeState{skin=2,hair=3,hairColour=2,build=1,top="turtleneck",head="headphones",legs="midi-skirt",hands="garden-gloves",feet="wellies"})?1:0;
+                saved+=MirrorShot(d,cam,"Add-ons - stripe tee and coral skirt",new WardrobeState{skin=0,hair=4,hairColour=4,build=1,top="stripe-tee",legs="coral-skirt",feet="trainers"})?1:0;
+                saved+=MirrorShot(d,cam,"Add-ons - joggers",new WardrobeState{skin=4,hair=0,hairColour=1,build=2,top="tee",legs="joggers",feet="plain-shoes"})?1:0;
+                saved+=MirrorShot(d,cam,"Add-ons - corduroys",new WardrobeState{skin=2,hair=1,hairColour=0,build=1,top="shirt",legs="cords",feet="loafers"})?1:0;
             }
             finally
             {

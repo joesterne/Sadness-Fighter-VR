@@ -308,28 +308,37 @@ namespace AfterHours
             Art.Box("Mirror frame",new Vector3(0,2.42f,-.11f),new Vector3(1.72f,.06f,.06f),Art.Gold,false);
             var wardrobe=wall.gameObject.AddComponent<Wardrobe>();wardrobe.director=d;d.wardrobe=wardrobe;
             wardrobe.nameplate=Art.Text("Mirror nameplate","YOUR WARDROBE",new Vector3(0,2.66f,-.13f),.11f,ivory,2.4f);
-            // The wardrobe: how you look on the left, what you wear on the right. Each row steps back or forward.
+            // The wardrobe: how you look on the left (four rows), what you wear on the right (a row for each outfit slot, set closer together).
+            // Each row steps back or forward.
             wardrobe.values=new TextMeshPro[Wardrobe.Rows.Length];
             for(int column=0;column<2;column++)
             {
                 float x=column==0?-1.475f:1.55f;
-                Art.Box("Wardrobe board",new Vector3(x,1.5f,-.13f),new Vector3(1.18f,1.5f,.04f),Art.Ink,false);
-                Art.Text("Wardrobe heading",column==0?"YOU":"WHAT YOU WEAR",new Vector3(x,2.13f,-.16f),.085f,muted,1.1f);
-                for(int k=0;k<4;k++)
+                int first=column==0?0:4,count=column==0?4:Wardrobe.Rows.Length-4;
+                float pitch=column==0?.28f:.2f,top=column==0?1.86f:1.98f,scale=column==0?1:.8f;
+                if(column==0)Art.Box("Wardrobe board",new Vector3(x,1.5f,-.13f),new Vector3(1.18f,1.5f,.04f),Art.Ink,false);
+                else Art.Box("Wardrobe board",new Vector3(x,1.47f,-.13f),new Vector3(1.18f,1.62f,.04f),Art.Ink,false);
+                Art.Text("Wardrobe heading",column==0?"YOU":"WHAT YOU WEAR",new Vector3(x,column==0?2.13f:2.2f,-.16f),.085f,muted,1.1f);
+                for(int k=0;k<count;k++)
                 {
-                    int row=column*4+k;float y=1.86f-k*.28f;
-                    Art.Text("Wardrobe row",Wardrobe.Rows[row],new Vector3(x,y+.08f,-.16f),.06f,muted,1f);
-                    Art.Button("Wardrobe back "+row,"<",new Vector3(x-.42f,y-.04f,-.17f),new Vector3(.22f,.15f,.06f),Art.Teal,ActionKind.WardrobePrev,d,row);
-                    Art.Button("Wardrobe next "+row,">",new Vector3(x+.42f,y-.04f,-.17f),new Vector3(.22f,.15f,.06f),Art.Teal,ActionKind.WardrobeNext,d,row);
-                    var value=Art.Text("Wardrobe value "+row,"",new Vector3(x,y-.04f,-.16f),.07f,ivory,.58f);
-                    value.rectTransform.sizeDelta=new Vector2(.58f,.2f);value.enableAutoSizing=true;value.fontSizeMin=.25f;value.fontSizeMax=.5f;
+                    int row=first+k;float y=top-k*pitch;
+                    Art.Text("Wardrobe row",Wardrobe.Rows[row],new Vector3(x,y+.08f*scale,-.16f),.06f*scale,muted,1f);
+                    Art.Button("Wardrobe back "+row,"<",new Vector3(x-.42f,y-.04f*scale,-.17f),new Vector3(.22f,.15f*scale,.06f),Art.Teal,ActionKind.WardrobePrev,d,row);
+                    Art.Button("Wardrobe next "+row,">",new Vector3(x+.42f,y-.04f*scale,-.17f),new Vector3(.22f,.15f*scale,.06f),Art.Teal,ActionKind.WardrobeNext,d,row);
+                    var value=Art.Text("Wardrobe value "+row,"",new Vector3(x,y-.04f*scale,-.16f),.07f*scale,ivory,.58f);
+                    value.rectTransform.sizeDelta=new Vector2(.58f,.2f*scale);value.enableAutoSizing=true;value.fontSizeMin=.25f;value.fontSizeMax=.5f*scale;
                     wardrobe.values[row]=value;
                 }
-                Art.Box("Wardrobe note board",new Vector3(x,.47f,-.13f),new Vector3(1.18f,.5f,.04f),Art.Navy,false);
-                var note=Art.Text(column==0?"Still to find":"Wardrobe status","",new Vector3(x,.47f,-.16f),.05f,column==0?muted:ivory,1.08f);
-                note.rectTransform.sizeDelta=new Vector2(1.1f,.46f);note.enableAutoSizing=true;note.fontSizeMin=.22f;note.fontSizeMax=.52f;
+                float noteY=column==0?.47f:.42f,noteHeight=column==0?.5f:.4f;
+                Art.Box("Wardrobe note board",new Vector3(x,noteY,-.13f),new Vector3(1.18f,noteHeight,.04f),Art.Navy,false);
+                var note=Art.Text(column==0?"Still to find":"Wardrobe status","",new Vector3(x,noteY,-.16f),.05f,column==0?muted:ivory,1.08f);
+                note.rectTransform.sizeDelta=new Vector2(1.1f,noteHeight-.04f);note.enableAutoSizing=true;note.fontSizeMin=.22f;note.fontSizeMax=.52f;
                 if(column==0)wardrobe.toFind=note;else wardrobe.status=note;
             }
+            // BUY covers the status board while an add-on is tried on (see Wardrobe.Refresh), and opens the store's checkout.
+            var buy=Art.Group("Wardrobe buy",Vector3.zero);
+            Art.Button("Wardrobe buy button","BUY",new Vector3(1.55f,.42f,-.18f),new Vector3(1.05f,.3f,.06f),Art.Coral,ActionKind.WardrobeBuy,d,0,buy);
+            wardrobe.buyButton=buy.gameObject;wardrobe.buyLabel=buy.Find("Wardrobe buy button label").GetComponent<TextMeshPro>();buy.gameObject.SetActive(false);
             // Where to stand: MIRROR on the desk brings the player here, facing the glass.
             d.mirrorSpot=Art.Group("Mirror spot",new Vector3(0,.04f,-1.7f));
             for(int s=-1;s<=1;s+=2)
@@ -409,6 +418,25 @@ namespace AfterHours
             Art.Shape("Beanie",PrimitiveType.Sphere,new Vector3(0,.075f,-.025f),new Vector3(.23f,.19f,.24f),Art.Teal,false,beanie);
             Art.Shape("Beanie band",PrimitiveType.Cylinder,new Vector3(0,.07f,-.022f),new Vector3(.225f,.025f,.232f),Art.Navy,false,beanie);
             Art.Shape("Pompom",PrimitiveType.Sphere,new Vector3(0,.18f,-.03f),Vector3.one*.065f,Art.Gold,false,beanie);
+            // Add-on hats (see Outfits.All).
+            var bucket=Look("bucket-hat",m.head).group.transform;
+            Art.Shape("Bucket crown",PrimitiveType.Cylinder,new Vector3(0,.095f,-.02f),new Vector3(.21f,.05f,.22f),Art.ToySky,false,bucket);
+            Art.Shape("Bucket band",PrimitiveType.Cylinder,new Vector3(0,.068f,-.02f),new Vector3(.216f,.012f,.226f),Art.Navy,false,bucket);
+            Art.Shape("Bucket brim",PrimitiveType.Cylinder,new Vector3(0,.055f,-.02f),new Vector3(.3f,.006f,.31f),Art.ToySky,false,bucket);
+            var flatCap=Look("flat-cap",m.head).group.transform;
+            Art.Shape("Flat cap",PrimitiveType.Sphere,new Vector3(0,.085f,-.005f),new Vector3(.228f,.1f,.245f),Art.Wood,false,flatCap);
+            Art.Box("Flat cap peak",new Vector3(0,.072f,.11f),new Vector3(.17f,.014f,.07f),Art.Wood,false,flatCap,.005f).transform.localRotation=Quaternion.Euler(8,0,0);
+            var sunHat=Look("sun-hat",m.head).group.transform;
+            Art.Shape("Sun hat crown",PrimitiveType.Cylinder,new Vector3(0,.11f,-.02f),new Vector3(.2f,.06f,.21f),Art.ToyCream,false,sunHat);
+            Art.Shape("Sun hat band",PrimitiveType.Cylinder,new Vector3(0,.085f,-.02f),new Vector3(.206f,.016f,.216f),Art.Coral,false,sunHat);
+            Art.Shape("Sun hat brim",PrimitiveType.Cylinder,new Vector3(0,.068f,-.02f),new Vector3(.44f,.005f,.44f),Art.ToyCream,false,sunHat);
+            var phones=Look("headphones",m.head).group.transform;
+            Art.Box("Headphone band",new Vector3(0,.13f,-.01f),new Vector3(.2f,.022f,.04f),Art.Ink,false,phones,.008f);
+            for(int s=-1;s<=1;s+=2)
+            {
+                Art.Box("Headphone arm",new Vector3(s*.1f,.075f,-.01f),new Vector3(.02f,.11f,.035f),Art.Ink,false,phones,.006f);
+                Art.Shape("Headphone cup",PrimitiveType.Cylinder,new Vector3(s*.105f,0,-.005f),new Vector3(.075f,.022f,.075f),Art.Coral,false,phones).transform.localRotation=Quaternion.Euler(0,0,90);
+            }
             Skin(Art.Shape("Neck",PrimitiveType.Cylinder,new Vector3(0,.07f,-.01f),new Vector3(.085f,.075f,.085f),tone,false,m.neck));
             // The torso's pivot is mid-spine, so its top (+.305) is the base of the neck and its bottom (-.305) the hips.
             Art.Box("Belt",new Vector3(0,-.29f,0),new Vector3(.34f,.07f,.19f),Art.Ink,false,m.torso,.015f);
@@ -441,6 +469,16 @@ namespace AfterHours
             Art.Shape("Hood",PrimitiveType.Sphere,new Vector3(0,.29f,-.07f),new Vector3(.3f,.13f,.15f),Art.Ink,false,hoodie);
             Art.Box("Hoodie pocket",new Vector3(0,-.15f,.102f),new Vector3(.22f,.11f,.01f),Art.Ink,false,hoodie,.008f);
             for(int s=-1;s<=1;s+=2)Art.Box("Drawstring",new Vector3(s*.035f,.18f,.104f),new Vector3(.012f,.13f,.01f),Art.Cream,false,hoodie,.002f);
+            var polo=Top("polo",Art.Mint,false);
+            for(int s=-1;s<=1;s+=2)Art.Box("Polo collar",new Vector3(s*.045f,.27f,.085f),new Vector3(.075f,.05f,.02f),Art.White,false,polo,.005f).transform.localRotation=Quaternion.Euler(0,0,-s*25);
+            foreach(float y in new[]{.22f,.17f})Art.Shape("Polo button",PrimitiveType.Sphere,new Vector3(0,y,.104f),Vector3.one*.016f,Art.Gold,false,polo);
+            var flannel=Top("flannel",Art.Coral,true);
+            foreach(float y in new[]{.17f,0f,-.17f})Art.Box("Flannel check",new Vector3(0,y,0),new Vector3(.366f,.028f,.206f),Art.Navy,false,flannel,.005f);
+            for(int s=-1;s<=1;s+=2)Art.Box("Flannel check",new Vector3(s*.09f,0,0),new Vector3(.028f,.584f,.206f),Art.Navy,false,flannel,.005f);
+            var turtleneck=Top("turtleneck",Art.ToyLilac,true);
+            Art.Shape("Rolled collar",PrimitiveType.Cylinder,new Vector3(0,.31f,0),new Vector3(.16f,.04f,.15f),Art.ToyLilac,false,turtleneck);
+            var stripeTee=Top("stripe-tee",Art.ToySun,false);
+            foreach(float y in new[]{.15f,.05f,-.05f,-.15f})Art.Box("Tee stripe",new Vector3(0,y,0),new Vector3(.366f,.03f,.206f),Art.ToyPink,false,stripeTee,.005f);
             // Around the neck
             var scarf=Look("scarf",m.torso).group.transform;
             Art.Shape("Scarf",PrimitiveType.Cylinder,new Vector3(0,.31f,0),new Vector3(.21f,.045f,.2f),Art.Coral,false,scarf);
@@ -486,13 +524,73 @@ namespace AfterHours
                 Skin(Art.Box("Thumb",new Vector3((i==0?1:-1)*.045f,0,.03f),new Vector3(.025f,.025f,.055f),tone,false,m.hand[i],.008f));
                 float x=i==0?-.1f:.1f;
                 m.leg[i]=Art.Group(side+" leg",new Vector3(x,0,0),m.legs);
-                Art.Box("Trouser leg",new Vector3(0,.47f,0),new Vector3(.14f,.86f,.16f),Art.Ink,false,m.leg[i],.03f);
-                Art.Box("Shoe",new Vector3(x,.045f,.045f),new Vector3(.12f,.09f,.25f),Art.Navy,false,m.legs,.02f);
             }
+            Legwear(m,tone,Look,Skin);
             m.skin=skin.ToArray();m.looks=looks.ToArray();m.skins=Art.Skins;m.hairs=Art.Hairs;
-            foreach(var look in looks)look.group.SetActive(false);
+            foreach(var look in looks){look.group.SetActive(false);if(look.extra!=null)foreach(var part in look.extra)part.SetActive(false);}
             m.body=root.GetComponentsInChildren<Renderer>(true);Skeleton(m);
             foreach(var r in root.GetComponentsInChildren<Renderer>(true))r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        // What goes on the legs, hands and feet. Trousers and the legs under a skirt are built on each leg, gloves on each hand
+        // (the extra groups switch with the first); a skirt hangs from the hips on the torso; shoes stand on the floor.
+        static void Legwear(MirrorAvatar m,Material tone,System.Func<string,Transform,Material,bool,OutfitLook> Look,System.Action<GameObject> Skin)
+        {
+            OutfitLook Each(string id,Transform[] sides,System.Action<Transform,int> build)
+            {
+                var look=Look(id,sides[0],null,false);build(look.group.transform,0);
+                var extra=new GameObject[sides.Length-1];
+                for(int i=1;i<sides.Length;i++){var g=Art.Group("Wear - "+id,Vector3.zero,sides[i]);build(g,i);extra[i-1]=g.gameObject;}
+                look.extra=extra;return look;
+            }
+            // i is 0 for the left leg or hand, 1 for the right; o points away from the body.
+            float Out(int i)=>i==0?-1:1;
+            void Trousers(string id,Material cloth,System.Action<Transform,int> details=null)
+            {
+                Each(id,m.leg,(t,i)=>{Art.Box("Trouser leg",new Vector3(0,.47f,0),new Vector3(.14f,.86f,.16f),cloth,false,t,.03f);details?.Invoke(t,i);});
+            }
+            Trousers("trousers",Art.Ink);
+            Trousers("jeans",Art.Navy,(t,i)=>{Art.Box("Jeans cuff",new Vector3(0,.07f,0),new Vector3(.148f,.05f,.168f),Art.Navy,false,t,.01f);Art.Box("Jeans seam",new Vector3(Out(i)*.071f,.47f,0),new Vector3(.006f,.8f,.02f),Art.Gold,false,t,.001f);});
+            Trousers("cargo",Art.ToyLeafDark,(t,i)=>Art.Box("Cargo pocket",new Vector3(Out(i)*.075f,.5f,0),new Vector3(.02f,.14f,.1f),Art.ToyLeaf,false,t,.005f));
+            Trousers("joggers",Art.Teal,(t,i)=>{Art.Box("Jogger stripe",new Vector3(Out(i)*.071f,.47f,0),new Vector3(.01f,.84f,.03f),Art.White,false,t,.002f);Art.Box("Jogger cuff",new Vector3(0,.07f,0),new Vector3(.12f,.06f,.14f),Art.Navy,false,t,.01f);});
+            Trousers("cords",Art.Wood,(t,i)=>{for(int k=-1;k<=1;k++)Art.Box("Cord rib",new Vector3(k*.035f,.47f,.081f),new Vector3(.012f,.84f,.006f),Art.ToyWoodDark,false,t,.001f);});
+            // Skirts: the skirt on the hips (the torso's bottom is at -.305), and bare legs or tights below it.
+            var parts=new[]{m.leg[0],m.leg[1],m.torso};
+            void Skirt(string id,Material legs,System.Action<Transform> skirt)
+            {
+                Each(id,parts,(t,i)=>{if(i==2){skirt(t);return;}var leg=Art.Box("Leg",new Vector3(0,.47f,0),new Vector3(.12f,.86f,.14f),legs??tone,false,t,.03f);if(legs==null)Skin(leg);});
+            }
+            Skirt("pleated-skirt",null,t=>{Art.Shape("Pleated skirt",PrimitiveType.Cylinder,new Vector3(0,-.47f,0),new Vector3(.4f,.13f,.24f),Art.Navy,false,t);for(int k=-2;k<=2;k++)Art.Box("Pleat",new Vector3(k*.07f,-.47f,.118f),new Vector3(.012f,.25f,.01f),Art.Ink,false,t,.001f);});
+            Skirt("coral-skirt",null,t=>{Art.Shape("A-line skirt",PrimitiveType.Cylinder,new Vector3(0,-.39f,0),new Vector3(.37f,.07f,.23f),Art.Coral,false,t);Art.Shape("A-line skirt hem",PrimitiveType.Cylinder,new Vector3(0,-.54f,0),new Vector3(.46f,.09f,.29f),Art.Coral,false,t);});
+            Skirt("midi-skirt",Art.Ink,t=>{Art.Shape("Midi skirt",PrimitiveType.Cylinder,new Vector3(0,-.6f,0),new Vector3(.42f,.2f,.26f),Art.Mint,false,t);Art.Shape("Midi waistband",PrimitiveType.Cylinder,new Vector3(0,-.4f,0),new Vector3(.43f,.02f,.27f),Art.Gold,false,t);});
+            // Gloves cover the hand and thumb (the thumb is on the inside of each hand), with a cuff at the wrist.
+            void Gloves(string id,Material glove,Material cuff)
+            {
+                Each(id,m.hand,(t,i)=>
+                {
+                    Art.Box("Glove",new Vector3(0,0,.055f),new Vector3(.088f,.043f,.108f),glove,false,t,.012f);
+                    Art.Box("Glove thumb",new Vector3((i==0?1:-1)*.045f,0,.03f),new Vector3(.033f,.033f,.063f),glove,false,t,.008f);
+                    Art.Box("Glove cuff",new Vector3(0,0,-.005f),new Vector3(.095f,.055f,.04f),cuff,false,t,.01f);
+                });
+            }
+            Gloves("knit-gloves",Art.Teal,Art.Cream);
+            Gloves("work-gloves",Art.ToyWood,Art.ToyWoodDark);
+            Gloves("garden-gloves",Art.ToyLeaf,Art.ToyPink);
+            // Shoes: one group with both, on the floor under each leg.
+            void Shoes(string id,Material shoe,float shaft=0,System.Action<Transform,float> details=null)
+            {
+                var t=Look(id,m.legs,null,false).group.transform;
+                foreach(float x in new[]{-.1f,.1f})
+                {
+                    Art.Box("Shoe",new Vector3(x,.045f,.045f),new Vector3(.12f,.09f,.25f),shoe,false,t,.02f);
+                    if(shaft>0)Art.Box("Boot shaft",new Vector3(x,.09f+shaft*.5f,0),new Vector3(.15f,shaft,.17f),shoe,false,t,.02f);
+                    details?.Invoke(t,x);
+                }
+            }
+            Shoes("plain-shoes",Art.Navy);
+            Shoes("trainers",Art.White,0,(t,x)=>{Art.Box("Trainer sole",new Vector3(x,.012f,.045f),new Vector3(.126f,.024f,.256f),Art.ToyCream,false,t,.005f);Art.Box("Trainer stripe",new Vector3(x,.05f,.04f),new Vector3(.124f,.018f,.15f),Art.Coral,false,t,.003f);});
+            Shoes("boots",Art.ToyWoodDark,.16f,(t,x)=>Art.Box("Boot sole",new Vector3(x,.012f,.045f),new Vector3(.126f,.024f,.256f),Art.Ink,false,t,.005f));
+            Shoes("loafers",Art.Ink,0,(t,x)=>Art.Box("Loafer bar",new Vector3(x,.08f,.13f),new Vector3(.08f,.012f,.02f),Art.Gold,false,t,.002f));
+            Shoes("wellies",Art.ToySun,.24f,(t,x)=>Art.Box("Wellie sole",new Vector3(x,.012f,.045f),new Vector3(.126f,.024f,.256f),Art.Ink,false,t,.005f));
         }
         // The X-ray skeleton, hidden until the mirror's secret is found. Every bone is a thin bar of white light with a wider, fainter copy as its glow,
         // and the parts hang from the same joints as the body, so the skeleton poses itself. Eye sockets and a nose hollow are dark.

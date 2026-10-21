@@ -3,7 +3,8 @@ using UnityEngine;
 namespace AfterHours
 {
     // One wearable piece built onto the avatar. A top also decides the colour and length of the sleeves.
-    [System.Serializable] public class OutfitLook { public string id; public GameObject group; public Material sleeve; public bool longSleeves; }
+    // A piece built on more than one moving part (both legs, both hands, a skirt and the legs below it) has extra groups, switched with the first.
+    [System.Serializable] public class OutfitLook { public string id; public GameObject group; public GameObject[] extra; public Material sleeve; public bool longSleeves; }
 
     // The player's reflection. A faceted figure stands on the far side of the lobby mirror and copies the head and hands,
     // mirrored across the glass, so it moves as a reflection would. There is no second camera: the room behind the glass
@@ -109,7 +110,7 @@ namespace AfterHours
             if(state==null)return;
             var skinMaterial=skins!=null&&skins.Length>0?skins[Mathf.Clamp(state.skin,0,skins.Length-1)]:null;
             if(skinMaterial&&skin!=null)foreach(var r in skin)if(r)r.sharedMaterial=skinMaterial;
-            bool hat=state.head!="no-hat";
+            bool hat=state.head!="no-hat"&&state.head!="headphones";
             if(hairStyles!=null)for(int i=0;i<hairStyles.Length;i++)
             {
                 var style=hairStyles[i];if(!style)continue;style.SetActive(i==state.hair);
@@ -120,8 +121,9 @@ namespace AfterHours
             OutfitLook top=null;
             if(looks!=null)foreach(var look in looks)
             {
-                bool on=look.id==state.top||look.id==state.head||look.id==state.neck||look.id==state.pin;
+                bool on=state.Wears(look.id);
                 if(look.group&&look.group.activeSelf!=on)look.group.SetActive(on);
+                if(look.extra!=null)foreach(var part in look.extra)if(part&&part.activeSelf!=on)part.SetActive(on);
                 if(on&&look.sleeve)top=look;
             }
             for(int i=0;i<2;i++)
