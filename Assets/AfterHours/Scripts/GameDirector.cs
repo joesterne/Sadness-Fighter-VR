@@ -31,6 +31,7 @@ namespace AfterHours
         public RageRoom rage;
         public AmbushRoom ambush;
         public RooftopRoom rooftop;
+        public ArchiveRoom archive;
         public Wardrobe wardrobe;
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
