@@ -203,7 +203,19 @@ namespace AfterHours.Editor
             var wayOut=amb.exitDoor.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.Travel);
             foreach(var t in Click(wayOut))yield return t;yield return 1f;
             Check(D.currentRoom==0,"The ambush: the way out can be chosen from the seat");
-            Check(D.CompletedCount==7,"All seven chapters completed seated, without moving");
+
+            D.Travel(WebRoom.Room);yield return 1.2f;seat=P.transform.position;var web=D.web;
+            Check(web.machete.held,"The NDA web: the machete is already in your hand");
+            float widestWeb=web.webs.Max(x=>WebTesting.SeatedReach(P.Head.position,x));
+            Check(widestWeb<.6f,"The NDA web: every web is within "+widestWeb.ToString("0.00")+" m of a seated hand, well inside the machete's 0.74 m");
+            AimAt(web.webs[0].room.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.KillItWithFire));
+            lines.Add("PASS: The NDA web: the unlabelled button can be pointed at from the seat, through the webs");
+            foreach(var t in WebTesting.ClearAll())yield return t;
+            Check(web.beaten&&D.rooms[WebRoom.Room].complete,"The NDA web: short chops from the seat clear every web before any grows back");
+            foreach(var t in Click(Button(ActionKind.KillItWithFire)))yield return t;yield return WebRoom.BurnSeconds+.3f;
+            Check(web.burned&&D.wardrobe.Has("flame-hat"),"The NDA web: the unlabelled button burns the spider from the seat");
+            Check(Moved(seat)<.05f,"The NDA web: done without leaving the seat");
+            Check(D.CompletedCount==8,"All eight chapters completed seated, without moving");
 
             // The mirror: MIRROR on the desk brings a seated player to it, and every wardrobe button is in reach from there.
             D.Travel(0);yield return 1f;

@@ -7,7 +7,7 @@ namespace AfterHours.Editor
 {
     // Runs the automated checks and builds without the menu. Temp/AfterHours-run.txt lists jobs, one per line, and the first
     // one is taken off the list whenever the editor is ready for it. Progress goes to Logs/AfterHours-queue.txt.
-    //   Suites (need desktop Play Mode and no other suite running): smoke, comfort, navigation, seat, mirror, ocean, throw, text, ambush, addons.
+    //   Suites (need desktop Play Mode and no other suite running): smoke, comfort, navigation, seat, mirror, ocean, throw, text, ambush, addons, web.
     //   Editor jobs (need Play Mode off): clearprefs, buildscene, previews, buildrelease, installrelease, refresh, play, push (commit and push as the Push window would, using Temp/AfterHours-commit-message.txt).
     //   stop: leaves Play Mode once no suite is running.
     [InitializeOnLoad]
@@ -17,7 +17,7 @@ namespace AfterHours.Editor
         static readonly string[] EditorJobs={"clearprefs","buildscene","previews","buildrelease","installrelease","refresh","play","push"};
         static double next;
         static AfterHoursTestQueue(){EditorApplication.update+=Pump;Note("runner loaded"+(EditorApplication.isPlaying?" (in Play Mode)":""));}
-        static bool Busy=>new[]{AfterHoursSmoke.Status,ComfortValidation.Status,NavigationValidation.Status,SeatedReachValidation.Status,WardrobeValidation.Status,OceanValidation.Status,ThrowValidation.Status,TextVisibilityValidation.Status,AmbushValidation.Status,AddOnValidation.Status}.Any(s=>s=="Running");
+        static bool Busy=>new[]{AfterHoursSmoke.Status,ComfortValidation.Status,NavigationValidation.Status,SeatedReachValidation.Status,WardrobeValidation.Status,OceanValidation.Status,ThrowValidation.Status,TextVisibilityValidation.Status,AmbushValidation.Status,AddOnValidation.Status,WebValidation.Status}.Any(s=>s=="Running");
         static void Note(string text){try{Directory.CreateDirectory("Logs");System.IO.File.AppendAllText(Log,DateTime.Now.ToString("HH:mm:ss")+" "+text+"\n");}catch{}}
         static void ClearPrefs()
         {
@@ -81,6 +81,7 @@ namespace AfterHours.Editor
                     case "text":TextVisibilityValidation.Start();break;
                     case "ambush":AmbushValidation.Start();break;
                     case "addons":AddOnValidation.Start();break;
+                    case "web":WebValidation.Start();break;
                     default:Note("unknown job "+name);break;
                 }
             }

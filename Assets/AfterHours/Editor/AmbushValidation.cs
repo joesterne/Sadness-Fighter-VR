@@ -97,13 +97,13 @@ namespace AfterHours.Editor
             D.darkOpening=true;D.gentleAmbush=false;
             var a=A;var lobby=D.rooms[0].root;
             // ---- What the scene holds
-            Check(a&&D.rooms.Length==9&&D.rooms[AmbushRoom.Room].title=="The ambush"&&a.director==D,"The game has nine rooms, and room 8 is The ambush");
-            Check(GameDirector.Chapters.Length==7&&GameDirector.IsChapter(AmbushRoom.Room)&&D.rooms[AmbushRoom.Room].total==AmbushRoom.Feelings,"The ambush is the seventh chapter, with six feelings to name");
+            Check(a&&D.rooms.Length==10&&D.rooms[AmbushRoom.Room].title=="The ambush"&&a.director==D,"The game has ten rooms, and room 8 is The ambush");
+            Check(GameDirector.Chapters.Length==8&&GameDirector.IsChapter(AmbushRoom.Room)&&D.rooms[AmbushRoom.Room].total==AmbushRoom.Feelings,"The ambush is the seventh chapter, with six feelings to name");
             Check(a.clowns.Length==2&&a.clowns.All(c=>c.root&&c.nose&&c.aim&&c.balloons.Length==3&&c.balloons.All(b=>b)&&c.propeller&&c.bowtie),"Two clowns, each with a nose, three balloons, a chest to aim at, a propeller beanie and a bowtie");
             Check(a.papers.Length==6&&a.cardPlates.Length==6&&a.cardLabels.Length==6&&a.cardOpen&&a.cardNamed&&a.chair&&a.board&&a.standUpButton&&a.exitDoor&&a.warmThings.Length==3&&a.puff&&a.balloonBits&&a.changing,"Six papers, six feeling cards, a chair, the screen, the stand-up button, the way out, warm lights and two particle systems");
             Check(a.lightsSound&&a.squeakSound&&a.balloonSound&&a.tearSound&&a.standSound,"All five of the room's sounds are loaded");
             var door=lobby.GetComponentsInChildren<Interactable>().FirstOrDefault(x=>x.kind==ActionKind.Travel&&x.value==AmbushRoom.Room);
-            Check(door&&D.lobbyProgress.text.Contains("0 / 7"),"The lobby has a seventh door, and counts seven rooms");
+            Check(door&&D.lobbyProgress.text.Contains("0 / 8"),"The lobby has a door to the ambush, and counts eight rooms");
             Check(!a.gameObject.activeInHierarchy&&!D.gentleAmbush&&D.darkOpening,"The ambush is closed until you walk in, with the clowns full size and the dark on");
             var homes=a.papers.Select(p=>p.transform.position).ToArray();
             var daySky=Sky;
@@ -306,7 +306,7 @@ namespace AfterHours.Editor
             yield return 1.5f;
             Check(Near(Sky,WarmSky,.04f),"The light turns warm");
             Check(D.wardrobe.Has("standup-pin"),"Finishing the chapter earns the stood-up pin");
-            Check(D.lobbyProgress.text.Contains("1 / 7"),"The lobby counts one of seven rooms");
+            Check(D.lobbyProgress.text.Contains("1 / 8"),"The lobby counts one of eight rooms");
             var way=a.exitDoor.GetComponentsInChildren<Interactable>().FirstOrDefault(x=>x.kind==ActionKind.Travel);
             Check(way&&way.value==0,"The way out leads to the lobby");
 
