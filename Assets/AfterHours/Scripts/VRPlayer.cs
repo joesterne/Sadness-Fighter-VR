@@ -426,7 +426,14 @@ namespace AfterHours
             fade.color=new Color(.025f,.04f,.07f,target);if(dimAudio)AudioListener.volume=1-target*.9f;
         }
         void Pulse(OVRInput.Controller controller){StartCoroutine(Haptic(controller,.3f,.06f));}
-        IEnumerator Haptic(OVRInput.Controller controller,float amplitude,float seconds){if(IsXR)OVRInput.SetControllerVibration(.25f,amplitude,controller);yield return new WaitForSeconds(seconds);if(IsXR)OVRInput.SetControllerVibration(0,0,controller);}
+        // A later buzz in the same hand outlasts an earlier one: the earlier one's end never cuts it short.
+        readonly float[] hapticUntil=new float[2];
+        IEnumerator Haptic(OVRInput.Controller controller,float amplitude,float seconds)
+        {
+            int side=controller==OVRInput.Controller.LTouch?0:1;float until=Time.time+seconds;hapticUntil[side]=Mathf.Max(hapticUntil[side],until);
+            if(IsXR)OVRInput.SetControllerVibration(.25f,amplitude,controller);yield return new WaitForSeconds(seconds);
+            if(IsXR&&Time.time>=hapticUntil[side])OVRInput.SetControllerVibration(0,0,controller);
+        }
         void OnGUI()
         {
             if(IsXR)return;

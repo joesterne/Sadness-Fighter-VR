@@ -31,8 +31,11 @@ namespace AfterHours
         public RageRoom rage;
         public AmbushRoom ambush;
         public RooftopRoom rooftop;
+        public ArchiveRoom archive;
         public Wardrobe wardrobe;
         public Music music;
+        // Outfit add-ons from the store. Started at launch, so the store's ownership check runs in the first seconds.
+        [NonSerialized] public AddOnShop shop;
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
         public AudioClip select, grab, send, place, menuOpen, menuClose, teleport, turn, row, spill, pour, shred, unlock;
@@ -69,6 +72,7 @@ namespace AfterHours
             targets=new SendTarget[rooms.Length][];grabbables=new Grabbable[rooms.Length][];guidance=new Guidance[rooms.Length][];
             for(int i=0;i<rooms.Length;i++){targets[i]=rooms[i].root.GetComponentsInChildren<SendTarget>(true);grabbables[i]=rooms[i].root.GetComponentsInChildren<Grabbable>(true);guidance[i]=rooms[i].root.GetComponentsInChildren<Guidance>(true);}
             if(wardrobe)wardrobe.Load();
+            shop=new AddOnShop(AddOnShop.ForThisDevice(),this);shop.Changed+=()=>{if(wardrobe)wardrobe.Refresh();};_=shop.Begin();
         }
         public void PlayUi(AudioClip clip,float volume){if(audioSource&&clip)audioSource.PlayOneShot(clip,volume);}
         public void PlayAt(AudioClip clip,Vector3 position,float volume){if(clip)AudioSource.PlayClipAtPoint(clip,position,volume);}
@@ -97,8 +101,24 @@ namespace AfterHours
         public void Earn(string id)
         {
             if(!wardrobe||!wardrobe.Unlock(id))return;
-            news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");
+            Announce(id);
         }
+        // BUY at the mirror: the store's checkout for the add-on being tried on. Once bought it is put on straight away.
+        bool buying;
+        public async void BuyTryingOn()
+        {
+            if(buying||!wardrobe||shop==null||wardrobe.TryingOn==null)return;
+            var id=wardrobe.TryingOn;var name=Outfits.Get(id).name;buying=true;PurchaseResult result;
+            try{result=await shop.Buy(id);}finally{buying=false;}
+            if(!this||!wardrobe)return;
+            switch(result)
+            {
+                case PurchaseResult.Bought:case PurchaseResult.AlreadyOwned:wardrobe.Wear(id);Say(name+" is yours. It is on now, and stays in your wardrobe.");PlayUi(unlock,.6f);break;
+                case PurchaseResult.Cancelled:Say("Nothing was bought. You can keep trying it on.");break;
+                default:Say("The store could not be reached just now. Nothing was charged.");break;
+            }
+        }
+        public void Announce(string id){news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");}
         // The first small step anywhere earns a pin. Every step still counts the same.
         public void SmallStep(){Earn("step-pin");}
         public void GoToMirror()
@@ -115,14 +135,17 @@ namespace AfterHours
         {
             if(room<0||room>=rooms.Length||player.busy||room==currentRoom)return;
             if(room>0)lastRoom=room;SaveCheckpoint();
+            if(currentRoom==0&&wardrobe)wardrobe.StopTrying();
             StartCoroutine(ChangeRoom(room));
         }
         IEnumerator ChangeRoom(int room)
         {
             player.busy=true;player.ReleaseAll();if(menu)menu.Close();if(intro)intro.Dismiss();if(currentRoom==1)ocean.OnDepart();yield return player.Fade(1,.2f,true);
-            int from=currentRoom;if(from==0&&wardrobe&&wardrobe.avatar)wardrobe.avatar.SetXray(false);rooms[currentRoom].root.SetActive(false);currentRoom=room;rooms[room].root.SetActive(true);
-            // The sea's night sky and light belong to the ocean room alone.
+            int from=currentRoom;if(from==0&&wardrobe&&wardrobe.avatar)wardrobe.avatar.SetXray(false);rooms[currentRoom].root.SetActive(false);
+            // The sea's night sky and light belong to the ocean room alone. They go before the next room switches on, so a room that
+            // takes the scene's light as it opens (the rooftop) takes the day's, not the sea's.
             if(from==1&&ocean)ocean.SetEnvironment(false);
+            currentRoom=room;rooms[room].root.SetActive(true);
             player.Place(rooms[room].spawn.position,rooms[room].spawn.eulerAngles.y);
             if(room==1)ocean.OnArrive();
             if(room==AmbushRoom.Room&&ambush)ambush.OnArrive();

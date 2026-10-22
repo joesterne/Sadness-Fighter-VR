@@ -133,6 +133,7 @@ namespace AfterHours.Editor
             Art.XrayVeil=Fade("26 X-ray backdrop",Hex("#02050B"),.94f);Art.XrayHalo=Glow("25 X-ray glow",Hex("#8FD3FF"),.15f);
             Art.XrayBone=Glow("24 X-ray bone",Color.white,1f);Art.XrayHollow=Fade("27 X-ray hollow",Hex("#02050B"),1f);
             Art.ConfettiPaper=Tint("28 Confetti paper");
+            Art.ArchiveStacks=Tint("29 Archive stacks");
             // A vivid orange for the hidden mug. It glows a little of its own, so it stays easy to spot inside a shadowed cupboard.
             Art.Orange=Mat("30 Orange mug",Hex("#F2681C"),0,.45f);Art.Orange.EnableKeyword("_EMISSION");Art.Orange.SetColor("_EmissionColor",Hex("#F2681C")*.3f);
             // The rooftop at sunrise: bright, saturated toy colours up close, soft pastels for the skyline, and glowing clouds.
@@ -243,6 +244,21 @@ namespace AfterHours.Editor
             var oceanRoom=Object.FindAnyObjectByType<OceanRoom>(FindObjectsInactive.Include);if(oceanRoom)oceanRoom.nightSkybox=night;
             // The rooftop's sunrise sky, which the rooftop swaps in while the player is there.
             var rooftopRoom=Object.FindAnyObjectByType<RooftopRoom>(FindObjectsInactive.Include);if(rooftopRoom)rooftopRoom.skybox=SunriseSky();
+            // The archive's sky: the same blue as its haze in every direction, so the stacks fade into it with no horizon.
+            var archiveRoom=Object.FindAnyObjectByType<ArchiveRoom>(FindObjectsInactive.Include);if(archiveRoom)archiveRoom.skybox=ArchiveSky();
+        }
+        // The sunrise sky's shader painted one dark blue (a shade deeper straight up), with no sun and no glow.
+        static Material ArchiveSky()
+        {
+            var shader=AssetDatabase.LoadAssetAtPath<Shader>(SunriseShader);
+            if(!shader||!shader.isSupported){Debug.LogError("After Hours: "+SunriseShader+" is missing or does not compile, so the archive keeps the daytime sky.");return null;}
+            string path=Folder+"15d Archive sky.mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
+            if(!m){m=new Material(shader);AssetDatabase.CreateAsset(m,path);}
+            m.shader=shader;var haze=ArchiveRoom.Haze;
+            foreach(var name in new[]{"_Horizon","_Low","_Mid","_Ground","_SunColor"})m.SetColor(name,haze);
+            m.SetColor("_High",Color.Lerp(haze,Color.black,.15f));m.SetColor("_Zenith",Color.Lerp(haze,Color.black,.3f));m.SetColor("_GlowColor",Color.black);
+            m.SetVector("_SunDir",new Vector4(0,-1,0,0));m.SetFloat("_SunRadius",.001f);
+            EditorUtility.SetDirty(m);return m;
         }
         // A gradient sky with a flat, glowing sun, drawn by a small shader (no texture, so nothing to band or stream).
         static Material SunriseSky()
@@ -315,6 +331,8 @@ namespace AfterHours.Editor
             if(d.ambush&&d.ambush.changing&&t.IsChildOf(d.ambush.changing))return true;
             // The rooftop's drifting clouds and balloon.
             if(d.rooftop&&d.rooftop.moving&&t.IsChildOf(d.rooftop.moving))return true;
+            // The archive's drifting pages, and its far stacks, which are already a few large meshes of their own and stay out of the batches near the signs.
+            if(d.archive&&(d.archive.moving&&t.IsChildOf(d.archive.moving)||d.archive.scenery&&t.IsChildOf(d.archive.scenery)))return true;
             if(d.kitchen.lever&&t.IsChildOf(d.kitchen.lever))return true;
             foreach(var c in d.kitchen.spills)if(t.IsChildOf(c.transform))return true;
             return false;

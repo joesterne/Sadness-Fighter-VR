@@ -3,7 +3,9 @@
 Run: python3 make_audio.py <output folder>
 Writes 32 kHz mono 16-bit WAV files. Ambience and music loop seamlessly.
 """
-import os, sys
+import os
+import sys
+
 import numpy as np
 from scipy import signal
 
@@ -530,7 +532,7 @@ def amb_sealapping(seconds=28, fade=4):
 
 def amb_nightsea(seconds=32, fade=4):
     """Night on open water: low wind with slow gusts, a deep swell and a few drops of lapping."""
-    n = int((seconds + fade) * SR); tt = np.arange(n) / SR
+    n = int((seconds + fade) * SR)
     gust = 0.35 + 0.65 * smooth_noise(n, 0.12)
     wind = bandpass(pink(n), 180, 1100, 2) * gust * 0.5
     whistle = bandpass(white(n), 1400, 2100, 2) * (0.04 + 0.1 * smooth_noise(n, 0.07) ** 3)

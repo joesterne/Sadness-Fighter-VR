@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AfterHours
 {
-    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam, AmbushFeeling, AmbushReply, AmbushBalloon, AmbushNose, StandUp, GentleAmbush, DarkOpening, Music }
+    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam, AmbushFeeling, AmbushReply, AmbushBalloon, AmbushNose, StandUp, GentleAmbush, DarkOpening, WardrobeBuy, Music }
     public class Interactable : MonoBehaviour
     {
         public ActionKind kind;
@@ -35,6 +35,7 @@ namespace AfterHours
                 case ActionKind.GoToMirror: director.GoToMirror();break;
                 case ActionKind.WardrobePrev: if(director.wardrobe)director.wardrobe.Cycle(value,-1);break;
                 case ActionKind.WardrobeNext: if(director.wardrobe)director.wardrobe.Cycle(value,1);break;
+                case ActionKind.WardrobeBuy: director.BuyTryingOn();break;
                 case ActionKind.ChooseLine: if(director.shredder)director.shredder.Choose(value);break;
                 case ActionKind.PutBatBack: if(director.rage)director.rage.PutBatBack();break;
                 case ActionKind.NewComputer: if(director.rage)director.rage.NewComputer();break;
