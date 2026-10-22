@@ -13,7 +13,7 @@ namespace AfterHours
         public static Headset Current { get; private set; } = Headset.Unknown;
         public static bool Applied { get; private set; }
         // What was in force before a profile changed it, so it can be put back.
-        static float savedScale, savedShadow, savedFrequency; static UniversalRenderPipelineAsset saved;
+        static float savedScale, savedShadow, savedFrequency; static UniversalRenderPipelineAsset saved; static bool frequencyChanged;
         public const float Quest2RenderScale=.9f, Quest2ShadowDistance=20f, Quest2Frequency=72f;
 
         // Foveated rendering. The level is a ceiling, not a fixed amount: with dynamic foveation on, the headset uses none while
@@ -95,42 +95,16 @@ namespace AfterHours
             {
                 // Only a rate the headset really offers is requested.
                 var display=OVRManager.display;var offered=display!=null?display.displayFrequenciesAvailable:null;
-                if(offered!=null&&System.Array.IndexOf(offered,Quest2Frequency)>=0){savedFrequency=display.displayFrequency;display.displayFrequency=Quest2Frequency;}
+                if(offered!=null&&System.Array.IndexOf(offered,Quest2Frequency)>=0){savedFrequency=display.displayFrequency;display.displayFrequency=Quest2Frequency;frequencyChanged=true;}
             }
             catch(System.Exception){}
             Debug.Log("[DeviceProfile] Quest 2 detected: render scale "+Quest2RenderScale+", shadows to "+Quest2ShadowDistance+" m, "+Quest2Frequency+" Hz.");
         }
-        // Asks the runtime for foveated rendering at the ceiling this headset gets. The runtime may not be ready in the first
-        // moments after start-up, so this is called again every half second until it takes the request, up to FoveationAttempts
-        // times. Anything unexpected from the runtime is logged and the picture is left as it is: foveation is never worth a crash.
-        public static bool TryApplyFoveation()
-        {
-            if(FoveationSettled)return true;
-            var wanted=FoveationFor(Current);
-            if(wanted==OVRManager.FoveatedRenderingLevel.Off){FoveationSettled=true;return true;}
-            foveationTries++;
-            try
-            {
-                if(FoveationSupported())
-                {
-                    FoveationSetter(wanted,true);
-                    Foveation=wanted;FoveationDynamic=true;FoveationApplied=true;FoveationSettled=true;
-                    Debug.Log("[DeviceProfile] "+Current+": foveated rendering up to "+wanted+", adapted to the load by the headset.");
-                    return true;
-                }
-            }
-            catch(System.Exception e)
-            {
-                FoveationSettled=true;Debug.LogWarning("[DeviceProfile] Foveated rendering could not be turned on, so the picture is left as it is: "+e.Message);
-                return true;
-            }
-            if(foveationTries>=FoveationAttempts){FoveationSettled=true;Debug.Log("[DeviceProfile] This runtime does not offer foveated rendering; the picture is left as it is.");}
-            return FoveationSettled;
-        }
-        // Puts the render settings back to what they were. Used by tests so the shared URP asset is never left changed.
+        // Puts the render settings and the refresh rate back to what they were. Used by tests so the shared URP asset is never left changed.
         public static void Undo()
         {
             if(saved){saved.renderScale=savedScale;saved.shadowDistance=savedShadow;saved=null;}
+            if(frequencyChanged){frequencyChanged=false;try{var display=OVRManager.display;if(display!=null)display.displayFrequency=savedFrequency;}catch(System.Exception){}}
             Applied=false;Current=Headset.Unknown;
             Foveation=OVRManager.FoveatedRenderingLevel.Off;FoveationDynamic=false;FoveationApplied=false;FoveationSettled=false;foveationTries=0;
             FoveationSupported=RuntimeSupportsFoveation;FoveationSetter=SetRuntimeFoveation;
