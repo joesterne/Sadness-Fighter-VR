@@ -100,6 +100,33 @@ namespace AfterHours
             catch(System.Exception){}
             Debug.Log("[DeviceProfile] Quest 2 detected: render scale "+Quest2RenderScale+", shadows to "+Quest2ShadowDistance+" m, "+Quest2Frequency+" Hz.");
         }
+        // Asks the runtime for foveated rendering at the ceiling this headset gets. The runtime may not be ready in the first
+        // moments after start-up, so this is called again every half second until it takes the request, up to FoveationAttempts
+        // times. Anything unexpected from the runtime is logged and the picture is left as it is: foveation is never worth a crash.
+        public static bool TryApplyFoveation()
+        {
+            if(FoveationSettled)return true;
+            var wanted=FoveationFor(Current);
+            if(wanted==OVRManager.FoveatedRenderingLevel.Off){FoveationSettled=true;return true;}
+            foveationTries++;
+            try
+            {
+                if(FoveationSupported())
+                {
+                    FoveationSetter(wanted,true);
+                    Foveation=wanted;FoveationDynamic=true;FoveationApplied=true;FoveationSettled=true;
+                    Debug.Log("[DeviceProfile] "+Current+": foveated rendering up to "+wanted+", adapted to the load by the headset.");
+                    return true;
+                }
+            }
+            catch(System.Exception e)
+            {
+                FoveationSettled=true;Debug.LogWarning("[DeviceProfile] Foveated rendering could not be turned on, so the picture is left as it is: "+e.Message);
+                return true;
+            }
+            if(foveationTries>=FoveationAttempts){FoveationSettled=true;Debug.Log("[DeviceProfile] This runtime does not offer foveated rendering; the picture is left as it is.");}
+            return FoveationSettled;
+        }
         // Puts the render settings and the refresh rate back to what they were. Used by tests so the shared URP asset is never left changed.
         public static void Undo()
         {
