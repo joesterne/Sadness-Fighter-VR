@@ -1,4 +1,4 @@
-2026-10-17 04:03:23Z
+2026-10-22 22:36:42Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note
@@ -64,7 +64,7 @@ PASS: The old résumé: "SENIOR COORDINATOR since 2016" shredded from the seat
 PASS: Pinch picks up Always available. Nights and weekends. from the seat (2.1 m away)
 PASS: Pointing at the destination lights it up
 PASS: The old résumé: "Always available. Nights and weekends." shredded from the seat
-PASS: Pinch picks up Exceeded every target. from the seat (2.2 m away)
+PASS: Pinch picks up Exceeded every target. from the seat (1.9 m away)
 PASS: Pointing at the destination lights it up
 PASS: The old résumé: "Exceeded every target." shredded from the seat
 PASS: Pinch picks up Ten years. One company. from the seat (2.1 m away)
@@ -115,7 +115,7 @@ PASS: The ambush: the way out can be chosen from the seat
 PASS: All seven chapters completed seated, without moving
 PASS: Mirror: MIRROR on the desk brings you to the glass, facing it
 PASS: Mirror: your reflection appears
-PASS: Mirror: all 16 wardrobe buttons can be pointed at from the mirror spot
+PASS: Mirror: all 22 wardrobe buttons can be pointed at from the mirror spot
 PASS: Mirror: your reflection's face is straight ahead (within 25 degrees)
 PASS: Mirror: TOP > puts on the next top, and the reflection wears it
 PASS: Mirror: trying things on needs no movement
