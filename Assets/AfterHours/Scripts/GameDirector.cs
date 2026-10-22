@@ -33,6 +33,8 @@ namespace AfterHours
         public RooftopRoom rooftop;
         public ArchiveRoom archive;
         public Wardrobe wardrobe;
+        // Outfit add-ons from the store. Started at launch, so the store's ownership check runs in the first seconds.
+        [NonSerialized] public AddOnShop shop;
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
         public AudioClip select, grab, send, place, menuOpen, menuClose, teleport, turn, row, spill, pour, shred, unlock;
@@ -69,6 +71,7 @@ namespace AfterHours
             targets=new SendTarget[rooms.Length][];grabbables=new Grabbable[rooms.Length][];guidance=new Guidance[rooms.Length][];
             for(int i=0;i<rooms.Length;i++){targets[i]=rooms[i].root.GetComponentsInChildren<SendTarget>(true);grabbables[i]=rooms[i].root.GetComponentsInChildren<Grabbable>(true);guidance[i]=rooms[i].root.GetComponentsInChildren<Guidance>(true);}
             if(wardrobe)wardrobe.Load();
+            shop=new AddOnShop(AddOnShop.ForThisDevice(),this);shop.Changed+=()=>{if(wardrobe)wardrobe.Refresh();};_=shop.Begin();
         }
         public void PlayUi(AudioClip clip,float volume){if(audioSource&&clip)audioSource.PlayOneShot(clip,volume);}
         public void PlayAt(AudioClip clip,Vector3 position,float volume){if(clip)AudioSource.PlayClipAtPoint(clip,position,volume);}
@@ -97,8 +100,24 @@ namespace AfterHours
         public void Earn(string id)
         {
             if(!wardrobe||!wardrobe.Unlock(id))return;
-            news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");
+            Announce(id);
         }
+        // BUY at the mirror: the store's checkout for the add-on being tried on. Once bought it is put on straight away.
+        bool buying;
+        public async void BuyTryingOn()
+        {
+            if(buying||!wardrobe||shop==null||wardrobe.TryingOn==null)return;
+            var id=wardrobe.TryingOn;var name=Outfits.Get(id).name;buying=true;PurchaseResult result;
+            try{result=await shop.Buy(id);}finally{buying=false;}
+            if(!this||!wardrobe)return;
+            switch(result)
+            {
+                case PurchaseResult.Bought:case PurchaseResult.AlreadyOwned:wardrobe.Wear(id);Say(name+" is yours. It is on now, and stays in your wardrobe.");PlayUi(unlock,.6f);break;
+                case PurchaseResult.Cancelled:Say("Nothing was bought. You can keep trying it on.");break;
+                default:Say("The store could not be reached just now. Nothing was charged.");break;
+            }
+        }
+        public void Announce(string id){news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");}
         // The first small step anywhere earns a pin. Every step still counts the same.
         public void SmallStep(){Earn("step-pin");}
         public void GoToMirror()
@@ -115,6 +134,7 @@ namespace AfterHours
         {
             if(room<0||room>=rooms.Length||player.busy||room==currentRoom)return;
             if(room>0)lastRoom=room;SaveCheckpoint();
+            if(currentRoom==0&&wardrobe)wardrobe.StopTrying();
             StartCoroutine(ChangeRoom(room));
         }
         IEnumerator ChangeRoom(int room)

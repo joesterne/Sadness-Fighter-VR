@@ -65,7 +65,7 @@ namespace AfterHours.Editor
             var panelButtons=D.menu.GetComponentsInChildren<Interactable>(true).Where(b=>b.gameObject.activeInHierarchy).ToArray();
             float widest=panelButtons.Max(b=>Vector3.Angle(Vector3.ProjectOnPlane(P.Head.forward,Vector3.up),b.transform.position-P.Head.position));
             Check(panelButtons.Length==14&&widest<42f,"Every one of the menu's "+panelButtons.Length+" buttons is within "+widest.ToString("0")+" degrees of straight ahead");
-            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.MirrorTap||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext),"Only doors, CONTINUE, the mirror (and its glass), its wardrobe and the first-visit guide remain as lobby signs");
+            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.MirrorTap||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext||x.kind==ActionKind.WardrobeBuy),"Only doors, CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs");
             foreach(var t in Click(ActionKind.SeatedMode))yield return t;
             Check(P.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Menu SEATED VIEW enables seated view at 1.65 m");
             foreach(var t in Click(ActionKind.SeatedHeight))yield return t;
