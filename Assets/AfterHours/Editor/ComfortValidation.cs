@@ -66,10 +66,11 @@ namespace AfterHours.Editor
             float widest=panelButtons.Max(b=>Vector3.Angle(Vector3.ProjectOnPlane(P.Head.forward,Vector3.up),b.transform.position-P.Head.position));
             Check(panelButtons.Length==15&&widest<42f,"Every one of the menu's "+panelButtons.Length+" buttons is within "+widest.ToString("0")+" degrees of straight ahead");
             // Calm background music: the theme in the lobby, a quieter piece in the chapters, and MUSIC in the menu to switch it off.
+            // The suites step a paused editor, and a paused editor plays no audio, so a playing piece is checked by its clip and its level.
             var music=D.music;
             Check(music&&music.transform.IsChildOf(D.transform)&&music.source&&music.source.loop&&music.source.spatialBlend==0&&music.theme&&music.theme.name=="Music - After hours theme"&&music.calm&&music.calm.name=="Music - Quiet hours","The game carries its music: the theme and the quiet piece, on the director rather than in a room");
             Check(D.rooms.All(r=>r.root.GetComponentsInChildren<AudioSource>(true).All(s=>!s.clip||!s.clip.name.StartsWith("Music"))),"No room plays music of its own, so two pieces never overlap");
-            Check(music.on&&music.Playing==music.theme&&music.Level>Music.Volume*.9f&&D.menu.music&&D.menu.music.text.Contains("MUSIC")&&D.menu.music.text.Contains("ON")&&D.menu.Button(ActionKind.Music),"Music plays in the lobby (the theme), and the menu offers MUSIC (on)");
+            Check(music.on&&music.source.clip==music.theme&&music.Level>Music.Volume*.9f&&D.menu.music&&D.menu.music.text.Contains("MUSIC")&&D.menu.music.text.Contains("ON")&&D.menu.Button(ActionKind.Music),"Music plays in the lobby (the theme), and the menu offers MUSIC (on)");
             foreach(var t in Click(ActionKind.Music))yield return t;yield return Music.FadeSeconds+.3f;
             Check(!music.on&&music.Level==0&&music.Playing==null&&D.menu.music.text.Contains("OFF")&&PlayerPrefs.GetInt(Music.Key,1)==0,"MUSIC fades the music out and pauses it, and the choice is stored");
             Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.MirrorTap||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext||x.kind==ActionKind.WardrobeBuy),"Only doors, CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs");
@@ -231,10 +232,10 @@ namespace AfterHours.Editor
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.ResetRoom))yield return t;
             Check(JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key)).strokes==0&&!D.menu.IsOpen,"Menu TRY AGAIN saves the reset and closes the menu");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.Music))yield return t;foreach(var t in MenuKey(false))yield return t;yield return Music.FadeSeconds;
-            Check(D.music.on&&D.music.Playing==D.music.calm&&D.music.Level>Music.Volume*.9f&&PlayerPrefs.GetInt(Music.Key,0)==1,"MUSIC switches back on in a chapter, which plays the quiet piece");
+            Check(D.music.on&&D.music.source.clip==D.music.calm&&D.music.Level>Music.Volume*.9f&&PlayerPrefs.GetInt(Music.Key,0)==1,"MUSIC switches back on in a chapter, which plays the quiet piece");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.Rest))yield return t;yield return .8f;
             Check(D.currentRoom==0,"Menu LOBBY returns to the lobby");
-            Check(D.music.Playing==D.music.theme,"Back in the lobby the theme plays again");
+            Check(D.music.source.clip==D.music.theme,"Back in the lobby the theme plays again");
             // Thumb shortcuts. The editor has no hands, so the gestures are handed over directly.
             var thumbs=P.GetComponent<ThumbShortcuts>();
             Check(thumbs&&thumbs.player==P,"The player carries the thumb shortcuts");
