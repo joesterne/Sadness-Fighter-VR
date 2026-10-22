@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AfterHours
 {
-    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam, AmbushFeeling, AmbushReply, AmbushBalloon, AmbushNose, StandUp, GentleAmbush, DarkOpening }
+    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam, AmbushFeeling, AmbushReply, AmbushBalloon, AmbushNose, StandUp, GentleAmbush, DarkOpening, Music }
     public class Interactable : MonoBehaviour
     {
         public ActionKind kind;
@@ -49,6 +49,7 @@ namespace AfterHours
                 case ActionKind.AmbushNose: if(director.ambush)director.ambush.Honk(value);break;
                 case ActionKind.StandUp: if(director.ambush)director.ambush.StandUp();break;
                 case ActionKind.GentleAmbush: director.gentleAmbush=!director.gentleAmbush; if(director.ambush)director.ambush.OptionChanged(); director.Say(director.gentleAmbush?"Gentle ambush: the clowns are smaller and softer from the start.":"The clowns will be as big as they were. You can change this anytime.");break;
+                case ActionKind.Music: if(director.music)director.music.Toggle();break;
                 case ActionKind.DarkOpening: director.darkOpening=!director.darkOpening; director.Say(director.darkOpening?"Dark opening on: the ambush starts in the dark, then the lights come on.":"Dark opening off: the ambush starts with the lights on.");break;
             }
             if(kind==ActionKind.SmoothMotion||kind==ActionKind.GentleAudience||kind==ActionKind.GentleAmbush||kind==ActionKind.DarkOpening)director.SaveCheckpoint();

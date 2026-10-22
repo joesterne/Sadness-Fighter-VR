@@ -286,9 +286,9 @@ namespace AfterHours
             if(carrying&&held[index]&&!grab)
             {
                 var letGo=held[index];held[index]=null;aimedTarget[index]=null;
-                // A throwable box let go while the hand is moving is thrown, bent toward the truck if it was aimed that way. Pointing at
-                // where it belongs and letting go still sends it there, which is what a seated player with a still hand does.
-                // A résumé page can be tossed the same way, but only when nothing is pointed at, and it is never helped toward anything.
+                // A throwable box or résumé page let go while the hand is moving is thrown, bent toward the truck or the shredder if it was aimed
+                // that way. Pointing at where it belongs and letting go still sends it there, which is what a seated player with a still hand does.
+                // Paperwork and mugs can be tossed the same way, but only when nothing is pointed at, and they are never helped toward anything.
                 bool tossing=(letGo.throwable||(letGo.tossable&&!sendTo))&&CanThrow;
                 var flick=tossing?letGo.HandVelocity():Vector3.zero;
                 if(tossing&&Throwing.IsThrow(flick))

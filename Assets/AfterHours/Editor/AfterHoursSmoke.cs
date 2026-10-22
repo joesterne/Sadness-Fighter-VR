@@ -214,7 +214,8 @@ namespace AfterHours.Editor
             // A quiet easter egg: a page thrown onto the floor bursts into confetti, then is back on its stand. Nothing is counted.
             {
                 var egg=d.shredder.egg;var sheet=d.shredder.pages[4];var sheetHome=sheet.transform.position;int popped=egg.bursts;
-                Check(egg&&egg.pop&&egg.shower&&egg.sound&&d.shredder.pages.All(x=>x.tossable&&!x.throwable),"The résumé room has its confetti, and its five pages can be tossed");
+                Check(egg&&egg.pop&&egg.shower&&egg.sound&&d.shredder.pages.All(x=>x.throwable&&!x.tossable),"The résumé room has its confetti, and its five pages can be thrown");
+                Check(d.music&&(!d.music.on||d.music.Playing==d.music.calm),"The chapter plays the quiet music (unless MUSIC is off)");
                 d.player.Place(d.rooms[6].spawn.position,0);yield return Delay();
                 Put(sheet,d.rooms[6].root.transform.TransformPoint(new Vector3(3.4f,1.2f,-2f)));
                 sheet.Throw(new Vector3(.4f,-1.5f,1.4f));yield return Delay(.6f);

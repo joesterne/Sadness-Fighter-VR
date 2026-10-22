@@ -263,6 +263,50 @@ def music_theme(seconds=64, fade=6):
     x = reverb(x, 3.5, 0.45, 3500)
     return normalise(make_loop(x, fade), -6, rms_db=-24)
 
+def soft_key(freq, seconds=5.0):
+    # A felt-piano-like note: a round fundamental, a quieter octave that fades first, and a soft hammer.
+    n = int(seconds * SR); tt = np.arange(n) / SR
+    x = (np.sin(2 * np.pi * freq * tt) + 0.3 * np.sin(2 * np.pi * freq * 2.002 * tt) * decay(n, 0.9)
+         + 0.08 * np.sin(2 * np.pi * freq * 3.004 * tt) * decay(n, 0.4))
+    return lowpass(x * decay(n, 1.6) * env_adsr(n, 0.012, 0.6), 2400, 1)
+
+def music_quiet(seconds=144, fade=8):
+    # The calm music under the chapters: slower and softer than the theme, in F. Warm pads change every 18 seconds over four
+    # chords, and now and then a short phrase of soft piano notes drifts over them, with long rests between.
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('F', 2), ('C', 3), ('A', 3), ('E', 4), ('G', 4)],     # Fmaj9
+        [('D', 2), ('A', 2), ('F', 3), ('C', 4), ('E', 4)],     # Dm9
+        [('A#', 2), ('F', 3), ('A', 3), ('C', 4), ('D', 4)],    # Bbmaj9/6
+        [('C', 3), ('G', 3), ('A#', 3), ('D', 4), ('F', 4)],    # C9sus
+    ]
+    seg = 18.0
+    pad = np.zeros(n)
+    for k in range(int(np.ceil((seconds + fade) / seg)) + 1):
+        chord = chords[k % len(chords)]
+        start = int(k * seg * SR); length = int((seg + 6) * SR)
+        if start >= n: break
+        m = min(length, n - start)
+        e = env_adsr(length, 5.0, 6.0, 2.0)[:m]
+        for name, octv in chord:
+            pad[start:start + m] += pad_note(hz(name, octv), m) * e * 0.15
+    pad = lowpass(pad, 1400, 2)
+    keys = np.zeros(n)
+    scale = [('F', 4), ('G', 4), ('A', 4), ('C', 5), ('D', 5), ('F', 5)]
+    t = 6.0
+    while t < seconds + fade - 6:
+        step = int(rng.integers(len(scale)))
+        for _ in range(int(rng.integers(2, 5))):
+            name, octv = scale[step]
+            b = soft_key(hz(name, octv)) * rng.uniform(0.05, 0.08)
+            i = int(t * SR); keys[i:i + len(b)] += b[:max(0, n - i)]
+            t += rng.choice([1.0, 1.25, 1.5])
+            step = int(np.clip(step + rng.choice([-2, -1, 1, 2]), 0, len(scale) - 1))
+        t += rng.uniform(5.0, 9.0)
+    x = pad + keys
+    x = reverb(x, 4.5, 0.5, 3000)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
 
 # ---------- effects ----------
 def sfx_select():
@@ -755,6 +799,7 @@ def main(folder):
         'SFX - Blast': sfx_blast,
         'SFX - Shatter': sfx_shatter, 'SFX - Cabinet': sfx_cabinet, 'SFX - Steam': sfx_steam,
         'Ambience - Boardroom': amb_boardroom, 'SFX - Lights': sfx_lights, 'SFX - Squeak': sfx_squeak, 'SFX - Balloon': sfx_balloon, 'SFX - Tear': sfx_tear, 'SFX - Stand': sfx_stand,
+        'Music - Quiet hours': music_quiet,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

@@ -6,7 +6,7 @@ namespace AfterHours
     // A quiet easter egg in the old résumé room. Throw a page onto the floor (or just drop it there) and it bursts into a shower of
     // multi-coloured confetti: a burst that flies up from where the page landed, a shower that falls from above, and a pop and a
     // flutter of paper. Nothing is lost. The page is back on its stand a moment later, so the chapter and its count are untouched.
-    // A page let go over the desk, or sent at the shredder, does nothing special.
+    // A page let go over the desk, or sent or thrown into the shredder, does nothing special.
     // Lives on the room's "Confetti" group, so it is switched off with the room. Coming back into the room (or TRY AGAIN) puts any
     // page that was mid-burst back at once.
     public class ConfettiEgg : MonoBehaviour

@@ -14,10 +14,11 @@ namespace AfterHours
         public bool upright;
         // A tool (the bat) is held in a fixed grip, stays in the hand when the pinch opens, and goes back to its rack when put down.
         public bool tool;
-        // The boxes in the heavy room can be thrown: let go while the hand is moving and the box flies on, helped toward the truck.
+        // The boxes in the heavy room and the old résumé pages can be thrown: let go while the hand is moving and it flies on, helped toward
+        // the truck or the shredder. One that misses goes back to its stand (a page that hits the floor bursts into confetti first).
         public bool throwable;
-        // The old résumé pages can be tossed too, as a quiet extra: let go while the hand is moving and with nothing pointed at, and the page flies on.
-        // It is never helped toward a target, and it stays wherever it lands (a box that misses goes back to its stand). A page tossed onto the floor bursts into confetti.
+        // The ambush's paperwork and the kitchen's mugs can be tossed, as a quiet extra: let go while the hand is moving and with nothing pointed at,
+        // and it flies on. It is never helped toward a target, and it stays wherever it lands.
         public bool tossable;
         public Transform Holder { get; private set; }
         // When the hand last closed on it (game clock). A box drawn in from across the room is moving fast for a moment; that is not a slam.
@@ -129,7 +130,7 @@ namespace AfterHours
                 if(Time.time-start>14f)break;
             }
             thrown=false;
-            // A page that was tossed stays where it fell. A box that missed goes back to its stand, with no penalty.
+            // Something tossed stays where it fell. A box or page that missed goes back to its stand, with no penalty.
             if(!throwable)yield break;
             var d=GameDirector.Instance;
             if(d&&Time.time>nextMissMessage){d.Say("Not quite. That one is back on its stand. There is no penalty, and you can still point and let go.");nextMissMessage=Time.time+12;}

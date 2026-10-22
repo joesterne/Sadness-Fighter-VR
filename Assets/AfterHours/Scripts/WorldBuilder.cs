@@ -21,7 +21,7 @@ namespace AfterHours
             NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
             NewRoom(7,"The rage room",new Vector3(560,0,0),new Vector3(0,.04f,-1.25f));Rage();
             NewRoom(8,"The ambush",new Vector3(640,0,0),new Vector3(0,.04f,-1.9f));Ambush();
-            Menu();
+            Menu();BackgroundMusic();
             FitPlates();
             // Signs that only guide or reassure can be switched off together (clean mode). Labels on buttons, doors and objects stay.
             foreach(var room in d.rooms)foreach(var t in room.root.GetComponentsInChildren<TextMeshPro>(true))if(GuidanceNames.Contains(t.name)&&!t.GetComponent<Guidance>())t.gameObject.AddComponent<Guidance>();
@@ -162,20 +162,22 @@ namespace AfterHours
         {
             var root=Art.Group("Comfort menu",Vector3.zero,d.player.transform);
             var menu=root.gameObject.AddComponent<ComfortMenu>();menu.director=d;d.menu=menu;d.player.menu=menu;
-            // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view.
-            Art.Box("Menu panel",new Vector3(0,-.1105f,.014f),new Vector3(.53f,.721f,.012f),Art.Ink,true,root,.006f);
-            Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.222f,-.002f),.019f,muted,.36f,root);
-            menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.19f,-.002f),.027f,ivory,.36f,root);
-            MenuButton(root,"Menu close","CLOSE",.19f,.205f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
-            MenuButton(root,"Menu turn left","< TURN",-.17f,.125f,Art.Teal,ActionKind.TurnLeft,.12f);
-            MenuButton(root,"Menu turn around","TURN AROUND",0,.125f,Art.Teal,ActionKind.TurnAround,.2f);
-            MenuButton(root,"Menu turn right","TURN >",.17f,.125f,Art.Teal,ActionKind.TurnRight,.12f);
+            // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view. The bottom row is as low
+            // as it can go (42 degrees below straight ahead), so the panel grows upward: the turning buttons and FACE FORWARD sit above eye level.
+            Art.Box("Menu panel",new Vector3(0,-.068f,.014f),new Vector3(.53f,.806f,.012f),Art.Ink,true,root,.006f);
+            Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.307f,-.002f),.019f,muted,.36f,root);
+            menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.275f,-.002f),.027f,ivory,.36f,root);
+            MenuButton(root,"Menu close","CLOSE",.19f,.29f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
+            MenuButton(root,"Menu turn left","< TURN",-.17f,.21f,Art.Teal,ActionKind.TurnLeft,.12f);
+            MenuButton(root,"Menu turn around","TURN AROUND",0,.21f,Art.Teal,ActionKind.TurnAround,.2f);
+            MenuButton(root,"Menu turn right","TURN >",.17f,.21f,Art.Teal,ActionKind.TurnRight,.12f);
+            MenuButton(root,"Menu face forward","FACE FORWARD",0,.125f,Art.Teal,ActionKind.FaceForward,.2f);
             menu.seated=MenuButton(root,"Menu seated view","SEATED VIEW",-.12f,.04f,Art.Navy,ActionKind.SeatedMode);
             menu.height=MenuButton(root,"Menu seated height","SEATED HEIGHT",.12f,.04f,Art.Navy,ActionKind.SeatedHeight);
             menu.walking=MenuButton(root,"Menu movement","MOVEMENT",-.12f,-.045f,Art.Navy,ActionKind.SmoothMotion);
             menu.vignette=MenuButton(root,"Menu comfort vignette","COMFORT VIGNETTE",.12f,-.045f,Art.Navy,ActionKind.Vignette);
             menu.crowd=MenuButton(root,"Menu kitchen crowd","KITCHEN CROWD",-.12f,-.13f,Art.Navy,ActionKind.GentleAudience);
-            MenuButton(root,"Menu face forward","FACE FORWARD",.12f,-.13f,Art.Teal,ActionKind.FaceForward);
+            menu.music=MenuButton(root,"Menu music","MUSIC",.12f,-.13f,Art.Navy,ActionKind.Music);
             menu.clean=MenuButton(root,"Menu clean mode","CLEAN MODE",-.12f,-.215f,Art.Navy,ActionKind.CleanMode);
             menu.night=MenuButton(root,"Menu ocean at night","OCEAN AT NIGHT",.12f,-.215f,Art.Navy,ActionKind.NightOcean);
             menu.gentle=MenuButton(root,"Menu gentle ambush","GENTLE AMBUSH",-.12f,-.30f,Art.Navy,ActionKind.GentleAmbush);
@@ -186,6 +188,14 @@ namespace AfterHours
             // A panel floating at arm's length should not throw a shadow onto the room.
             foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
             menu.Refresh();root.gameObject.SetActive(false);
+        }
+        // Calm background music for the whole game. It belongs to the director, not a room, so it carries on across room changes.
+        static void BackgroundMusic()
+        {
+            var go=new GameObject("Music");go.transform.SetParent(d.transform,false);
+            var music=go.AddComponent<Music>();music.director=d;d.music=music;
+            music.source=go.AddComponent<AudioSource>();music.source.loop=true;music.source.playOnAwake=false;music.source.spatialBlend=0;music.source.priority=64;music.source.volume=Music.Volume;
+            music.theme=SoundBank.Get("Music - After hours theme");music.calm=SoundBank.Get("Music - Quiet hours");music.source.clip=music.theme;
         }
         // A sign that says one thing to a player using hands and another to a player using controllers, and follows them if they switch.
         static TextMeshPro Words(TextMeshPro text,string hands,string controllers)
@@ -289,7 +299,7 @@ namespace AfterHours
             Mirror();
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
             Guide();
-            Sound("Ambience - Lobby",.5f);Sound("Music - After hours theme",.22f);
+            Sound("Ambience - Lobby",.5f);
         }
         // A full-length mirror built into the lobby's left wall, with the wardrobe on either side of it. Behind the glass
         // is a mirror-image copy of this end of the lobby, and the player's reflection stands in it (see MirrorAvatar).
@@ -588,6 +598,12 @@ namespace AfterHours
             m.xray=parts.ToArray();m.halos=halos.ToArray();m.haloMaterial=Art.XrayHalo;
         }
         // The old résumé: five pages on a rack, a shredder, and a blank page at the end.
+        // The shredder stands on the player's side of the desk, just right of the arrival point and turned to face it, so it is a step or
+        // two away rather than across the room, and a page thrown at it from the arrival point lands in it. It stays clear of the
+        // line of sight to the pages and the four true lines.
+        public static readonly Vector3 ShredderAt=new Vector3(1.95f,0,-.8f);
+        public const float ShredderYaw=70;
+        static Vector3 FromShredder(Vector3 local)=>ShredderAt+Quaternion.Euler(0,ShredderYaw,0)*local;
         static void Shredding()
         {
             Shell(12,15,Art.Cream);d.rooms[6].total=5;
@@ -607,7 +623,9 @@ namespace AfterHours
             string[] farewells={"A title described a role. It was never the whole of you.","You were never meant to be reachable all the time.","Your worth was never a quarterly number.","Your loyalty is still yours. It goes with you.","You do not owe anyone a perfect explanation."};
             var pages=new Grabbable[resumes.Length];for(int i=0;i<pages.Length;i++)pages[i]=Page(resumes[i],new Vector3(-1.44f+i*.72f,1.087f,.45f));
             // The shredder: a bin with a window onto the paper, the cutting head and its slot. Big enough to read from the seat.
-            const float z=3.3f,top=1.4f;
+            // It is built in its own frame (z=0 is its middle), which is placed and turned as one.
+            const float z=0,top=1.4f;
+            var room=Art.Root;var unit=Art.Group("Shredder",ShredderAt);unit.localRotation=Quaternion.Euler(0,ShredderYaw,0);Art.Root=unit;
             Art.Box("Bin back",new Vector3(0,.39f,z+.297f),new Vector3(.875f,.775f,.03f),Art.Ink);
             for(int s=-1;s<=1;s+=2)Art.Box("Bin side",new Vector3(s*.42f,.39f,z),new Vector3(.035f,.775f,.625f),Art.Ink);
             Art.Box("Bin floor",new Vector3(0,.015f,z),new Vector3(.875f,.03f,.625f),Art.Ink);
@@ -639,15 +657,17 @@ namespace AfterHours
             main.startSize3D=true;main.startSizeX=.018f;main.startSizeY=.013f;main.startSizeZ=.14f;main.startRotation3D=true;main.startRotationY=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);
             var emission=strips.emission;emission.rateOverTime=26;var shape=strips.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(.6f,.08f,.01f);
             var stripRenderer=strips.GetComponent<ParticleSystemRenderer>();stripRenderer.renderMode=ParticleSystemRenderMode.Mesh;stripRenderer.mesh=Geometry.Get(PrimitiveType.Cube);stripRenderer.sharedMaterial=Art.Paper;
+            Art.Root=room;
             // Each page also sends a flurry of loose bits up out of the head. They tumble down across the room and come to rest on the floor...
             var floorPlane=Art.Group("Paper floor",new Vector3(0,.012f,0));
-            var flurry=new[]{Flurry("Paper bits flying",new Vector3(0,top+.05f,z),Art.White,floorPlane),Flurry("Paper bits flying",new Vector3(0,top+.05f,z),Art.Paper,floorPlane)};
+            var flurry=new[]{Flurry("Paper bits flying",FromShredder(new Vector3(0,top+.05f,z)),Art.White,floorPlane),Flurry("Paper bits flying",FromShredder(new Vector3(0,top+.05f,z)),Art.Paper,floorPlane)};
             // ...and leaves a set of scraps behind (they appear once the flurry has come down): over the floor, thickest around the shredder,
             // on the desk, on the shredder's top and on the window sill. Each page adds a set, so the room fills with paper as the pages go.
             float Gauss()=>Mathf.Sqrt(-2*Mathf.Log(Mathf.Max(R(),.0001f)))*Mathf.Cos(2*Mathf.PI*R());
             bool OnFloor(float x,float zz)
             {
-                if(Mathf.Abs(x)<.6f&&zz>2.85f&&zz<3.75f)return false;                                                  // inside the shredder's bin
+                var inBin=Quaternion.Euler(0,-ShredderYaw,0)*(new Vector3(x,0,zz)-ShredderAt);
+                if(Mathf.Abs(inBin.x)<.6f&&Mathf.Abs(inBin.z)<.45f)return false;                                      // inside the shredder's bin
                 if(x>-5.1f&&x<-4.1f&&zz>2.6f&&zz<3.5f)return false;if(x>4f&&x<5f&&zz>2.2f&&zz<3f)return false;       // under the archive boxes
                 return Mathf.Abs(Mathf.Abs(x)-4.9f)>.5f||Mathf.Abs(zz-8.4f)>.5f;                                       // and the plants
             }
@@ -664,24 +684,24 @@ namespace AfterHours
                 for(int k=0;k<210;k++)
                 {
                     // Three in five fall around the shredder and the desk, the rest anywhere on the floor.
-                    float x=k%5<3?Gauss()*1.9f:R()*11f-5.5f,zz=k%5<3?1.6f+Gauss()*2.2f:R()*13.8f-4.4f;
+                    float x=k%5<3?.9f+Gauss()*1.9f:R()*11f-5.5f,zz=k%5<3?-.2f+Gauss()*1.8f:R()*13.8f-4.4f;
                     x=Mathf.Clamp(x,-5.5f,5.5f);zz=Mathf.Clamp(zz,-4.4f,9.4f);
                     if(OnFloor(x,zz))Drop(x,.004f+R()*.006f,zz);
                 }
                 for(int k=0;k<20;k++)Drop(R()*4.2f-2.1f,.783f+R()*.003f,k%2==0?.03f+R()*.27f:.6f+R()*.27f);                  // on the desk, either side of the page rack
-                for(int k=0;k<9;k++)Drop(R()*.9f-.45f,1.434f+R()*.004f,k%2==0?3f+R()*.22f:3.38f+R()*.24f);                    // on the shredder's top, clear of the slot
+                for(int k=0;k<9;k++){var onTop=FromShredder(new Vector3(R()*.9f-.45f,1.434f+R()*.004f,k%2==0?-.3f+R()*.22f:.08f+R()*.24f));Drop(onTop.x,onTop.y,onTop.z);}  // on the shredder's top, clear of the slot
                 for(int k=0;k<7;k++)Drop(R()*5.8f-2.9f,.809f+R()*.003f,9.72f+R()*.12f);                                      // on the window sill
                 Scraps("Paper scraps white",scraps,scrapWhite,Art.White);Scraps("Paper scraps",scraps,scrapPaper,Art.Paper);
                 scraps.gameObject.SetActive(false);litter[i]=scraps.gameObject;
             }
             // The slot's trigger runs the shredder. Pointing at the slot while holding a page lights its outline.
-            var slot=Art.Box("Shredder slot",new Vector3(0,top+.23f,z),new Vector3(.9f,.4f,.45f),Art.Teal,false);
+            var slot=Art.Box("Shredder slot",new Vector3(0,top+.23f,z),new Vector3(.9f,.4f,.45f),Art.Teal,false,unit);
             Object.DestroyImmediate(slot.GetComponent<Renderer>());slot.AddComponent<BoxCollider>().isTrigger=true;
             var shredder=slot.AddComponent<Shredder>();d.shredder=shredder;shredder.director=d;shredder.pages=pages;shredder.farewells=farewells;shredder.piles=piles;shredder.strips=strips;shredder.bits=flurry;shredder.litter=litter;
             Confetti(shredder,pages,floorPlane);
             // A page stands in the slot, then sinks out of sight into the head.
-            shredder.feed=Art.Group("Feed point",new Vector3(0,top+.305f,z));
-            Target(slot,6,new Vector3(0,.09f,0),.55f,"Point at the shredder and let go.",Outline("Shredder highlight",new Vector3(0,top+.045f,z),new Vector2(1.15f,.88f),false));
+            shredder.feed=Art.Group("Feed point",new Vector3(0,top+.305f,z),unit);
+            Target(slot,6,new Vector3(0,.09f,0),.55f,"Point at the shredder and let go.",Outline("Shredder highlight",new Vector3(0,top+.045f,z),new Vector2(1.15f,.88f),false,unit));
             // After the last page: a blank page and four true lines to choose from.
             var blank=Art.Group("Blank page",Vector3.zero);
             Art.Box("Page stand",new Vector3(0,.88f,.62f),new Vector3(.5f,.16f,.12f),Art.Navy,false,blank);
@@ -750,7 +770,7 @@ namespace AfterHours
             var group=Art.Group("Confetti",Vector3.zero);var egg=group.gameObject.AddComponent<ConfettiEgg>();
             egg.director=d;egg.pages=pages;egg.sound=SoundBank.Get("SFX - Confetti");
             egg.pop=ConfettiSystem("Confetti burst",group,floor,true);egg.shower=ConfettiSystem("Confetti shower",group,floor,false);
-            foreach(var page in pages){page.tossable=true;page.gameObject.AddComponent<ConfettiPage>().egg=egg;}
+            foreach(var page in pages){page.throwable=true;page.gameObject.AddComponent<ConfettiPage>().egg=egg;}
             shredder.egg=egg;
         }
         // Seven bright colours; each bit takes one at random. The burst flies up from the floor and slows in the air; the shower falls from two metres up.
