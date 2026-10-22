@@ -313,7 +313,7 @@ namespace AfterHours.Editor
             D.RestartCurrentRoom();yield return .3f;
             Check(!sheet.processed&&sheet.gameObject.activeSelf&&D.rooms[6].accepted==0&&D.shredder.shredded==0,"TRY AGAIN puts the page back on its stand");
             var shredderSlot=D.Targets.First(x=>x.GetComponent<Shredder>());
-            Check(Vector3.Distance(Flat(D.rooms[6].spawn.position),Flat(shredderSlot.LandingPoint))<2.5f&&Flat(shredderSlot.LandingPoint-D.rooms[6].spawn.position).z<.5f,"The shredder stands on the player's side of the desk, within a couple of steps of the arrival point");
+            Check(Vector3.Distance(Flat(D.rooms[6].spawn.position),Flat(shredderSlot.LandingPoint))<2.5f&&D.rooms[6].root.transform.InverseTransformPoint(shredderSlot.LandingPoint).z<0,"The shredder stands on the player's side of the desk (in front of its near edge), within a couple of steps of the arrival point");
             foreach(var t in Take(sheet))yield return t;
             var toward=Flat(shredderSlot.LandingPoint-sheet.transform.position).normalized+Vector3.up*.3f;
             foreach(var t in Fling(toward,4f))yield return t;
