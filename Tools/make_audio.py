@@ -309,6 +309,102 @@ def music_quiet(seconds=144, fade=8):
     x = reverb(x, 4.5, 0.5, 3000)
     return normalise(make_loop(x, fade), -8, rms_db=-25)
 
+def pad_bed(chords, seg, n, level=0.15, attack=5.0, release=6.0, cutoff=1400):
+    # Warm pads that move through the chords, one every seg seconds, each overlapping the next.
+    pad = np.zeros(n)
+    for k in range(int(np.ceil(n / SR / seg)) + 1):
+        chord = chords[k % len(chords)]
+        start = int(k * seg * SR); length = int((seg + release) * SR)
+        if start >= n: break
+        m = min(length, n - start)
+        e = env_adsr(length, attack, release, 2.0)[:m]
+        for name, octv in chord:
+            pad[start:start + m] += pad_note(hz(name, octv), m) * e * level
+    return lowpass(pad, cutoff, 2)
+
+def place(into, sound, at):
+    i = int(at * SR)
+    if i >= len(into): return
+    into[i:i + len(sound)] += sound[:len(into) - i]
+
+def music_tide(seconds=128, fade=8):
+    # Slow tide: a rolling, unhurried arpeggio in A, three notes up and three down like water coming in and going out,
+    # over soft pads that change every 16 seconds (Amaj9, F#m11, Dmaj9, E6sus).
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('A', 2), ('E', 3), ('G#', 3), ('B', 3), ('C#', 4)],
+        [('F#', 2), ('C#', 3), ('E', 3), ('A', 3), ('B', 3)],
+        [('D', 2), ('A', 2), ('F#', 3), ('C#', 4), ('E', 4)],
+        [('E', 2), ('B', 2), ('C#', 3), ('F#', 3), ('A', 3)],
+    ]
+    seg = 16.0
+    pad = pad_bed(chords, seg, n, level=0.12)
+    roll = np.zeros(n)
+    t = 2.0
+    while t < seconds + fade - 4:
+        chord = chords[int(t // seg) % len(chords)]
+        up = [hz(name, octv + 1) for name, octv in chord[1:4]]
+        for j, f in enumerate(up + up[::-1]):
+            place(roll, soft_key(f, 3.5) * (0.05 + 0.015 * np.sin(j)) * rng.uniform(0.85, 1.1), t + j * 0.62)
+        t += 6 * 0.62 + rng.choice([0.6, 1.2, 2.4])
+    x = reverb(pad + roll, 4.0, 0.5, 3200)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
+def music_box(freq, seconds=2.5):
+    # A small music-box tine: bright, quick to fade, with a faint metallic overtone.
+    n = int(seconds * SR); tt = np.arange(n) / SR
+    x = np.sin(2 * np.pi * freq * tt) + 0.25 * np.sin(2 * np.pi * freq * 3.95 * tt) * decay(n, 0.15)
+    return lowpass(x * decay(n, 0.7) * env_adsr(n, 0.003, 0.3), 5000, 1)
+
+def music_lanterns(seconds=120, fade=8):
+    # Paper lanterns: a gentle music-box tune in G, a four-bar motif that comes back with small changes, over pads
+    # (Gmaj7, Em9, Cmaj9, Dsus) and long breaths of rest.
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('G', 2), ('D', 3), ('F#', 3), ('B', 3)],
+        [('E', 2), ('B', 2), ('G', 3), ('D', 4), ('F#', 4)],
+        [('C', 3), ('G', 3), ('B', 3), ('D', 4), ('E', 4)],
+        [('D', 3), ('A', 3), ('C', 4), ('G', 4)],
+    ]
+    seg = 12.0
+    pad = pad_bed(chords, seg, n, level=0.1, attack=4.0, release=5.0, cutoff=1600)
+    scale = [('G', 5), ('A', 5), ('B', 5), ('D', 6), ('E', 6), ('G', 6)]
+    motif = [2, 3, 4, 3, 2, 1, 0, 1]
+    tune = np.zeros(n)
+    t = 3.0
+    while t < seconds + fade - 6:
+        phrase = [int(np.clip(m + rng.choice([0, 0, 0, 1, -1]), 0, len(scale) - 1)) for m in motif]
+        for j, step in enumerate(phrase):
+            name, octv = scale[step]
+            place(tune, music_box(hz(name, octv)) * rng.uniform(0.045, 0.06), t + j * 0.55)
+        t += len(phrase) * 0.55 + rng.uniform(4.0, 7.0)
+    x = reverb(pad + tune, 3.2, 0.45, 4200)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
+def music_night(seconds=144, fade=8):
+    # Night window: warm, slightly wavering electric-piano chords in E flat, one every 6 seconds, over a slow low line,
+    # like a late street seen from a quiet room (Ebmaj9, Cm9, Abmaj7(#11), Bb7sus).
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('D#', 2), ('A#', 3), ('D', 4), ('G', 4), ('F', 4)],
+        [('C', 2), ('A#', 3), ('D#', 4), ('G', 4), ('D', 5)],
+        [('G#', 1), ('G', 3), ('C', 4), ('D', 4), ('D#', 4)],
+        [('A#', 1), ('G#', 3), ('C', 4), ('D#', 4), ('F', 4)],
+    ]
+    keys = np.zeros(n)
+    t = 1.0; k = 0
+    while t < seconds + fade - 4:
+        chord = chords[(k // 2) % len(chords)]
+        for j, (name, octv) in enumerate(chord):
+            note = soft_key(hz(name, octv), 6.0) * (0.09 if j == 0 else 0.05)
+            place(keys, note, t + j * rng.uniform(0.0, 0.03))
+        t += 6.0; k += 1
+    tt = np.arange(n) / SR
+    keys *= 0.88 + 0.12 * np.sin(2 * np.pi * 4.2 * tt)   # a soft tremolo, like an old electric piano
+    pad = pad_bed([c[:1] + c[2:4] for c in chords], 12.0, n, level=0.06, cutoff=900)
+    x = reverb(keys + pad, 3.8, 0.42, 2800)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
 
 # ---------- effects ----------
 def sfx_select():
@@ -802,6 +898,7 @@ def main(folder):
         'SFX - Shatter': sfx_shatter, 'SFX - Cabinet': sfx_cabinet, 'SFX - Steam': sfx_steam,
         'Ambience - Boardroom': amb_boardroom, 'SFX - Lights': sfx_lights, 'SFX - Squeak': sfx_squeak, 'SFX - Balloon': sfx_balloon, 'SFX - Tear': sfx_tear, 'SFX - Stand': sfx_stand,
         'Music - Quiet hours': music_quiet,
+        'Music - Slow tide': music_tide, 'Music - Paper lanterns': music_lanterns, 'Music - Night window': music_night,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

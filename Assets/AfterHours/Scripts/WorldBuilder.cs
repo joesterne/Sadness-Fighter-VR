@@ -196,6 +196,11 @@ namespace AfterHours
             var music=go.AddComponent<Music>();music.director=d;d.music=music;
             music.source=go.AddComponent<AudioSource>();music.source.loop=true;music.source.playOnAwake=false;music.source.spatialBlend=0;music.source.priority=64;music.source.volume=Music.Volume;
             music.theme=SoundBank.Get("Music - After hours theme");music.calm=SoundBank.Get("Music - Quiet hours");music.source.clip=music.theme;
+            // Each chapter's own piece: the ocean and the rage room roll with Slow tide, the kitchen has Paper lanterns, the archive and
+            // the ambush Night window; the heavy room and the old résumé keep Quiet hours.
+            music.byRoom=new AudioClip[d.rooms.Length];
+            AudioClip tide=SoundBank.Get("Music - Slow tide"),lanterns=SoundBank.Get("Music - Paper lanterns"),night=SoundBank.Get("Music - Night window");
+            music.byRoom[1]=tide;music.byRoom[3]=lanterns;music.byRoom[4]=night;music.byRoom[RageRoom.Room]=tide;music.byRoom[AmbushRoom.Room]=night;
         }
         // A sign that says one thing to a player using hands and another to a player using controllers, and follows them if they switch.
         static TextMeshPro Words(TextMeshPro text,string hands,string controllers)

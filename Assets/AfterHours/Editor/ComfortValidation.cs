@@ -69,6 +69,7 @@ namespace AfterHours.Editor
             // The suites step a paused editor, and a paused editor plays no audio, so a playing piece is checked by its clip and its level.
             var music=D.music;
             Check(music&&music.transform.IsChildOf(D.transform)&&music.source&&music.source.loop&&music.source.spatialBlend==0&&music.theme&&music.theme.name=="Music - After hours theme"&&music.calm&&music.calm.name=="Music - Quiet hours","The game carries its music: the theme and the quiet piece, on the director rather than in a room");
+            Check(music.byRoom!=null&&music.byRoom.Length==D.rooms.Length&&new[]{1,2,3,4,6,7,8}.Select(r=>music.ClipFor(r).name).SequenceEqual(new[]{"Music - Slow tide","Music - Quiet hours","Music - Paper lanterns","Music - Night window","Music - Quiet hours","Music - Slow tide","Music - Night window"})&&music.ClipFor(0)==music.theme&&music.ClipFor(5)==music.theme,"Every chapter has its piece: Slow tide, Quiet hours, Paper lanterns, Night window, Quiet hours, Slow tide, Night window; the lobby and rooftop the theme");
             Check(D.rooms.All(r=>r.root.GetComponentsInChildren<AudioSource>(true).All(s=>!s.clip||!s.clip.name.StartsWith("Music"))),"No room plays music of its own, so two pieces never overlap");
             Check(music.on&&music.source.clip==music.theme&&music.Level>Music.Volume*.9f&&D.menu.music&&D.menu.music.text.Contains("MUSIC")&&D.menu.music.text.Contains("ON")&&D.menu.Button(ActionKind.Music),"Music plays in the lobby (the theme), and the menu offers MUSIC (on)");
             foreach(var t in Click(ActionKind.Music))yield return t;yield return Music.FadeSeconds+.3f;
@@ -232,7 +233,7 @@ namespace AfterHours.Editor
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.ResetRoom))yield return t;
             Check(JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key)).strokes==0&&!D.menu.IsOpen,"Menu TRY AGAIN saves the reset and closes the menu");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.Music))yield return t;foreach(var t in MenuKey(false))yield return t;yield return Music.FadeSeconds;
-            Check(D.music.on&&D.music.source.clip==D.music.calm&&D.music.Level>Music.Volume*.9f&&PlayerPrefs.GetInt(Music.Key,0)==1,"MUSIC switches back on in a chapter, which plays the quiet piece");
+            Check(D.music.on&&D.music.source.clip==D.music.ClipFor(1)&&D.music.ClipFor(1)&&D.music.ClipFor(1).name=="Music - Slow tide"&&D.music.Level>Music.Volume*.9f&&PlayerPrefs.GetInt(Music.Key,0)==1,"MUSIC switches back on in a chapter, which plays its own piece (Slow tide on the ocean)");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.Rest))yield return t;yield return .8f;
             Check(D.currentRoom==0,"Menu LOBBY returns to the lobby");
             Check(D.music.source.clip==D.music.theme,"Back in the lobby the theme plays again");

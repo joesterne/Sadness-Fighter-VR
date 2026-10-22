@@ -216,7 +216,7 @@ namespace AfterHours.Editor
                 var egg=d.shredder.egg;var sheet=d.shredder.pages[4];var sheetHome=sheet.transform.position;int popped=egg.bursts;
                 Check(egg&&egg.pop&&egg.shower&&egg.sound&&d.shredder.pages.All(x=>x.throwable&&!x.tossable),"The résumé room has its confetti, and its five pages can be thrown");
                 // The editor is paused and stepped here, so no audio plays: the piece is checked by the clip the music has picked.
-                Check(d.music&&(!d.music.on||d.music.source.clip==d.music.calm),"The chapter plays the quiet music (unless MUSIC is off)");
+                Check(d.music&&(!d.music.on||d.music.source.clip==d.music.ClipFor(6)),"The chapter plays its own piece (unless MUSIC is off)");
                 d.player.Place(d.rooms[6].spawn.position,0);yield return Delay();
                 Put(sheet,d.rooms[6].root.transform.TransformPoint(new Vector3(3.4f,1.2f,-2f)));
                 sheet.Throw(new Vector3(.4f,-1.5f,1.4f));yield return Delay(.6f);
