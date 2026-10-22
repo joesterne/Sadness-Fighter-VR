@@ -28,6 +28,8 @@ namespace AfterHours
         public Collider[] hitVolumes=Array.Empty<Collider>();
         public TextMeshPro screenText;
         public string screenStart, brokenLine;
+        // Things standing on this part (the laptop and the work phone on the side desk). When it breaks, they go down with it.
+        public Breakable[] riders=Array.Empty<Breakable>();
         public int damage;
         [NonSerialized] public float nextHit;
         public int HitsToBreak=>stages.Length;

@@ -1,8 +1,10 @@
 using UnityEngine;
 namespace AfterHours
 {
-    // The bat. While it is held, any swing of the tip faster than a slow wave counts as a hit on the part the barrel
-    // touches, so short swings from a seat count as fully as big ones. Pieces that have already flown are knocked along.
+    // The bat, and every other tool on the rage room's wall (the hammer, the handsaw, the nail bat, the axe). While it is held,
+    // any swing of the tip faster than a slow wave counts as a hit on the part the striking end touches, so short swings from a
+    // seat count as fully as big ones. Pieces that have already flown are knocked along. A heavier tool (power 2) breaks a part
+    // two steps at a time.
     [DefaultExecutionOrder(100)]
     public class Bat : MonoBehaviour
     {
@@ -10,12 +12,16 @@ namespace AfterHours
         public Grabbable grabbable;
         // Along the bat from the grip: where the barrel starts, the tip, and how thick a swing counts as.
         public float barrelFrom=.28f, length=.85f, radius=.06f;
+        // Where the striking end sits off the handle's line (an axe blade or a hammer face hangs to one side), and how many
+        // steps of breaking one hit does.
+        public Vector3 barrelOffset;
+        public int power=1;
         public const float MinSpeed=1.1f, WhooshSpeed=2.4f;
         public float Speed{get;private set;}
         public Vector3 Velocity{get;private set;}
         Vector3 lastTip,lastBase;bool tracking;float nextWhoosh;bool whooshArmed=true;
-        public Vector3 Tip=>transform.TransformPoint(0,0,length);
-        public Vector3 BarrelStart=>transform.TransformPoint(0,0,barrelFrom);
+        public Vector3 Tip=>transform.TransformPoint(barrelOffset+new Vector3(0,0,length));
+        public Vector3 BarrelStart=>transform.TransformPoint(barrelOffset+new Vector3(0,0,barrelFrom));
         void LateUpdate()
         {
             if(!grabbable||!grabbable.held||!room){tracking=false;Speed=0;Velocity=Vector3.zero;return;}
@@ -37,9 +43,9 @@ namespace AfterHours
             for(int i=0;i<count;i++)
             {
                 var c=touched[i];var part=c.GetComponentInParent<Breakable>();
-                if(part){if(!part.Broken)room.Hit(part,Speed,c.ClosestPoint(to),Velocity);continue;}
+                if(part){if(!part.Broken)room.Hit(part,Speed,c.ClosestPoint(to),Velocity,this);continue;}
                 // A piece already knocked loose belongs to the room, not the part: the swing knocks it along.
-                var body=c.attachedRigidbody;if(body&&!body.isKinematic)room.Knock(body,Speed,c.ClosestPoint(to),Velocity);
+                var body=c.attachedRigidbody;if(body&&!body.isKinematic)room.Knock(body,Speed,c.ClosestPoint(to),Velocity,this);
             }
         }
     }

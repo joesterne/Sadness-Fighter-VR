@@ -54,7 +54,7 @@ namespace AfterHours.Editor
             var bare=new[]{"no-hat","no-neck","no-pin","no-gloves"};
             Check(Outfits.All.Where(p=>!bare.Contains(p.id)).All(p=>looks.Contains(p.id)),"Every piece but the bare ones is built on the reflection");
             Check(W.avatar.looks.Where(l=>Outfits.Get(l.id).slot==OutfitSlot.Legs||Outfits.Get(l.id).slot==OutfitSlot.Hands).All(l=>l.extra!=null&&l.extra.Length>=1),"Trousers, skirts and gloves are built on both legs or both hands");
-            Check(Outfits.Earnable==12&&addOns.All(p=>!Outfits.Earned(p)),"Add-ons are not among the twelve pieces to earn");
+            Check(Outfits.Earnable==13&&addOns.All(p=>!Outfits.Earned(p)),"Add-ons are not among the thirteen pieces to earn");
             Check(S.Ready&&S.State==StoreStart.Ready&&S.store is TestAddOnStore,"In the editor the shop starts against the test store");
             Check(addOns.All(p=>S.OnSale(p.id)&&!string.IsNullOrEmpty(S.Price(p.id))),"The catalog lists every add-on with a price");
             Check(addOns.All(p=>!W.Has(p.id))&&slots.All(slot=>W.Owned(slot).All(p=>!p.IsAddOn)),"A new player owns no add-ons");

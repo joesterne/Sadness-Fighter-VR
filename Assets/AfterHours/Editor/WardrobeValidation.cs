@@ -185,6 +185,9 @@ namespace AfterHours.Editor
             D.shredder.Choose(1);
             Check(W.Has("lanyard")&&W.State.line=="I care about people."&&!W.Has("jacket"),"Choosing a line earns the lanyard; the jacket still waits for the rage room");
             D.Travel(RageRoom.Room);yield return 1f;
+            Check(!W.Has(RageRoom.PaperJamPin),"The Paper Jam pin waits for the copier");
+            while(!D.rage.copier.Broken){D.rage.HitNow(D.rage.copier);yield return .05f;}
+            Check(W.Has(RageRoom.PaperJamPin)&&D.rage.Jams==1,"Breaking the copier for good jams it: the Paper Jam easter egg earns its pin");
             foreach(var part in D.rage.parts)while(!part.Broken){D.rage.HitNow(part);yield return .05f;}
             Check(!W.Has("letitout-pin"),"The let it out pin waits for the quiet after the last break");
             yield return 11.5f;

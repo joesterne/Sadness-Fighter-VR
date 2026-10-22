@@ -37,6 +37,7 @@ namespace AfterHours
             P("letitout-pin","Let it out pin",OutfitSlot.Pin,"Finish The rage room"),
             P("orange-pin","Orange mug pin",OutfitSlot.Pin,"Something orange is hiding in the kitchen"),
             P("standup-pin","Stood up pin",OutfitSlot.Pin,"Finish The ambush"),
+            P("paperjam-pin","Paper Jam pin",OutfitSlot.Pin,"Something in the rage room jams for good"),
             P("trousers","Work trousers",OutfitSlot.Legs),
             P("no-gloves","Bare hands",OutfitSlot.Hands),
             P("plain-shoes","Plain shoes",OutfitSlot.Feet),

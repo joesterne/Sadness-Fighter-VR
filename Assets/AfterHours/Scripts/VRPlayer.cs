@@ -251,6 +251,8 @@ namespace AfterHours
             // A held trigger or pinch must be released after travel or tracking recovery before it can act again.
             if(inputBlocked[index])
             {wasSelect[index]=select;wasGrip[index]=grab;if(!select&&!grab)inputBlocked[index]=false;return;}
+            // Pointing at another tool on the wall while holding one swaps them: the one in hand goes back to its place.
+            if(held[index]&&held[index].tool&&grab&&!wasGrip[index]&&item&&item.tool&&!item.held&&item!=held[index]){held[index].Release();held[index]=null;}
             if(!held[index] && grab&&!wasGrip[index])
             {
                 Grabbable nearby=null;float closest=.23f;
@@ -313,7 +315,7 @@ namespace AfterHours
         string HoldHint(Grabbable item)
         {
             if(item.paddle)return "The oar turns at its lock. Push the handle forward to drive the blade back through the water, then draw it toward you. Or press ROW.";
-            if(item.tool)return "The bat stays in your hand. Swing at the old computer: short swings count. Point at the rack and "+Wording.PutBack+" to put it back.";
+            if(item.tool)return item.label+" stays in your hand. Swing at the old computer: short swings count. Point at another tool and "+Wording.PutBack+" to swap, or at the rack to put it back.";
             string toss=item.throwable&&CanThrow?" Or throw it.":item.tossable&&item.GetComponent<Mug>()&&CanThrow?" Or throw it: a mug will break.":"";
             foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt+toss;
             return item.label.Replace("\n"," ")+"  /  Let go to place it.";

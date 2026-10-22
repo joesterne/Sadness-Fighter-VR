@@ -14,6 +14,8 @@ namespace AfterHours
         // theme plays in these rooms; a room's own piece (byRoom, by room number) or calm everywhere else. Without calm, the theme plays everywhere.
         public AudioClip theme, calm;
         public AudioClip[] byRoom;
+        // The rage room's beat gives way to this once everything there is broken and the room goes quiet, and comes back with a new computer.
+        public AudioClip afterRage;
         public int[] themeRooms={0,5};
         public bool on{get;private set;}=true;
         public float Level=>source?source.volume:0;
@@ -29,6 +31,17 @@ namespace AfterHours
             if(!calm||System.Array.IndexOf(themeRooms,room)>=0)return theme;
             return byRoom!=null&&room>=0&&room<byRoom.Length&&byRoom[room]?byRoom[room]:calm;
         }
+        // What should be playing now: the room's piece, or the quiet piece in a rage room that has gone quiet.
+        public AudioClip Wanted
+        {
+            get
+            {
+                if(!director)return theme;
+                var rage=director.rage;int room=director.currentRoom;
+                if(room==RageRoom.Room&&afterRage&&rage&&(rage.Quieting||rage.Calm))return afterRage;
+                return ClipFor(room);
+            }
+        }
         public void Toggle()
         {
             on=!on;PlayerPrefs.SetInt(Key,on?1:0);PlayerPrefs.Save();
@@ -37,8 +50,11 @@ namespace AfterHours
         void Update()
         {
             if(!source)return;
-            var wanted=director?ClipFor(director.currentRoom):theme;
-            if(wanted&&source.clip!=wanted)
+            var wanted=Wanted;bool easing=false;
+            // Within the rage room the beat eases out before the quiet piece comes in (and back), rather than cutting. A room change
+            // swaps at once, while the screen is dark.
+            if(wanted&&source.clip&&source.clip!=wanted&&source.volume>0&&director&&director.currentRoom==RageRoom.Room&&!director.player.busy)easing=true;
+            else if(wanted&&source.clip!=wanted)
             {
                 // Remember where the old piece was, and pick the new one up where it was left.
                 if(source.clip)left[source.clip]=source.time;
@@ -46,7 +62,7 @@ namespace AfterHours
                 left.TryGetValue(wanted,out float at);source.time=at<wanted.length?at:0;
                 if(was)source.Play();
             }
-            float target=on?Volume:0;
+            float target=on&&!easing?Volume:0;
             source.volume=Mathf.MoveTowards(source.volume,target,Volume/FadeSeconds*Time.unscaledDeltaTime);
             // Silent music is paused, so it costs nothing and resumes where it stopped.
             if(source.volume<=0){if(source.isPlaying)source.Pause();}
