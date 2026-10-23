@@ -64,7 +64,7 @@ namespace AfterHours.Editor
             var fire=Find(ActionKind.KillItWithFire);
             Check(fire&&fire.transform.parent.GetComponentsInChildren<TMP_Text>(true).Length==0&&string.IsNullOrEmpty(fire.prompt),"The button on the wall has no label at all");
             var hat=Outfits.Get("flame-hat");
-            Check(hat.id=="flame-hat"&&hat.slot==OutfitSlot.Head&&Outfits.Earned(hat)&&!hat.IsAddOn&&!string.IsNullOrEmpty(hat.hint)&&Outfits.Earnable==13,"The hat of flames is a hat to earn, never to buy: one of thirteen pieces");
+            Check(hat.id=="flame-hat"&&hat.slot==OutfitSlot.Head&&Outfits.Earned(hat)&&!hat.IsAddOn&&!string.IsNullOrEmpty(hat.hint)&&Outfits.Earnable==14,"The hat of flames is a hat to earn, never to buy: one of fourteen pieces");
             Check(D.wardrobe.avatar.looks.Any(l=>l.id=="flame-hat"&&l.group.GetComponentsInChildren<Flicker>(true).Length>=9),"The reflection can wear the hat of flames, its flames flickering");
 
             // ---- Arriving
@@ -144,6 +144,9 @@ namespace AfterHours.Editor
             foreach(var t in WebTesting.Chop(0))yield return t;
             Check(w.Cleared==2,"A column cut before TRY AGAIN");
             foreach(var t in OpenMenu())yield return t;
+            // Aim first and let the blade settle: snapping the view and pressing in one frame would leave the machete moving fast
+            // as the webs grow back round it.
+            Aim(D.menu.Button(ActionKind.ResetRoom));yield return .3f;
             foreach(var t in Click(D.menu.Button(ActionKind.ResetRoom)))yield return t;yield return .5f;
             Check(w.Standing==18&&D.rooms[WebRoom.Room].accepted==0&&D.rooms[WebRoom.Room].complete&&w.machete.held,"TRY AGAIN grows every web back, and the machete stays in hand");
             Check(D.rooms[WebRoom.Room].progress.text.Contains("BREATHE"),"The finished chapter stays finished");

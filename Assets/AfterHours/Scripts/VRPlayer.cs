@@ -253,7 +253,14 @@ namespace AfterHours
             {wasSelect[index]=select;wasGrip[index]=grab;if(!select&&!grab)inputBlocked[index]=false;return;}
             // Pointing at another tool on the wall while holding one swaps them: the one in hand goes back to its place.
             if(held[index]&&held[index].tool&&grab&&!wasGrip[index]&&item&&item.tool&&!item.held&&item!=held[index]){held[index].Release();held[index]=null;}
-            if(!held[index] && grab&&!wasGrip[index])
+            // A tool in the other hand changes hands when this one closes on it.
+            if(!held[index]&&grab&&!wasGrip[index]&&!desktop&&held[1-index]&&held[1-index].tool&&Near(held[1-index],grip.position)<.23f)
+            {
+                var tool=held[1-index];held[1-index]=null;aimedTarget[1-index]=null;tool.held=false;
+                if(tool.Take(grip,direction*.07f,false,ToolRotation(false,direction))){held[index]=tool;ShowHint(HoldHint(tool),4);Pulse(controller);}
+                else{tool.held=true;held[1-index]=tool;}
+            }
+            else if(!held[index] && grab&&!wasGrip[index])
             {
                 Grabbable nearby=null;float closest=.23f;
                 foreach(var col in Physics.OverlapSphere(grip.position,.23f,~0,QueryTriggerInteraction.Ignore))
@@ -315,6 +322,7 @@ namespace AfterHours
         string HoldHint(Grabbable item)
         {
             if(item.paddle)return "The oar turns at its lock. Push the handle forward to drive the blade back through the water, then draw it toward you. Or press ROW.";
+            if(item.tool&&item.GetComponent<Machete>())return "The machete stays in your hand. Swing it through the webs: short chops count. "+Wording.Pick("Reach over and pinch it with your other hand to swap hands.","Reach over and squeeze it with your other controller to swap hands.");
             if(item.tool)return item.label+" stays in your hand. Swing at the old computer: short swings count. Point at another tool and "+Wording.PutBack+" to swap, or at the rack to put it back.";
             string toss=item.throwable&&CanThrow?" Or throw it.":item.tossable&&item.GetComponent<Mug>()&&CanThrow?" Or throw it: a mug will break.":"";
             foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt+toss;

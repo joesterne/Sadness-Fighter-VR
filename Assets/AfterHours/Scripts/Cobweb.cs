@@ -10,8 +10,10 @@ namespace AfterHours
         public int index;
         public Collider volume;
         public Transform silk;
-        // Cut and waiting to grow back, when it was cut, and how far it has grown back (1 is whole).
+        // Cut and waiting to grow back, and how far it has grown back (1 is whole).
         [NonSerialized] public bool cut;
-        [NonSerialized] public float cutAt, grown=1;
+        // When it grows back: set when it is cut, so a web cut alongside others grows back with them (a regrowth only lengthens the
+        // wait for webs cut after it).
+        [NonSerialized] public float regrowAt, grown=1;
     }
 }
