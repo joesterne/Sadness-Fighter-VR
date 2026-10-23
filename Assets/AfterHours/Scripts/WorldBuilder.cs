@@ -1431,6 +1431,8 @@ namespace AfterHours
                 var lockSign=Art.Group("Tool lock",new Vector3(-1.535f,1.3f,slots[i]));lockSign.localRotation=Quaternion.Euler(0,-90,0);
                 Art.Box("Padlock",new Vector3(0,.07f,0),new Vector3(.06f,.05f,.012f),Art.Gold,false,lockSign,.004f);
                 Art.Box("Padlock shackle",new Vector3(0,.105f,0),new Vector3(.036f,.03f,.008f),Art.Metal,false,lockSign,.003f);
+                // A pale card behind the name, so it reads against the painted outline it hangs over (the coral count reads on the board).
+                Art.Box("Tool lock card",new Vector3(0,0,.001f),new Vector3(.28f,.055f,.004f),Art.Paper,false,lockSign,.002f);
                 Art.Text("Tool name","<b>"+names[i]+"</b>",new Vector3(0,0,-.005f),.035f,dark,.26f,lockSign);
                 room.lockCounts[i]=Art.Text("Tool count","",new Vector3(0,-.06f,-.005f),.024f,coral,.26f,lockSign);
                 room.toolLocks[i]=lockSign.gameObject;
@@ -1450,7 +1452,8 @@ namespace AfterHours
             Art.Button("Wheel in a new computer","WHEEL IN A NEW ONE",Vector3.zero,new Vector3(.62f,.16f,.05f),Art.Teal,ActionKind.NewComputer,d,0,fresh);
             fresh.gameObject.SetActive(false);room.newComputer=fresh.gameObject;
 
-            // The room around it: a hanging lamp, a box of desk things, a knocked-over chair, the rules and a clock at five.
+            // The room around it: a hanging lamp, a box of desk things, a knocked-over chair, the rules and a clock at five. The rules hang
+            // far enough along the left wall to be seen past the tool wall from the arrival point.
             Art.Line("Lamp cord",new Vector3(0,4.58f,-.2f),new Vector3(0,2.75f,-.2f),.012f,Art.Ink);
             Art.Shape("Lamp shade",PrimitiveType.Cylinder,new Vector3(0,2.72f,-.2f),new Vector3(.38f,.08f,.38f),Art.Gold,false);
             Art.Shape("Lamp bulb",PrimitiveType.Sphere,new Vector3(0,2.62f,-.2f),Vector3.one*.11f,Art.White,false);
@@ -1463,8 +1466,8 @@ namespace AfterHours
             var chair=Art.Group("Knocked-over chair",new Vector3(-1.9f,0,1.3f));chair.localRotation=Quaternion.Euler(0,35,0);
             Art.Box("Chair seat",new Vector3(0,.3f,0),new Vector3(.55f,.1f,.5f),Art.Navy,true,chair).transform.localRotation=Quaternion.Euler(0,0,78);
             Art.Shape("Chair back",PrimitiveType.Capsule,new Vector3(-.32f,.3f,.35f),new Vector3(.55f,.38f,.14f),Art.Navy,false,chair).transform.localRotation=Quaternion.Euler(90,0,0);
-            Fitted(Art.Box("Rules board",new Vector3(-4.88f,2,1),new Vector3(1.7f,1.1f,.04f),Art.Navy,false),.1f,1.25f).transform.localRotation=Quaternion.Euler(0,-90,0);
-            Art.Text("Rules","RAGE ROOM RULES\n<size=70%>1. Break things, never people.\n2. Short swings count.\n3. Rest whenever you like.</size>",new Vector3(-4.85f,2,1),.13f,ivory,1.55f).transform.localRotation=Quaternion.Euler(0,-90,0);
+            Fitted(Art.Box("Rules board",new Vector3(-4.88f,2,2),new Vector3(1.7f,1.1f,.04f),Art.Navy,false),.1f,1.25f).transform.localRotation=Quaternion.Euler(0,-90,0);
+            Art.Text("Rules","RAGE ROOM RULES\n<size=70%>1. Break things, never people.\n2. Short swings count.\n3. Rest whenever you like.</size>",new Vector3(-4.85f,2,2),.13f,ivory,1.55f).transform.localRotation=Quaternion.Euler(0,-90,0);
             Art.Shape("Clock",PrimitiveType.Cylinder,new Vector3(4.88f,2.6f,1.5f),new Vector3(.5f,.02f,.5f),Art.Cream,false).transform.localRotation=Quaternion.Euler(0,0,90);
             Art.Line("Clock hand",new Vector3(4.85f,2.6f,1.5f),new Vector3(4.85f,2.6f+.866f*.12f,1.5f+.5f*.12f),.014f,Art.Ink);
             Art.Line("Clock hand",new Vector3(4.85f,2.6f,1.5f),new Vector3(4.85f,2.78f,1.5f),.01f,Art.Ink);
