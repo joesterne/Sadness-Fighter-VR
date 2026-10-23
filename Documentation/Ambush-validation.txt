@@ -1,19 +1,19 @@
-2026-10-22 22:43:29Z
+2026-10-23 19:03:33Z
 Passed
 The dark opening, the two giant clowns and how they shrink, naming six feelings, the five replies, balloons and noses, the paperwork (sent, thrown, torn), standing up, the way out, GENTLE AMBUSH and DARK OPENING, TRY AGAIN, and saving.
-PASS: The game has nine rooms, and room 8 is The ambush
+PASS: The game has ten rooms, and room 8 is The ambush
 PASS: The ambush is the seventh chapter, with six feelings to name
 PASS: Two clowns, each with a nose, three balloons, a chest to aim at, a propeller beanie and a bowtie
 PASS: Six papers, six feeling cards, a chair, the screen, the stand-up button, the way out, warm lights and two particle systems
 PASS: All five of the room's sounds are loaded
-PASS: The lobby has a seventh door, and counts seven rooms
+PASS: The lobby has a door to the ambush, and counts eight rooms
 PASS: The ambush is closed until you walk in, with the clowns full size and the dark on
 PASS: Walking in, the room is dark
 PASS: The view is held black, not just fading in
 PASS: It stays dark for the first few seconds
 PASS: Then the lights come on
 PASS: They flicker first: the view flashes clear and goes black again before they stay on
-PASS: The dark lasts about four seconds (4.5 s)
+PASS: The dark lasts about four seconds (4.4 s)
 PASS: Once the lights are on the view is clear
 PASS: The room says what to do as the lights come up
 PASS: The room is lit cool and harsh, unlike the lobby
@@ -143,8 +143,8 @@ PASS: The screen counts 6 of 6
 PASS: Both clowns shrink: 1.13 to 0.80
 PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
 PASS: The chapter is not complete yet
-PASS: All six named: the clowns are smaller than a person (0.80 times, head at 2.1 m)
-PASS: They stand upright and have come in close [lean 0.0, x -1.30, size 0.80, hit -0.60]
+PASS: All six named: the clowns are smaller than a person (0.80 times, head at 2.2 m)
+PASS: They stand upright and have come in close [lean 0.0, x -1.30, size 0.80, hit -0.56]
 PASS: They have nothing left to say
 PASS: STAND UP appears, and the chapter waits for it
 PASS: The room says so
@@ -158,7 +158,7 @@ PASS: The screen says you stood up
 PASS: The chair rolls back to let you stand
 PASS: The light turns warm
 PASS: Finishing the chapter earns the stood-up pin
-PASS: The lobby counts one of seven rooms
+PASS: The lobby counts one of eight rooms
 PASS: The way out leads to the lobby
 PASS: The button to press exists
 PASS: The way out returns to the lobby, in the lobby's own light

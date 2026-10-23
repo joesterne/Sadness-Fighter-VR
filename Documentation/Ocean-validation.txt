@@ -1,4 +1,4 @@
-2026-10-22 22:39:12Z
+2026-10-23 18:58:37Z
 Passed
 The rowing oars, the lighthouse light, night in the ocean only, the sea sounds, the menu button that clears everything, and clean mode.
 PASS: The ocean room has oars, a lighthouse light, moving water and sea sounds
@@ -34,11 +34,11 @@ PASS: All the swells together are only 0.46 m from trough to crest
 PASS: The water is rebuilt as the game runs (260 times in ten seconds)
 PASS: The sea at the boat rises and falls (0.35 m in ten seconds)
 PASS: No wave climbs above the deck or sinks out of sight (highest 0.12 m, lowest -0.52 m)
-PASS: The sea's beat keeps time with the game (18.0 s into the wave loop)
+PASS: The sea's beat keeps time with the game (18.1 s into the wave loop)
 INFO: the wave sound was not playing in this run, so its position was not compared
 PASS: The water's beat follows the wave sound
-INFO: one rebuild of the water takes 0.40 ms in the editor (it is done 30 times a second)
-PASS: Rebuilding the water is cheap (0.40 ms)
+INFO: one rebuild of the water takes 0.37 ms in the editor (it is done 30 times a second)
+PASS: Rebuilding the water is cheap (0.37 ms)
 PASS: The surf comes from the shore itself, which moves with the horizon
 PASS: Rowing brings the surf nearer (17 m, then 11 m)
 PASS: The lighthouse has a light with two beams
@@ -77,7 +77,7 @@ PASS: A first visit opens the guide
 PASS: The guide waits for the menu while a message shows
 PASS: During the guide's menu step, the first press still opens the menu
 PASS: Every menu button, including the new ones, is within 39 degrees of straight ahead
-PASS: The guiding signs are marked (42) and all show
+PASS: The guiding signs are marked (46) and all show
 PASS: No button label counts as a guiding sign
 PASS: CLEAN MODE switches on and is saved
 PASS: Clean mode switches off every guiding sign
