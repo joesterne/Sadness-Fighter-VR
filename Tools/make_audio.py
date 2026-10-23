@@ -875,6 +875,106 @@ def sfx_stand():
     return fade_edges(normalise(reverb(x, 1.6, 0.3), -8))
 
 
+def kick(n, level=1.0):
+    # A techno kick: a fast pitch drop from 150 Hz to 45 Hz, a short click on top.
+    tt = np.arange(n) / SR
+    f = 45 + 105 * np.exp(-tt / 0.03)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * decay(n, 0.22)
+    click = highpass(white(n), 2000, 1) * decay(n, 0.003) * 0.25
+    return (body + click) * level
+
+def hat(n, open_=False):
+    x = highpass(white(n), 7000, 2) * decay(n, 0.09 if open_ else 0.018)
+    return x * env_adsr(n, 0.0005, 0.01)
+
+def clap(n):
+    # Three quick bursts of band-passed noise, then a short tail.
+    x = np.zeros(n); burst = bandpass(white(n), 900, 4200, 2)
+    for k, at in enumerate([0, 0.011, 0.023]):
+        i = int(at * SR); x[i:] += burst[:n - i] * decay(n - i, 0.008 if k < 2 else 0.12)
+    return x
+
+def acid(freq, n, cutoff, accent=1.0):
+    # A rolling bass note: a saw through a resonant low-pass whose cutoff snaps down after each note.
+    tt = np.arange(n) / SR
+    saw = signal.sawtooth(2 * np.pi * freq * tt) + 0.5 * signal.sawtooth(2 * np.pi * freq * 1.006 * tt)
+    # The filters change every 4 ms and carry their state across, so the sweep is smooth and never clicks.
+    out = np.zeros(n); step = int(0.004 * SR); zl = np.zeros(2); zp = np.zeros(2)
+    for j in range(0, n, step):
+        c = min(cutoff * (0.35 + 0.65 * np.exp(-j / SR / 0.06)) * accent, SR / 2.4)
+        lo, la = signal.butter(2, c / (SR / 2), 'low'); pb, pa = signal.iirpeak(c, 3.0, fs=SR)
+        seg = saw[j:j + step]
+        low, zl = signal.lfilter(lo, la, seg, zi=zl); peak, zp = signal.lfilter(pb, pa, seg, zi=zp)
+        out[j:j + step] = low + 0.25 * peak
+    return out * env_adsr(n, 0.002, 0.03) * decay(n, 0.5)
+
+def stab(freqs, n):
+    # A short chord stab: detuned square-ish tones through a low-pass, quick to fade.
+    tt = np.arange(n) / SR; x = np.zeros(n)
+    for f in freqs:
+        for d in (0.997, 1.003):
+            x += np.tanh(3 * np.sin(2 * np.pi * f * d * tt))
+    return lowpass(x, 2600, 2) * decay(n, 0.16) * env_adsr(n, 0.002, 0.05)
+
+def music_overtime(bars=64, bpm=128):
+    # Overtime: upbeat techno for the rage room, in A minor at 128 BPM. A four-on-the-floor kick, off-beat open hats,
+    # sixteenth hats and claps on two and four, a rolling acid bassline whose filter opens and closes over the track, and
+    # chord stabs. It builds in eight-bar sections (a drop with no kick, then everything back in), and the end runs straight
+    # back into the start, so it loops on the beat.
+    beat = 60 / bpm; bar = 4 * beat; n = int(bars * bar * SR); tail = int(2 * SR)
+    x = np.zeros(n + tail); drums = np.zeros(n + tail); bass = np.zeros(n + tail); keys = np.zeros(n + tail)
+    k = kick(int(0.45 * SR)); ch = hat(int(0.06 * SR)); oh = hat(int(0.25 * SR), True); cl = clap(int(0.35 * SR))
+    # The bassline: sixteen steps per bar over four chords (Am, F, C, G), a pattern with rests and octave jumps.
+    roots = [('A', 1), ('F', 1), ('C', 2), ('G', 1)]
+    pattern = [0, None, 12, 0, None, 0, 7, None, 0, None, 12, 0, 3, None, 7, 10]
+    chords = [[('A', 3), ('C', 4), ('E', 4)], [('F', 3), ('A', 3), ('C', 4)], [('C', 4), ('E', 4), ('G', 4)], [('G', 3), ('B', 3), ('D', 4)]]
+    sixteenth = beat / 4
+    for b in range(bars):
+        section = (b // 8) % 8
+        breakdown = section in (3, 7)       # eight bars without the kick, the stabs carried by the pads
+        full = section in (2, 5, 6)         # the stabs every off-beat instead of now and then
+        name, octv = roots[b % 4]; root = hz(name, octv)
+        # The filter rises over each 32-bar half and falls back, so the bass breathes.
+        sweep = 0.5 - 0.5 * np.cos(2 * np.pi * (b % 32) / 32)
+        cutoff = 300 + 1700 * sweep
+        for s in range(16):
+            t = b * bar + s * sixteenth; i = int(t * SR)
+            if s % 4 == 0 and not breakdown: drums[i:i + len(k)] += k * 0.9
+            if s % 4 == 2: drums[i:i + len(oh)] += oh * 0.22
+            elif not breakdown or b % 8 >= 4: drums[i:i + len(ch)] += ch * (0.12 if s % 2 else 0.08)
+            if s in (4, 12) and not breakdown: drums[i:i + len(cl)] += cl * 0.35
+            step = pattern[s]
+            if step is not None and not (breakdown and b % 8 < 4):
+                note = acid(root * 2 ** (step / 12), int(sixteenth * 1.6 * SR), cutoff, 1.4 if s % 4 == 0 else 1.0)
+                bass[i:i + len(note)] += note * 0.22
+            if (full and s % 4 == 2) or (s in (6, 14) and b % 2 == 0) or (breakdown and s == 0):
+                st = stab([hz(nm, o) for nm, o in chords[b % 4]], int(0.4 * SR)) * (0.09 if not breakdown else 0.06)
+                keys[i:i + len(st)] += st
+        # A rising noise sweep over the last bar before each new section.
+        if b % 8 == 7:
+            i = int(b * bar * SR); m = int(bar * SR)
+            riser = bandpass(white(m), 1500, 7000, 2) * np.linspace(0, 1, m) ** 2 * 0.05
+            x[i:i + m] += riser
+    pads = pad_bed([[(nm, o) for nm, o in c] for c in chords], bar, n + tail, level=0.035, attack=0.4, release=1.0, cutoff=1800)
+    x += drums + lowpass(bass, 3500, 2) + reverb(keys, 1.2, 0.3) + pads
+    # The tail past the last bar wraps onto the start, so the loop point is seamless.
+    out = x[:n].copy(); out[:tail] += x[n:n + tail]
+    return normalise(np.tanh(out * 1.2) / 1.2, -4, rms_db=-19)
+
+def sfx_paper_jam():
+    # The copier gives up: a grinding of rollers that catches and stalls, a crumple of paper, and three error beeps.
+    n = int(1.9 * SR); tt = np.arange(n) / SR
+    grind = signal.sawtooth(2 * np.pi * (70 + 25 * np.sin(2 * np.pi * 9 * tt)) * tt) * 0.4 + bandpass(white(n), 300, 2200, 2) * 0.3
+    grind = lowpass(grind, 1600, 2) * env_adsr(n, 0.02, 0.1) * (tt < 0.75)
+    crumple = clicks(1.9, 45, 1500, 7000, 0.5) * 0.7 + bandpass(white(n), 2000, 8000, 2) * decay(n, 0.25) * 0.3
+    beeps = np.zeros(n)
+    for j in range(3):
+        m = int(0.12 * SR); b = np.sign(np.sin(2 * np.pi * 1760 * np.arange(m) / SR)) * env_adsr(m, 0.003, 0.02) * 0.18
+        i = int((0.95 + j * 0.22) * SR); beeps[i:i + m] += lowpass(b, 5000, 1)
+    x = grind + crumple + beeps
+    return fade_edges(normalise(reverb(x, 0.5, 0.12), -5))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -899,6 +999,7 @@ def main(folder):
         'Ambience - Boardroom': amb_boardroom, 'SFX - Lights': sfx_lights, 'SFX - Squeak': sfx_squeak, 'SFX - Balloon': sfx_balloon, 'SFX - Tear': sfx_tear, 'SFX - Stand': sfx_stand,
         'Music - Quiet hours': music_quiet,
         'Music - Slow tide': music_tide, 'Music - Paper lanterns': music_lanterns, 'Music - Night window': music_night,
+        'Music - Overtime': music_overtime, 'SFX - Paper jam': sfx_paper_jam,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

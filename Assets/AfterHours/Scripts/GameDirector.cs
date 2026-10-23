@@ -119,6 +119,8 @@ namespace AfterHours
             }
         }
         public void Announce(string id){news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");}
+        // Other news (a tool unlocked in the rage room) waits its turn the same way, with the same chime.
+        public void Queue(string text){news.Enqueue(text);}
         // The first small step anywhere earns a pin. Every step still counts the same.
         public void SmallStep(){Earn("step-pin");}
         public void GoToMirror()
@@ -151,7 +153,7 @@ namespace AfterHours
             if(room==AmbushRoom.Room&&ambush)ambush.OnArrive();
             yield return player.Fade(0,.35f,true);player.busy=false;
             Autosave(true);
-            string[] messages={"Your progress is saved. Continue when you want to, or stop here for today.","Hold either oar and push it forward through the water, then draw it back. Or press ROW. The horizon will wait.","These feelings can travel with you. "+Wording.Pick("Pinch","Squeeze the trigger on")+" a box to pick it up. Point at the truck and let go, or throw it. Five boxes.","Pick up a cup, point at the spout and let go. Then try BREW. You can ask for help at any point. The menu can hide the watching crowd.","Sort six notes into FACT, FEAR, and STILL TRUE: pick one up, point at its tray and let go. A thought does not have to become a verdict.","Stay as long as you like. Your next chapter does not need a title yet.","Pick up an old résumé, point at the shredder and let go, or throw it. When they are gone, keep one true line.","Point at the bat and "+Wording.Pick("pinch","squeeze the trigger")+" to pick it up. It stays in your hand. Swing at the old computer: short swings count, and nothing here can be hurt.",""};
+            string[] messages={"Your progress is saved. Continue when you want to, or stop here for today.","Hold either oar and push it forward through the water, then draw it back. Or press ROW. The horizon will wait.","These feelings can travel with you. "+Wording.Pick("Pinch","Squeeze the trigger on")+" a box to pick it up. Point at the truck and let go, or throw it. Five boxes.","Pick up a cup, point at the spout and let go. Then try BREW. You can ask for help at any point. The menu can hide the watching crowd.","Sort six notes into FACT, FEAR, and STILL TRUE: pick one up, point at its tray and let go. A thought does not have to become a verdict.","Stay as long as you like. Your next chapter does not need a title yet.","Pick up an old résumé, point at the shredder and let go, or throw it. When they are gone, keep one true line.","Point at the bat and "+Wording.Pick("pinch","squeeze the trigger")+" to pick it up. It stays in your hand. Swing at the old computer: short swings count, and nothing here can be hurt. Breaking things unlocks more tools on the wall.",""};
             if(room==AmbushRoom.Room&&ambush)ambush.Announce();else Say(messages[room]);
         }
         public void Say(string text){if(player)player.ShowHint(text,9);lastSay=Time.time;}
