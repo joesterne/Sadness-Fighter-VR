@@ -326,7 +326,9 @@ namespace AfterHours.Editor
             Check(hammer.held&&d.player.IsHolding(hammer),"An unlocked tool on the wall can be picked up: the hammer");
             Aim(nailBat.transform.TransformPoint(0,0,.6f));yield return Delay(.06f);Press(true);yield return Delay(.3f);Press(false);yield return Delay(.6f);
             Check(nailBat.held&&!hammer.held&&!d.player.IsHolding(hammer),"Pointing at another tool swaps them: the nail bat in hand, the hammer back on the wall");
-            rage.HitNow(rage.parts[0],nailBat.GetComponent<Bat>());
+            // Turning to the tool wall and back swings whatever is held, so the computer may have taken hits (and gone quiet) by now:
+            // start from a whole one.
+            rage.ResetComputer();rage.HitNow(rage.parts[0],nailBat.GetComponent<Bat>());
             Check(rage.parts[0].damage==2,"The nail bat breaks a part two steps at a time");
             rage.ResetComputer();
             yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
