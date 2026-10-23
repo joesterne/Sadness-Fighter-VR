@@ -136,7 +136,7 @@ namespace AfterHours.Editor
             var note=D.rooms[4].root.GetComponentsInChildren<Grabbable>().First();var tray=D.rooms[4].root.GetComponentsInChildren<DropZone>().First(x=>x.category==note.category);
             tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.SaveCheckpoint();
             var saved=JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
-            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2&&saved.ambush==17&&!saved.darkOpening&&!saved.gentleAmbush,"Checkpoint stores partial progress in all seven chapters");
+            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2&&saved.ambush==17&&!saved.darkOpening&&!saved.gentleAmbush,"Checkpoint stores partial progress in the chapters that keep it");
             // Autosave: a snapshot as a room is left, another on arriving in the next, and a quiet one now and then; nothing is rewritten when nothing changed.
             string settled=PlayerPrefs.GetString(CheckpointStore.Key);
             backupFile=Path.Combine(Path.GetTempPath(),"AfterHours-save-test-"+Guid.NewGuid().ToString("N")+".json");SaveBackup.PathOverride=backupFile;SaveBackup.Delete();

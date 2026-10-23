@@ -11,7 +11,7 @@ namespace AfterHours
         static Color ivory=new Color(.92f,.91f,.85f), muted=new Color(.61f,.76f,.77f), dark=new Color(.08f,.15f,.2f);
         public static void Build(GameDirector director)
         {
-            d=director;d.rooms=new MindRoom[9];backings.Clear();fits.Clear();
+            d=director;d.rooms=new MindRoom[10];backings.Clear();fits.Clear();
             NewRoom(0,"The lobby",Vector3.zero,new Vector3(0,.05f,-4));Hub();
             NewRoom(1,"Ocean of shame",new Vector3(80,0,0),new Vector3(0,.3f,-1));Ocean();
             NewRoom(2,"Heavy things",new Vector3(160,0,0),new Vector3(0,.04f,-2.4f));Warehouse();
@@ -282,12 +282,14 @@ namespace AfterHours
             Door("05","The old\nrésumé","Let go of who you\nwere for them.",new Vector3(6.82f,0,-2.6f),90,Art.Gold,6);
             Door("06","The rage\nroom","Break the old work\ncomputer. Let it out.",new Vector3(-6.82f,0,4.05f),-90,Art.Coral,RageRoom.Room);
             Door("07","The\nambush","Starts in the dark.\nName what happened.",new Vector3(6.82f,0,4.05f),90,Art.Gold,AmbushRoom.Room);
+            // The side walls are full, so door 08 stands on the entrance wall, to the right behind the arrival point.
+            Door("08","The NDA\nweb","Cut through what\nyou could not say.",new Vector3(4.3f,0,-4.92f),180,Art.Coral,WebRoom.Room);
             // A detailed, polished memory occupies the end of each side of the lobby.
             MemoryOffice(new Vector3(-4.6f,0,12));MemoryOffice(new Vector3(4.6f,0,12));
             Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(4f,1.24f,.65f),Art.Navy);
             Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(4.1f,.06f,.72f),Art.Gold);
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.07f,-.64f),.17f,ivory,3.4f);
-            d.lobbyProgress=Art.Text("Journey progress","0 / 7   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
+            d.lobbyProgress=Art.Text("Journey progress","0 / 8   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
             // The board hangs above the lines of sight from the arrival point to the side doors (they pass between 1.1 and 2.4 m here).
             Backed(0,"Move instructions",Fitted(Art.Box("Getting started board",new Vector3(3.5f,3.2f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy),.14f,1.4f));
             Words(Art.Text("Move instructions","",new Vector3(3.5f,3.2f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
@@ -434,6 +436,15 @@ namespace AfterHours
             Art.Shape("Beanie",PrimitiveType.Sphere,new Vector3(0,.075f,-.025f),new Vector3(.23f,.19f,.24f),Art.Teal,false,beanie);
             Art.Shape("Beanie band",PrimitiveType.Cylinder,new Vector3(0,.07f,-.022f),new Vector3(.225f,.025f,.232f),Art.Navy,false,beanie);
             Art.Shape("Pompom",PrimitiveType.Sphere,new Vector3(0,.18f,-.03f),Vector3.one*.065f,Art.Gold,false,beanie);
+            // The NDA web's secret: a crown of flames on a coral band, every flame flickering on its own.
+            var flameHat=Look("flame-hat",m.head).group.transform;
+            Art.Shape("Flame band",PrimitiveType.Cylinder,new Vector3(0,.075f,-.022f),new Vector3(.226f,.02f,.234f),Art.Coral,false,flameHat);
+            for(int k=0;k<9;k++)
+            {
+                float a=k*Mathf.PI*2/9;var at=new Vector3(Mathf.Cos(a)*.1f,.13f,Mathf.Sin(a)*.105f-.022f);
+                Art.Facet("Flame",at,new Vector3(.06f,.12f+.04f*(k%3),.06f),k%2==0?Art.Flame:Art.Orange,5,flameHat).AddComponent<Flicker>();
+            }
+            Art.Facet("Flame core",new Vector3(0,.17f,-.022f),new Vector3(.11f,.2f,.11f),Art.FlameCore,6,flameHat).AddComponent<Flicker>().speed=5;
             // Add-on hats (see Outfits.All).
             var bucket=Look("bucket-hat",m.head).group.transform;
             Art.Shape("Bucket crown",PrimitiveType.Cylinder,new Vector3(0,.095f,-.02f),new Vector3(.21f,.05f,.22f),Art.ToySky,false,bucket);

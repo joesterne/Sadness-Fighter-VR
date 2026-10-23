@@ -67,7 +67,7 @@ namespace AfterHours.Editor
             Check(!D.menu.lobby.activeSelf&&!D.menu.tryAgain.activeSelf,"The lobby menu has no LOBBY or TRY AGAIN");
             key=MenuKey(false);while(key.MoveNext())yield return key.Current;
             // Every ENTER sign and menu return route, including the rooftop (last, returning with the lobby key).
-            foreach(int room in new[]{1,2,3,4,6,RageRoom.Room,AmbushRoom.Room,5})
+            foreach(int room in new[]{1,2,3,4,6,RageRoom.Room,AmbushRoom.Room,WebRoom.Room,5})
             {
                 var entry=Button(ActionKind.Travel,room);Approach(entry);yield return .2f;Aim(entry.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;Arrived(room);
                 key=MenuKey(true);while(key.MoveNext())yield return key.Current;

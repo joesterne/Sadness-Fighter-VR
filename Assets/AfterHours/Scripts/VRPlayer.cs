@@ -383,6 +383,28 @@ namespace AfterHours
             var bounds=new Bounds(item.transform.position,Vector3.zero);foreach(var c in item.GetComponentsInChildren<Collider>())bounds.Encapsulate(c.bounds);
             var e=bounds.extents;return Mathf.Abs(direction.x)*e.x+Mathf.Abs(direction.y)*e.y+Mathf.Abs(direction.z)*e.z;
         }
+        // How far a point is from the nearest surface of an object.
+        static float Near(Grabbable item,Vector3 point){float best=float.MaxValue;foreach(var c in item.GetComponentsInChildren<Collider>())if(!c.isTrigger)best=Mathf.Min(best,Vector3.Distance(point,c.ClosestPoint(point)));return best;}
+        // The grip of a hand or controller that is tracked right now, or null.
+        Transform GripOf(int index)
+        {
+            OVRHand hand=index==0?leftHand:rightHand;var controller=index==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch;
+            if(hand&&hand.IsTracked&&hand.HandConfidence==OVRHand.TrackingConfidence.High)return hand.transform;
+            if(OVRInput.IsControllerConnected(controller)&&OVRInput.GetControllerPositionTracked(controller))return index==0?rig.leftControllerAnchor:rig.rightControllerAnchor;
+            return null;
+        }
+        // Puts a tool straight into a hand, in its fixed grip: the right hand if it is tracked, else the left. On desktop it is held low and to the right
+        // of the view. False when no hand is tracked yet, or that hand is already holding something.
+        public bool Give(Grabbable tool)
+        {
+            if(!tool||!tool.tool||tool.held||IsHolding(tool))return false;
+            bool desktop=!IsXR;int index=1;Transform grip=desktop?desktopToolGrip:GripOf(1);
+            if(!desktop&&(!grip||held[1])){index=0;grip=GripOf(0);}
+            if(!grip||held[index])return false;
+            var direction=desktop?Head.forward:grip.forward;
+            if(!tool.Take(grip,desktop?Vector3.zero:direction*.07f,false,ToolRotation(desktop,direction)))return false;
+            held[index]=tool;return true;
+        }
         // Puts a held object down (a tool goes back to its rack).
         public void Drop(Grabbable item){for(int i=0;i<2;i++)if(item&&held[i]==item){item.Release();held[i]=null;aimedTarget[i]=null;}}
         public bool IsHolding(Grabbable item)=>item&&(held[0]==item||held[1]==item);
