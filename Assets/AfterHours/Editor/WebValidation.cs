@@ -144,6 +144,9 @@ namespace AfterHours.Editor
             foreach(var t in WebTesting.Chop(0))yield return t;
             Check(w.Cleared==2,"A column cut before TRY AGAIN");
             foreach(var t in OpenMenu())yield return t;
+            // Aim first and let the blade settle: snapping the view and pressing in one frame would leave the machete moving fast
+            // as the webs grow back round it.
+            Aim(D.menu.Button(ActionKind.ResetRoom));yield return .3f;
             foreach(var t in Click(D.menu.Button(ActionKind.ResetRoom)))yield return t;yield return .5f;
             Check(w.Standing==18&&D.rooms[WebRoom.Room].accepted==0&&D.rooms[WebRoom.Room].complete&&w.machete.held,"TRY AGAIN grows every web back, and the machete stays in hand");
             Check(D.rooms[WebRoom.Room].progress.text.Contains("BREATHE"),"The finished chapter stays finished");

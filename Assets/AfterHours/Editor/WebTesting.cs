@@ -23,19 +23,26 @@ namespace AfterHours.Editor
             var local=grip+axis*best;
             return Quaternion.LookRotation(point-head.position,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(local,Vector3.up));
         }
-        // One chop: the view looks up, well clear of every web (so moving into position cuts nothing else), settles above the point,
-        // and sweeps down through it. Yields game-time waits; zero means the next frame.
-        public static IEnumerable<float> ChopAt(Vector3 point,float degrees=50,float seconds=.15f)
+        // One chop: the view looks up, well clear of every web (so moving into position cuts nothing else), and sweeps straight down
+        // through the point to degrees/2 past it, as fast as a chop of `degrees` in `seconds`. (Jumping to a pose just above the point
+        // first would itself count as a swing, and that pose already has the blade in the high webs.) Yields game-time waits; zero
+        // means the next frame.
+        public static IEnumerable<float> ChopAt(Vector3 point,float degrees=50,float seconds=.15f)=>Sweep(()=>Through(point),degrees,seconds);
+        static IEnumerable<float> Sweep(System.Func<Quaternion> aim,float degrees,float seconds)
         {
             var head=D.player.Head;
             if(head.forward.y<.95f)foreach(var t in Raise())yield return t;
-            var through=Through(point);
+            var through=aim();
             head.rotation=through*Quaternion.Euler(-85,0,0);yield return .15f;
-            head.rotation=through*Quaternion.Euler(-degrees/2,0,0);yield return .15f;
-            float start=Time.time;
-            while(Time.time<start+seconds){head.rotation=through*Quaternion.Euler(Mathf.Lerp(-degrees/2,degrees/2,(Time.time-start)/seconds),0,0);yield return 0;}
+            float start=Time.time,sweep=seconds*(85+degrees/2)/degrees;
+            while(Time.time<start+sweep){head.rotation=through*Quaternion.Euler(Mathf.Lerp(-85,degrees/2,(Time.time-start)/sweep),0,0);yield return 0;}
             head.rotation=through*Quaternion.Euler(degrees/2,0,0);yield return .1f;
-            head.rotation=through*Quaternion.Euler(-85,0,0);yield return .1f;
+            // Back up the same way. Snapping straight up in one frame would count as a swing along the chord between the two poses,
+            // which passes through the next column's high web.
+            start=Time.time;
+            while(Time.time<start+sweep){head.rotation=through*Quaternion.Euler(Mathf.Lerp(degrees/2,-85,(Time.time-start)/sweep),0,0);yield return 0;}
+            // End looking straight up (the aim leans down a little), so the next chop starts without the slow raise.
+            head.rotation=Quaternion.Euler(-85,through.eulerAngles.y,0);yield return .1f;
         }
         // Degrees per second at which turning the view moves the blade tip well under the machete's cutting speed.
         public const float SlowTurn=20f;
@@ -46,8 +53,11 @@ namespace AfterHours.Editor
             while(Quaternion.Angle(head.rotation,up)>.5f){head.rotation=Quaternion.RotateTowards(head.rotation,up,SlowTurn*Time.deltaTime);yield return 0;}
             head.rotation=up;yield return .1f;
         }
-        public static IEnumerable<float> Chop(int col)=>ChopAt(Between(col));
-        // Chops every column once, left to right, in about seven seconds: well inside the first wait before a web grows back.
+        // A chop through one column. The desktop machete hangs to the right of the eye, so a sweep aimed straight at the point between
+        // the two webs crosses the ring at a slant: it clips the next column's high web on the right. Turned 1.5 degrees left it passes
+        // through both of the column's webs and no others (3 degrees is too far: it catches the low web of the column on the left).
+        public static IEnumerable<float> Chop(int col)=>Sweep(()=>Quaternion.AngleAxis(-1.5f,Vector3.up)*Through(Between(col)),50,.15f);
+        // Chops every column once, left to right, in about nine seconds: inside the first wait before a web grows back.
         public static IEnumerable<float> ClearAll(){for(int col=0;col<Columns;col++)foreach(var t in Chop(col))yield return t;}
         // How far a seated player's hand (about 45 cm below the eye and 25 cm out toward the web) is from the nearest point of a web.
         public static float SeatedReach(Vector3 eye,Cobweb web)
