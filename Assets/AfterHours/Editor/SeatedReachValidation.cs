@@ -208,10 +208,8 @@ namespace AfterHours.Editor
             Check(web.machete.held,"The NDA web: the machete is already in your hand");
             float widestWeb=web.webs.Max(x=>WebTesting.SeatedReach(P.Head.position,x));
             Check(widestWeb<.6f,"The NDA web: every web is within "+widestWeb.ToString("0.00")+" m of a seated hand, well inside the machete's 0.74 m");
-            // Turn to the button slowly: snapping the view round would swing the machete through the webs.
             var fire=web.webs[0].room.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.KillItWithFire);
-            var toFire=Quaternion.LookRotation(fire.transform.position-P.Head.position);
-            while(Quaternion.Angle(P.Head.rotation,toFire)>.5f){P.Head.rotation=Quaternion.RotateTowards(P.Head.rotation,toFire,WebTesting.SlowTurn*Time.deltaTime);yield return 0;}
+            foreach(var t in WebTesting.TurnTo(fire.transform.position))yield return t;
             AimAt(fire);
             lines.Add("PASS: The NDA web: the unlabelled button can be pointed at from the seat, through the webs");
             foreach(var t in WebTesting.ClearAll())yield return t;

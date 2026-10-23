@@ -1,4 +1,4 @@
-2026-10-22 22:33:50Z
+2026-10-23 18:52:12Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -9,7 +9,8 @@ PASS: The lobby menu hides LOBBY and TRY AGAIN
 PASS: The menu offers GENTLE AMBUSH (off) and DARK OPENING (on)
 PASS: Every one of the menu's 15 buttons is within 39 degrees of straight ahead
 PASS: The game carries its music: the theme and the quiet piece, on the director rather than in a room
-PASS: Every chapter has its piece: Slow tide, Quiet hours, Paper lanterns, Night window, Quiet hours, Slow tide, Night window; the lobby and rooftop the theme
+PASS: Every chapter has its piece: Slow tide, Quiet hours, Paper lanterns, Night window, Quiet hours, Overtime, Night window; the lobby and rooftop the theme
+PASS: The rage room's quiet, once everything is broken, has Slow tide in place of the beat
 PASS: No room plays music of its own, so two pieces never overlap
 PASS: Music plays in the lobby (the theme), and the menu offers MUSIC (on)
 PASS: MUSIC fades the music out and pauses it, and the choice is stored
@@ -40,7 +41,7 @@ PASS: Short ocean session records four strokes
 PASS: Short kitchen session records one pour and help
 PASS: Short rage room session breaks the mouse
 PASS: Short ambush session names two feelings
-PASS: Checkpoint stores partial progress in all seven chapters
+PASS: Checkpoint stores partial progress in the chapters that keep it
 PASS: Saving writes the backup copy once, and leaves an unchanged checkpoint alone
 PASS: The backup copy holds the checkpoint and the comfort settings (music included), exactly as stored
 PASS: Saving again with nothing changed writes nothing at all
@@ -66,8 +67,8 @@ PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
 PASS: A shredded résumé restores exactly once, and the paper stays in the bin and on the floor
-PASS: Each page leaves at least 100 scraps (1230 in all)
-PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (10.9 by 14.4 m)
+PASS: Each page leaves at least 100 scraps (1140 in all)
+PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (11.1 by 14.4 m)
 PASS: Scraps have no colliders, and each set is two draws
 PASS: The résumé room carries its confetti: a burst, a shower and a pop sound
 PASS: Every page can be thrown (helped toward the shredder), and tells the confetti when it hits something
@@ -87,11 +88,12 @@ PASS: Only the hidden mug is orange
 PASS: One spout target takes any mug
 PASS: Six cupboard doors hang on their outer edges, shut, each opened by pointing at it
 PASS: The orange mug waits inside the fifth cupboard, and nothing else is hidden there
-PASS: The orange mug pin is one of twelve pieces to earn, and its hint is a gentle one
+PASS: The orange mug pin is one of fourteen pieces to earn, and its hint is a gentle one
 PASS: The machine has a lever that brews, a steam wand and valve that blow steam, and the BREW button besides
 PASS: A breaking mug has shards over the counter and over the floor, a puff of dust and four coffee splashes, each waiting to be played
 PASS: The kitchen's effects share the flat paper material, cast no shadows, never hold more than 300 bits (224) and have their three sounds
 PASS: A broken mouse restores exactly once, still in pieces
+PASS: The rage room's count of things broken restores, and the hammer still waits: 2 more to break
 PASS: Two named feelings and the dark-opening choice restore exactly once
 PASS: Continue button names the last room
 PASS: Continue input returns to the saved room

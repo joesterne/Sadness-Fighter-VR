@@ -1,4 +1,4 @@
-2026-10-22 22:36:42Z
+2026-10-23 19:13:13Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note
@@ -77,13 +77,17 @@ PASS: The old résumé: a blank page offers four true lines
 PASS: The old résumé: choosing a line from the seat completes the chapter
 PASS: The old résumé: done without leaving the seat
 PASS: The rage room: every part is within 0.65 m of a seated hand, inside the bat's 0.85 m
-PASS: The rage room: every desk thing is within 0.67 m of a seated hand, inside the bat's 0.85 m
+PASS: The rage room: every desk thing is within 0.74 m of a seated hand, inside the bat's 0.85 m
 PASS: The rage room: pinch picks up the bat from the seat (1.0 m away), and it stays in hand
 PASS: The rage room: short swings from the seat break the mug
 PASS: The rage room: short swings from the seat break the desk phone
 PASS: The rage room: short swings from the seat break the stapler
 PASS: The rage room: short swings from the seat break the pen cup
 PASS: The rage room: short swings from the seat break the name plate
+PASS: The rage room: short swings from the seat break the laptop
+PASS: The rage room: short swings from the seat break the work phone
+PASS: The rage room: short swings from the seat break the side desk
+PASS: The rage room: short swings from the seat break the copier
 PASS: The rage room: short swings from the seat break the monitor
 PASS: The rage room: short swings from the seat break the keyboard
 PASS: The rage room: short swings from the seat break the tower
@@ -112,7 +116,13 @@ PASS: The ambush: STAND UP appears
 PASS: The ambush: STAND UP completes the chapter from the seat
 PASS: The ambush: done without leaving the seat
 PASS: The ambush: the way out can be chosen from the seat
-PASS: All seven chapters completed seated, without moving
+PASS: The NDA web: the machete is already in your hand
+PASS: The NDA web: every web is within 0.38 m of a seated hand, well inside the machete's 0.74 m
+PASS: The NDA web: the unlabelled button can be pointed at from the seat, through the webs
+PASS: The NDA web: short chops from the seat clear every web before any grows back
+PASS: The NDA web: the unlabelled button burns the spider from the seat
+PASS: The NDA web: done without leaving the seat
+PASS: All eight chapters completed seated, without moving
 PASS: Mirror: MIRROR on the desk brings you to the glass, facing it
 PASS: Mirror: your reflection appears
 PASS: Mirror: all 22 wardrobe buttons can be pointed at from the mirror spot

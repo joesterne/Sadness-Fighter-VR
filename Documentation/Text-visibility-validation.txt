@@ -1,4 +1,4 @@
-2026-10-22 22:42:03Z
+2026-10-23 19:01:50Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -32,10 +32,14 @@ PASS: room 0 [The lobby] The ambush doorway/Chapter number at (0.0, 2.6, -0.1) '
 PASS: room 0 [The lobby] The ambush doorway/Destination at (0.0, 2.1, -0.1) 'The ambush'
 PASS: room 0 [The lobby] The ambush doorway/Intention at (0.0, 1.5, -0.1) 'Starts in the dark. Name what happ...'
 PASS: room 0 [The lobby] The ambush doorway/Enter The ambush label at (0.0, 1.0, -0.1) 'ENTER'
+PASS: room 0 [The lobby] The NDA web doorway/Chapter number at (0.0, 2.6, -0.1) '08'
+PASS: room 0 [The lobby] The NDA web doorway/Destination at (0.0, 2.1, -0.1) 'The NDA web'
+PASS: room 0 [The lobby] The NDA web doorway/Intention at (0.0, 1.5, -0.1) 'Cut through what you could not say...'
+PASS: room 0 [The lobby] The NDA web doorway/Enter The NDA web label at (0.0, 1.0, -0.1) 'ENTER'
 PASS: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2) 'MONDAY 09:00'
 PASS: room 0 [The lobby] BEFORE - remembered office/Memory caption at (0.0, 2.8, -1.9) 'BEFORE  /  THE WAY YOU REMEMBER IT'
 PASS: room 0 [The lobby] 00 - The lobby/Welcome at (0.0, 1.1, -0.6) 'YOU CAN BEGIN ANYWHERE'
-PASS: room 0 [The lobby] 00 - The lobby/Journey progress at (0.0, 0.6, -0.6) '0 / 7   ROOMS EXPLORED Your pace. ...'
+PASS: room 0 [The lobby] 00 - The lobby/Journey progress at (0.0, 0.6, -0.6) '0 / 8   ROOMS EXPLORED Your pace. ...'
 PASS: room 0 [The lobby] 00 - The lobby/Move instructions at (3.5, 3.2, 2.8) 'POINT AND PINCH TO CHOOSE Pinch an...'
 PASS: room 0 [The lobby] 00 - The lobby/Continue last room label at (-1.0, 1.5, -0.4) 'BEGIN / OCEAN OF SHAME'
 PASS: room 0 [The lobby] 00 - The lobby/Small sessions at (0.0, 0.8, -0.6) 'A FEW MINUTES IS ENOUGH Each small...'
@@ -90,7 +94,7 @@ PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 0.8, -0.2) 'SHOES'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe back 10 label at (1.1, 0.7, -0.2) '<'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe next 10 label at (2.0, 0.7, -0.2) '>'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe value 10 at (1.6, 0.7, -0.2) 'Plain shoes'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.4, -0.2) '0 OF 12 PIECES FOUND'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.4, -0.2) '0 OF 14 PIECES FOUND'
 PASS: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0) 'YOU ARE STILL WELCOME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0) '01  /  OCEAN OF SHAME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0) 'A feeling can be vast without bein...'
@@ -152,9 +156,16 @@ PASS: room 7 [The rage room] 07 - The rage room/Desk note at (0.0, 0.5, -0.6) 'S
 PASS: room 7 [The rage room] Monitor - pieces/Screen text at (0.0, 0.0, 0.0) 'INBOX   1,284 unread Re: Re: Re: q...'
 PASS: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0) 'TEAM PLAYER'
 PASS: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0) 'SENIOR ASSOCIATE'
-PASS: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0) 'PUT THE BAT BACK'
-PASS: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2) 'MY THINGS'
-PASS: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0) 'RAGE ROOM RULES 1. Break things, n...'
+PASS: room 7 [The rage room] Laptop lid/Laptop text at (0.0, 0.0, 0.0) '1 NEW MEETING "Quick chat" with HR...'
+PASS: room 7 [The rage room] Work phone - pieces/Phone text at (0.0, 0.0, 0.0) '47 MISSED CALLS Manager (12)'
+PASS: room 7 [The rage room] Copier - pieces/Copier text at (0.2, 0.8, -0.3) 'READY'
+PASS: room 7 [The rage room] Door B/Door B label at (0.3, 0.6, -0.2) 'B'
+PASS: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0) 'PUT IT BACK'
+PASS: room 7 [The rage room] 07 - The rage room/Tool wall sign at (-1.5, 2.0, -1.2) 'TOOL WALL Break things to unlock m...'
+PASS: room 7 [The rage room] Tool lock/Tool name at (0.0, 0.0, 0.0) 'HAMMER'
+PASS: room 7 [The rage room] Tool lock/Tool count at (0.0, -0.1, 0.0) '3 MORE TO BREAK'
+PASS: room 7 [The rage room] 07 - The rage room/Box label at (2.0, 0.2, 0.1) 'MY THINGS'
+PASS: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 2.0) 'RAGE ROOM RULES 1. Break things, n...'
 PASS: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1) 'WE ARE A FAMILY'
 PASS: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7) 'THERE IS NO 'I' IN TEAM'
 PASS: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5) 'PEOPLE ARE OUR GREATEST ASSET'
@@ -183,6 +194,19 @@ PASS: room 8 [The ambush] Confidentiality agreement/Paper text at (0.0, 0.0, 0.0
 PASS: room 8 [The ambush] Restructuring plan/Paper text at (0.0, 0.0, 0.0) 'RESTRUCTURING PLAN Your role is no...'
 PASS: room 8 [The ambush] Benefits ending/Paper text at (0.0, 0.0, 0.0) 'BENEFITS ENDING As of this afterno...'
 PASS: room 8 [The ambush] Severance packet/Paper text at (0.0, 0.0, 0.0) 'SEVERANCE PACKET Sign here. And he...'
+PASS: room 9 [The NDA web] 09 - The NDA web/Chapter at (-0.6, 4.2, 5.9) '08 / THE NDA WEB'
+PASS: room 9 [The NDA web] 09 - The NDA web/Room title at (-0.6, 3.6, 5.9) 'Cut yourself free.'
+PASS: room 9 [The NDA web] 09 - The NDA web/Room subtitle at (-0.6, 3.0, 5.9) 'Everything you agreed never to say...'
+PASS: room 9 [The NDA web] 09 - The NDA web/Room progress at (-0.6, 2.6, 5.9) '0 / 18   CUT AWAY'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, -2.6) 'CONFIDENTIAL'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, -1.0) 'DO NOT DISCUSS'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, 0.6) 'CONFIDENTIAL'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, 2.2) 'DO NOT DISCUSS'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, -2.6) 'CONFIDENTIAL'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, -1.0) 'DO NOT DISCUSS'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, 0.6) 'CONFIDENTIAL'
+PASS: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, 2.2) 'DO NOT DISCUSS'
+PASS: room 9 [The NDA web] Web silk/Web clause at (0.0, 0.0, 0.0) 'DO NOT DISCUSS'
 NOTE: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): partly blocked from 3 of 107 places, by text 'BEFORE  /  THE WAY YOU REMEMBER IT'
 NOTE: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): partly blocked from 14 of 107 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 3.0, 13.5)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 109 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
@@ -206,6 +230,9 @@ NOTE: room 0 [The lobby] The rage room doorway/Enter The rage room label at (0.0
 NOTE: room 0 [The lobby] The ambush doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 118 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.5, 1.5, 13.0)
 NOTE: room 0 [The lobby] The ambush doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 2 of 75 places, by 00 - The lobby/Batched geometry - 05 Burnt coral near (1.0, 1.5, -0.5)
 NOTE: room 0 [The lobby] The ambush doorway/Enter The ambush label at (0.0, 1.0, -0.1): partly blocked from 18 of 115 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-0.5, 1.5, -0.5)
+NOTE: room 0 [The lobby] The NDA web doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 115 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.5, 1.5, 13.0)
+NOTE: room 0 [The lobby] The NDA web doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 8 of 50 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] The NDA web doorway/Enter The NDA web label at (0.0, 1.0, -0.1): partly blocked from 30 of 94 places, by 00 - The lobby/Batched geometry - 02 Deep blue near (1.0, 1.0, 0.0)
 NOTE: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2): partly blocked from 2 of 27 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0); partly blocked from 3 of 25 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (2.5, 1.5, 10.0)
 NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 1 label at (-1.9, 1.5, -0.2): partly blocked from 3 of 47 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
 NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 1 label at (-1.1, 1.5, -0.2): partly blocked from 4 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
@@ -250,9 +277,16 @@ NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): partly blocked from 4 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-7.0, 1.5, -4.0)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 7 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-6.0, 1.5, 5.5)
 NOTE: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0): partly blocked from 1 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (2.0, 1.5, -0.5); partly blocked from 3 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (1.5, 1.5, -0.5); partly blocked from 4 of 15 places, by 06 - The old résumé/Batched geometry - 10 Brushed aluminium near (1.5, 1.5, -1.0)
-NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 52 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
+NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 50 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
+NOTE: room 7 [The rage room] 07 - The rage room/Spray paint at (-2.5, 1.9, 6.8): partly blocked from 2 of 53 places, by 07 - The rage room/Batched geometry - 07 Polished limestone near (-1.5, 1.5, -1.5)
+NOTE: room 7 [The rage room] 07 - The rage room/Spray paint at (2.2, 1.0, 6.8): partly blocked from 2 of 53 places, by 07 - The rage room/Batched geometry - 07 Polished limestone near (-1.5, 1.5, -1.0)
+NOTE: room 7 [The rage room] 07 - The rage room/Desk note at (0.0, 0.5, -0.6): partly blocked from 8 of 18 places, by 07 - The rage room/Batched geometry - 07 Polished limestone near (-1.5, 1.0, -1.5)
+NOTE: room 7 [The rage room] Monitor - pieces/Screen text at (0.0, 0.0, 0.0): partly blocked from 1 of 9 places, by 07 - The rage room/Batched geometry - 07 Polished limestone near (-1.5, 1.5, -1.0)
 NOTE: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): out of reading range from everywhere sampled (letters about 0.7 cm tall)
-NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 18 places, by Monitor - pieces/Monitor body
+NOTE: room 7 [The rage room] Work phone - pieces/Phone text at (0.0, 0.0, 0.0): out of reading range from everywhere sampled (letters about 0.6 cm tall)
+NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 16 places, by 07 - The rage room/Batched geometry - 07 Polished limestone near (-1.5, 1.0, -1.5)
+NOTE: room 7 [The rage room] 07 - The rage room/Box label at (2.0, 0.2, 0.1): partly blocked from 2 of 14 places, by Copier - pieces/Copier body
+NOTE: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 2.0): partly blocked from 3 of 52 places, by 07 - The rage room/Batched geometry - 07 Polished limestone near (-1.5, 1.5, -1.5)
 NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): partly blocked from 17 of 80 places, by Clown B/Clown B - 06 Brass and daylight
 NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): partly blocked from 19 of 85 places, by Clown A/Clown A - 03 Quiet teal
 NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): partly blocked from 18 of 78 places, by Clown B/Clown B - 03 Quiet teal
@@ -293,6 +327,10 @@ INFO: room 0 [The lobby] The ambush doorway/Chapter number at (0.0, 2.6, -0.1): 
 INFO: room 0 [The lobby] The ambush doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 118, clear from 117, outlined
 INFO: room 0 [The lobby] The ambush doorway/Intention at (0.0, 1.5, -0.1): in range of 83 places, faced from 75, clear from 73, outlined
 INFO: room 0 [The lobby] The ambush doorway/Enter The ambush label at (0.0, 1.0, -0.1): in range of 126 places, faced from 115, clear from 97
+INFO: room 0 [The lobby] The NDA web doorway/Chapter number at (0.0, 2.6, -0.1): in range of 116 places, faced from 105, clear from 105, outlined
+INFO: room 0 [The lobby] The NDA web doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 115, clear from 114, outlined
+INFO: room 0 [The lobby] The NDA web doorway/Intention at (0.0, 1.5, -0.1): in range of 61 places, faced from 50, clear from 42, outlined
+INFO: room 0 [The lobby] The NDA web doorway/Enter The NDA web label at (0.0, 1.0, -0.1): in range of 105 places, faced from 94, clear from 64
 INFO: room 0 [The lobby] BEFORE - remembered office/Screen text at (0.0, 1.4, 0.2): in range of 49 places, faced from 27, clear from 25, outlined
 INFO: room 0 [The lobby] BEFORE - remembered office/Memory caption at (0.0, 2.8, -1.9): in range of 87 places, faced from 49, clear from 49, outlined
 INFO: room 0 [The lobby] 00 - The lobby/Welcome at (0.0, 1.1, -0.6): in range of 107 places, faced from 24, clear from 24, outlined
@@ -403,19 +441,26 @@ INFO: room 6 [The old résumé] 06 - The old résumé/Room progress at (0.0, 2.5
 INFO: room 6 [The old résumé] Page face/Page heading at (0.0, 0.2, 0.0): in range of 11 places, faced from 5, clear from 5
 INFO: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0): in range of 33 places, faced from 15, clear from 15
 INFO: room 6 [The old résumé] Shredder/Shredder label at (0.0, 1.3, -0.4): in range of 64 places, faced from 29, clear from 29, outlined
-INFO: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): in range of 59 places, faced from 52, clear from 51, outlined
-INFO: room 7 [The rage room] 07 - The rage room/Room title at (0.0, 3.8, 6.8): in range of 59 places, faced from 52, clear from 52, outlined
-INFO: room 7 [The rage room] 07 - The rage room/Room subtitle at (0.0, 3.2, 6.8): in range of 59 places, faced from 53, clear from 53, outlined
-INFO: room 7 [The rage room] 07 - The rage room/Room progress at (0.0, 2.8, 6.8): in range of 59 places, faced from 54, clear from 54, outlined
-INFO: room 7 [The rage room] 07 - The rage room/Spray paint at (-2.5, 1.9, 6.8): in range of 59 places, faced from 55, clear from 55
-INFO: room 7 [The rage room] 07 - The rage room/Spray paint at (2.2, 1.0, 6.8): in range of 59 places, faced from 55, clear from 55
-INFO: room 7 [The rage room] 07 - The rage room/Desk note at (0.0, 0.5, -0.6): in range of 46 places, faced from 19, clear from 19, outlined
-INFO: room 7 [The rage room] Monitor - pieces/Screen text at (0.0, 0.0, 0.0): in range of 19 places, faced from 10, clear from 10
+INFO: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): in range of 57 places, faced from 50, clear from 49, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Room title at (0.0, 3.8, 6.8): in range of 57 places, faced from 50, clear from 50, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Room subtitle at (0.0, 3.2, 6.8): in range of 57 places, faced from 51, clear from 51, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Room progress at (0.0, 2.8, 6.8): in range of 57 places, faced from 52, clear from 52, outlined
+INFO: room 7 [The rage room] 07 - The rage room/Spray paint at (-2.5, 1.9, 6.8): in range of 57 places, faced from 53, clear from 51
+INFO: room 7 [The rage room] 07 - The rage room/Spray paint at (2.2, 1.0, 6.8): in range of 57 places, faced from 53, clear from 51
+INFO: room 7 [The rage room] 07 - The rage room/Desk note at (0.0, 0.5, -0.6): in range of 44 places, faced from 18, clear from 10, outlined
+INFO: room 7 [The rage room] Monitor - pieces/Screen text at (0.0, 0.0, 0.0): in range of 17 places, faced from 9, clear from 8
 INFO: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): in range of 0 places, faced from 0, clear from 0
-INFO: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0): in range of 7 places, faced from 5, clear from 5
-INFO: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): in range of 42 places, faced from 18, clear from 16
-INFO: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2): in range of 31 places, faced from 10, clear from 10
-INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0): in range of 59 places, faced from 55, clear from 55, outlined
+INFO: room 7 [The rage room] Plate/Plate title at (0.0, 0.0, 0.0): in range of 6 places, faced from 5, clear from 5
+INFO: room 7 [The rage room] Laptop lid/Laptop text at (0.0, 0.0, 0.0): in range of 9 places, faced from 6, clear from 6
+INFO: room 7 [The rage room] Work phone - pieces/Phone text at (0.0, 0.0, 0.0): in range of 0 places, faced from 0, clear from 0
+INFO: room 7 [The rage room] Copier - pieces/Copier text at (0.2, 0.8, -0.3): in range of 6 places, faced from 4, clear from 4
+INFO: room 7 [The rage room] Door B/Door B label at (0.3, 0.6, -0.2): in range of 8 places, faced from 2, clear from 2
+INFO: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): in range of 40 places, faced from 16, clear from 14
+INFO: room 7 [The rage room] 07 - The rage room/Tool wall sign at (-1.5, 2.0, -1.2): in range of 38 places, faced from 19, clear from 19, outlined
+INFO: room 7 [The rage room] Tool lock/Tool name at (0.0, 0.0, 0.0): in range of 13 places, faced from 6, clear from 6
+INFO: room 7 [The rage room] Tool lock/Tool count at (0.0, -0.1, 0.0): in range of 8 places, faced from 4, clear from 4
+INFO: room 7 [The rage room] 07 - The rage room/Box label at (2.0, 0.2, 0.1): in range of 28 places, faced from 14, clear from 12
+INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 2.0): in range of 57 places, faced from 52, clear from 49, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): in range of 93 places, faced from 80, clear from 63
 INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): in range of 97 places, faced from 85, clear from 66
 INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): in range of 92 places, faced from 78, clear from 60
@@ -444,6 +489,19 @@ INFO: room 8 [The ambush] Confidentiality agreement/Paper text at (0.0, 0.0, 0.0
 INFO: room 8 [The ambush] Restructuring plan/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 7, clear from 7
 INFO: room 8 [The ambush] Benefits ending/Paper text at (0.0, 0.0, 0.0): in range of 5 places, faced from 5, clear from 5
 INFO: room 8 [The ambush] Severance packet/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 7, clear from 7
+INFO: room 9 [The NDA web] 09 - The NDA web/Chapter at (-0.6, 4.2, 5.9): in range of 51 places, faced from 49, clear from 49, outlined
+INFO: room 9 [The NDA web] 09 - The NDA web/Room title at (-0.6, 3.6, 5.9): in range of 51 places, faced from 50, clear from 50, outlined
+INFO: room 9 [The NDA web] 09 - The NDA web/Room subtitle at (-0.6, 3.0, 5.9): in range of 51 places, faced from 50, clear from 50, outlined
+INFO: room 9 [The NDA web] 09 - The NDA web/Room progress at (-0.6, 2.6, 5.9): in range of 51 places, faced from 50, clear from 50, outlined
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, -2.6): in range of 20 places, faced from 15, clear from 15
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, -1.0): in range of 22 places, faced from 16, clear from 16
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, 0.6): in range of 22 places, faced from 16, clear from 16
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (-4.3, 1.2, 2.2): in range of 17 places, faced from 12, clear from 12
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, -2.6): in range of 20 places, faced from 14, clear from 14
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, -1.0): in range of 23 places, faced from 16, clear from 16
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, 0.6): in range of 23 places, faced from 17, clear from 17
+INFO: room 9 [The NDA web] 09 - The NDA web/Drawer label at (4.3, 1.2, 2.2): in range of 18 places, faced from 13, clear from 13
+INFO: room 9 [The NDA web] Web silk/Web clause at (0.0, 0.0, 0.0): in range of 19 places, faced from 10, clear from 10
 INFO: plate room 0 [The lobby] Getting started board: 2.93 by 0.73 m, 1 sign on it, smallest margin 17.4 cm
 INFO: plate room 1 [Ocean of shame] Distance plate: 1.55 by 0.22 m, 1 sign on it, smallest margin 6.0 cm
 INFO: plate room 1 [Ocean of shame] Rowing plate: 2.65 by 0.60 m, 1 sign on it, smallest margin 10.0 cm
@@ -455,4 +513,4 @@ INFO: plate room 4 [The infinite archive] FEAR sign plate: 1.34 by 0.70 m, 2 sig
 INFO: plate room 4 [The infinite archive] Heading plate: 4.86 by 2.10 m, 4 signs on it, smallest margin 20.0 cm
 INFO: plate room 4 [The infinite archive] STILL TRUE sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
 INFO: plate room 7 [The rage room] Rules board: 1.32 by 0.61 m, 1 sign on it, smallest margin 10.0 cm
-INFO: 182 signs checked; 0 skinned meshes in the last scan were not counted as solid.
+INFO: 206 signs checked; 0 skinned meshes in the last scan were not counted as solid.
