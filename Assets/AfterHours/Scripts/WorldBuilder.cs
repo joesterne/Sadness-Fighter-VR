@@ -21,8 +21,7 @@ namespace AfterHours
             NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
             NewRoom(7,"The rage room",new Vector3(560,0,0),new Vector3(0,.04f,-1.25f));Rage();
             NewRoom(8,"The ambush",new Vector3(640,0,0),new Vector3(0,.04f,-1.9f));Ambush();
-            NewRoom(9,"The NDA web",new Vector3(720,0,0),new Vector3(0,.04f,-1));Web();
-            Menu();
+            Menu();BackgroundMusic();
             FitPlates();
             // Signs that only guide or reassure can be switched off together (clean mode). Labels on buttons, doors and objects stay.
             foreach(var room in d.rooms)foreach(var t in room.root.GetComponentsInChildren<TextMeshPro>(true))if(GuidanceNames.Contains(t.name)&&!t.GetComponent<Guidance>())t.gameObject.AddComponent<Guidance>();
@@ -163,20 +162,22 @@ namespace AfterHours
         {
             var root=Art.Group("Comfort menu",Vector3.zero,d.player.transform);
             var menu=root.gameObject.AddComponent<ComfortMenu>();menu.director=d;d.menu=menu;d.player.menu=menu;
-            // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view.
-            Art.Box("Menu panel",new Vector3(0,-.1105f,.014f),new Vector3(.53f,.721f,.012f),Art.Ink,true,root,.006f);
-            Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.222f,-.002f),.019f,muted,.36f,root);
-            menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.19f,-.002f),.027f,ivory,.36f,root);
-            MenuButton(root,"Menu close","CLOSE",.19f,.205f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
-            MenuButton(root,"Menu turn left","< TURN",-.17f,.125f,Art.Teal,ActionKind.TurnLeft,.12f);
-            MenuButton(root,"Menu turn around","TURN AROUND",0,.125f,Art.Teal,ActionKind.TurnAround,.2f);
-            MenuButton(root,"Menu turn right","TURN >",.17f,.125f,Art.Teal,ActionKind.TurnRight,.12f);
+            // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view. The bottom row is as low
+            // as it can go (42 degrees below straight ahead), so the panel grows upward: the turning buttons and FACE FORWARD sit above eye level.
+            Art.Box("Menu panel",new Vector3(0,-.068f,.014f),new Vector3(.53f,.806f,.012f),Art.Ink,true,root,.006f);
+            Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.307f,-.002f),.019f,muted,.36f,root);
+            menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.275f,-.002f),.027f,ivory,.36f,root);
+            MenuButton(root,"Menu close","CLOSE",.19f,.29f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
+            MenuButton(root,"Menu turn left","< TURN",-.17f,.21f,Art.Teal,ActionKind.TurnLeft,.12f);
+            MenuButton(root,"Menu turn around","TURN AROUND",0,.21f,Art.Teal,ActionKind.TurnAround,.2f);
+            MenuButton(root,"Menu turn right","TURN >",.17f,.21f,Art.Teal,ActionKind.TurnRight,.12f);
+            MenuButton(root,"Menu face forward","FACE FORWARD",0,.125f,Art.Teal,ActionKind.FaceForward,.2f);
             menu.seated=MenuButton(root,"Menu seated view","SEATED VIEW",-.12f,.04f,Art.Navy,ActionKind.SeatedMode);
             menu.height=MenuButton(root,"Menu seated height","SEATED HEIGHT",.12f,.04f,Art.Navy,ActionKind.SeatedHeight);
             menu.walking=MenuButton(root,"Menu movement","MOVEMENT",-.12f,-.045f,Art.Navy,ActionKind.SmoothMotion);
             menu.vignette=MenuButton(root,"Menu comfort vignette","COMFORT VIGNETTE",.12f,-.045f,Art.Navy,ActionKind.Vignette);
             menu.crowd=MenuButton(root,"Menu kitchen crowd","KITCHEN CROWD",-.12f,-.13f,Art.Navy,ActionKind.GentleAudience);
-            MenuButton(root,"Menu face forward","FACE FORWARD",.12f,-.13f,Art.Teal,ActionKind.FaceForward);
+            menu.music=MenuButton(root,"Menu music","MUSIC",.12f,-.13f,Art.Navy,ActionKind.Music);
             menu.clean=MenuButton(root,"Menu clean mode","CLEAN MODE",-.12f,-.215f,Art.Navy,ActionKind.CleanMode);
             menu.night=MenuButton(root,"Menu ocean at night","OCEAN AT NIGHT",.12f,-.215f,Art.Navy,ActionKind.NightOcean);
             menu.gentle=MenuButton(root,"Menu gentle ambush","GENTLE AMBUSH",-.12f,-.30f,Art.Navy,ActionKind.GentleAmbush);
@@ -187,6 +188,20 @@ namespace AfterHours
             // A panel floating at arm's length should not throw a shadow onto the room.
             foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
             menu.Refresh();root.gameObject.SetActive(false);
+        }
+        // Calm background music for the whole game. It belongs to the director, not a room, so it carries on across room changes.
+        static void BackgroundMusic()
+        {
+            var go=new GameObject("Music");go.transform.SetParent(d.transform,false);
+            var music=go.AddComponent<Music>();music.director=d;d.music=music;
+            music.source=go.AddComponent<AudioSource>();music.source.loop=true;music.source.playOnAwake=false;music.source.spatialBlend=0;music.source.priority=64;music.source.volume=Music.Volume;
+            music.theme=SoundBank.Get("Music - After hours theme");music.calm=SoundBank.Get("Music - Quiet hours");music.source.clip=music.theme;
+            // Each chapter's own piece: the ocean rolls with Slow tide, the kitchen has Paper lanterns, the archive and the ambush
+            // Night window; the heavy room and the old résumé keep Quiet hours. The rage room has Overtime, upbeat techno, which eases
+            // into Slow tide once everything there is broken and the room goes quiet.
+            music.byRoom=new AudioClip[d.rooms.Length];
+            AudioClip tide=SoundBank.Get("Music - Slow tide"),lanterns=SoundBank.Get("Music - Paper lanterns"),night=SoundBank.Get("Music - Night window");
+            music.byRoom[1]=tide;music.byRoom[3]=lanterns;music.byRoom[4]=night;music.byRoom[RageRoom.Room]=SoundBank.Get("Music - Overtime");music.afterRage=tide;music.byRoom[AmbushRoom.Room]=night;
         }
         // A sign that says one thing to a player using hands and another to a player using controllers, and follows them if they switch.
         static TextMeshPro Words(TextMeshPro text,string hands,string controllers)
@@ -292,7 +307,7 @@ namespace AfterHours
             Mirror();
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
             Guide();
-            Sound("Ambience - Lobby",.5f);Sound("Music - After hours theme",.22f);
+            Sound("Ambience - Lobby",.5f);
         }
         // A full-length mirror built into the lobby's left wall, with the wardrobe on either side of it. Behind the glass
         // is a mirror-image copy of this end of the lobby, and the player's reflection stands in it (see MirrorAvatar).
@@ -523,6 +538,13 @@ namespace AfterHours
             Art.Shape("Pin disc",PrimitiveType.Cylinder,new Vector3(-.095f,.15f,.104f),new Vector3(.06f,.004f,.06f),Art.Gold,false,standPin).transform.localRotation=Quaternion.Euler(90,0,0);
             Art.Box("Pin figure",new Vector3(-.095f,.145f,.109f),new Vector3(.012f,.03f,.006f),Art.Teal,false,standPin,.002f);
             Art.Shape("Pin head",PrimitiveType.Sphere,new Vector3(-.095f,.166f,.109f),Vector3.one*.013f,Art.Teal,false,standPin);
+            // The Paper Jam pin, from the rage room's copier: a tiny copier, a sheet stuck in its lid, in a gold frame.
+            var jamPin=Look(RageRoom.PaperJamPin,m.torso).group.transform;
+            Art.Box("Pin frame",new Vector3(-.095f,.15f,.104f),new Vector3(.056f,.066f,.004f),Art.Gold,false,jamPin,.001f);
+            Art.Box("Pin backing",new Vector3(-.095f,.15f,.106f),new Vector3(.044f,.054f,.003f),Art.Navy,false,jamPin,0);
+            Art.Box("Pin copier",new Vector3(-.095f,.141f,.109f),new Vector3(.03f,.024f,.006f),Art.Cream,false,jamPin,.001f);
+            Art.Box("Pin copier lid",new Vector3(-.095f,.155f,.109f),new Vector3(.032f,.005f,.007f),Art.Ink,false,jamPin,0);
+            Art.Box("Pin paper",new Vector3(-.089f,.162f,.11f),new Vector3(.014f,.01f,.002f),Art.White,false,jamPin,0).transform.localRotation=Quaternion.Euler(0,0,-12);
             // Arms are two fixed-length segments each, bent by the pose; hands follow tracked hands or controllers.
             for(int i=0;i<2;i++)
             {
@@ -703,6 +725,12 @@ namespace AfterHours
             m.xray=parts.ToArray();m.halos=halos.ToArray();m.haloMaterial=Art.XrayHalo;
         }
         // The old résumé: five pages on a rack, a shredder, and a blank page at the end.
+        // The shredder stands on the player's side of the desk, just right of the arrival point and turned to face it, so it is a step or
+        // two away rather than across the room, and a page thrown at it from the arrival point lands in it. It stays clear of the
+        // line of sight to the pages and the four true lines.
+        public static readonly Vector3 ShredderAt=new Vector3(1.95f,0,-.8f);
+        public const float ShredderYaw=70;
+        static Vector3 FromShredder(Vector3 local)=>ShredderAt+Quaternion.Euler(0,ShredderYaw,0)*local;
         static void Shredding()
         {
             Shell(12,15,Art.Cream);d.rooms[6].total=5;
@@ -722,7 +750,9 @@ namespace AfterHours
             string[] farewells={"A title described a role. It was never the whole of you.","You were never meant to be reachable all the time.","Your worth was never a quarterly number.","Your loyalty is still yours. It goes with you.","You do not owe anyone a perfect explanation."};
             var pages=new Grabbable[resumes.Length];for(int i=0;i<pages.Length;i++)pages[i]=Page(resumes[i],new Vector3(-1.44f+i*.72f,1.087f,.45f));
             // The shredder: a bin with a window onto the paper, the cutting head and its slot. Big enough to read from the seat.
-            const float z=3.3f,top=1.4f;
+            // It is built in its own frame (z=0 is its middle), which is placed and turned as one.
+            const float z=0,top=1.4f;
+            var room=Art.Root;var unit=Art.Group("Shredder",ShredderAt);unit.localRotation=Quaternion.Euler(0,ShredderYaw,0);Art.Root=unit;
             Art.Box("Bin back",new Vector3(0,.39f,z+.297f),new Vector3(.875f,.775f,.03f),Art.Ink);
             for(int s=-1;s<=1;s+=2)Art.Box("Bin side",new Vector3(s*.42f,.39f,z),new Vector3(.035f,.775f,.625f),Art.Ink);
             Art.Box("Bin floor",new Vector3(0,.015f,z),new Vector3(.875f,.03f,.625f),Art.Ink);
@@ -754,15 +784,17 @@ namespace AfterHours
             main.startSize3D=true;main.startSizeX=.018f;main.startSizeY=.013f;main.startSizeZ=.14f;main.startRotation3D=true;main.startRotationY=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);
             var emission=strips.emission;emission.rateOverTime=26;var shape=strips.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(.6f,.08f,.01f);
             var stripRenderer=strips.GetComponent<ParticleSystemRenderer>();stripRenderer.renderMode=ParticleSystemRenderMode.Mesh;stripRenderer.mesh=Geometry.Get(PrimitiveType.Cube);stripRenderer.sharedMaterial=Art.Paper;
+            Art.Root=room;
             // Each page also sends a flurry of loose bits up out of the head. They tumble down across the room and come to rest on the floor...
             var floorPlane=Art.Group("Paper floor",new Vector3(0,.012f,0));
-            var flurry=new[]{Flurry("Paper bits flying",new Vector3(0,top+.05f,z),Art.White,floorPlane),Flurry("Paper bits flying",new Vector3(0,top+.05f,z),Art.Paper,floorPlane)};
+            var flurry=new[]{Flurry("Paper bits flying",FromShredder(new Vector3(0,top+.05f,z)),Art.White,floorPlane),Flurry("Paper bits flying",FromShredder(new Vector3(0,top+.05f,z)),Art.Paper,floorPlane)};
             // ...and leaves a set of scraps behind (they appear once the flurry has come down): over the floor, thickest around the shredder,
             // on the desk, on the shredder's top and on the window sill. Each page adds a set, so the room fills with paper as the pages go.
             float Gauss()=>Mathf.Sqrt(-2*Mathf.Log(Mathf.Max(R(),.0001f)))*Mathf.Cos(2*Mathf.PI*R());
             bool OnFloor(float x,float zz)
             {
-                if(Mathf.Abs(x)<.6f&&zz>2.85f&&zz<3.75f)return false;                                                  // inside the shredder's bin
+                var inBin=Quaternion.Euler(0,-ShredderYaw,0)*(new Vector3(x,0,zz)-ShredderAt);
+                if(Mathf.Abs(inBin.x)<.6f&&Mathf.Abs(inBin.z)<.45f)return false;                                      // inside the shredder's bin
                 if(x>-5.1f&&x<-4.1f&&zz>2.6f&&zz<3.5f)return false;if(x>4f&&x<5f&&zz>2.2f&&zz<3f)return false;       // under the archive boxes
                 return Mathf.Abs(Mathf.Abs(x)-4.9f)>.5f||Mathf.Abs(zz-8.4f)>.5f;                                       // and the plants
             }
@@ -779,24 +811,24 @@ namespace AfterHours
                 for(int k=0;k<210;k++)
                 {
                     // Three in five fall around the shredder and the desk, the rest anywhere on the floor.
-                    float x=k%5<3?Gauss()*1.9f:R()*11f-5.5f,zz=k%5<3?1.6f+Gauss()*2.2f:R()*13.8f-4.4f;
+                    float x=k%5<3?.9f+Gauss()*1.9f:R()*11f-5.5f,zz=k%5<3?-.2f+Gauss()*1.8f:R()*13.8f-4.4f;
                     x=Mathf.Clamp(x,-5.5f,5.5f);zz=Mathf.Clamp(zz,-4.4f,9.4f);
                     if(OnFloor(x,zz))Drop(x,.004f+R()*.006f,zz);
                 }
                 for(int k=0;k<20;k++)Drop(R()*4.2f-2.1f,.783f+R()*.003f,k%2==0?.03f+R()*.27f:.6f+R()*.27f);                  // on the desk, either side of the page rack
-                for(int k=0;k<9;k++)Drop(R()*.9f-.45f,1.434f+R()*.004f,k%2==0?3f+R()*.22f:3.38f+R()*.24f);                    // on the shredder's top, clear of the slot
+                for(int k=0;k<9;k++){var onTop=FromShredder(new Vector3(R()*.9f-.45f,1.434f+R()*.004f,k%2==0?-.3f+R()*.22f:.08f+R()*.24f));Drop(onTop.x,onTop.y,onTop.z);}  // on the shredder's top, clear of the slot
                 for(int k=0;k<7;k++)Drop(R()*5.8f-2.9f,.809f+R()*.003f,9.72f+R()*.12f);                                      // on the window sill
                 Scraps("Paper scraps white",scraps,scrapWhite,Art.White);Scraps("Paper scraps",scraps,scrapPaper,Art.Paper);
                 scraps.gameObject.SetActive(false);litter[i]=scraps.gameObject;
             }
             // The slot's trigger runs the shredder. Pointing at the slot while holding a page lights its outline.
-            var slot=Art.Box("Shredder slot",new Vector3(0,top+.23f,z),new Vector3(.9f,.4f,.45f),Art.Teal,false);
+            var slot=Art.Box("Shredder slot",new Vector3(0,top+.23f,z),new Vector3(.9f,.4f,.45f),Art.Teal,false,unit);
             Object.DestroyImmediate(slot.GetComponent<Renderer>());slot.AddComponent<BoxCollider>().isTrigger=true;
             var shredder=slot.AddComponent<Shredder>();d.shredder=shredder;shredder.director=d;shredder.pages=pages;shredder.farewells=farewells;shredder.piles=piles;shredder.strips=strips;shredder.bits=flurry;shredder.litter=litter;
             Confetti(shredder,pages,floorPlane);
             // A page stands in the slot, then sinks out of sight into the head.
-            shredder.feed=Art.Group("Feed point",new Vector3(0,top+.305f,z));
-            Target(slot,6,new Vector3(0,.09f,0),.55f,"Point at the shredder and let go.",Outline("Shredder highlight",new Vector3(0,top+.045f,z),new Vector2(1.15f,.88f),false));
+            shredder.feed=Art.Group("Feed point",new Vector3(0,top+.305f,z),unit);
+            Target(slot,6,new Vector3(0,.09f,0),.55f,"Point at the shredder and let go.",Outline("Shredder highlight",new Vector3(0,top+.045f,z),new Vector2(1.15f,.88f),false,unit));
             // After the last page: a blank page and four true lines to choose from.
             var blank=Art.Group("Blank page",Vector3.zero);
             Art.Box("Page stand",new Vector3(0,.88f,.62f),new Vector3(.5f,.16f,.12f),Art.Navy,false,blank);
@@ -865,12 +897,13 @@ namespace AfterHours
             var group=Art.Group("Confetti",Vector3.zero);var egg=group.gameObject.AddComponent<ConfettiEgg>();
             egg.director=d;egg.pages=pages;egg.sound=SoundBank.Get("SFX - Confetti");
             egg.pop=ConfettiSystem("Confetti burst",group,floor,true);egg.shower=ConfettiSystem("Confetti shower",group,floor,false);
-            foreach(var page in pages){page.tossable=true;page.gameObject.AddComponent<ConfettiPage>().egg=egg;}
+            foreach(var page in pages){page.throwable=true;page.gameObject.AddComponent<ConfettiPage>().egg=egg;}
             shredder.egg=egg;
         }
         // Seven bright colours; each bit takes one at random. The burst flies up from the floor and slows in the air; the shower falls from two metres up.
         // Both drift down slowly (drag, a little noise), tumble, rest on the floor plane, and shrink away at the end of their time. Each is one draw.
-        static ParticleSystem ConfettiSystem(string name,Transform parent,Transform floor,bool burst)
+        // Plain (the rage room's paper jam), the bits are sheets of paper: bigger, fewer, and all white.
+        static ParticleSystem ConfettiSystem(string name,Transform parent,Transform floor,bool burst,Material plain=null)
         {
             var group=Art.Group(name,Vector3.zero,parent);group.localRotation=Quaternion.Euler(burst?-90:90,0,0);
             var ps=group.gameObject.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -878,7 +911,7 @@ namespace AfterHours
             main.startLifetime=burst?new ParticleSystem.MinMaxCurve(5f,7f):new ParticleSystem.MinMaxCurve(5.5f,8f);
             main.startSpeed=burst?new ParticleSystem.MinMaxCurve(2.5f,7f):new ParticleSystem.MinMaxCurve(0f,.5f);
             main.gravityModifier=burst?.35f:.25f;main.maxParticles=burst?320:260;main.simulationSpace=ParticleSystemSimulationSpace.World;
-            main.startSize3D=true;main.startSizeX=new ParticleSystem.MinMaxCurve(.05f,.11f);main.startSizeY=new ParticleSystem.MinMaxCurve(.03f,.06f);main.startSizeZ=.004f;
+            main.startSize3D=true;main.startSizeX=plain?new ParticleSystem.MinMaxCurve(.12f,.18f):new ParticleSystem.MinMaxCurve(.05f,.11f);main.startSizeY=plain?new ParticleSystem.MinMaxCurve(.09f,.13f):new ParticleSystem.MinMaxCurve(.03f,.06f);main.startSizeZ=.004f;
             var anyTurn=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);main.startRotation3D=true;main.startRotationX=anyTurn;main.startRotationY=anyTurn;main.startRotationZ=anyTurn;
             string[] hex={"#FF4D6D","#FFB703","#2FD38A","#23B5F0","#8B5CF6","#FF7A1A","#F9F871"};
             var colours=new Gradient{mode=GradientMode.Fixed};var keys=new GradientColorKey[hex.Length];
@@ -886,8 +919,9 @@ namespace AfterHours
             colours.SetKeys(keys,new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(1,1)});
             var pick=new ParticleSystem.MinMaxGradient(colours);pick.mode=ParticleSystemGradientMode.RandomColor;main.startColor=pick;
             var emission=ps.emission;
-            if(burst){emission.rateOverTime=0;emission.SetBursts(new[]{new ParticleSystem.Burst(0,(short)220)});}
-            else emission.rateOverTime=110;
+            if(burst){emission.rateOverTime=0;emission.SetBursts(new[]{new ParticleSystem.Burst(0,(short)(plain?120:220))});}
+            else emission.rateOverTime=plain?45:110;
+            if(plain)main.startColor=Color.white;
             var shape=ps.shape;
             if(burst){shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=48;shape.radius=.1f;}
             else{shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(2f,2f,.05f);}
@@ -896,7 +930,7 @@ namespace AfterHours
             var noise=ps.noise;noise.enabled=true;noise.strength=.5f;noise.frequency=.5f;noise.quality=ParticleSystemNoiseQuality.Low;
             var fade=ps.sizeOverLifetime;fade.enabled=true;fade.size=new ParticleSystem.MinMaxCurve(1,new AnimationCurve(new Keyframe(0,1),new Keyframe(.8f,1),new Keyframe(1,0)));
             var collision=ps.collision;collision.enabled=true;collision.type=ParticleSystemCollisionType.Planes;collision.AddPlane(floor);collision.dampen=1;collision.bounce=0;collision.lifetimeLoss=0;collision.radiusScale=.05f;
-            var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Cube);renderer.sharedMaterial=Art.ConfettiPaper;
+            var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Cube);renderer.sharedMaterial=plain?plain:Art.ConfettiPaper;
             renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;
             return ps;
         }
@@ -969,7 +1003,8 @@ namespace AfterHours
             Art.Text("Spray paint","<b>\"IT'S NOT PERSONAL\"</b>",new Vector3(2.2f,.95f,6.82f),.3f,ink,2.6f);
             Art.Box("Spray strike",new Vector3(2.2f,.96f,6.81f),new Vector3(2.5f,.035f,.01f),Art.Coral,false).transform.localRotation=Quaternion.Euler(0,0,-3);
             // A taped safety line marks where things break.
-            for(float x=-1.2f;x<=1.21f;x+=.3f)foreach(float z in new[]{-.82f,.82f})Art.Box("Safety tape",new Vector3(x,.012f,z),new Vector3(.18f,.012f,.07f),Art.Gold,false,null,.003f);
+            // The near line stops short of the side desk and the copier on either side of the seat.
+            for(float x=-1.2f;x<=1.21f;x+=.3f)foreach(float z in new[]{-.82f,.82f})if(z>0||Mathf.Abs(x)<.65f)Art.Box("Safety tape",new Vector3(x,.012f,z),new Vector3(.18f,.012f,.07f),Art.Gold,false,null,.003f);
             for(float z=-.6f;z<=.61f;z+=.3f)foreach(float x in new[]{-1.35f,1.35f})Art.Box("Safety tape",new Vector3(x,.012f,z),new Vector3(.07f,.012f,.18f),Art.Gold,false,null,.003f);
             // The desk. Its top is at .745 m, just in front of the seat.
             Art.Box("Desk top",new Vector3(0,.72f,-.25f),new Vector3(1.6f,.05f,.7f),Art.Wood);
@@ -1154,29 +1189,252 @@ namespace AfterHours
             var plateStand=Piece("Plate stand",new Vector3(0,.005f,.01f),new Vector3(.2f,.01f,.04f),Art.Metal,namePlate.visual,.08f,true,PrimitiveType.Cube,.002f);
             namePlate.stages=new[]{new BreakStage{debris=new[]{plate,plateStand}.Concat(Bits("Screw",3,new Vector3(0,.01f,.01f),new Vector3(.08f,0,0),new Vector3(.008f,.006f,.008f),Art.Metal,namePlate.visual,.003f,55,PrimitiveType.Cylinder)).ToArray()}};
 
-            room.extras=new[]{mug,phone,stapler,penCup,namePlate};
+            // The side desk to the left of the seat, with the laptop and the work phone on it. Its top is a plain surface for them to
+            // stand on; the part the bat hits is its front edge and its frame, so a swing at the laptop does not also hit the desk.
+            // Three hits: the drawer flies out with its papers, a side panel goes and a leg cracks, then it collapses, and anything
+            // still on it goes down with it.
+            var sideTop=Art.Box("Side desk top",new Vector3(-1f,.72f,-1.2f),new Vector3(.55f,.05f,.9f),Art.Wood);
+            var sideDesk=Part("Side desk",new Vector3(-1f,0,-1.2f),"the side desk",BreakSound.Plastic,"Hot desking is over. Nobody needs to book this desk again.",new Vector3(.15f,.2f,.9f),new Vector3(.2f,.6f,0));
+            var sdv=sideDesk.visual;
+            var deskFrame=sideDesk.gameObject.AddComponent<BoxCollider>();deskFrame.center=new Vector3(0,.33f,0);deskFrame.size=new Vector3(.55f,.6f,.9f);
+            sideDesk.hitVolumes=new[]{sideDesk.hitVolumes[0],deskFrame};
+            Art.Box("Desk apron",new Vector3(.25f,.66f,0),new Vector3(.03f,.08f,.86f),Art.Wood,false,sdv,.004f);
+            var legs=new List<Rigidbody>();
+            foreach(float x in new[]{-.24f,.24f})foreach(float z in new[]{-.41f,.41f})legs.Add(Piece("Desk leg",new Vector3(x,.35f,z),new Vector3(.04f,.7f,.04f),Art.Metal,sdv,.6f,true));
+            var drawer=Piece("Desk drawer",new Vector3(.24f,.6f,.18f),new Vector3(.04f,.1f,.36f),Art.Wood,sdv,.5f,true);
+            var drawerKnob=Piece("Drawer knob",new Vector3(.27f,.6f,.18f),new Vector3(.02f,.02f,.02f),Art.Gold,sdv,.01f,true,PrimitiveType.Sphere);
+            Rigidbody[] Sheets(int count,Vector3 around,Vector3 spread,Transform parent,int seed)
+            {
+                var sheets=Bits("Paper",count,around,spread,new Vector3(.21f,.003f,.15f),Art.Paper,parent,.005f,seed);
+                // Paper drifts rather than flies.
+                foreach(var sheet in sheets){sheet.linearDamping=3;sheet.angularDamping=1.5f;}
+                return sheets;
+            }
+            var sidePanel=Piece("Desk side panel",new Vector3(0,.42f,-.44f),new Vector3(.5f,.4f,.02f),Art.Navy,sdv,.8f,true);
+            var legCrack=Art.Box("Leg crack",new Vector3(.24f,.3f,-.41f),new Vector3(.045f,.008f,.045f),Art.Ink,false,sdv,0);legCrack.SetActive(false);
+            Rigidbody TopHalf(float z)
+            {
+                var half=Body("Desk top half",new Vector3(0,.72f,z),new Vector3(.55f,.05f,.45f),sdv,1.5f);
+                Art.Box("Desk top half",Vector3.zero,new Vector3(.55f,.05f,.44f),Art.Wood,false,half.transform);return half;
+            }
+            sideDesk.stages=new[]{
+                new BreakStage{debris=new[]{drawer,drawerKnob}.Concat(Sheets(5,new Vector3(.2f,.6f,.18f),new Vector3(.02f,.03f,.12f),sdv,61))
+                    .Concat(Bits("Pen",2,new Vector3(.2f,.6f,.18f),new Vector3(.02f,.02f,.1f),new Vector3(.008f,.008f,.13f),Art.Coral,sdv,.008f,62,PrimitiveType.Cylinder)).ToArray()},
+                new BreakStage{show=new[]{legCrack},tilt=new Vector3(0,0,-1.5f),debris=new[]{sidePanel}.Concat(Bits("Screw",4,new Vector3(0,.42f,-.44f),new Vector3(.22f,.18f,0),new Vector3(.008f,.006f,.008f),Art.Metal,sdv,.003f,63,PrimitiveType.Cylinder))
+                    .Concat(Bits("Wood splinter",3,new Vector3(.24f,.3f,-.41f),new Vector3(.02f,.05f,.02f),new Vector3(.01f,.06f,.01f),Art.Wood,sdv,.004f,64)).ToArray()},
+                new BreakStage{hide=new[]{sideTop,sdv.gameObject},debris=new[]{TopHalf(-.225f),TopHalf(.225f)}.Concat(legs)
+                    .Concat(Bits("Wood splinter",6,new Vector3(0,.7f,0),new Vector3(.25f,.02f,.4f),new Vector3(.012f,.08f,.012f),Art.Wood,sdv,.005f,65)).ToArray()},
+            };
+
+            // The laptop on the side desk, its screen toward the seat. Three hits: the screen cracks and keys fly, the lid snaps
+            // off, then the base splits.
+            const string meeting="<b>1 NEW MEETING</b>\n<size=80%>\"Quick chat\" with HR\nToday, 4:45 pm</size>";
+            var laptop=Part("Laptop",new Vector3(-.95f,.745f,-1.3f),"the laptop",BreakSound.Glass,"Logged out. You do not have to be reachable now.",new Vector3(.36f,.26f,.27f),new Vector3(0,.12f,0));
+            laptop.transform.localRotation=Quaternion.Euler(0,-90,0);
+            var lv=laptop.visual;
+            Art.Box("Laptop base",new Vector3(0,.01f,0),new Vector3(.34f,.02f,.24f),Art.Metal,false,lv,.004f);
+            var lid=Art.Group("Laptop lid",new Vector3(0,.13f,.115f),lv);
+            Art.Box("Lid back",Vector3.zero,new Vector3(.34f,.23f,.012f),Art.Metal,false,lid,.004f);
+            var laptopScreen=Art.Box("Laptop screen",new Vector3(0,.005f,-.007f),new Vector3(.31f,.19f,.003f),Art.White,false,lid,.001f);
+            var laptopText=Art.Text("Laptop text",meeting,new Vector3(0,.005f,-.01f),.02f,dark,.28f,lid);
+            laptopText.rectTransform.sizeDelta=new Vector2(.28f,.17f);laptopText.enableAutoSizing=true;laptopText.fontSizeMin=.06f;laptopText.fontSizeMax=.2f;
+            laptop.screenText=laptopText;laptop.screenStart=meeting;
+            var laptopCrack=Art.Group("Crack",Vector3.zero,lid);
+            for(int k=0;k<6;k++){float a=k*1.05f+.3f;Art.Line("Crack line",new Vector3(.05f,.03f,-.01f),new Vector3(.05f+Mathf.Cos(a)*.11f,.03f+Mathf.Sin(a)*.07f,-.01f),.003f,Art.Navy,laptopCrack);}
+            laptopCrack.gameObject.SetActive(false);
+            var laptopKeys=new List<Rigidbody>();
+            for(int row=0;row<3;row++)for(int col=0;col<8;col++)laptopKeys.Add(Piece("Key",new Vector3(-.13f+col*.037f,.024f,-.02f+row*.034f),new Vector3(.03f,.006f,.028f),Art.Ink,lv,.003f,true,PrimitiveType.Cube,.001f));
+            var trackpad=Piece("Trackpad",new Vector3(0,.022f,-.085f),new Vector3(.1f,.004f,.06f),Art.Ink,lv,.01f,true,PrimitiveType.Cube,.001f);
+            var flyingLid=Body("Laptop lid",new Vector3(0,.13f,.115f),new Vector3(.34f,.23f,.02f),lv,.4f);
+            Art.Box("Lid back",Vector3.zero,new Vector3(.34f,.23f,.012f),Art.Metal,false,flyingLid.transform,.004f);
+            Art.Box("Laptop screen",new Vector3(0,.005f,-.007f),new Vector3(.31f,.19f,.003f),Art.Navy,false,flyingLid.transform,.001f);
+            Rigidbody LaptopHalf(float x)
+            {
+                var half=Body("Laptop half",new Vector3(x,.01f,0),new Vector3(.17f,.02f,.24f),lv,.4f);
+                Art.Box("Laptop half",Vector3.zero,new Vector3(.17f,.02f,.24f),Art.Metal,false,half.transform,.004f);return half;
+            }
+            laptop.stages=new[]{
+                new BreakStage{show=new[]{laptopCrack.gameObject},debris=laptopKeys.Take(8).Concat(Bits("Glass shard",4,new Vector3(.05f,.16f,.1f),new Vector3(.08f,.05f,0),new Vector3(.025f,.02f,.003f),Art.Mint,lv,.01f,66)).ToArray(),
+                    screen="<b>CONNECTION LOST</b>\n<size=80%>Your access has been removed.</size>"},
+                new BreakStage{hide=new[]{lid.gameObject},debris=new[]{flyingLid,trackpad}.Concat(laptopKeys.Skip(8).Take(8)).Concat(Bits("Hinge",2,new Vector3(0,.02f,.115f),new Vector3(.15f,0,0),new Vector3(.03f,.01f,.01f),Art.Metal,lv,.005f,67)).ToArray()},
+                new BreakStage{hide=new[]{lv.gameObject},debris=new[]{LaptopHalf(-.085f),LaptopHalf(.085f),Piece("Laptop battery",new Vector3(0,.008f,.06f),new Vector3(.2f,.008f,.07f),Art.Ink,lv,.15f)}
+                    .Concat(laptopKeys.Skip(16)).Concat(Bits("Laptop chip",3,new Vector3(0,.01f,0),new Vector3(.15f,.005f,.1f),new Vector3(.02f,.004f,.015f),Art.Teal,lv,.004f,68)).ToArray()},
+            };
+
+            // The work phone, face up on the side desk. Two hits: the glass cracks and the case comes off, then it is in pieces.
+            const string missed="<b>47 MISSED CALLS</b>\n<size=75%>Manager (12)</size>";
+            var workPhone=Part("Work phone",new Vector3(-.85f,.745f,-.95f),"the work phone",BreakSound.Glass,"No more messages after hours.",new Vector3(.12f,.08f,.2f),new Vector3(0,.02f,0));
+            workPhone.transform.localRotation=Quaternion.Euler(0,-70,0);
+            var wv=workPhone.visual;
+            Art.Box("Phone back",new Vector3(0,.004f,0),new Vector3(.075f,.008f,.155f),Art.Ink,false,wv,.003f);
+            var phoneGlass=Art.Box("Phone screen",new Vector3(0,.0095f,0),new Vector3(.068f,.002f,.145f),Art.Navy,false,wv,0);
+            var phoneText=Art.Text("Phone text",missed,new Vector3(0,.011f,0),.01f,ivory,.06f,wv);
+            phoneText.transform.localRotation=Quaternion.Euler(90,0,0);
+            workPhone.screenText=phoneText;workPhone.screenStart=missed;
+            var phoneCrack=Art.Group("Crack",Vector3.zero,wv);
+            for(int k=0;k<5;k++){float a=k*1.25f+.2f;Art.Line("Crack line",new Vector3(.01f,.0112f,.03f),new Vector3(.01f+Mathf.Cos(a)*.035f,.0112f,.03f+Mathf.Sin(a)*.06f),.0025f,Art.Mint,phoneCrack);}
+            phoneCrack.gameObject.SetActive(false);
+            var phoneCase=Piece("Phone case",new Vector3(0,.001f,0),new Vector3(.08f,.004f,.16f),Art.Coral,wv,.02f,true,PrimitiveType.Cube,.002f);
+            workPhone.stages=new[]{
+                new BreakStage{show=new[]{phoneCrack.gameObject},tilt=new Vector3(0,12,0),debris=new[]{phoneCase}.Concat(Bits("Glass shard",4,new Vector3(.01f,.012f,.03f),new Vector3(.03f,0,.05f),new Vector3(.015f,.002f,.012f),Art.Mint,wv,.003f,71)).ToArray(),
+                    screen="<b>NO SIGNAL</b>\n<size=75%>Out of office</size>"},
+                new BreakStage{hide=new[]{wv.gameObject},debris=new[]{Piece("Phone half",new Vector3(0,.004f,-.04f),new Vector3(.075f,.008f,.075f),Art.Ink,wv,.05f),Piece("Phone half",new Vector3(0,.004f,.04f),new Vector3(.075f,.008f,.075f),Art.Ink,wv,.05f),
+                    Piece("Phone battery",new Vector3(0,.004f,0),new Vector3(.05f,.005f,.08f),Art.Gold,wv,.03f),Piece("SIM card",new Vector3(.02f,.004f,.06f),new Vector3(.012f,.001f,.015f),Art.Gold,wv,.001f,false,PrimitiveType.Cube,0)}
+                    .Concat(Bits("Glass shard",5,new Vector3(0,.01f,0),new Vector3(.03f,0,.07f),new Vector3(.018f,.002f,.014f),Art.Mint,wv,.003f,72)).ToArray()},
+            };
+            sideDesk.riders=new[]{laptop,workPhone};
+
+            // The copier, to the right of the seat, its front toward it. Four hits, and every one throws paper: the paper drawer, then
+            // the lid and the scanner glass, then door B and the toner, the drum and the fuser, then it falls apart. Its little screen
+            // keeps up a running complaint. When it is broken for good it jams one last time: see RageRoom.PaperJam.
+            var copier=Part("Copier",new Vector3(.95f,0,-1.2f),"the copier",BreakSound.Plastic,"",new Vector3(.7f,.5f,.55f),new Vector3(0,.72f,0));
+            copier.transform.localRotation=Quaternion.Euler(0,90,0);
+            var copierLower=copier.gameObject.AddComponent<BoxCollider>();copierLower.center=new Vector3(0,.235f,0);copierLower.size=new Vector3(.7f,.47f,.55f);
+            copier.hitVolumes=new[]{copier.hitVolumes[0],copierLower};
+            var cpv=copier.visual;
+            Art.Box("Copier base",new Vector3(0,.04f,0),new Vector3(.68f,.08f,.54f),Art.Ink,false,cpv,.006f);
+            Art.Box("Copier body",new Vector3(0,.42f,0),new Vector3(.66f,.68f,.52f),Art.Cream,false,cpv,.01f);
+            Art.Box("Copier scanner",new Vector3(0,.81f,.02f),new Vector3(.66f,.1f,.48f),Art.Metal,false,cpv,.006f);
+            var scanGlass=Art.Box("Scanner glass",new Vector3(0,.862f,.02f),new Vector3(.5f,.004f,.36f),Art.Mint,false,cpv,0);
+            var copierLid=Piece("Copier lid",new Vector3(0,.88f,.02f),new Vector3(.64f,.035f,.48f),Art.Cream,cpv,.8f,true,PrimitiveType.Cube,.006f);
+            Art.Box("Control panel",new Vector3(.17f,.83f,-.25f),new Vector3(.26f,.05f,.08f),Art.Ink,false,cpv,.004f);
+            Art.Box("Copier display",new Vector3(.17f,.83f,-.291f),new Vector3(.16f,.036f,.004f),Art.Mint,false,cpv,0);
+            var copierText=Art.Text("Copier text","READY",new Vector3(.17f,.83f,-.295f),.016f,dark,.15f,cpv);
+            copierText.rectTransform.sizeDelta=new Vector2(.15f,.034f);copierText.enableAutoSizing=true;copierText.fontSizeMin=.04f;copierText.fontSizeMax=.16f;
+            copier.screenText=copierText;copier.screenStart="READY";
+            var copierButtons=new Rigidbody[6];for(int k=0;k<6;k++)copierButtons[k]=Piece("Copier button",new Vector3(.02f+(k%3)*.03f-.13f,.83f+(k/3)*.018f-.009f,-.293f),new Vector3(.02f,.012f,.008f),k==5?Art.Teal:Art.Cream,cpv,.003f,true,PrimitiveType.Cube,.001f);
+            var trayTop=Piece("Paper drawer",new Vector3(0,.47f,-.245f),new Vector3(.6f,.14f,.05f),Art.Cream,cpv,.9f,true,PrimitiveType.Cube,.006f);
+            var trayLow=Piece("Paper drawer",new Vector3(0,.29f,-.245f),new Vector3(.6f,.14f,.05f),Art.Cream,cpv,.9f,true,PrimitiveType.Cube,.006f);
+            Art.Box("Drawer handle",new Vector3(0,.5f,-.272f),new Vector3(.2f,.015f,.01f),Art.Ink,false,trayTop.transform,.002f);
+            Art.Box("Drawer handle",new Vector3(0,.32f,-.272f),new Vector3(.2f,.015f,.01f),Art.Ink,false,trayLow.transform,.002f);
+            var outTray=Piece("Output tray",new Vector3(-.36f,.62f,0),new Vector3(.06f,.015f,.34f),Art.Ink,cpv,.2f,true,PrimitiveType.Cube,.003f);
+            var doorB=Piece("Door B",new Vector3(.335f,.42f,0),new Vector3(.01f,.6f,.48f),Art.Cream,cpv,.6f,true,PrimitiveType.Cube,.004f);
+            Art.Text("Door B label","B",new Vector3(.341f,.62f,-.18f),.05f,dark,.1f,doorB.transform).transform.localRotation=Quaternion.Euler(0,-90,0);
+            var toner=Piece("Toner cartridge",new Vector3(0,.62f,0),new Vector3(.4f,.08f,.09f),Art.Ink,cpv,.4f);
+            var drum=Piece("Drum",new Vector3(0,.52f,.05f),new Vector3(.06f,.2f,.06f),Art.Teal,cpv,.2f,false,PrimitiveType.Cylinder);drum.transform.localRotation=Quaternion.Euler(0,0,90);
+            var fuser=Piece("Fuser",new Vector3(0,.4f,.1f),new Vector3(.3f,.06f,.06f),Art.Coral,cpv,.3f);
+            Rigidbody[] Rollers(int seed)=>Bits("Roller",3,new Vector3(0,.5f,0),new Vector3(.1f,.15f,.15f),new Vector3(.03f,.12f,.03f),Art.Ink,cpv,.05f,seed,PrimitiveType.Cylinder);
+            Rigidbody CopierShell(float x,bool panel)
+            {
+                var shell=Body("Copier shell",new Vector3(x,.45f,0),new Vector3(.33f,.74f,.52f),cpv,2.5f);
+                Art.Box("Copier shell",Vector3.zero,new Vector3(.33f,.74f,.52f),Art.Cream,false,shell.transform,.008f);
+                if(panel)
+                {
+                    Art.Box("Control panel",new Vector3(0,.38f,-.25f),new Vector3(.26f,.05f,.08f),Art.Ink,false,shell.transform,.004f);
+                    Art.Box("Copier display",new Vector3(0,.38f,-.291f),new Vector3(.16f,.036f,.004f),Art.Coral,false,shell.transform,0);
+                    Art.Text("Copier text","<b>PAPER JAM</b>",new Vector3(0,.38f,-.295f),.014f,dark,.15f,shell.transform);
+                }
+                return shell;
+            }
+            var copierBase=Body("Copier base",new Vector3(0,.04f,0),new Vector3(.68f,.08f,.54f),cpv,3);
+            Art.Box("Copier base",Vector3.zero,new Vector3(.68f,.08f,.54f),Art.Ink,false,copierBase.transform,.006f);
+            copier.stages=new[]{
+                new BreakStage{debris=new[]{trayTop}.Concat(Sheets(6,new Vector3(0,.47f,-.2f),new Vector3(.2f,.04f,.05f),cpv,81)).Concat(copierButtons.Take(3)).ToArray(),screen="PC LOAD LETTER"},
+                new BreakStage{hide=new[]{scanGlass},tilt=new Vector3(0,0,2),debris=new[]{copierLid,outTray}.Concat(Bits("Glass shard",6,new Vector3(0,.862f,.02f),new Vector3(.22f,0,.16f),new Vector3(.03f,.004f,.025f),Art.Mint,cpv,.01f,82))
+                    .Concat(Sheets(3,new Vector3(-.3f,.66f,0),new Vector3(.03f,.03f,.1f),cpv,83)).ToArray(),screen="TONER LOW"},
+                new BreakStage{tilt=new Vector3(0,3,4),shift=new Vector3(0,0,.01f),debris=new[]{doorB,trayLow,toner,drum,fuser}.Concat(Sheets(6,new Vector3(0,.35f,0),new Vector3(.2f,.1f,.15f),cpv,84)).Concat(copierButtons.Skip(3)).ToArray(),screen="OPEN DOOR B"},
+                new BreakStage{hide=new[]{cpv.gameObject},debris=new[]{CopierShell(-.165f,false),CopierShell(.165f,true),copierBase}
+                    .Concat(Rollers(85)).Concat(Sheets(10,new Vector3(0,.5f,0),new Vector3(.25f,.25f,.2f),cpv,86)).ToArray()},
+            };
+            room.copier=copier;room.jamSound=SoundBank.Get("SFX - Paper jam");
+            var jamFloor=Art.Group("Paper floor",new Vector3(0,.012f,0));
+            var jam=Art.Group("Paper jam",Vector3.zero);
+            room.paperBurst=ConfettiSystem("Paper burst",jam,jamFloor,true,Art.ConfettiPaper);room.paperShower=ConfettiSystem("Paper shower",jam,jamFloor,false,Art.ConfettiPaper);
+
+            room.extras=new[]{mug,phone,stapler,penCup,namePlate,laptop,workPhone,sideDesk,copier};
             // Every piece remembers what it is made of, for the sound it makes when the bat knocks it about later.
-            // The sticky notes are paper, whatever they were stuck to.
-            foreach(var note in mv.GetComponentsInChildren<Rigidbody>(true).Where(r=>r.name=="Sticky note"))note.gameObject.AddComponent<Loose>().sound=BreakSound.Paper;
+            // The sticky notes and sheets of paper are paper, whatever they came out of.
+            foreach(var note in room.GetComponentsInChildren<Rigidbody>(true).Where(r=>r.name=="Sticky note"||r.name=="Paper"))note.gameObject.AddComponent<Loose>().sound=BreakSound.Paper;
             foreach(var thing in room.parts.Concat(room.extras))foreach(var stage in thing.stages)foreach(var piece in stage.debris)
                 if(piece&&!piece.GetComponent<Loose>())piece.gameObject.AddComponent<Loose>().sound=thing.sound;
 
             // The bat stands on its rack to the left of the desk. Pointing at it and pinching puts it in your hand.
-            var bat=Art.Group("Bat",new Vector3(-.62f,.11f,-.78f));bat.localRotation=Quaternion.Euler(-84,8,0);
-            void Segment(string name,float z,float length,float diameter,Material material)
-            {Art.Shape(name,PrimitiveType.Cylinder,new Vector3(0,0,z),new Vector3(diameter,length/2,diameter),material,false,bat).transform.localRotation=Quaternion.Euler(90,0,0);}
-            Segment("Bat knob",-.075f,.02f,.052f,Art.Ink);Segment("Bat grip",.075f,.28f,.033f,Art.Ink);Segment("Bat taper",.31f,.2f,.046f,Art.Wood);
-            Segment("Bat barrel",.62f,.44f,.066f,Art.Wood);Segment("Bat band",.47f,.025f,.07f,Art.Coral);
+            void Segment(Transform tool,string name,float z,float length,float diameter,Material material)
+            {Art.Shape(name,PrimitiveType.Cylinder,new Vector3(0,0,z),new Vector3(diameter,length/2,diameter),material,false,tool).transform.localRotation=Quaternion.Euler(90,0,0);}
+            // A tool: one box to point at and pick up, held in the fixed grip, and its striking end (along the handle, from and to,
+            // how thick, how far off the handle's line) and how many steps of breaking each hit does.
+            Grabbable Tool(Transform tool,string label,Vector3 size,Vector3 centre,float from,float length,float radius,Vector3 offset,int power)
+            {
+                var box=tool.gameObject.AddComponent<BoxCollider>();box.center=centre;box.size=size;
+                var body=tool.gameObject.AddComponent<Rigidbody>();body.isKinematic=true;body.interpolation=RigidbodyInterpolation.Interpolate;
+                var grab=tool.gameObject.AddComponent<Grabbable>();grab.label=label;grab.room=RageRoom.Room;grab.tool=true;
+                var swing=tool.gameObject.AddComponent<Bat>();swing.room=room;swing.grabbable=grab;
+                swing.barrelFrom=from;swing.length=length;swing.radius=radius;swing.barrelOffset=offset;swing.power=power;
+                return grab;
+            }
+            var bat=Art.Group("Bat",new Vector3(-.5f,.11f,-.85f));bat.localRotation=Quaternion.Euler(-84,8,0);
+            Segment(bat,"Bat knob",-.075f,.02f,.052f,Art.Ink);Segment(bat,"Bat grip",.075f,.28f,.033f,Art.Ink);Segment(bat,"Bat taper",.31f,.2f,.046f,Art.Wood);
+            Segment(bat,"Bat barrel",.62f,.44f,.066f,Art.Wood);Segment(bat,"Bat band",.47f,.025f,.07f,Art.Coral);
             Art.Shape("Bat end",PrimitiveType.Sphere,new Vector3(0,0,.84f),new Vector3(.066f,.066f,.03f),Art.Wood,false,bat);
-            var batCollider=bat.gameObject.AddComponent<BoxCollider>();batCollider.center=new Vector3(0,0,.38f);batCollider.size=new Vector3(.09f,.09f,.96f);
-            var batBody=bat.gameObject.AddComponent<Rigidbody>();batBody.isKinematic=true;batBody.interpolation=RigidbodyInterpolation.Interpolate;
-            var grab=bat.gameObject.AddComponent<Grabbable>();grab.label="The bat";grab.room=RageRoom.Room;grab.tool=true;room.bat=grab;
-            var swing=bat.gameObject.AddComponent<Bat>();swing.room=room;swing.grabbable=grab;
-            Art.Shape("Bat stand",PrimitiveType.Cylinder,new Vector3(-.62f,.015f,-.78f),new Vector3(.22f,.015f,.22f),Art.Navy);
-            Art.Box("Rack post",new Vector3(-.72f,.33f,-.78f),new Vector3(.03f,.64f,.03f),Art.Metal);
-            Art.Box("Rack hook",new Vector3(-.67f,.56f,-.76f),new Vector3(.1f,.02f,.02f),Art.Gold,false);
+            room.bat=Tool(bat,"The bat",new Vector3(.09f,.09f,.96f),new Vector3(0,0,.38f),.28f,.85f,.06f,Vector3.zero,1);
+            Art.Shape("Bat stand",PrimitiveType.Cylinder,new Vector3(-.5f,.015f,-.85f),new Vector3(.22f,.015f,.22f),Art.Navy);
+            Art.Box("Rack post",new Vector3(-.6f,.33f,-.85f),new Vector3(.03f,.64f,.03f),Art.Metal);
+            Art.Box("Rack hook",new Vector3(-.55f,.56f,-.83f),new Vector3(.1f,.02f,.02f),Art.Gold,false);
             var rack=Art.Group("Bat rack sign",new Vector3(-1.02f,.9f,-.5f));rack.localRotation=Quaternion.Euler(0,-40,0);
-            Art.Button("Bat rack","PUT THE BAT BACK",Vector3.zero,new Vector3(.3f,.085f,.03f),Art.Navy,ActionKind.PutBatBack,d,0,rack);
+            Art.Button("Bat rack","PUT IT BACK",Vector3.zero,new Vector3(.3f,.085f,.03f),Art.Navy,ActionKind.PutBatBack,d,0,rack);
+
+            // The tool wall, behind the side desk on the left: a pegboard with a painted outline for each tool. A tool hangs on its
+            // outline once enough things have been broken here (over every visit): the hammer after 3, the handsaw after 6, the
+            // nail bat after 10 and the axe after 16. Until then a padlock and a count hang there instead. The nail bat and the
+            // axe are heavy: each hit breaks a part two steps at a time.
+            Art.Box("Tool wall",new Vector3(-1.56f,1.35f,-1.15f),new Vector3(.03f,1.1f,1.25f),Art.Cream);
+            Art.Text("Tool wall sign","<b>TOOL WALL</b>\n<size=60%>Break things to unlock more.</size>",new Vector3(-1.54f,2.02f,-1.15f),.075f,ivory,1.2f).transform.localRotation=Quaternion.Euler(0,-90,0);
+            Transform Hang(string name,float z){var t=Art.Group(name,new Vector3(-1.5f,.95f,z));t.localRotation=Quaternion.Euler(-90,0,0);return t;}
+            // Each tool's painted outline on the board: where it hangs, how long and how wide its head is.
+            void Outline(float z,float length,float headAt,float headWidth)
+            {
+                Art.Box("Tool outline",new Vector3(-1.543f,.95f+length/2,z),new Vector3(.004f,length,.045f),Art.Ink,false,null,0);
+                Art.Box("Tool outline",new Vector3(-1.543f,.95f+headAt,z),new Vector3(.004f,.06f,headWidth),Art.Ink,false,null,0);
+            }
+            var hammer=Hang("Hammer",-1.6f);
+            Segment(hammer,"Hammer grip",.06f,.12f,.036f,Art.Ink);Segment(hammer,"Hammer handle",.2f,.28f,.028f,Art.Wood);
+            Art.Box("Hammer head",new Vector3(0,-.01f,.36f),new Vector3(.035f,.15f,.045f),Art.Metal,false,hammer,.004f);
+            Art.Box("Hammer face",new Vector3(0,-.09f,.36f),new Vector3(.045f,.025f,.05f),Art.Metal,false,hammer,.004f);
+            Art.Box("Hammer claw",new Vector3(0,.08f,.35f),new Vector3(.025f,.05f,.03f),Art.Metal,false,hammer,.003f).transform.localRotation=Quaternion.Euler(25,0,0);
+            Outline(-1.6f,.4f,.36f,.17f);
+            var saw=Hang("Handsaw",-1.33f);
+            Art.Box("Saw handle",new Vector3(0,-.01f,.06f),new Vector3(.03f,.11f,.14f),Art.Coral,false,saw,.008f);
+            Art.Box("Saw grip hole",new Vector3(0,-.01f,.055f),new Vector3(.032f,.045f,.07f),Art.Ink,false,saw,.004f);
+            Art.Box("Saw blade",new Vector3(0,-.03f,.42f),new Vector3(.003f,.12f,.58f),Art.Metal,false,saw,0).transform.localRotation=Quaternion.Euler(-4,0,0);
+            for(int k=0;k<16;k++)Art.Box("Saw tooth",new Vector3(0,-.09f+k*.0015f,.15f+k*.034f),new Vector3(.003f,.012f,.012f),Art.Metal,false,saw,0).transform.localRotation=Quaternion.Euler(45,0,0);
+            Outline(-1.33f,.7f,.42f,.12f);
+            var nailBat=Hang("Nail bat",-1.03f);
+            Segment(nailBat,"Bat knob",-.075f,.02f,.052f,Art.Ink);Segment(nailBat,"Bat grip",.075f,.28f,.033f,Art.Coral);Segment(nailBat,"Bat taper",.31f,.2f,.046f,Art.Wood);
+            Segment(nailBat,"Bat barrel",.62f,.44f,.066f,Art.Wood);Segment(nailBat,"Bat band",.47f,.025f,.07f,Art.Ink);
+            Art.Shape("Bat end",PrimitiveType.Sphere,new Vector3(0,0,.84f),new Vector3(.066f,.066f,.03f),Art.Wood,false,nailBat);
+            for(int k=0;k<18;k++)
+            {
+                float a=k*2.4f,z=.48f+(k%9)*.04f;var out_=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);
+                Art.Shape("Nail",PrimitiveType.Cylinder,out_*.042f+new Vector3(0,0,z),new Vector3(.006f,.018f,.006f),Art.Metal,false,nailBat).transform.localRotation=Quaternion.FromToRotation(Vector3.up,out_);
+            }
+            Outline(-1.03f,.88f,.62f,.1f);
+            var axe=Hang("Axe",-.72f);
+            Segment(axe,"Axe grip",.08f,.16f,.036f,Art.Ink);Segment(axe,"Axe handle",.42f,.72f,.03f,Art.Wood);
+            Art.Box("Axe head",new Vector3(0,-.04f,.72f),new Vector3(.03f,.1f,.1f),Art.Metal,false,axe,.004f);
+            Art.Box("Axe blade",new Vector3(0,-.115f,.72f),new Vector3(.012f,.06f,.17f),Art.Metal,false,axe,.002f);
+            Art.Box("Axe edge",new Vector3(0,-.148f,.72f),new Vector3(.008f,.008f,.17f),Art.White,false,axe,0);
+            Art.Box("Axe poll",new Vector3(0,.03f,.72f),new Vector3(.035f,.04f,.07f),Art.Ink,false,axe,.003f);
+            Outline(-.72f,.8f,.72f,.2f);
+            room.tools=new[]{
+                Tool(hammer,"The hammer",new Vector3(.06f,.2f,.44f),new Vector3(0,0,.2f),.28f,.42f,.06f,new Vector3(0,-.05f,0),1),
+                Tool(saw,"The handsaw",new Vector3(.05f,.15f,.7f),new Vector3(0,-.02f,.36f),.14f,.7f,.05f,new Vector3(0,-.06f,0),1),
+                Tool(nailBat,"The nail bat",new Vector3(.11f,.11f,.96f),new Vector3(0,0,.38f),.28f,.85f,.075f,Vector3.zero,2),
+                Tool(axe,"The axe",new Vector3(.06f,.22f,.84f),new Vector3(0,-.04f,.38f),.6f,.82f,.08f,new Vector3(0,-.08f,0),2),
+            };
+            room.unlockAt=new[]{3,6,10,16};
+            // A padlock, the tool's name and how many more things to break, hung on each outline until the tool is there.
+            var names=new[]{"HAMMER","HANDSAW","NAIL BAT","AXE"};var slots=new[]{-1.6f,-1.33f,-1.03f,-.72f};
+            room.toolLocks=new GameObject[4];room.lockCounts=new TextMeshPro[4];
+            for(int i=0;i<4;i++)
+            {
+                var lockSign=Art.Group("Tool lock",new Vector3(-1.535f,1.3f,slots[i]));lockSign.localRotation=Quaternion.Euler(0,-90,0);
+                Art.Box("Padlock",new Vector3(0,.07f,0),new Vector3(.06f,.05f,.012f),Art.Gold,false,lockSign,.004f);
+                Art.Box("Padlock shackle",new Vector3(0,.105f,0),new Vector3(.036f,.03f,.008f),Art.Metal,false,lockSign,.003f);
+                Art.Text("Tool name","<b>"+names[i]+"</b>",new Vector3(0,0,-.005f),.035f,dark,.26f,lockSign);
+                room.lockCounts[i]=Art.Text("Tool count","",new Vector3(0,-.06f,-.005f),.024f,coral,.26f,lockSign);
+                room.toolLocks[i]=lockSign.gameObject;
+            }
+            room.RefreshTools();
 
             // When it is all broken: the quiet, a soft light panel at reading distance beyond the desk, and a way to wheel in a new one.
             var calm=Art.Group("The quiet",new Vector3(0,1.62f,1.35f));
@@ -1195,11 +1453,12 @@ namespace AfterHours
             Art.Line("Lamp cord",new Vector3(0,4.58f,-.2f),new Vector3(0,2.75f,-.2f),.012f,Art.Ink);
             Art.Shape("Lamp shade",PrimitiveType.Cylinder,new Vector3(0,2.72f,-.2f),new Vector3(.38f,.08f,.38f),Art.Gold,false);
             Art.Shape("Lamp bulb",PrimitiveType.Sphere,new Vector3(0,2.62f,-.2f),Vector3.one*.11f,Art.White,false);
-            Art.Box("Box of your things",new Vector3(1.15f,.17f,-1.05f),new Vector3(.45f,.32f,.35f),Art.Paper);
-            foreach(float s in new[]{-1f,1f})Art.Box("Box flap",new Vector3(1.15f+s*.24f,.36f,-1.05f),new Vector3(.02f,.12f,.33f),Art.Paper,false).transform.localRotation=Quaternion.Euler(0,0,s*-30);
-            Art.Text("Box label","MY THINGS",new Vector3(1.15f,.2f,-1.235f),.06f,dark,.4f);
-            Art.Shape("Mug",PrimitiveType.Cylinder,new Vector3(1.05f,.37f,-1.02f),new Vector3(.08f,.05f,.08f),Art.White,false);
-            Art.Facet("Desk plant",new Vector3(1.25f,.42f,-1.02f),new Vector3(.12f,.2f,.12f),Art.Teal,5);
+            // A box of your things in the corner beyond the copier.
+            Art.Box("Box of your things",new Vector3(2f,.17f,.3f),new Vector3(.45f,.32f,.35f),Art.Paper);
+            foreach(float s in new[]{-1f,1f})Art.Box("Box flap",new Vector3(2f+s*.24f,.36f,.3f),new Vector3(.02f,.12f,.33f),Art.Paper,false).transform.localRotation=Quaternion.Euler(0,0,s*-30);
+            Art.Text("Box label","MY THINGS",new Vector3(2f,.2f,.115f),.06f,dark,.4f);
+            Art.Shape("Mug",PrimitiveType.Cylinder,new Vector3(1.9f,.37f,.33f),new Vector3(.08f,.05f,.08f),Art.White,false);
+            Art.Facet("Desk plant",new Vector3(2.1f,.42f,.33f),new Vector3(.12f,.2f,.12f),Art.Teal,5);
             var chair=Art.Group("Knocked-over chair",new Vector3(-1.9f,0,1.3f));chair.localRotation=Quaternion.Euler(0,35,0);
             Art.Box("Chair seat",new Vector3(0,.3f,0),new Vector3(.55f,.1f,.5f),Art.Navy,true,chair).transform.localRotation=Quaternion.Euler(0,0,78);
             Art.Shape("Chair back",PrimitiveType.Capsule,new Vector3(-.32f,.3f,.35f),new Vector3(.55f,.38f,.14f),Art.Navy,false,chair).transform.localRotation=Quaternion.Euler(90,0,0);

@@ -99,7 +99,9 @@ namespace AfterHours
         {
             StopAllCoroutines();busy=false;current=null;shredded=0;line="";
             if(egg)egg.ResetRoom();
-            foreach(var page in pages){page.gameObject.SetActive(true);page.ResetObject();}
+            // BringBack also tells the page's body where its stand is. Otherwise the body wakes where the page last lay (down in the
+            // shredder's slot) and the slot takes the page in again.
+            foreach(var page in pages)page.BringBack();
             foreach(var pile in piles)pile.SetActive(false);
             if(litter!=null)foreach(var set in litter)if(set)set.SetActive(false);
             if(strips)strips.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);

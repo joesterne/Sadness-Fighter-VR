@@ -265,6 +265,146 @@ def music_theme(seconds=64, fade=6):
     x = reverb(x, 3.5, 0.45, 3500)
     return normalise(make_loop(x, fade), -6, rms_db=-24)
 
+def soft_key(freq, seconds=5.0):
+    # A felt-piano-like note: a round fundamental, a quieter octave that fades first, and a soft hammer.
+    n = int(seconds * SR); tt = np.arange(n) / SR
+    x = (np.sin(2 * np.pi * freq * tt) + 0.3 * np.sin(2 * np.pi * freq * 2.002 * tt) * decay(n, 0.9)
+         + 0.08 * np.sin(2 * np.pi * freq * 3.004 * tt) * decay(n, 0.4))
+    return lowpass(x * decay(n, 1.6) * env_adsr(n, 0.012, 0.6), 2400, 1)
+
+def music_quiet(seconds=144, fade=8):
+    # The calm music under the chapters: slower and softer than the theme, in F. Warm pads change every 18 seconds over four
+    # chords, and now and then a short phrase of soft piano notes drifts over them, with long rests between.
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('F', 2), ('C', 3), ('A', 3), ('E', 4), ('G', 4)],     # Fmaj9
+        [('D', 2), ('A', 2), ('F', 3), ('C', 4), ('E', 4)],     # Dm9
+        [('A#', 2), ('F', 3), ('A', 3), ('C', 4), ('D', 4)],    # Bbmaj9/6
+        [('C', 3), ('G', 3), ('A#', 3), ('D', 4), ('F', 4)],    # C9sus
+    ]
+    seg = 18.0
+    pad = np.zeros(n)
+    for k in range(int(np.ceil((seconds + fade) / seg)) + 1):
+        chord = chords[k % len(chords)]
+        start = int(k * seg * SR); length = int((seg + 6) * SR)
+        if start >= n: break
+        m = min(length, n - start)
+        e = env_adsr(length, 5.0, 6.0, 2.0)[:m]
+        for name, octv in chord:
+            pad[start:start + m] += pad_note(hz(name, octv), m) * e * 0.15
+    pad = lowpass(pad, 1400, 2)
+    keys = np.zeros(n)
+    scale = [('F', 4), ('G', 4), ('A', 4), ('C', 5), ('D', 5), ('F', 5)]
+    t = 6.0
+    while t < seconds + fade - 6:
+        step = int(rng.integers(len(scale)))
+        for _ in range(int(rng.integers(2, 5))):
+            name, octv = scale[step]
+            b = soft_key(hz(name, octv)) * rng.uniform(0.05, 0.08)
+            i = int(t * SR); keys[i:i + len(b)] += b[:max(0, n - i)]
+            t += rng.choice([1.0, 1.25, 1.5])
+            step = int(np.clip(step + rng.choice([-2, -1, 1, 2]), 0, len(scale) - 1))
+        t += rng.uniform(5.0, 9.0)
+    x = pad + keys
+    x = reverb(x, 4.5, 0.5, 3000)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
+def pad_bed(chords, seg, n, level=0.15, attack=5.0, release=6.0, cutoff=1400):
+    # Warm pads that move through the chords, one every seg seconds, each overlapping the next.
+    pad = np.zeros(n)
+    for k in range(int(np.ceil(n / SR / seg)) + 1):
+        chord = chords[k % len(chords)]
+        start = int(k * seg * SR); length = int((seg + release) * SR)
+        if start >= n: break
+        m = min(length, n - start)
+        e = env_adsr(length, attack, release, 2.0)[:m]
+        for name, octv in chord:
+            pad[start:start + m] += pad_note(hz(name, octv), m) * e * level
+    return lowpass(pad, cutoff, 2)
+
+def place(into, sound, at):
+    i = int(at * SR)
+    if i >= len(into): return
+    into[i:i + len(sound)] += sound[:len(into) - i]
+
+def music_tide(seconds=128, fade=8):
+    # Slow tide: a rolling, unhurried arpeggio in A, three notes up and three down like water coming in and going out,
+    # over soft pads that change every 16 seconds (Amaj9, F#m11, Dmaj9, E6sus).
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('A', 2), ('E', 3), ('G#', 3), ('B', 3), ('C#', 4)],
+        [('F#', 2), ('C#', 3), ('E', 3), ('A', 3), ('B', 3)],
+        [('D', 2), ('A', 2), ('F#', 3), ('C#', 4), ('E', 4)],
+        [('E', 2), ('B', 2), ('C#', 3), ('F#', 3), ('A', 3)],
+    ]
+    seg = 16.0
+    pad = pad_bed(chords, seg, n, level=0.12)
+    roll = np.zeros(n)
+    t = 2.0
+    while t < seconds + fade - 4:
+        chord = chords[int(t // seg) % len(chords)]
+        up = [hz(name, octv + 1) for name, octv in chord[1:4]]
+        for j, f in enumerate(up + up[::-1]):
+            place(roll, soft_key(f, 3.5) * (0.05 + 0.015 * np.sin(j)) * rng.uniform(0.85, 1.1), t + j * 0.62)
+        t += 6 * 0.62 + rng.choice([0.6, 1.2, 2.4])
+    x = reverb(pad + roll, 4.0, 0.5, 3200)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
+def music_box(freq, seconds=2.5):
+    # A small music-box tine: bright, quick to fade, with a faint metallic overtone.
+    n = int(seconds * SR); tt = np.arange(n) / SR
+    x = np.sin(2 * np.pi * freq * tt) + 0.25 * np.sin(2 * np.pi * freq * 3.95 * tt) * decay(n, 0.15)
+    return lowpass(x * decay(n, 0.7) * env_adsr(n, 0.003, 0.3), 5000, 1)
+
+def music_lanterns(seconds=120, fade=8):
+    # Paper lanterns: a gentle music-box tune in G, a four-bar motif that comes back with small changes, over pads
+    # (Gmaj7, Em9, Cmaj9, Dsus) and long breaths of rest.
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('G', 2), ('D', 3), ('F#', 3), ('B', 3)],
+        [('E', 2), ('B', 2), ('G', 3), ('D', 4), ('F#', 4)],
+        [('C', 3), ('G', 3), ('B', 3), ('D', 4), ('E', 4)],
+        [('D', 3), ('A', 3), ('C', 4), ('G', 4)],
+    ]
+    seg = 12.0
+    pad = pad_bed(chords, seg, n, level=0.1, attack=4.0, release=5.0, cutoff=1600)
+    scale = [('G', 5), ('A', 5), ('B', 5), ('D', 6), ('E', 6), ('G', 6)]
+    motif = [2, 3, 4, 3, 2, 1, 0, 1]
+    tune = np.zeros(n)
+    t = 3.0
+    while t < seconds + fade - 6:
+        phrase = [int(np.clip(m + rng.choice([0, 0, 0, 1, -1]), 0, len(scale) - 1)) for m in motif]
+        for j, step in enumerate(phrase):
+            name, octv = scale[step]
+            place(tune, music_box(hz(name, octv)) * rng.uniform(0.045, 0.06), t + j * 0.55)
+        t += len(phrase) * 0.55 + rng.uniform(4.0, 7.0)
+    x = reverb(pad + tune, 3.2, 0.45, 4200)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
+def music_night(seconds=144, fade=8):
+    # Night window: warm, slightly wavering electric-piano chords in E flat, one every 6 seconds, over a slow low line,
+    # like a late street seen from a quiet room (Ebmaj9, Cm9, Abmaj7(#11), Bb7sus).
+    n = int((seconds + fade) * SR)
+    chords = [
+        [('D#', 2), ('A#', 3), ('D', 4), ('G', 4), ('F', 4)],
+        [('C', 2), ('A#', 3), ('D#', 4), ('G', 4), ('D', 5)],
+        [('G#', 1), ('G', 3), ('C', 4), ('D', 4), ('D#', 4)],
+        [('A#', 1), ('G#', 3), ('C', 4), ('D#', 4), ('F', 4)],
+    ]
+    keys = np.zeros(n)
+    t = 1.0; k = 0
+    while t < seconds + fade - 4:
+        chord = chords[(k // 2) % len(chords)]
+        for j, (name, octv) in enumerate(chord):
+            note = soft_key(hz(name, octv), 6.0) * (0.09 if j == 0 else 0.05)
+            place(keys, note, t + j * rng.uniform(0.0, 0.03))
+        t += 6.0; k += 1
+    tt = np.arange(n) / SR
+    keys *= 0.88 + 0.12 * np.sin(2 * np.pi * 4.2 * tt)   # a soft tremolo, like an old electric piano
+    pad = pad_bed([c[:1] + c[2:4] for c in chords], 12.0, n, level=0.06, cutoff=900)
+    x = reverb(keys + pad, 3.8, 0.42, 2800)
+    return normalise(make_loop(x, fade), -8, rms_db=-25)
+
 
 # ---------- effects ----------
 def sfx_select():
@@ -735,67 +875,104 @@ def sfx_stand():
     return fade_edges(normalise(reverb(x, 1.6, 0.3), -8))
 
 
-# ---------- the NDA web: a dusty records room, a machete, webs cut and growing back, a spider, and fire ----------
-def amb_recordsroom(seconds=30, fade=4):
-    # A records store long after hours: deep, close room tone, a draught under the door, and now and then a dry creak or a soft skitter somewhere in the dark.
-    n = int((seconds + fade) * SR)
-    room = lowpass(brown(n), 140, 2) * 0.6
-    draught = bandpass(pink(n), 250, 1400, 2) * 0.09 * (0.5 + 0.5 * smooth_noise(n, 0.07))
-    x = room + draught
-    for _ in range(9):
-        m = int(rng.uniform(0.25, 0.6) * SR); i = int(rng.uniform(0, seconds) * SR); tt = np.arange(m) / SR
-        pitch = rng.uniform(140, 260) + 60 * np.sin(2 * np.pi * rng.uniform(2, 5) * tt)
-        creak = bandpass(signal.sawtooth(2 * np.pi * np.cumsum(pitch) / SR), 400, 2000, 2) * env_adsr(m, 0.05, 0.2, 2) * 0.05
-        x[i:i + m] += creak[:max(0, n - i)]
-    for _ in range(5):
-        i = int(rng.uniform(0, seconds) * SR); k = clicks(0.5, 14, 2500, 8000, 0.8) * 0.06
-        x[i:i + len(k)] += k[:max(0, n - i)]
-    return normalise(make_loop(x, fade), -12, rms_db=-34)
+def kick(n, level=1.0):
+    # A techno kick: a fast pitch drop from 150 Hz to 45 Hz, a short click on top.
+    tt = np.arange(n) / SR
+    f = 45 + 105 * np.exp(-tt / 0.03)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * decay(n, 0.22)
+    click = highpass(white(n), 2000, 1) * decay(n, 0.003) * 0.25
+    return (body + click) * level
 
-def sfx_slash():
-    # A machete through the air: a quick, thin whistle that rises and falls, sharper than the bat's swing.
-    n = int(0.26 * SR)
-    x = sweep_noise(0.26, 900, 4200, 1200, 0.5) * np.sin(np.linspace(0, np.pi, n)) ** 3
-    return fade_edges(normalise(x, -9))
+def hat(n, open_=False):
+    x = highpass(white(n), 7000, 2) * decay(n, 0.09 if open_ else 0.018)
+    return x * env_adsr(n, 0.0005, 0.01)
 
-def sfx_web_cut():
-    # A web cut through: a soft sticky snap, a few threads twanging loose, and a papery hiss as it falls away.
-    n = int(0.7 * SR)
-    snap = bandpass(white(n), 1800, 7000, 2) * decay(n, 0.015) * 0.8
-    twang = np.zeros(n)
-    for _ in range(4):
-        f = rng.uniform(900, 2400); m = int(0.25 * SR); i = int(rng.uniform(0.0, 0.12) * SR); tt = np.arange(m) / SR
-        tw = np.sin(2 * np.pi * f * tt * (1 - 0.3 * tt)) * decay(m, 0.05) * rng.uniform(0.1, 0.25)
-        twang[i:i + m] += tw[:n - i]
-    fall = highpass(white(n), 2500, 1) * env_adsr(n, 0.03, 0.4, 2) * 0.12
-    x = snap + twang + fall
-    return fade_edges(normalise(reverb(x, 0.4, 0.12), -6))
+def clap(n):
+    # Three quick bursts of band-passed noise, then a short tail.
+    x = np.zeros(n); burst = bandpass(white(n), 900, 4200, 2)
+    for k, at in enumerate([0, 0.011, 0.023]):
+        i = int(at * SR); x[i:] += burst[:n - i] * decay(n - i, 0.008 if k < 2 else 0.12)
+    return x
 
-def sfx_web_grow():
-    # A web growing back: a faint run of tiny ticks, like many small feet, and a thin thread drawn tight.
-    n = int(1.6 * SR); tt = np.arange(n) / SR
-    feet = clicks(1.6, 40, 3000, 9000, 0.9) * env_adsr(n, 0.2, 0.6, 2) * 0.5
-    thread = np.sin(2 * np.pi * np.cumsum(1400 + 900 * tt) / SR) * env_adsr(n, 0.4, 0.5, 2) * 0.05
-    x = feet + thread
-    return fade_edges(normalise(reverb(x, 0.5, 0.15), -14))
+def acid(freq, n, cutoff, accent=1.0):
+    # A rolling bass note: a saw through a resonant low-pass whose cutoff snaps down after each note.
+    tt = np.arange(n) / SR
+    saw = signal.sawtooth(2 * np.pi * freq * tt) + 0.5 * signal.sawtooth(2 * np.pi * freq * 1.006 * tt)
+    # The filters change every 4 ms and carry their state across, so the sweep is smooth and never clicks.
+    out = np.zeros(n); step = int(0.004 * SR); zl = np.zeros(2); zp = np.zeros(2)
+    for j in range(0, n, step):
+        c = min(cutoff * (0.35 + 0.65 * np.exp(-j / SR / 0.06)) * accent, SR / 2.4)
+        lo, la = signal.butter(2, c / (SR / 2), 'low'); pb, pa = signal.iirpeak(c, 3.0, fs=SR)
+        seg = saw[j:j + step]
+        low, zl = signal.lfilter(lo, la, seg, zi=zl); peak, zp = signal.lfilter(pb, pa, seg, zi=zp)
+        out[j:j + step] = low + 0.25 * peak
+    return out * env_adsr(n, 0.002, 0.03) * decay(n, 0.5)
 
-def sfx_fire():
-    # Kill it with fire: a deep whoomph as it catches, a roaring rush of flame, crackling, and a long fall away.
-    n = int(3.2 * SR)
-    whoomph = thump(n, 48, 0.45) * 1.0 + lowpass(white(n), 400, 2) * decay(n, 0.25) * 0.8
-    roar = bandpass(brown(n), 80, 900, 2) * env_adsr(n, 0.08, 2.2, 2) * (0.7 + 0.3 * smooth_noise(n, 6)) * 0.9
-    rush = bandpass(white(n), 800, 5000, 2) * env_adsr(n, 0.05, 1.6, 3) * 0.35
-    crackle = clicks(3.2, 120, 1500, 9000, 0.85) * np.exp(-np.arange(n) / (1.4 * SR)) * 0.6
-    x = whoomph + roar + rush + crackle
-    return fade_edges(normalise(reverb(x, 1.0, 0.18), -4))
+def stab(freqs, n):
+    # A short chord stab: detuned square-ish tones through a low-pass, quick to fade.
+    tt = np.arange(n) / SR; x = np.zeros(n)
+    for f in freqs:
+        for d in (0.997, 1.003):
+            x += np.tanh(3 * np.sin(2 * np.pi * f * d * tt))
+    return lowpass(x, 2600, 2) * decay(n, 0.16) * env_adsr(n, 0.002, 0.05)
 
-def sfx_hiss():
-    # The spider's last hiss: a dry, breathy rasp that rises, then sputters out.
-    n = int(1.2 * SR)
-    hiss = bandpass(white(n), 2200, 9000, 2) * env_adsr(n, 0.15, 0.7, 2) * (0.6 + 0.4 * smooth_noise(n, 25))
-    sputter = clicks(1.2, 20, 1200, 5000, 0.9) * np.linspace(0, 1, n) * 0.3
-    x = hiss + sputter
-    return fade_edges(normalise(reverb(x, 0.3, 0.1), -8))
+def music_overtime(bars=64, bpm=128):
+    # Overtime: upbeat techno for the rage room, in A minor at 128 BPM. A four-on-the-floor kick, off-beat open hats,
+    # sixteenth hats and claps on two and four, a rolling acid bassline whose filter opens and closes over the track, and
+    # chord stabs. It builds in eight-bar sections (a drop with no kick, then everything back in), and the end runs straight
+    # back into the start, so it loops on the beat.
+    beat = 60 / bpm; bar = 4 * beat; n = int(bars * bar * SR); tail = int(2 * SR)
+    x = np.zeros(n + tail); drums = np.zeros(n + tail); bass = np.zeros(n + tail); keys = np.zeros(n + tail)
+    k = kick(int(0.45 * SR)); ch = hat(int(0.06 * SR)); oh = hat(int(0.25 * SR), True); cl = clap(int(0.35 * SR))
+    # The bassline: sixteen steps per bar over four chords (Am, F, C, G), a pattern with rests and octave jumps.
+    roots = [('A', 1), ('F', 1), ('C', 2), ('G', 1)]
+    pattern = [0, None, 12, 0, None, 0, 7, None, 0, None, 12, 0, 3, None, 7, 10]
+    chords = [[('A', 3), ('C', 4), ('E', 4)], [('F', 3), ('A', 3), ('C', 4)], [('C', 4), ('E', 4), ('G', 4)], [('G', 3), ('B', 3), ('D', 4)]]
+    sixteenth = beat / 4
+    for b in range(bars):
+        section = (b // 8) % 8
+        breakdown = section in (3, 7)       # eight bars without the kick, the stabs carried by the pads
+        full = section in (2, 5, 6)         # the stabs every off-beat instead of now and then
+        name, octv = roots[b % 4]; root = hz(name, octv)
+        # The filter rises over each 32-bar half and falls back, so the bass breathes.
+        sweep = 0.5 - 0.5 * np.cos(2 * np.pi * (b % 32) / 32)
+        cutoff = 300 + 1700 * sweep
+        for s in range(16):
+            t = b * bar + s * sixteenth; i = int(t * SR)
+            if s % 4 == 0 and not breakdown: drums[i:i + len(k)] += k * 0.9
+            if s % 4 == 2: drums[i:i + len(oh)] += oh * 0.22
+            elif not breakdown or b % 8 >= 4: drums[i:i + len(ch)] += ch * (0.12 if s % 2 else 0.08)
+            if s in (4, 12) and not breakdown: drums[i:i + len(cl)] += cl * 0.35
+            step = pattern[s]
+            if step is not None and not (breakdown and b % 8 < 4):
+                note = acid(root * 2 ** (step / 12), int(sixteenth * 1.6 * SR), cutoff, 1.4 if s % 4 == 0 else 1.0)
+                bass[i:i + len(note)] += note * 0.22
+            if (full and s % 4 == 2) or (s in (6, 14) and b % 2 == 0) or (breakdown and s == 0):
+                st = stab([hz(nm, o) for nm, o in chords[b % 4]], int(0.4 * SR)) * (0.09 if not breakdown else 0.06)
+                keys[i:i + len(st)] += st
+        # A rising noise sweep over the last bar before each new section.
+        if b % 8 == 7:
+            i = int(b * bar * SR); m = int(bar * SR)
+            riser = bandpass(white(m), 1500, 7000, 2) * np.linspace(0, 1, m) ** 2 * 0.05
+            x[i:i + m] += riser
+    pads = pad_bed([[(nm, o) for nm, o in c] for c in chords], bar, n + tail, level=0.035, attack=0.4, release=1.0, cutoff=1800)
+    x += drums + lowpass(bass, 3500, 2) + reverb(keys, 1.2, 0.3) + pads
+    # The tail past the last bar wraps onto the start, so the loop point is seamless.
+    out = x[:n].copy(); out[:tail] += x[n:n + tail]
+    return normalise(np.tanh(out * 1.2) / 1.2, -4, rms_db=-19)
+
+def sfx_paper_jam():
+    # The copier gives up: a grinding of rollers that catches and stalls, a crumple of paper, and three error beeps.
+    n = int(1.9 * SR); tt = np.arange(n) / SR
+    grind = signal.sawtooth(2 * np.pi * (70 + 25 * np.sin(2 * np.pi * 9 * tt)) * tt) * 0.4 + bandpass(white(n), 300, 2200, 2) * 0.3
+    grind = lowpass(grind, 1600, 2) * env_adsr(n, 0.02, 0.1) * (tt < 0.75)
+    crumple = clicks(1.9, 45, 1500, 7000, 0.5) * 0.7 + bandpass(white(n), 2000, 8000, 2) * decay(n, 0.25) * 0.3
+    beeps = np.zeros(n)
+    for j in range(3):
+        m = int(0.12 * SR); b = np.sign(np.sin(2 * np.pi * 1760 * np.arange(m) / SR)) * env_adsr(m, 0.003, 0.02) * 0.18
+        i = int((0.95 + j * 0.22) * SR); beeps[i:i + m] += lowpass(b, 5000, 1)
+    x = grind + crumple + beeps
+    return fade_edges(normalise(reverb(x, 0.5, 0.12), -5))
 
 
 def main(folder):
@@ -820,7 +997,9 @@ def main(folder):
         'SFX - Blast': sfx_blast,
         'SFX - Shatter': sfx_shatter, 'SFX - Cabinet': sfx_cabinet, 'SFX - Steam': sfx_steam,
         'Ambience - Boardroom': amb_boardroom, 'SFX - Lights': sfx_lights, 'SFX - Squeak': sfx_squeak, 'SFX - Balloon': sfx_balloon, 'SFX - Tear': sfx_tear, 'SFX - Stand': sfx_stand,
-        'Ambience - Records room': amb_recordsroom, 'SFX - Slash': sfx_slash, 'SFX - Web cut': sfx_web_cut, 'SFX - Web grow': sfx_web_grow, 'SFX - Fire': sfx_fire, 'SFX - Hiss': sfx_hiss,
+        'Music - Quiet hours': music_quiet,
+        'Music - Slow tide': music_tide, 'Music - Paper lanterns': music_lanterns, 'Music - Night window': music_night,
+        'Music - Overtime': music_overtime, 'SFX - Paper jam': sfx_paper_jam,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

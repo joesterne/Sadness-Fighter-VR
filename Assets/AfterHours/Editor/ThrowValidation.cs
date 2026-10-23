@@ -88,6 +88,7 @@ namespace AfterHours.Editor
             flingTrace="frames "+frames+trace;
         }
         static void HandHome(){var g=Grip;if(g)g.localPosition=gripHome;}
+        static Vector3 Flat(Vector3 v){v.y=0;return v;}
         static void Release(){Press(false);}
         // The simulated flight of a launch: where it crosses a height on the way down.
         static Vector3 LandsAt(Vector3 from,Vector3 velocity,float height)
@@ -109,7 +110,7 @@ namespace AfterHours.Editor
 
             // ---- Which things can be thrown
             var everything=D.rooms.SelectMany(r=>r.root.GetComponentsInChildren<Grabbable>(true)).ToArray();
-            Check(boxes.All(b=>b.throwable)&&everything.Count(g=>g.throwable)==5,"Only the five boxes in the heavy room can be thrown");
+            Check(boxes.All(b=>b.throwable)&&D.shredder.pages.All(p=>p.throwable)&&everything.Count(g=>g.throwable)==10,"Only the five boxes in the heavy room and the five résumé pages can be thrown");
             Check(!P.CanThrow&&!VRPlayer.ThrowOnDesktop,"On the desktop nothing is thrown unless a test switches throwing on");
 
             // ---- The throw: speed, direction and the pull toward the truck
@@ -280,13 +281,13 @@ namespace AfterHours.Editor
             lines.Add("INFO: boxes in each place: "+string.Join(" ",slots.Select(s=>boxes.Count(x=>Vector3.Distance(x.transform.position,s.position)<.02f))));
             Check(slots.Select(s=>boxes.Count(x=>Vector3.Distance(x.transform.position,s.position)<.02f)).All(n=>n==1),"Every place in the truck holds exactly one box");
 
-            // ---- An easter egg: a résumé page tossed onto the floor bursts into confetti
+            // ---- Résumé pages: thrown into the shredder, and an easter egg: a page thrown onto the floor bursts into confetti
             VRPlayer.ThrowOnDesktop=true;
             D.Travel(6);yield return .95f;
             var egg=D.shredder.egg;var sheet=D.shredder.pages[1];var sheetHome=sheet.transform.position;int popped=egg.bursts;
-            Check(D.shredder.pages.All(p=>p.tossable&&!p.throwable)&&D.ambush.papers.Length==6&&D.ambush.papers.All(p=>p.tossable&&!p.throwable)&&everything.Count(g=>g.tossable&&!g.GetComponent<Mug>()&&!D.ambush.papers.Contains(g))==5&&everything.Count(g=>g.tossable&&g.GetComponent<Mug>())==5&&everything.Count(g=>g.throwable)==5,"Only the five résumé pages, the six ambush papers and the five kitchen mugs can be tossed, and a toss is never helped toward the shredder");
+            Check(D.shredder.pages.All(p=>p.throwable&&!p.tossable)&&D.ambush.papers.Length==6&&D.ambush.papers.All(p=>p.tossable&&!p.throwable)&&everything.Count(g=>g.tossable&&!g.GetComponent<Mug>())==6&&everything.Count(g=>g.tossable&&g.GetComponent<Mug>())==5,"Only the six ambush papers and the five kitchen mugs are tossed; the résumé pages are thrown, helped toward the shredder");
             foreach(var t in Take(sheet))yield return t;
-            Check(!P.hint.text.Contains("Or throw it."),"Picking up a page does not mention throwing");
+            Check(P.hint.text.Contains("Or throw it."),"Picking up a page says it can be thrown");
             // Stand clear of the desk with the page in hand, and flick it down at the floor.
             // (Place would let go of the page, so the player is shifted with it in hand.)
             var clear=D.rooms[6].root.transform.TransformPoint(new Vector3(3.6f,.04f,-2.2f));P.Shift(new Vector3(clear.x,.04f,clear.z)-P.transform.position);P.Head.rotation=Quaternion.identity;yield return .2f;
@@ -307,7 +308,22 @@ namespace AfterHours.Editor
             foreach(var t in Fling(Vector3.up,4f,.2f))yield return t;
             Release();
             foreach(var t in Watch(sheet,5,()=>sheet.processed&&!sheet.sending))yield return t;
-            Check(!flight.thrown&&sheet.processed&&egg.bursts==popped+1,"A page let go while pointing at the shredder is sent in, not tossed");
+            Check(!flight.thrown&&sheet.processed&&egg.bursts==popped+1,"A page let go while pointing at the shredder (the hand only lifting) is sent in, not thrown");
+            // Thrown at the shredder, a page is helped in and shredded like one sent there.
+            D.RestartCurrentRoom();yield return .3f;
+            Check(!sheet.processed&&sheet.gameObject.activeSelf&&D.rooms[6].accepted==0&&D.shredder.shredded==0,"TRY AGAIN puts the page back on its stand");
+            var shredderSlot=D.Targets.First(x=>x.GetComponent<Shredder>());
+            Check(Vector3.Distance(Flat(D.rooms[6].spawn.position),Flat(shredderSlot.LandingPoint))<2.5f&&D.rooms[6].root.transform.InverseTransformPoint(shredderSlot.LandingPoint).z<0,"The shredder stands on the player's side of the desk (in front of its near edge), within a couple of steps of the arrival point");
+            foreach(var t in Take(sheet))yield return t;
+            var toward=Flat(shredderSlot.LandingPoint-sheet.transform.position).normalized+Vector3.up*.3f;
+            foreach(var t in Fling(toward,4f))yield return t;
+            Release();
+            foreach(var t in Watch(sheet,4,()=>sheet.processed))yield return t;
+            lines.Add("INFO: the page thrown at the shredder: thrown seen "+flight.thrown+", peak "+flight.peak.ToString("0.0")+" m/s, processed "+sheet.processed+", at "+sheet.transform.position.ToString("0.00")+", accepted "+D.rooms[6].accepted);
+            Check(flight.thrown&&sheet.processed&&egg.bursts==popped+1,"A page thrown at the shredder flies in and is taken");
+            yield return 1.6f;
+            Check(D.rooms[6].accepted==1&&D.shredder.shredded==1&&!sheet.gameObject.activeSelf,"It is shredded and counted once");
+            D.RestartCurrentRoom();yield return .2f;
 
             // ---- Mugs in the kitchen: thrown or dropped from carrying height they break and come back; set down gently, or sent under the spout, they never do
             D.Travel(3);yield return .95f;

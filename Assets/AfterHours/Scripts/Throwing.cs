@@ -1,8 +1,8 @@
 using UnityEngine;
 namespace AfterHours
 {
-    // How a thrown box is launched. The player's own throw sets the speed and direction; when it is aimed roughly at the
-    // truck, a gentle pull bends it in, so a seated player with a short arm swing still lands it.
+    // How a thrown box (or résumé page) is launched. The player's own throw sets the speed and direction; when it is aimed roughly at the
+    // truck (or the shredder), a gentle pull bends it in, so a seated player with a short arm swing still lands it.
     public static class Throwing
     {
         // The hand has to be moving this fast, and sideways enough, for a release to count as a throw. Anything slower is a drop or a point-and-release.

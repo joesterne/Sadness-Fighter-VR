@@ -214,7 +214,9 @@ namespace AfterHours.Editor
             // A quiet easter egg: a page thrown onto the floor bursts into confetti, then is back on its stand. Nothing is counted.
             {
                 var egg=d.shredder.egg;var sheet=d.shredder.pages[4];var sheetHome=sheet.transform.position;int popped=egg.bursts;
-                Check(egg&&egg.pop&&egg.shower&&egg.sound&&d.shredder.pages.All(x=>x.tossable&&!x.throwable),"The résumé room has its confetti, and its five pages can be tossed");
+                Check(egg&&egg.pop&&egg.shower&&egg.sound&&d.shredder.pages.All(x=>x.throwable&&!x.tossable),"The résumé room has its confetti, and its five pages can be thrown");
+                // The editor is paused and stepped here, so no audio plays: the piece is checked by the clip the music has picked.
+                Check(d.music&&(!d.music.on||d.music.source.clip==d.music.ClipFor(6)),"The chapter plays its own piece (unless MUSIC is off)");
                 d.player.Place(d.rooms[6].spawn.position,0);yield return Delay();
                 Put(sheet,d.rooms[6].root.transform.TransformPoint(new Vector3(3.4f,1.2f,-2f)));
                 sheet.Throw(new Vector3(.4f,-1.5f,1.4f));yield return Delay(.6f);
@@ -265,7 +267,7 @@ namespace AfterHours.Editor
             Check(rage.parts[0].damage==0,"Moving the bat slowly through the monitor does not count as a hit");
             int pieceCount=RageTesting.Pieces.Count();
             int computerPieces=rage.parts.Sum(x=>x.stages.Sum(t=>t.debris.Length));
-            Check(computerPieces>=4*32&&pieceCount>=200&&rage.extras.Length==5,"The computer holds "+computerPieces+" pieces that can fly off (32 before), and the five desk things "+(pieceCount-computerPieces)+" more");
+            Check(computerPieces>=4*32&&pieceCount>=200&&rage.extras.Length==9,"The computer holds "+computerPieces+" pieces that can fly off (32 before), and the nine other things "+(pieceCount-computerPieces)+" more");
             var swings=new List<int>();
             foreach(var extra in rage.extras)
             {
@@ -273,6 +275,9 @@ namespace AfterHours.Editor
                 Check(extra.Broken,"Short swings break "+extra.label+" ("+extra.HitsToBreak+(extra.HitsToBreak==1?" hit)":" hits)"));
             }
             Check(!d.rooms[RageRoom.Room].complete&&d.rooms[RageRoom.Room].accepted==rage.BrokenCount&&rage.BrokenCount<4,"The desk things are extras: breaking them does not count toward the chapter");
+            Check(rage.Jams==1&&d.wardrobe.Has(RageRoom.PaperJamPin)&&(rage.paperBurst.isPlaying||rage.paperBurst.particleCount>0),"The copier, broken for good, jams in a burst of paper: the Paper Jam easter egg and its pin");
+            Capture("Rage room-Paper jam");
+            Check(rage.BrokenEver==9&&rage.tools[0].gameObject.activeSelf&&rage.tools[1].gameObject.activeSelf&&!rage.tools[2].gameObject.activeSelf&&!rage.toolLocks[0].activeSelf&&rage.toolLocks[2].activeSelf&&rage.lockCounts[2].text.StartsWith("1 MORE"),"Nine things broken unlock the hammer (3) and the handsaw (6); the nail bat waits for 1 more");
             for(int i=0;i<rage.parts.Length;i++)
             {
                 var part=rage.parts[i];
@@ -281,7 +286,9 @@ namespace AfterHours.Editor
                 Check(d.rooms[RageRoom.Room].accepted==rage.BrokenCount&&rage.BrokenCount>=i+1,"The room counts "+rage.BrokenCount+" of 4 broken");
             }
             Check(!d.rooms[RageRoom.Room].complete&&rage.Quieting,"The last part starts the quiet; the chapter waits for it");
-            Check(rage.Hits==rage.Everything.Sum(x=>x.HitsToBreak)&&rage.FewestThrown>=3&&rage.Thrown==pieceCount,"Every hit throws pieces: "+rage.Hits+" hits threw all "+rage.Thrown+", at least "+rage.FewestThrown+" at a time");
+            Check(rage.BrokenEver==13&&rage.tools[2].gameObject.activeSelf&&!rage.tools[3].gameObject.activeSelf&&rage.lockCounts[3].text.StartsWith("3 MORE"),"Thirteen things broken unlock the nail bat; the axe waits for 3 more");
+            Check(d.music.Wanted==d.music.afterRage&&d.music.afterRage.name=="Music - Slow tide","The quiet eases the beat out for Slow tide");
+            Check(rage.Hits+rage.Carried==rage.Everything.Sum(x=>x.HitsToBreak)&&rage.FewestThrown>=3&&rage.Thrown==pieceCount,"Every hit throws pieces: "+rage.Hits+" hits threw all "+rage.Thrown+", at least "+rage.FewestThrown+" at a time");
             var desk=roomRoot.TransformPoint(new Vector3(.1f,.85f,-.3f));
             yield return Delay(1);Aim(desk);yield return Delay(.2f);Capture("Rage room-Broken");
             Aim(roomRoot.TransformPoint(new Vector3(0,.2f,.9f)));yield return Delay(.2f);Capture("Rage room-Mess");
@@ -309,9 +316,21 @@ namespace AfterHours.Editor
             yield return Click(rage.newComputer.GetComponentInChildren<Interactable>());yield return Delay(1.8f);
             Check(rage.parts.All(x=>x.damage==0&&!x.Broken)&&d.rooms[RageRoom.Room].accepted==0&&!rage.Calm&&d.rooms[RageRoom.Room].complete,"WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete");
             Check(Mathf.Abs(rage.ambience.volume-rage.ambienceVolume)<.01f,"The hum returns with the new computer");
+            Check(d.music.Wanted.name=="Music - Overtime","The beat returns with the new computer");
+            Check(rage.BrokenEver==13&&rage.tools[2].gameObject.activeSelf,"A new computer keeps the tools unlocked");
             Check(rage.Everything.All(x=>x.damage==0)&&RageTesting.Pieces.All(b=>b.isKinematic&&b.transform.parent!=roomRoot),"WHEEL IN A NEW ONE also brings fresh desk things, with every piece back in place");
             yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
-            Check(!bat.held&&!d.player.IsHolding(bat)&&Vector3.Distance(bat.transform.position,batHome)<.05f,"PUT THE BAT BACK returns the bat to its rack");
+            Check(!bat.held&&!d.player.IsHolding(bat)&&Vector3.Distance(bat.transform.position,batHome)<.05f,"PUT IT BACK returns the bat to its rack");
+            var hammer=rage.tools[0];var nailBat=rage.tools[2];
+            Aim(hammer.transform.TransformPoint(0,0,.3f));yield return Delay(.06f);Press(true);yield return Delay(.3f);Press(false);yield return Delay(.3f);
+            Check(hammer.held&&d.player.IsHolding(hammer),"An unlocked tool on the wall can be picked up: the hammer");
+            Aim(nailBat.transform.TransformPoint(0,0,.6f));yield return Delay(.06f);Press(true);yield return Delay(.3f);Press(false);yield return Delay(.6f);
+            Check(nailBat.held&&!hammer.held&&!d.player.IsHolding(hammer),"Pointing at another tool swaps them: the nail bat in hand, the hammer back on the wall");
+            rage.HitNow(rage.parts[0],nailBat.GetComponent<Bat>());
+            Check(rage.parts[0].damage==2,"The nail bat breaks a part two steps at a time");
+            rage.ResetComputer();
+            yield return Click(d.rooms[RageRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.PutBatBack));yield return Delay(1);
+            Check(!nailBat.held&&!d.player.IsHolding(nailBat),"PUT IT BACK puts the nail bat back too");
             Check(d.CompletedCount==6&&!d.wardrobe.Has("jacket"),"Six chapters complete before the ambush, and the sunrise jacket waits for the seventh");
             yield return Visit(AmbushRoom.Room);Capture("Ambush");
             var amb=d.ambush;
@@ -338,22 +357,8 @@ namespace AfterHours.Editor
             yield return Click(Button(ActionKind.StandUp));yield return Delay(.5f);
             Check(amb.standing&&d.rooms[AmbushRoom.Room].complete&&amb.exitDoor.activeSelf,"STAND UP completes the chapter and opens the way out");
             yield return Delay(3.2f);Aim(d.rooms[AmbushRoom.Room].root.transform.TransformPoint(new Vector3(0,1.5f,4)));yield return Delay(.2f);Capture("Ambush-Standing");
-            Check(d.CompletedCount==7&&!d.wardrobe.Has("jacket"),"Seven chapters complete before the NDA web, and the sunrise jacket waits for the eighth");
-            yield return Visit(WebRoom.Room);Capture("NDA web");
-            var web=d.web;var webRoot=d.rooms[WebRoom.Room].root.transform;
-            Check(web.machete.held&&d.player.IsHolding(web.machete)&&web.Standing==18,"The NDA web opens with eighteen webs round the seat and the machete already in hand");
-            Aim(web.spider.position+Vector3.up*.7f);yield return Delay(.2f);Capture("NDA web-Spider");
-            foreach(var w in WebTesting.Chop(4))yield return Wait(w);
-            Check(web.Cleared==2&&!d.rooms[WebRoom.Room].complete,"A chop through the webs straight ahead cuts both of them");
-            foreach(var w in WebTesting.ClearAll())yield return Wait(w);
-            Check(web.beaten&&web.Cleared==18&&d.rooms[WebRoom.Room].complete,"Chopping through every web before any grows back completes the chapter");
-            Aim(webRoot.TransformPoint(new Vector3(0,1.4f,4)));yield return Delay(.2f);Capture("NDA web-Cleared");
-            yield return Click(d.rooms[WebRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.KillItWithFire));
-            Aim(web.spider.position+Vector3.up*.5f);yield return Delay(.3f);Capture("NDA web-Fire");
-            yield return Delay(WebRoom.BurnSeconds+.3f);
-            Check(web.burned&&web.ash.activeSelf&&d.wardrobe.Has("flame-hat"),"The unlabelled button burns the spider away and earns the hat of flames");
-            Check(d.CompletedCount==8,"All eight chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==990,"Completion saved as all eight chapter flags");
-            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","standup-pin","jacket","step-pin","scarf","orange-pin","flame-hat"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin, the kind scarf and the hat of flames");
+            Check(d.CompletedCount==7,"All seven chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==478,"Completion saved as all seven chapter flags");
+            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","standup-pin","jacket","step-pin","scarf","orange-pin",RageRoom.PaperJamPin}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
             // The rooftop is a sunrise: its own gradient sky, golden light from low in front of the player, a warm haze and a lit-up ambient, all put back on leaving.
             var rooftop=d.rooftop;

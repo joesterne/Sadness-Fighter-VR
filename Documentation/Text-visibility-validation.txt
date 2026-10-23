@@ -1,4 +1,4 @@
-2026-10-17 04:07:37Z
+2026-10-22 22:42:03Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -61,24 +61,36 @@ PASS: room 0 [The lobby] Mirror wall/Wardrobe back 3 label at (-1.9, 1.0, -0.2) 
 PASS: room 0 [The lobby] Mirror wall/Wardrobe next 3 label at (-1.1, 1.0, -0.2) '>'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe value 3 at (-1.5, 1.0, -0.2) 'Medium'
 PASS: room 0 [The lobby] Mirror wall/Still to find at (-1.5, 0.5, -0.2) 'STILL TO FIND Reach the shore in O...'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe heading at (1.6, 2.1, -0.2) 'WHAT YOU WEAR'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.9, -0.2) 'TOP'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe back 4 label at (1.1, 1.8, -0.2) '<'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe next 4 label at (2.0, 1.8, -0.2) '>'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe value 4 at (1.6, 1.8, -0.2) 'Plain tee'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.7, -0.2) 'HAT'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.5, -0.2) '<'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.5, -0.2) '>'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe value 5 at (1.6, 1.5, -0.2) 'No hat'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.4, -0.2) 'NECK'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.3, -0.2) '<'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.3, -0.2) '>'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe value 6 at (1.6, 1.3, -0.2) 'Open collar'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.1, -0.2) 'PIN'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2) '<'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2) '>'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2) 'No pin'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 12 PIECES FOUND'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe heading at (1.6, 2.2, -0.2) 'WHAT YOU WEAR'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 2.0, -0.2) 'TOP'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 4 label at (1.1, 1.9, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 4 label at (2.0, 1.9, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 4 at (1.6, 1.9, -0.2) 'Plain tee'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.8, -0.2) 'HAT'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.7, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.7, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 5 at (1.6, 1.7, -0.2) 'No hat'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.6, -0.2) 'NECK'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.5, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.5, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 6 at (1.6, 1.5, -0.2) 'Open collar'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.4, -0.2) 'PIN'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.3, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.3, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.3, -0.2) 'No pin'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.2, -0.2) 'LEGS'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 8 label at (1.1, 1.1, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 8 label at (2.0, 1.1, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 8 at (1.6, 1.1, -0.2) 'Work trousers'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.0, -0.2) 'GLOVES'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 9 label at (1.1, 0.9, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 9 label at (2.0, 0.9, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 9 at (1.6, 0.9, -0.2) 'Bare hands'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 0.8, -0.2) 'SHOES'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe back 10 label at (1.1, 0.7, -0.2) '<'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe next 10 label at (2.0, 0.7, -0.2) '>'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe value 10 at (1.6, 0.7, -0.2) 'Plain shoes'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.4, -0.2) '0 OF 12 PIECES FOUND'
 PASS: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0) 'YOU ARE STILL WELCOME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0) '01  /  OCEAN OF SHAME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0) 'A feeling can be vast without bein...'
@@ -129,7 +141,7 @@ PASS: room 6 [The old résumé] 06 - The old résumé/Room subtitle at (0.0, 2.9
 PASS: room 6 [The old résumé] 06 - The old résumé/Room progress at (0.0, 2.5, 9.6) '0 / 5   LET GO'
 PASS: room 6 [The old résumé] Page face/Page heading at (0.0, 0.2, 0.0) 'RÉSUMÉ'
 PASS: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0) 'SENIOR COORDINATOR since 2016'
-PASS: room 6 [The old résumé] 06 - The old résumé/Shredder label at (0.0, 1.3, 2.9) 'LET IT GO'
+PASS: room 6 [The old résumé] Shredder/Shredder label at (0.0, 1.3, -0.4) 'LET IT GO'
 PASS: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8) '06 / THE RAGE ROOM'
 PASS: room 7 [The rage room] 07 - The rage room/Room title at (0.0, 3.8, 6.8) 'Let it out.'
 PASS: room 7 [The rage room] 07 - The rage room/Room subtitle at (0.0, 3.2, 6.8) 'Break the old work computer. Short...'
@@ -201,12 +213,16 @@ NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 2 label at (-1.9, 1.3, -0.2):
 NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 2 label at (-1.1, 1.3, -0.2): partly blocked from 6 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
 NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 3 label at (-1.9, 1.0, -0.2): partly blocked from 5 of 45 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
 NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 3 label at (-1.1, 1.0, -0.2): partly blocked from 6 of 52 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 1.5, 0.0)
-NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.5, -0.2): partly blocked from 3 of 63 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
-NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.5, -0.2): partly blocked from 2 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
-NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.3, -0.2): partly blocked from 4 of 62 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
-NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.3, -0.2): partly blocked from 2 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
-NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2): partly blocked from 5 of 61 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
-NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2): partly blocked from 2 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.5, -0.2): partly blocked from 3 of 45 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.5, -0.2): partly blocked from 1 of 48 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.3, -0.2): partly blocked from 3 of 45 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.3, -0.2): partly blocked from 1 of 48 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 8 label at (1.1, 1.1, -0.2): partly blocked from 3 of 45 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 8 label at (2.0, 1.1, -0.2): partly blocked from 1 of 48 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 9 label at (1.1, 0.9, -0.2): partly blocked from 3 of 44 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 9 label at (2.0, 0.9, -0.2): partly blocked from 1 of 48 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.5, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe back 10 label at (1.1, 0.7, -0.2): partly blocked from 3 of 44 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, 0.0)
+NOTE: room 0 [The lobby] Mirror wall/Wardrobe next 10 label at (2.0, 0.7, -0.2): partly blocked from 2 of 47 places, by 00 - The lobby/Batched geometry - 06 Brass and daylight near (-2.0, 1.5, 0.0)
 NOTE: room 2 [Heavy things] 02 - Heavy things/Chapter at (0.0, 4.4, 15.8): partly blocked from 22 of 95 places, by 02 - Heavy things/Batched geometry - 11 Uncoated paper near (-6.5, 2.0, 3.5)
 NOTE: room 2 [Heavy things] 02 - Heavy things/Room title at (0.0, 4.0, 15.8): partly blocked from 51 of 136 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (1.5, 2.5, 5.0)
 NOTE: room 2 [Heavy things] 02 - Heavy things/Room subtitle at (0.0, 3.6, 15.8): partly blocked from 64 of 137 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (1.5, 2.5, 5.0)
@@ -233,14 +249,15 @@ NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE descrip
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): partly blocked from 2 of 105 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-5.5, 2.0, -4.5)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): partly blocked from 4 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-7.0, 1.5, -4.0)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 7 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-6.0, 1.5, 5.5)
+NOTE: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0): partly blocked from 1 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (2.0, 1.5, -0.5); partly blocked from 3 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (1.5, 1.5, -0.5); partly blocked from 4 of 15 places, by 06 - The old résumé/Batched geometry - 10 Brushed aluminium near (1.5, 1.5, -1.0)
 NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 52 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
 NOTE: room 7 [The rage room] Mug whole/Mug words at (0.0, 0.1, 0.0): out of reading range from everywhere sampled (letters about 0.7 cm tall)
 NOTE: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): partly blocked from 2 of 18 places, by Monitor - pieces/Monitor body
 NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): partly blocked from 17 of 80 places, by Clown B/Clown B - 06 Brass and daylight
-NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): partly blocked from 20 of 85 places, by Clown A/Clown A - 03 Quiet teal
+NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): partly blocked from 19 of 85 places, by Clown A/Clown A - 03 Quiet teal
 NOTE: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): partly blocked from 18 of 78 places, by Clown B/Clown B - 03 Quiet teal
-NOTE: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): partly blocked from 14 of 61 places, by Clown A/Clown A - 05 Burnt coral
-NOTE: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): partly blocked from 30 of 87 places, by Clown A/Clown A - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): partly blocked from 13 of 61 places, by Clown A/Clown A - 05 Burnt coral
+NOTE: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): partly blocked from 29 of 87 places, by Clown A/Clown A - 05 Burnt coral
 NOTE: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0): partly blocked from 24 of 70 places, by Clown A/Clown A - 05 Burnt coral
 NOTE: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0): partly blocked from 9 of 51 places, by Clown A/Clown A - 05 Burnt coral
 NOTE: room 8 [The ambush] Feeling card 4/Feeling 4 label at (0.0, 0.0, 0.0): partly blocked from 3 of 35 places, by 08 - The ambush/Batched geometry - 02 Deep blue near (-2.0, 1.0, 0.5)
@@ -305,24 +322,36 @@ INFO: room 0 [The lobby] Mirror wall/Wardrobe back 3 label at (-1.9, 1.0, -0.2):
 INFO: room 0 [The lobby] Mirror wall/Wardrobe next 3 label at (-1.1, 1.0, -0.2): in range of 62 places, faced from 52, clear from 46
 INFO: room 0 [The lobby] Mirror wall/Wardrobe value 3 at (-1.5, 1.0, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
 INFO: room 0 [The lobby] Mirror wall/Still to find at (-1.5, 0.5, -0.2): in range of 14 places, faced from 12, clear from 12, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe heading at (1.6, 2.1, -0.2): in range of 29 places, faced from 25, clear from 25, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.9, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe back 4 label at (1.1, 1.8, -0.2): in range of 73 places, faced from 63, clear from 63
-INFO: room 0 [The lobby] Mirror wall/Wardrobe next 4 label at (2.0, 1.8, -0.2): in range of 78 places, faced from 67, clear from 67
-INFO: room 0 [The lobby] Mirror wall/Wardrobe value 4 at (1.6, 1.8, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.7, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.5, -0.2): in range of 73 places, faced from 63, clear from 60
-INFO: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.5, -0.2): in range of 78 places, faced from 67, clear from 65
-INFO: room 0 [The lobby] Mirror wall/Wardrobe value 5 at (1.6, 1.5, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.4, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.3, -0.2): in range of 72 places, faced from 62, clear from 58
-INFO: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.3, -0.2): in range of 78 places, faced from 67, clear from 65
-INFO: room 0 [The lobby] Mirror wall/Wardrobe value 6 at (1.6, 1.3, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.1, -0.2): in range of 16 places, faced from 13, clear from 13, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2): in range of 72 places, faced from 61, clear from 56
-INFO: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2): in range of 78 places, faced from 67, clear from 65
-INFO: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
-INFO: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2): in range of 21 places, faced from 18, clear from 18, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe heading at (1.6, 2.2, -0.2): in range of 29 places, faced from 25, clear from 25, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 2.0, -0.2): in range of 11 places, faced from 9, clear from 9, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 4 label at (1.1, 1.9, -0.2): in range of 53 places, faced from 45, clear from 45
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 4 label at (2.0, 1.9, -0.2): in range of 55 places, faced from 48, clear from 48
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 4 at (1.6, 1.9, -0.2): in range of 14 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.8, -0.2): in range of 11 places, faced from 9, clear from 9, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 5 label at (1.1, 1.7, -0.2): in range of 53 places, faced from 45, clear from 45
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 5 label at (2.0, 1.7, -0.2): in range of 55 places, faced from 48, clear from 48
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 5 at (1.6, 1.7, -0.2): in range of 14 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.6, -0.2): in range of 12 places, faced from 10, clear from 10, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 6 label at (1.1, 1.5, -0.2): in range of 53 places, faced from 45, clear from 42
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 6 label at (2.0, 1.5, -0.2): in range of 55 places, faced from 48, clear from 47
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 6 at (1.6, 1.5, -0.2): in range of 14 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.4, -0.2): in range of 11 places, faced from 9, clear from 9, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.3, -0.2): in range of 53 places, faced from 45, clear from 42
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.3, -0.2): in range of 55 places, faced from 48, clear from 47
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.3, -0.2): in range of 14 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.2, -0.2): in range of 11 places, faced from 9, clear from 9, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 8 label at (1.1, 1.1, -0.2): in range of 53 places, faced from 45, clear from 42
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 8 label at (2.0, 1.1, -0.2): in range of 55 places, faced from 48, clear from 47
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 8 at (1.6, 1.1, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.0, -0.2): in range of 11 places, faced from 9, clear from 9, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 9 label at (1.1, 0.9, -0.2): in range of 53 places, faced from 44, clear from 41
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 9 label at (2.0, 0.9, -0.2): in range of 55 places, faced from 48, clear from 47
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 9 at (1.6, 0.9, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 0.8, -0.2): in range of 11 places, faced from 9, clear from 9, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe back 10 label at (1.1, 0.7, -0.2): in range of 53 places, faced from 44, clear from 41
+INFO: room 0 [The lobby] Mirror wall/Wardrobe next 10 label at (2.0, 0.7, -0.2): in range of 55 places, faced from 47, clear from 45
+INFO: room 0 [The lobby] Mirror wall/Wardrobe value 10 at (1.6, 0.7, -0.2): in range of 13 places, faced from 11, clear from 11, outlined
+INFO: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.4, -0.2): in range of 21 places, faced from 18, clear from 18, outlined
 INFO: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0): in range of 4 places, faced from 4, clear from 4, outlined
 INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
 INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
@@ -373,7 +402,7 @@ INFO: room 6 [The old résumé] 06 - The old résumé/Room subtitle at (0.0, 2.9
 INFO: room 6 [The old résumé] 06 - The old résumé/Room progress at (0.0, 2.5, 9.6): in range of 65 places, faced from 59, clear from 59, outlined
 INFO: room 6 [The old résumé] Page face/Page heading at (0.0, 0.2, 0.0): in range of 11 places, faced from 5, clear from 5
 INFO: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0): in range of 33 places, faced from 15, clear from 15
-INFO: room 6 [The old résumé] 06 - The old résumé/Shredder label at (0.0, 1.3, 2.9): in range of 81 places, faced from 39, clear from 39, outlined
+INFO: room 6 [The old résumé] Shredder/Shredder label at (0.0, 1.3, -0.4): in range of 64 places, faced from 29, clear from 29, outlined
 INFO: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): in range of 59 places, faced from 52, clear from 51, outlined
 INFO: room 7 [The rage room] 07 - The rage room/Room title at (0.0, 3.8, 6.8): in range of 59 places, faced from 52, clear from 52, outlined
 INFO: room 7 [The rage room] 07 - The rage room/Room subtitle at (0.0, 3.2, 6.8): in range of 59 places, faced from 53, clear from 53, outlined
@@ -388,10 +417,10 @@ INFO: room 7 [The rage room] Bat rack sign/Bat rack label at (0.0, 0.0, 0.0): in
 INFO: room 7 [The rage room] 07 - The rage room/Box label at (1.2, 0.2, -1.2): in range of 31 places, faced from 10, clear from 10
 INFO: room 7 [The rage room] 07 - The rage room/Rules at (-4.9, 2.0, 1.0): in range of 59 places, faced from 55, clear from 55, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, -1.1): in range of 93 places, faced from 80, clear from 63
-INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): in range of 97 places, faced from 85, clear from 65
+INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 2.7): in range of 97 places, faced from 85, clear from 66
 INFO: room 8 [The ambush] 08 - The ambush/Wall poster text at (7.8, 3.4, 6.5): in range of 92 places, faced from 78, clear from 60
-INFO: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): in range of 74 places, faced from 61, clear from 47, outlined
-INFO: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): in range of 99 places, faced from 87, clear from 57, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Chapter at (-7.6, 5.3, 5.0): in range of 74 places, faced from 61, clear from 48, outlined
+INFO: room 8 [The ambush] 08 - The ambush/Room title at (-7.6, 4.6, 5.0): in range of 99 places, faced from 87, clear from 58, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0): in range of 82 places, faced from 70, clear from 46, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0): in range of 63 places, faced from 51, clear from 42, outlined
 INFO: room 8 [The ambush] 08 - The ambush/Ambush feelings sign at (0.0, 0.8, -0.6): in range of 31 places, faced from 10, clear from 10, outlined
@@ -426,4 +455,4 @@ INFO: plate room 4 [The infinite archive] FEAR sign plate: 1.34 by 0.70 m, 2 sig
 INFO: plate room 4 [The infinite archive] Heading plate: 4.86 by 2.10 m, 4 signs on it, smallest margin 20.0 cm
 INFO: plate room 4 [The infinite archive] STILL TRUE sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
 INFO: plate room 7 [The rage room] Rules board: 1.32 by 0.61 m, 1 sign on it, smallest margin 10.0 cm
-INFO: 170 signs checked; 0 skinned meshes in the last scan were not counted as solid.
+INFO: 182 signs checked; 0 skinned meshes in the last scan were not counted as solid.

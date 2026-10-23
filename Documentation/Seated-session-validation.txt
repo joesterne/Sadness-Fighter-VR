@@ -1,4 +1,4 @@
-2026-10-17 04:00:43Z
+2026-10-22 22:33:50Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -7,8 +7,13 @@ PASS: A returning player sees no first-visit guide
 PASS: Menu key opens the menu at arm's length (0.67 m)
 PASS: The lobby menu hides LOBBY and TRY AGAIN
 PASS: The menu offers GENTLE AMBUSH (off) and DARK OPENING (on)
-PASS: Every one of the menu's 14 buttons is within 39 degrees of straight ahead
-PASS: Only doors, CONTINUE, the mirror (and its glass), its wardrobe and the first-visit guide remain as lobby signs
+PASS: Every one of the menu's 15 buttons is within 39 degrees of straight ahead
+PASS: The game carries its music: the theme and the quiet piece, on the director rather than in a room
+PASS: Every chapter has its piece: Slow tide, Quiet hours, Paper lanterns, Night window, Quiet hours, Slow tide, Night window; the lobby and rooftop the theme
+PASS: No room plays music of its own, so two pieces never overlap
+PASS: Music plays in the lobby (the theme), and the menu offers MUSIC (on)
+PASS: MUSIC fades the music out and pauses it, and the choice is stored
+PASS: Only doors, CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs
 PASS: Menu SEATED VIEW enables seated view at 1.65 m
 PASS: Menu SEATED HEIGHT changes eye height to 1.85 m
 PASS: The open menu moves up with the new eye height
@@ -27,7 +32,7 @@ PASS: Seated teleports face the pointed direction, unless the point is underfoot
 PASS: Menu MOVEMENT switches walking back on
 PASS: No vignette while standing still
 PASS: The comfort vignette shows while walking and clears after stopping
-PASS: The menu opens near the entrance wall (fitted at 0.51 scale); the next press must reach it
+PASS: The menu opens near the entrance wall (fitted at 0.59 scale); the next press must reach it
 PASS: Menu COMFORT VIGNETTE switches the vignette off
 PASS: Travel closes the menu
 PASS: Chapter menus offer LOBBY and TRY AGAIN and name the room
@@ -37,7 +42,7 @@ PASS: Short rage room session breaks the mouse
 PASS: Short ambush session names two feelings
 PASS: Checkpoint stores partial progress in all seven chapters
 PASS: Saving writes the backup copy once, and leaves an unchanged checkpoint alone
-PASS: The backup copy holds the checkpoint and the comfort settings, exactly as stored
+PASS: The backup copy holds the checkpoint and the comfort settings (music included), exactly as stored
 PASS: Saving again with nothing changed writes nothing at all
 PASS: A change is written once, to the checkpoint and to the backup copy
 PASS: Undoing the change gives back exactly the same checkpoint
@@ -55,16 +60,17 @@ PASS: Only the game's own saved values are ever restored
 PASS: The saved values are back as they were
 PASS: Seated mode and eye-height preference survive reload
 PASS: Vignette preference survives reload
+PASS: Music off survives reload
 PASS: Ocean count and horizon restore before first entry
 PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
 PASS: A shredded résumé restores exactly once, and the paper stays in the bin and on the floor
-PASS: Each page leaves at least 100 scraps (1170 in all)
-PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (11.0 by 14.4 m)
+PASS: Each page leaves at least 100 scraps (1230 in all)
+PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (10.9 by 14.4 m)
 PASS: Scraps have no colliders, and each set is two draws
 PASS: The résumé room carries its confetti: a burst, a shower and a pop sound
-PASS: Every page can be tossed, is never thrown with help, and tells the confetti when it hits something
+PASS: Every page can be thrown (helped toward the shredder), and tells the confetti when it hits something
 PASS: The confetti comes in seven colours, rests on the floor plane and plays once when asked
 PASS: Both systems share one flat unlit paper material and cast no shadows
 PASS: The heavy room carries its box blast: the five boxes, a flash, sparks, smoke, chips and a boom
@@ -72,7 +78,7 @@ PASS: The blast plays once when asked: a flash, 70 sparks, 9 puffs of smoke and 
 PASS: The chips land on a floor plane in seven colours, and the sparks are stretched along their flight
 PASS: The blast shares the flat unlit paper material, casts no shadows and never holds more than 300 bits (270)
 PASS: The kitchen has five mugs, each with a grabbable
-PASS: The mugs are tossed like the résumé pages: tossable, never helped to a target, upright, kind 'mug', in the kitchen
+PASS: The mugs are tossed like the ambush paperwork: tossable, never helped to a target, upright, kind 'mug', in the kitchen
 PASS: Every mug has its coffee disc, shown only while there is coffee in it, and only your cup carries a saved pour
 PASS: Every mug belongs to the kitchen
 PASS: One mug is the orange one
@@ -91,7 +97,9 @@ PASS: Continue button names the last room
 PASS: Continue input returns to the saved room
 PASS: First room activation preserves restored ocean position
 PASS: Menu TRY AGAIN saves the reset and closes the menu
+PASS: MUSIC switches back on in a chapter, which plays its own piece (Slow tide on the ocean)
 PASS: Menu LOBBY returns to the lobby
+PASS: Back in the lobby the theme plays again
 PASS: The player carries the thumb shortcuts
 PASS: In the lobby a thumb swipe back has nowhere to go, so it asks nothing
 PASS: Mid-move, thumb gestures wait

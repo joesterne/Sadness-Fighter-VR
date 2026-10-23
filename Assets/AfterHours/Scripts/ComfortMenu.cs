@@ -8,7 +8,7 @@ namespace AfterHours
     public class ComfortMenu : MonoBehaviour
     {
         public GameDirector director;
-        public TextMeshPro status, seated, height, walking, vignette, crowd, clean, night, gentle, dark;
+        public TextMeshPro status, seated, height, walking, vignette, crowd, clean, night, gentle, dark, music;
         public GameObject lobby, tryAgain;
         public bool IsOpen => gameObject.activeSelf;
         const float Distance=.65f, Drop=.16f;
@@ -43,7 +43,7 @@ namespace AfterHours
         }
         public void Close(){if(IsOpen)gameObject.SetActive(false);}
         // The panel's centre and corners, relative to its pivot.
-        static readonly Vector3[] Corners={Vector3.zero,new Vector3(-.27f,.25f,0),new Vector3(.27f,.25f,0),new Vector3(-.27f,-.47f,0),new Vector3(.27f,-.47f,0)};
+        static readonly Vector3[] Corners={Vector3.zero,new Vector3(-.27f,.335f,0),new Vector3(.27f,.335f,0),new Vector3(-.27f,-.47f,0),new Vector3(.27f,-.47f,0)};
         float Clearance(Vector3 eye,Vector3 offset)
         {
             float length=offset.magnitude,fit=1;
@@ -67,6 +67,7 @@ namespace AfterHours
             Set(night,"OCEAN AT NIGHT\n"+(director.ocean&&director.ocean.night?"ON":"OFF"));
             Set(gentle,"GENTLE AMBUSH\n"+(director.gentleAmbush?"ON":"OFF"));
             Set(dark,"DARK OPENING\n"+(director.darkOpening?"ON":"OFF"));
+            Set(music,"MUSIC\n"+(director.music&&director.music.on?"ON":"OFF"));
         }
         static void Set(TextMeshPro label,string text){if(label)label.text=text;}
         public Interactable Button(ActionKind kind)

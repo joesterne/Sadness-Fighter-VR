@@ -21,7 +21,7 @@ namespace AfterHours
         [Serializable] public class Entry{public string key;public bool text;public int number;public string value;}
         [Serializable] public class Copy{public int version=1;public Entry[] entries=Array.Empty<Entry>();}
         static readonly string[] Texts={CheckpointStore.Key,Wardrobe.Key};
-        static readonly string[] Numbers={CheckpointStore.ProgressKey,IntroGuide.Key,"AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey};
+        static readonly string[] Numbers={CheckpointStore.ProgressKey,IntroGuide.Key,"AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,Music.Key};
         static string folder,lastWritten;
         public static bool Enabled=>PathOverride!=null||(Application.platform==RuntimePlatform.Android&&!Application.isEditor);
         public static string FilePath

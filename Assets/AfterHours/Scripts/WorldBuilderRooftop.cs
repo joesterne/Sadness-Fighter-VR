@@ -77,7 +77,7 @@ namespace AfterHours
         static void Rooftop()
         {
             var room=d.rooms[RooftopRoom.Room].root.AddComponent<RooftopRoom>();room.director=d;d.rooftop=room;
-            Sound("Ambience - Rooftop",.55f);Sound("Music - After hours theme",.2f);
+            Sound("Ambience - Rooftop",.55f);
             RooftopDeck();RooftopBoard();RooftopBunting();RooftopFurniture();RooftopHutAndTower();RooftopSkyline();RooftopSky(room);
         }
 

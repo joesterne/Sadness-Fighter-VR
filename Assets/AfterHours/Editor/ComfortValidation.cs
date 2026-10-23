@@ -15,7 +15,7 @@ namespace AfterHours.Editor
     {
         static IEnumerator<float> run;static double next,deadline;static Mouse mouse;static Keyboard keyboard;
         static readonly List<string> lines=new List<string>();
-        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,IntroGuide.Key,Wardrobe.Key};
+        static readonly string[] keys={CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,IntroGuide.Key,Wardrobe.Key,Music.Key};
         static bool[] existed;static string checkpoint,wardrobe;static int[] values;static string backupFile;
         public static string Status="Not run";
         static GameDirector D=>GameDirector.Instance;
@@ -64,7 +64,17 @@ namespace AfterHours.Editor
             Check(D.menu.gentle&&D.menu.dark&&D.menu.gentle.text.Contains("GENTLE AMBUSH")&&D.menu.gentle.text.Contains("OFF")&&D.menu.dark.text.Contains("DARK OPENING")&&D.menu.dark.text.Contains("ON")&&D.menu.Button(ActionKind.GentleAmbush)&&D.menu.Button(ActionKind.DarkOpening),"The menu offers GENTLE AMBUSH (off) and DARK OPENING (on)");
             var panelButtons=D.menu.GetComponentsInChildren<Interactable>(true).Where(b=>b.gameObject.activeInHierarchy).ToArray();
             float widest=panelButtons.Max(b=>Vector3.Angle(Vector3.ProjectOnPlane(P.Head.forward,Vector3.up),b.transform.position-P.Head.position));
-            Check(panelButtons.Length==14&&widest<42f,"Every one of the menu's "+panelButtons.Length+" buttons is within "+widest.ToString("0")+" degrees of straight ahead");
+            Check(panelButtons.Length==15&&widest<42f,"Every one of the menu's "+panelButtons.Length+" buttons is within "+widest.ToString("0")+" degrees of straight ahead");
+            // Calm background music: the theme in the lobby, a quieter piece in the chapters, and MUSIC in the menu to switch it off.
+            // The suites step a paused editor, and a paused editor plays no audio, so a playing piece is checked by its clip and its level.
+            var music=D.music;
+            Check(music&&music.transform.IsChildOf(D.transform)&&music.source&&music.source.loop&&music.source.spatialBlend==0&&music.theme&&music.theme.name=="Music - After hours theme"&&music.calm&&music.calm.name=="Music - Quiet hours","The game carries its music: the theme and the quiet piece, on the director rather than in a room");
+            Check(music.byRoom!=null&&music.byRoom.Length==D.rooms.Length&&new[]{1,2,3,4,6,7,8}.Select(r=>music.ClipFor(r).name).SequenceEqual(new[]{"Music - Slow tide","Music - Quiet hours","Music - Paper lanterns","Music - Night window","Music - Quiet hours","Music - Overtime","Music - Night window"})&&music.ClipFor(0)==music.theme&&music.ClipFor(5)==music.theme,"Every chapter has its piece: Slow tide, Quiet hours, Paper lanterns, Night window, Quiet hours, Overtime, Night window; the lobby and rooftop the theme");
+            Check(music.afterRage&&music.afterRage.name=="Music - Slow tide","The rage room's quiet, once everything is broken, has Slow tide in place of the beat");
+            Check(D.rooms.All(r=>r.root.GetComponentsInChildren<AudioSource>(true).All(s=>!s.clip||!s.clip.name.StartsWith("Music"))),"No room plays music of its own, so two pieces never overlap");
+            Check(music.on&&music.source.clip==music.theme&&music.Level>Music.Volume*.9f&&D.menu.music&&D.menu.music.text.Contains("MUSIC")&&D.menu.music.text.Contains("ON")&&D.menu.Button(ActionKind.Music),"Music plays in the lobby (the theme), and the menu offers MUSIC (on)");
+            foreach(var t in Click(ActionKind.Music))yield return t;yield return Music.FadeSeconds+.3f;
+            Check(!music.on&&music.Level==0&&music.Playing==null&&D.menu.music.text.Contains("OFF")&&PlayerPrefs.GetInt(Music.Key,1)==0,"MUSIC fades the music out and pauses it, and the choice is stored");
             Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.MirrorTap||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext||x.kind==ActionKind.WardrobeBuy),"Only doors, CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs");
             foreach(var t in Click(ActionKind.SeatedMode))yield return t;
             Check(P.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Menu SEATED VIEW enables seated view at 1.65 m");
@@ -134,7 +144,7 @@ namespace AfterHours.Editor
             D.SaveCheckpoint();
             Check(File.Exists(backupFile)&&SaveBackup.Writes==copied+1&&CheckpointStore.Writes==stored,"Saving writes the backup copy once, and leaves an unchanged checkpoint alone");
             var held=JsonUtility.FromJson<SaveBackup.Copy>(File.ReadAllText(backupFile)).entries.ToDictionary(e=>e.key);
-            Check(held.ContainsKey(CheckpointStore.Key)&&held[CheckpointStore.Key].value==settled&&held["AfterHours.Seated"].number==1&&held["AfterHours.Vignette"].number==0&&held[IntroGuide.Key].number==1,"The backup copy holds the checkpoint and the comfort settings, exactly as stored");
+            Check(held.ContainsKey(CheckpointStore.Key)&&held[CheckpointStore.Key].value==settled&&held["AfterHours.Seated"].number==1&&held["AfterHours.Vignette"].number==0&&held[IntroGuide.Key].number==1&&held[Music.Key].number==0,"The backup copy holds the checkpoint and the comfort settings (music included), exactly as stored");
             D.SaveCheckpoint();D.SaveCheckpoint();
             Check(CheckpointStore.Writes==stored&&SaveBackup.Writes==copied+1,"Saving again with nothing changed writes nothing at all");
             D.gentleAmbush=true;D.SaveCheckpoint();
@@ -174,6 +184,7 @@ namespace AfterHours.Editor
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return .8f;
             Check(D.player.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Seated mode and eye-height preference survive reload");
             Check(!P.comfortVignette,"Vignette preference survives reload");
+            Check(!D.music.on&&D.music.Level==0&&D.music.Playing==null,"Music off survives reload");
             Check(D.ocean.strokes==4&&Mathf.Abs(D.ocean.horizon.localPosition.z+3.6f)<.01f,"Ocean count and horizon restore before first entry");
             Check(D.rooms[2].accepted==1&&D.rooms[2].root.GetComponentsInChildren<Grabbable>(true).Count(x=>x.processed)==1,"Delivered box restores exactly once");
             Check(D.rooms[4].accepted==1&&D.rooms[4].root.GetComponentsInChildren<Grabbable>(true).Count(x=>x.processed)==1,"Sorted note restores exactly once");
@@ -185,7 +196,7 @@ namespace AfterHours.Editor
             Check(D.shredder.litter.All(g=>g.GetComponentsInChildren<Collider>(true).Length==0)&&D.shredder.litter.All(g=>g.GetComponentsInChildren<MeshRenderer>(true).Length==2),"Scraps have no colliders, and each set is two draws");
             var egg=D.shredder.egg;
             Check(egg&&egg.director==D&&egg.pages.Length==5&&egg.sound&&egg.sound.name=="SFX - Confetti"&&egg.pop&&egg.shower&&egg.transform.IsChildOf(D.rooms[6].root.transform),"The résumé room carries its confetti: a burst, a shower and a pop sound");
-            Check(D.shredder.pages.All(x=>x.tossable&&!x.throwable&&x.GetComponent<ConfettiPage>()&&x.GetComponent<ConfettiPage>().egg==egg),"Every page can be tossed, is never thrown with help, and tells the confetti when it hits something");
+            Check(D.shredder.pages.All(x=>x.throwable&&!x.tossable&&x.GetComponent<ConfettiPage>()&&x.GetComponent<ConfettiPage>().egg==egg),"Every page can be thrown (helped toward the shredder), and tells the confetti when it hits something");
             Check(new[]{egg.pop,egg.shower}.All(s=>s.main.startColor.mode==ParticleSystemGradientMode.RandomColor&&s.main.startColor.gradient.colorKeys.Length==7&&s.collision.enabled&&s.collision.planeCount==1&&!s.main.loop&&!s.main.playOnAwake&&s.main.maxParticles>=260&&!s.isPlaying),"The confetti comes in seven colours, rests on the floor plane and plays once when asked");
             Check(new[]{egg.pop,egg.shower}.All(s=>{var r=s.GetComponent<ParticleSystemRenderer>();return r.sharedMaterial==D.shredder.egg.pop.GetComponent<ParticleSystemRenderer>().sharedMaterial&&r.sharedMaterial.name=="28 Confetti paper"&&r.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.Off;}),"Both systems share one flat unlit paper material and cast no shadows");
             var boxBlast=D.boxBlast;var blastSystems=boxBlast?new[]{boxBlast.flash,boxBlast.sparks,boxBlast.smoke,boxBlast.chips}:new ParticleSystem[0];
@@ -196,7 +207,7 @@ namespace AfterHours.Editor
             // The kitchen: five mugs that can be thrown (and break), six cupboard doors with an orange mug behind one, the machine's lever and steam wand, and the effects of a breaking mug.
             var kitchen=D.kitchen;var kitchenRoot=D.rooms[3].root.transform;var spoutTargets=kitchenRoot.GetComponentsInChildren<SendTarget>(true);
             Check(kitchen.mugs.Length==5&&kitchen.mugs.All(m=>m&&m.item),"The kitchen has five mugs, each with a grabbable");
-            Check(kitchen.mugs.All(m=>m.item.tossable&&!m.item.throwable&&m.item.upright&&m.item.category=="mug"&&m.item.room==3),"The mugs are tossed like the résumé pages: tossable, never helped to a target, upright, kind 'mug', in the kitchen");
+            Check(kitchen.mugs.All(m=>m.item.tossable&&!m.item.throwable&&m.item.upright&&m.item.category=="mug"&&m.item.room==3),"The mugs are tossed like the ambush paperwork: tossable, never helped to a target, upright, kind 'mug', in the kitchen");
             Check(kitchen.mugs.All(m=>m.coffee&&m.coffee.gameObject.activeSelf==(m.level>0))&&kitchen.mugs.Where(m=>!m.item.Equals(kitchen.cup)).All(m=>m.level==0),"Every mug has its coffee disc, shown only while there is coffee in it, and only your cup carries a saved pour");
             Check(kitchen.mugs.All(m=>m.transform.IsChildOf(kitchenRoot)),"Every mug belongs to the kitchen");
             Check(kitchen.mugs.Count(m=>m.orange)==1&&kitchen.orangeMug&&kitchen.orangeMug==kitchen.mugs.Single(m=>m.orange)&&kitchen.orangeMug.item.label=="Orange mug","One mug is the orange one");
@@ -214,6 +225,7 @@ namespace AfterHours.Editor
             var kitchenEffects=breakSystems.Concat(new[]{kitchen.steam}).ToArray();
             Check(kitchenEffects.All(x=>{var r=x.GetComponent<ParticleSystemRenderer>();return r.sharedMaterial.name=="28 Confetti paper"&&r.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.Off&&!r.receiveShadows;})&&kitchenEffects.Sum(x=>x.main.maxParticles)<=300&&kitchen.shatterSound&&kitchen.shatterSound.name=="SFX - Shatter"&&kitchen.cabinetSound&&kitchen.cabinetSound.name=="SFX - Cabinet"&&kitchen.steamSound&&kitchen.steamSound.name=="SFX - Steam","The kitchen's effects share the flat paper material, cast no shadows, never hold more than 300 bits ("+kitchenEffects.Sum(x=>x.main.maxParticles)+") and have their three sounds");
             Check(D.rooms[RageRoom.Room].accepted==1&&D.rage.parts[3].Broken&&D.rage.parts.Take(3).All(x=>x.damage==0)&&!D.rage.parts[3].visual.gameObject.activeSelf,"A broken mouse restores exactly once, still in pieces");
+            Check(D.rage.BrokenEver==1&&!D.rage.tools[0].gameObject.activeSelf&&D.rage.toolLocks[0].activeSelf&&D.rage.lockCounts[0].text.StartsWith("2 MORE"),"The rage room's count of things broken restores, and the hammer still waits: 2 more to break");
             Check(D.ambush.namedMask==17&&D.ambush.named==2&&D.rooms[AmbushRoom.Room].accepted==2&&!D.darkOpening&&!D.gentleAmbush&&!D.rooms[AmbushRoom.Room].complete,"Two named feelings and the dark-opening choice restore exactly once");
             Check(D.lastRoom==4&&D.resumeLabel.text.Contains("ARCHIVE"),"Continue button names the last room");
             Aim(Button(ActionKind.Resume));Press(true);yield return .12f;Press(false);yield return .85f;
@@ -222,8 +234,11 @@ namespace AfterHours.Editor
             Check(D.ocean.strokes==4&&Mathf.Abs(D.ocean.horizon.localPosition.z+3.6f)<.01f,"First room activation preserves restored ocean position");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.ResetRoom))yield return t;
             Check(JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key)).strokes==0&&!D.menu.IsOpen,"Menu TRY AGAIN saves the reset and closes the menu");
+            foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.Music))yield return t;foreach(var t in MenuKey(false))yield return t;yield return Music.FadeSeconds;
+            Check(D.music.on&&D.music.source.clip==D.music.ClipFor(1)&&D.music.ClipFor(1)&&D.music.ClipFor(1).name=="Music - Slow tide"&&D.music.Level>Music.Volume*.9f&&PlayerPrefs.GetInt(Music.Key,0)==1,"MUSIC switches back on in a chapter, which plays its own piece (Slow tide on the ocean)");
             foreach(var t in MenuKey(true))yield return t;foreach(var t in Click(ActionKind.Rest))yield return t;yield return .8f;
             Check(D.currentRoom==0,"Menu LOBBY returns to the lobby");
+            Check(D.music.source.clip==D.music.theme,"Back in the lobby the theme plays again");
             // Thumb shortcuts. The editor has no hands, so the gestures are handed over directly.
             var thumbs=P.GetComponent<ThumbShortcuts>();
             Check(thumbs&&thumbs.player==P,"The player carries the thumb shortcuts");
