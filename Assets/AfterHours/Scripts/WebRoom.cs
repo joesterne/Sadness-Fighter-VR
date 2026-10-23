@@ -86,7 +86,7 @@ namespace AfterHours
         {
             if(!director||director.currentRoom!=Room)return;
             Give();
-            if(!beaten)foreach(var w in webs)if(w&&w.cut&&Time.time>=w.cutAt+regrowDelay)Regrow(w);
+            if(!beaten)foreach(var w in webs)if(w&&w.cut&&Time.time>=w.regrowAt)Regrow(w);
             foreach(var w in webs)if(w&&!w.cut&&w.grown<1){w.grown=Mathf.Min(1,w.grown+Time.deltaTime/GrowSeconds);Show(w);}
             Watch();
         }
@@ -118,7 +118,7 @@ namespace AfterHours
         {
             if(!web||web.cut||!director||director.currentRoom!=Room)return false;
             // A web that is still growing back is cut as easily as a whole one.
-            web.cut=true;web.cutAt=Time.time;web.grown=0;Show(web);cuts++;
+            web.cut=true;web.regrowAt=Time.time+regrowDelay;web.grown=0;Show(web);cuts++;
             Burst(point);director.PlayAt(cutSound,point,Mathf.Clamp(.55f+speed/8f,.55f,1f));
             if(director.player)director.player.PulseFor(machete,Mathf.Clamp(.3f+speed/7f,.3f,.9f));
             Count();director.SmallStep();
