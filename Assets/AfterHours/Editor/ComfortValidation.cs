@@ -126,7 +126,7 @@ namespace AfterHours.Editor
             var note=D.rooms[4].root.GetComponentsInChildren<Grabbable>().First();var tray=D.rooms[4].root.GetComponentsInChildren<DropZone>().First(x=>x.category==note.category);
             tray.RestoreItem(note);D.AcceptItem(4,note.label);D.shredder.ShredNow(D.shredder.pages[0]);D.SaveCheckpoint();
             var saved=JsonUtility.FromJson<CheckpointStore.State>(PlayerPrefs.GetString(CheckpointStore.Key));
-            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2&&saved.ambush==17&&!saved.darkOpening&&!saved.gentleAmbush,"Checkpoint stores partial progress in all seven chapters");
+            Check(saved.strokes==4&&saved.processed.Length==3&&saved.fills==1&&saved.helped&&saved.rage!=null&&saved.rage.Length==D.rage.parts.Length+D.rage.extras.Length&&saved.rage.Sum()==2&&saved.rage[3]==2&&saved.ambush==17&&!saved.darkOpening&&!saved.gentleAmbush,"Checkpoint stores partial progress in the chapters that keep it");
             // Autosave: a snapshot as a room is left, another on arriving in the next, and a quiet one now and then; nothing is rewritten when nothing changed.
             string settled=PlayerPrefs.GetString(CheckpointStore.Key);
             backupFile=Path.Combine(Path.GetTempPath(),"AfterHours-save-test-"+Guid.NewGuid().ToString("N")+".json");SaveBackup.PathOverride=backupFile;SaveBackup.Delete();
@@ -206,7 +206,7 @@ namespace AfterHours.Editor
             Check(kitchen.doors.Length==6&&kitchen.doors.Select((x,i)=>x&&x.GetComponentInChildren<Interactable>().kind==ActionKind.Cabinet&&x.GetComponentInChildren<Interactable>().value==i&&x.GetComponent<Rigidbody>().isKinematic&&Mathf.Sign(x.openAngle)==(i<3?1:-1)&&Mathf.Abs(x.openAngle)>=90&&!x.open).All(b=>b),"Six cupboard doors hang on their outer edges, shut, each opened by pointing at it");
             Check(KitchenRoom.OrangeCabinet==4&&kitchen.InCabinet(kitchen.orangeMug)&&!kitchen.mugs.Where(m=>!m.orange).Any(m=>kitchen.InCabinet(m)),"The orange mug waits inside the fifth cupboard, and nothing else is hidden there");
             var orangePin=Outfits.Get("orange-pin");
-            Check(orangePin.id=="orange-pin"&&orangePin.slot==OutfitSlot.Pin&&!orangePin.starter&&!string.IsNullOrEmpty(orangePin.hint)&&Outfits.Earnable==12,"The orange mug pin is one of twelve pieces to earn, and its hint is a gentle one");
+            Check(orangePin.id=="orange-pin"&&orangePin.slot==OutfitSlot.Pin&&!orangePin.starter&&!string.IsNullOrEmpty(orangePin.hint)&&Outfits.Earnable==13,"The orange mug pin is one of thirteen pieces to earn, and its hint is a gentle one");
             var steamMain=kitchen.steam?kitchen.steam.main:default;
             Check(kitchen.lever&&kitchen.lever.IsChildOf(kitchenRoot)&&kitchen.lever.GetComponentInChildren<Interactable>().kind==ActionKind.Brew&&kitchen.steam&&!steamMain.playOnAwake&&steamMain.loop&&kitchen.steam.emission.rateOverTime.constant==0&&kitchenRoot.GetComponentsInChildren<Interactable>(true).Count(x=>x.kind==ActionKind.Steam)==2&&kitchenRoot.GetComponentsInChildren<Interactable>(true).Count(x=>x.kind==ActionKind.Brew)==2,"The machine has a lever that brews, a steam wand and valve that blow steam, and the BREW button besides");
             var breakSystems=new[]{kitchen.shardsCounter,kitchen.shardsFloor,kitchen.dust};

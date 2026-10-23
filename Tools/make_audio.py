@@ -735,6 +735,69 @@ def sfx_stand():
     return fade_edges(normalise(reverb(x, 1.6, 0.3), -8))
 
 
+# ---------- the NDA web: a dusty records room, a machete, webs cut and growing back, a spider, and fire ----------
+def amb_recordsroom(seconds=30, fade=4):
+    # A records store long after hours: deep, close room tone, a draught under the door, and now and then a dry creak or a soft skitter somewhere in the dark.
+    n = int((seconds + fade) * SR)
+    room = lowpass(brown(n), 140, 2) * 0.6
+    draught = bandpass(pink(n), 250, 1400, 2) * 0.09 * (0.5 + 0.5 * smooth_noise(n, 0.07))
+    x = room + draught
+    for _ in range(9):
+        m = int(rng.uniform(0.25, 0.6) * SR); i = int(rng.uniform(0, seconds) * SR); tt = np.arange(m) / SR
+        pitch = rng.uniform(140, 260) + 60 * np.sin(2 * np.pi * rng.uniform(2, 5) * tt)
+        creak = bandpass(signal.sawtooth(2 * np.pi * np.cumsum(pitch) / SR), 400, 2000, 2) * env_adsr(m, 0.05, 0.2, 2) * 0.05
+        x[i:i + m] += creak[:max(0, n - i)]
+    for _ in range(5):
+        i = int(rng.uniform(0, seconds) * SR); k = clicks(0.5, 14, 2500, 8000, 0.8) * 0.06
+        x[i:i + len(k)] += k[:max(0, n - i)]
+    return normalise(make_loop(x, fade), -12, rms_db=-34)
+
+def sfx_slash():
+    # A machete through the air: a quick, thin whistle that rises and falls, sharper than the bat's swing.
+    n = int(0.26 * SR)
+    x = sweep_noise(0.26, 900, 4200, 1200, 0.5) * np.sin(np.linspace(0, np.pi, n)) ** 3
+    return fade_edges(normalise(x, -9))
+
+def sfx_web_cut():
+    # A web cut through: a soft sticky snap, a few threads twanging loose, and a papery hiss as it falls away.
+    n = int(0.7 * SR)
+    snap = bandpass(white(n), 1800, 7000, 2) * decay(n, 0.015) * 0.8
+    twang = np.zeros(n)
+    for _ in range(4):
+        f = rng.uniform(900, 2400); m = int(0.25 * SR); i = int(rng.uniform(0.0, 0.12) * SR); tt = np.arange(m) / SR
+        tw = np.sin(2 * np.pi * f * tt * (1 - 0.3 * tt)) * decay(m, 0.05) * rng.uniform(0.1, 0.25)
+        twang[i:i + m] += tw[:n - i]
+    fall = highpass(white(n), 2500, 1) * env_adsr(n, 0.03, 0.4, 2) * 0.12
+    x = snap + twang + fall
+    return fade_edges(normalise(reverb(x, 0.4, 0.12), -6))
+
+def sfx_web_grow():
+    # A web growing back: a faint run of tiny ticks, like many small feet, and a thin thread drawn tight.
+    n = int(1.6 * SR); tt = np.arange(n) / SR
+    feet = clicks(1.6, 40, 3000, 9000, 0.9) * env_adsr(n, 0.2, 0.6, 2) * 0.5
+    thread = np.sin(2 * np.pi * np.cumsum(1400 + 900 * tt) / SR) * env_adsr(n, 0.4, 0.5, 2) * 0.05
+    x = feet + thread
+    return fade_edges(normalise(reverb(x, 0.5, 0.15), -14))
+
+def sfx_fire():
+    # Kill it with fire: a deep whoomph as it catches, a roaring rush of flame, crackling, and a long fall away.
+    n = int(3.2 * SR)
+    whoomph = thump(n, 48, 0.45) * 1.0 + lowpass(white(n), 400, 2) * decay(n, 0.25) * 0.8
+    roar = bandpass(brown(n), 80, 900, 2) * env_adsr(n, 0.08, 2.2, 2) * (0.7 + 0.3 * smooth_noise(n, 6)) * 0.9
+    rush = bandpass(white(n), 800, 5000, 2) * env_adsr(n, 0.05, 1.6, 3) * 0.35
+    crackle = clicks(3.2, 120, 1500, 9000, 0.85) * np.exp(-np.arange(n) / (1.4 * SR)) * 0.6
+    x = whoomph + roar + rush + crackle
+    return fade_edges(normalise(reverb(x, 1.0, 0.18), -4))
+
+def sfx_hiss():
+    # The spider's last hiss: a dry, breathy rasp that rises, then sputters out.
+    n = int(1.2 * SR)
+    hiss = bandpass(white(n), 2200, 9000, 2) * env_adsr(n, 0.15, 0.7, 2) * (0.6 + 0.4 * smooth_noise(n, 25))
+    sputter = clicks(1.2, 20, 1200, 5000, 0.9) * np.linspace(0, 1, n) * 0.3
+    x = hiss + sputter
+    return fade_edges(normalise(reverb(x, 0.3, 0.1), -8))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -757,6 +820,7 @@ def main(folder):
         'SFX - Blast': sfx_blast,
         'SFX - Shatter': sfx_shatter, 'SFX - Cabinet': sfx_cabinet, 'SFX - Steam': sfx_steam,
         'Ambience - Boardroom': amb_boardroom, 'SFX - Lights': sfx_lights, 'SFX - Squeak': sfx_squeak, 'SFX - Balloon': sfx_balloon, 'SFX - Tear': sfx_tear, 'SFX - Stand': sfx_stand,
+        'Ambience - Records room': amb_recordsroom, 'SFX - Slash': sfx_slash, 'SFX - Web cut': sfx_web_cut, 'SFX - Web grow': sfx_web_grow, 'SFX - Fire': sfx_fire, 'SFX - Hiss': sfx_hiss,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

@@ -25,6 +25,8 @@ namespace AfterHours
         public static Material ConfettiPaper;
         // The infinite archive's far stacks: unlit, coloured per vertex, so the shade of each face is drawn into the mesh.
         public static Material ArchiveStacks;
+        // The NDA web: see-through silk, the spider and its red eyes, and the flames of the hat and the fire.
+        public static Material Silk, SpiderBody, SpiderEye, Flame, FlameCore;
         public static TMP_FontAsset Font;
         // Outlined lettering. Light text gets a deep-blue outline and dark text an ivory one, so a sign stays readable over whatever is behind it.
         public static Material TextHalo, TextHaloDark;

@@ -251,7 +251,14 @@ namespace AfterHours
             // A held trigger or pinch must be released after travel or tracking recovery before it can act again.
             if(inputBlocked[index])
             {wasSelect[index]=select;wasGrip[index]=grab;if(!select&&!grab)inputBlocked[index]=false;return;}
-            if(!held[index] && grab&&!wasGrip[index])
+            // A tool in the other hand changes hands when this one closes on it.
+            if(!held[index]&&grab&&!wasGrip[index]&&!desktop&&held[1-index]&&held[1-index].tool&&Near(held[1-index],grip.position)<.23f)
+            {
+                var tool=held[1-index];held[1-index]=null;aimedTarget[1-index]=null;tool.held=false;
+                if(tool.Take(grip,direction*.07f,false,ToolRotation(false,direction))){held[index]=tool;ShowHint(HoldHint(tool),4);Pulse(controller);}
+                else{tool.held=true;held[1-index]=tool;}
+            }
+            else if(!held[index] && grab&&!wasGrip[index])
             {
                 Grabbable nearby=null;float closest=.23f;
                 foreach(var col in Physics.OverlapSphere(grip.position,.23f,~0,QueryTriggerInteraction.Ignore))
@@ -313,6 +320,7 @@ namespace AfterHours
         string HoldHint(Grabbable item)
         {
             if(item.paddle)return "The oar turns at its lock. Push the handle forward to drive the blade back through the water, then draw it toward you. Or press ROW.";
+            if(item.tool&&item.GetComponent<Machete>())return "The machete stays in your hand. Swing it through the webs: short chops count. "+Wording.Pick("Reach over and pinch it with your other hand to swap hands.","Reach over and squeeze it with your other controller to swap hands.");
             if(item.tool)return "The bat stays in your hand. Swing at the old computer: short swings count. Point at the rack and "+Wording.PutBack+" to put it back.";
             string toss=item.throwable&&CanThrow?" Or throw it.":item.tossable&&item.GetComponent<Mug>()&&CanThrow?" Or throw it: a mug will break.":"";
             foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt+toss;
@@ -380,6 +388,28 @@ namespace AfterHours
         {
             var bounds=new Bounds(item.transform.position,Vector3.zero);foreach(var c in item.GetComponentsInChildren<Collider>())bounds.Encapsulate(c.bounds);
             var e=bounds.extents;return Mathf.Abs(direction.x)*e.x+Mathf.Abs(direction.y)*e.y+Mathf.Abs(direction.z)*e.z;
+        }
+        // How far a point is from the nearest surface of an object.
+        static float Near(Grabbable item,Vector3 point){float best=float.MaxValue;foreach(var c in item.GetComponentsInChildren<Collider>())if(!c.isTrigger)best=Mathf.Min(best,Vector3.Distance(point,c.ClosestPoint(point)));return best;}
+        // The grip of a hand or controller that is tracked right now, or null.
+        Transform GripOf(int index)
+        {
+            OVRHand hand=index==0?leftHand:rightHand;var controller=index==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch;
+            if(hand&&hand.IsTracked&&hand.HandConfidence==OVRHand.TrackingConfidence.High)return hand.transform;
+            if(OVRInput.IsControllerConnected(controller)&&OVRInput.GetControllerPositionTracked(controller))return index==0?rig.leftControllerAnchor:rig.rightControllerAnchor;
+            return null;
+        }
+        // Puts a tool straight into a hand, in its fixed grip: the right hand if it is tracked, else the left. On desktop it is held low and to the right
+        // of the view. False when no hand is tracked yet, or that hand is already holding something.
+        public bool Give(Grabbable tool)
+        {
+            if(!tool||!tool.tool||tool.held||IsHolding(tool))return false;
+            bool desktop=!IsXR;int index=1;Transform grip=desktop?desktopToolGrip:GripOf(1);
+            if(!desktop&&(!grip||held[1])){index=0;grip=GripOf(0);}
+            if(!grip||held[index])return false;
+            var direction=desktop?Head.forward:grip.forward;
+            if(!tool.Take(grip,desktop?Vector3.zero:direction*.07f,false,ToolRotation(desktop,direction)))return false;
+            held[index]=tool;return true;
         }
         // Puts a held object down (a tool goes back to its rack).
         public void Drop(Grabbable item){for(int i=0;i<2;i++)if(item&&held[i]==item){item.Release();held[i]=null;aimedTarget[i]=null;}}

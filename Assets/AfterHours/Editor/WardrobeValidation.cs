@@ -178,7 +178,7 @@ namespace AfterHours.Editor
             Check(D.rooms[1].complete&&W.Has("jumper"),"Reaching the shore earns the harbour jumper");
             foreach(int room in new[]{2,3,4})D.CompleteRoom(room);
             Check(W.Has("cap")&&W.Has("cardigan")&&W.Has("true-pin"),"Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin");
-            Check(!W.Has("jacket"),"The jacket waits for all seven chapters");
+            Check(!W.Has("jacket"),"The jacket waits for all eight chapters");
             D.Travel(Shredder.Room);yield return 1f;
             foreach(var page in D.shredder.pages)D.shredder.ShredNow(page);
             Check(D.shredder.Offering&&!W.Has("lanyard"),"The lanyard waits for a true line");
@@ -193,7 +193,13 @@ namespace AfterHours.Editor
             for(int i=0;i<AmbushRoom.Feelings;i++)D.ambush.Feel(i);
             Check(D.ambush.named==6&&!W.Has("standup-pin")&&!W.Has("jacket"),"Naming all six feelings is not yet standing up: the stood-up pin and the jacket wait");
             D.ambush.StandUp();
-            Check(W.Has("standup-pin")&&W.Has("jacket"),"Standing up earns the stood-up pin, and finishing all seven chapters the sunrise jacket");
+            Check(W.Has("standup-pin")&&!W.Has("jacket"),"Standing up earns the stood-up pin; the jacket still waits for the NDA web");
+            D.Travel(WebRoom.Room);yield return 1.2f;
+            Check(!W.Has("flame-hat"),"The hat of flames waits for the unlabelled button");
+            D.web.Burn();yield return WebRoom.BurnSeconds+.3f;
+            Check(W.Has("flame-hat")&&D.web.burned&&!W.Has("jacket"),"Burning the spider earns the hat of flames, but does not finish the chapter");
+            foreach(var web in D.web.webs)D.web.Cut(web,3,web.transform.position);
+            Check(D.rooms[WebRoom.Room].complete&&W.Has("jacket"),"Clearing every web finishes all eight chapters: the sunrise jacket");
             D.Travel(5);yield return 10f;
             Check(!W.Has("beanie"),"Ten seconds on the rooftop is not yet a rest");
             yield return 12f;

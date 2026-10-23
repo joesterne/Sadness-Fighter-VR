@@ -57,7 +57,7 @@ namespace AfterHours.Editor
             // Reopen from disk so the editor shows exactly what ships. Meshes rewritten in place during the build can otherwise draw stale data in the editor.
             EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);var saved=Object.FindAnyObjectByType<GameDirector>();if(saved)Selection.activeGameObject=saved.gameObject;
             if(SceneView.lastActiveSceneView)SceneView.lastActiveSceneView.LookAt(new Vector3(0,1.8f,3),Quaternion.Euler(12,0,0),13);
-            Debug.Log("After Hours: scene authored, nine rooms (the lobby, seven chapters and the rooftop), hands/controllers, Quest build settings ready.");
+            Debug.Log("After Hours: scene authored, ten rooms (the lobby, eight chapters and the rooftop), hands/controllers, Quest build settings ready.");
         }
         static Material Mat(string name,Color color,float metallic=0,float smoothness=.15f,Texture texture=null)
         {
@@ -148,6 +148,9 @@ namespace AfterHours.Editor
             Art.SkylineWindowGlass=Mat("32c Skyline window glass",Hex("#7FA2E4"),0,.5f);Art.SkylineWood=Mat("32d Skyline wood",Hex("#C9814E"),0,.1f);
             Art.CloudWhite=Mat("33 Cloud white",Hex("#FFF5EC"),0,.05f);Art.CloudWhite.EnableKeyword("_EMISSION");Art.CloudWhite.SetColor("_EmissionColor",Hex("#FFD9D2")*.28f);
             Art.CloudPink=Mat("33a Cloud pink",Hex("#FFD3D9"),0,.05f);Art.CloudPink.EnableKeyword("_EMISSION");Art.CloudPink.SetColor("_EmissionColor",Hex("#FFB5C0")*.24f);
+            // The NDA web: pale silk that lets the room show through, a dark spider with eyes that glow red in any light, and fire.
+            Art.Silk=Fade("34 Cobweb silk",Hex("#DCE4E8"),.62f);Art.SpiderBody=Mat("35 Spider",Hex("#1E1A24"),0,.35f);
+            Art.SpiderEye=Unlit("36 Spider eyes",Hex("#FF2414"));Art.Flame=Unlit("37 Flame",Hex("#FF7A1A"));Art.FlameCore=Unlit("37a Flame core",Hex("#FFD45C"));
             Art.Font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
             if(!Art.Font)Art.Font=TMP_Settings.defaultFontAsset;
             // Lettering with an outline: light text gets a deep-blue one, dark text an ivory one, so a sign stays readable over whatever is behind it.
@@ -329,6 +332,8 @@ namespace AfterHours.Editor
             foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;
             // The ambush: clowns, cards, chair, lamps and the like change while playing.
             if(d.ambush&&d.ambush.changing&&t.IsChildOf(d.ambush.changing))return true;
+            // The NDA web: the webs, the machete, the spider and its fire.
+            if(d.web&&d.web.changing&&t.IsChildOf(d.web.changing))return true;
             // The rooftop's drifting clouds and balloon.
             if(d.rooftop&&d.rooftop.moving&&t.IsChildOf(d.rooftop.moving))return true;
             // The archive's drifting pages, and its far stacks, which are already a few large meshes of their own and stay out of the batches near the signs.
