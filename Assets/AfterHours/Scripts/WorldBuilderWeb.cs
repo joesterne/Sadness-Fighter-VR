@@ -9,7 +9,7 @@ namespace AfterHours
     {
         // The ring of webs: nine columns from 120 degrees left of straight ahead to 120 degrees right, each a web low and a web high, at this distance from the seat.
         // The gap behind the seat is closed by a curtain of silk that cannot be cut. Every web is within a short chop of a seated hand.
-        const int WebColumns=9;const float WebRadius=.72f,WebLow=.95f,WebHigh=1.62f,WebSize=.66f;
+        const int WebColumns=9;const float WebRadius=.72f,WebLow=.95f,WebHigh=1.62f,WebSize=.66f,CutWidth=.52f;
         // One web as a single see-through mesh with its hub at the origin, facing -z: spokes out to an uneven rim, and a spiral of threads between them.
         static Mesh WebMesh(string name,float size,int seed,bool ragged)
         {
@@ -140,7 +140,9 @@ namespace AfterHours
                     var at=seat+way*WebRadius;at.y=tier==0?WebLow:WebHigh;
                     var g=Art.Group("Web "+(index+1),at,changing);g.localRotation=Quaternion.LookRotation(way,Vector3.up);
                     var web=g.gameObject.AddComponent<Cobweb>();web.room=room;web.index=index;
-                    var volume=g.gameObject.AddComponent<BoxCollider>();volume.isTrigger=true;volume.size=new Vector3(WebSize,WebSize,.3f);web.volume=volume;
+                    // The cut zone is narrower and thinner than the silk: neighbouring silks overlap at their edges, and a full-size zone
+                    // let one chop through the middle of a column cut the columns either side of it too.
+                    var volume=g.gameObject.AddComponent<BoxCollider>();volume.isTrigger=true;volume.size=new Vector3(CutWidth,WebSize,.2f);web.volume=volume;
                     var silk=Silk("Web silk",WebMesh("NDA web "+(index+1),WebSize,index*7+3,false),g);web.silk=silk.transform;
                     // The clause is written on the low web, below every line of sight to the room's heading.
                     if(tier==0)Art.Text("Web clause",WebRoom.Clauses[col],new Vector3(0,-.04f,-.01f),.045f,ivory,WebSize*.8f,silk.transform,false);
