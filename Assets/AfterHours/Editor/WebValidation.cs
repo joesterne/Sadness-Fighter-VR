@@ -64,7 +64,7 @@ namespace AfterHours.Editor
             var fire=Find(ActionKind.KillItWithFire);
             Check(fire&&fire.transform.parent.GetComponentsInChildren<TMP_Text>(true).Length==0&&string.IsNullOrEmpty(fire.prompt),"The button on the wall has no label at all");
             var hat=Outfits.Get("flame-hat");
-            Check(hat.id=="flame-hat"&&hat.slot==OutfitSlot.Head&&Outfits.Earned(hat)&&!hat.IsAddOn&&!string.IsNullOrEmpty(hat.hint)&&Outfits.Earnable==13,"The hat of flames is a hat to earn, never to buy: one of thirteen pieces");
+            Check(hat.id=="flame-hat"&&hat.slot==OutfitSlot.Head&&Outfits.Earned(hat)&&!hat.IsAddOn&&!string.IsNullOrEmpty(hat.hint)&&Outfits.Earnable==14,"The hat of flames is a hat to earn, never to buy: one of fourteen pieces");
             Check(D.wardrobe.avatar.looks.Any(l=>l.id=="flame-hat"&&l.group.GetComponentsInChildren<Flicker>(true).Length>=9),"The reflection can wear the hat of flames, its flames flickering");
 
             // ---- Arriving

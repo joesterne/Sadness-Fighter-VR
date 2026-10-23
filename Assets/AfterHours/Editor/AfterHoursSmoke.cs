@@ -359,8 +359,22 @@ namespace AfterHours.Editor
             yield return Click(Button(ActionKind.StandUp));yield return Delay(.5f);
             Check(amb.standing&&d.rooms[AmbushRoom.Room].complete&&amb.exitDoor.activeSelf,"STAND UP completes the chapter and opens the way out");
             yield return Delay(3.2f);Aim(d.rooms[AmbushRoom.Room].root.transform.TransformPoint(new Vector3(0,1.5f,4)));yield return Delay(.2f);Capture("Ambush-Standing");
-            Check(d.CompletedCount==7,"All seven chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==478,"Completion saved as all seven chapter flags");
-            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","standup-pin","jacket","step-pin","scarf","orange-pin",RageRoom.PaperJamPin}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin and the kind scarf");
+            Check(d.CompletedCount==7&&!d.wardrobe.Has("jacket"),"Seven chapters complete before the NDA web, and the sunrise jacket waits for the eighth");
+            yield return Visit(WebRoom.Room);Capture("NDA web");
+            var web=d.web;var webRoot=d.rooms[WebRoom.Room].root.transform;
+            Check(web.machete.held&&d.player.IsHolding(web.machete)&&web.Standing==18,"The NDA web opens with eighteen webs round the seat and the machete already in hand");
+            Aim(web.spider.position+Vector3.up*.7f);yield return Delay(.2f);Capture("NDA web-Spider");
+            foreach(var w in WebTesting.Chop(4))yield return Wait(w);
+            Check(web.Cleared==2&&!d.rooms[WebRoom.Room].complete,"A chop through the webs straight ahead cuts both of them");
+            foreach(var w in WebTesting.ClearAll())yield return Wait(w);
+            Check(web.beaten&&web.Cleared==18&&d.rooms[WebRoom.Room].complete,"Chopping through every web before any grows back completes the chapter");
+            Aim(webRoot.TransformPoint(new Vector3(0,1.4f,4)));yield return Delay(.2f);Capture("NDA web-Cleared");
+            yield return Click(d.rooms[WebRoom.Room].root.GetComponentsInChildren<Interactable>().First(x=>x.kind==ActionKind.KillItWithFire));
+            Aim(web.spider.position+Vector3.up*.5f);yield return Delay(.3f);Capture("NDA web-Fire");
+            yield return Delay(WebRoom.BurnSeconds+.3f);
+            Check(web.burned&&web.ash.activeSelf&&d.wardrobe.Has("flame-hat"),"The unlabelled button burns the spider away and earns the hat of flames");
+            Check(d.CompletedCount==8,"All eight chapters complete");Check(PlayerPrefs.GetInt("AfterHours.Progress.v1")==990,"Completion saved as all eight chapter flags");
+            Check(new[]{"jumper","cap","cardigan","true-pin","lanyard","letitout-pin","standup-pin","jacket","step-pin","scarf","orange-pin",RageRoom.PaperJamPin,"flame-hat"}.All(d.wardrobe.Has),"Playing through earns every chapter piece, the sunrise jacket, the small step pin, the kind scarf, the Paper Jam pin and the hat of flames");
             yield return Visit(5);Check(d.ending.text.Contains("more"),"Completed journey changes rooftop ending");Capture("Rooftop");
             // The rooftop is a sunrise: its own gradient sky, golden light from low in front of the player, a warm haze and a lit-up ambient, all put back on leaving.
             var rooftop=d.rooftop;

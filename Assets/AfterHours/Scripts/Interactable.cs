@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace AfterHours
 {
-    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam, AmbushFeeling, AmbushReply, AmbushBalloon, AmbushNose, StandUp, GentleAmbush, DarkOpening, WardrobeBuy, Music }
+    public enum ActionKind { Travel, Brew, Help, Rest, SmoothMotion, GentleAudience, Row, ResetRoom, SeatedMode, SeatedHeight, Resume, TurnLeft, TurnRight, TurnAround, FaceForward, Vignette, CloseMenu, IntroNext, IntroSkip, GoToMirror, WardrobePrev, WardrobeNext, ChooseLine, PutBatBack, NewComputer, CleanMode, NightOcean, MirrorTap, Cabinet, Steam, AmbushFeeling, AmbushReply, AmbushBalloon, AmbushNose, StandUp, GentleAmbush, DarkOpening, WardrobeBuy, Music, KillItWithFire }
     public class Interactable : MonoBehaviour
     {
         public ActionKind kind;

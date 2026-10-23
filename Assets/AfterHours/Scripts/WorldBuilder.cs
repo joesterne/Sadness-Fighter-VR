@@ -21,6 +21,7 @@ namespace AfterHours
             NewRoom(6,"The old résumé",new Vector3(480,0,0),new Vector3(0,.04f,-1.4f));Shredding();
             NewRoom(7,"The rage room",new Vector3(560,0,0),new Vector3(0,.04f,-1.25f));Rage();
             NewRoom(8,"The ambush",new Vector3(640,0,0),new Vector3(0,.04f,-1.9f));Ambush();
+            NewRoom(9,"The NDA web",new Vector3(720,0,0),new Vector3(0,.04f,-1));Web();
             Menu();BackgroundMusic();
             FitPlates();
             // Signs that only guide or reassure can be switched off together (clean mode). Labels on buttons, doors and objects stay.
