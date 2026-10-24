@@ -1,4 +1,4 @@
-2026-10-23 18:58:37Z
+2026-10-24 17:51:10Z
 Passed
 The rowing oars, the lighthouse light, night in the ocean only, the sea sounds, the menu button that clears everything, and clean mode.
 PASS: The ocean room has oars, a lighthouse light, moving water and sea sounds
@@ -30,15 +30,22 @@ PASS: The sea is 32 by 44 flat facets, and its bounds hold every wave
 PASS: The water casts no shadows, which saves the headset a pass
 PASS: The main swell repeats every 8 seconds, to match the waves in the sound
 PASS: A crest passes the boat 3.3 seconds into each wave, as the sound crests
-PASS: All the swells together are only 0.46 m from trough to crest
+PASS: The swells together run up to 0.98 m from trough to crest: a lively sea, never a wild one
+PASS: No water ever shows on the deck (highest inside the hull -0.02 m; the deck is at 0.25 m)
+PASS: The swells rise and fall against the side of the boat (-0.47 to -0.03 m)
+PASS: Foam rides on the water: 340 whitecaps and 56 flecks of wash round the hull, in one mesh
+PASS: The foam casts no shadows
+PASS: Spray is ready at the bow, and stays with the boat
 PASS: The water is rebuilt as the game runs (260 times in ten seconds)
-PASS: The sea at the boat rises and falls (0.35 m in ten seconds)
-PASS: No wave climbs above the deck or sinks out of sight (highest 0.12 m, lowest -0.52 m)
+PASS: The sea beside the boat rises and falls (0.59 m in ten seconds)
+PASS: Crests stand well up out of the sea, and no trough sinks out of sight (highest 0.37 m, lowest -0.73 m)
+PASS: Foam opens and closes with the swells (67 to 108 flecks showing)
+PASS: A crest breaks on the bow in spray as the waves pass (1 times in ten seconds)
 PASS: The sea's beat keeps time with the game (18.1 s into the wave loop)
 INFO: the wave sound was not playing in this run, so its position was not compared
 PASS: The water's beat follows the wave sound
-INFO: one rebuild of the water takes 0.37 ms in the editor (it is done 30 times a second)
-PASS: Rebuilding the water is cheap (0.37 ms)
+INFO: one rebuild of the water takes 0.54 ms in the editor (it is done 30 times a second)
+PASS: Rebuilding the water is cheap (0.54 ms)
 PASS: The surf comes from the shore itself, which moves with the horizon
 PASS: Rowing brings the surf nearer (17 m, then 11 m)
 PASS: The lighthouse has a light with two beams

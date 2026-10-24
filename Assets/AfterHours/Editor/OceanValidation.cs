@@ -112,23 +112,43 @@ namespace AfterHours.Editor
             Check(ocean.water.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.Off,"The water casts no shadows, which saves the headset a pass");
             Check(Mathf.Abs(OceanWaves.MainSwell(0,0,1.7f)-OceanWaves.MainSwell(0,0,1.7f+OceanWaves.Period))<.001f&&Mathf.Abs(OceanWaves.MainSwell(0,0,OceanWaves.Crest)-OceanWaves.MainSwell(0,0,OceanWaves.Crest+OceanWaves.Period*3))<.001f,"The main swell repeats every "+OceanWaves.Period+" seconds, to match the waves in the sound");
             Check(OceanWaves.MainSwell(0,0,OceanWaves.Crest)>OceanWaves.MainSwell(0,0,OceanWaves.Crest-.7f)&&OceanWaves.MainSwell(0,0,OceanWaves.Crest)>OceanWaves.MainSwell(0,0,OceanWaves.Crest+.7f),"A crest passes the boat "+OceanWaves.Crest+" seconds into each wave, as the sound crests");
-            Check(OceanWaves.MostSwell<.26f,"All the swells together are only "+(OceanWaves.MostSwell*2).ToString("0.00")+" m from trough to crest");
-            // Watch the sea for ten seconds: it moves where the boat is, stays below the deck, and stays in time with the sound.
-            Vector3 SeaAtBoat(out float y)
+            Check(OceanWaves.MostSwell>.4f&&OceanWaves.MostSwell<.55f,"The swells together run up to "+(OceanWaves.MostSwell*2).ToString("0.00")+" m from trough to crest: a lively sea, never a wild one");
+            // However high the swells run and wherever the boat has rowed to, the water under the hull stays below the deck, and climbs the hull's sides.
             {
-                var at=waves.transform.InverseTransformPoint(origin);int ix=Mathf.RoundToInt((at.x-OceanWaves.OriginX)/OceanWaves.Cell),iz=Mathf.RoundToInt((at.z-OceanWaves.OriginZ)/OceanWaves.Cell);
-                var v=waves.live.vertices[(iz*OceanWaves.CellsX+ix)*6];y=v.y;return v;
+                float inside=-99,sideHigh=-99,sideLow=99;int keptStrokes=ocean.strokes;
+                for(int n=0;n<=ocean.requiredStrokes;n++)
+                {
+                    ocean.RestoreProgress(n);
+                    for(int k=0;k<16;k++)
+                    {
+                        waves.Apply(k*.53f);
+                        for(float x=-1.15f;x<=1.151f;x+=.1f)for(float z=-2.3f;z<=1.86f;z+=.1f)inside=Mathf.Max(inside,waves.WaterAt(x,z));
+                        for(float z=-2.3f;z<=1.86f;z+=.2f){float h=waves.WaterAt(OceanWaves.HullX+.1f,z);sideHigh=Mathf.Max(sideHigh,h);sideLow=Mathf.Min(sideLow,h);}
+                    }
+                }
+                ocean.RestoreProgress(keptStrokes);
+                Check(inside<.22f&&waves.underHull<=OceanWaves.HullLevel+.001f,"No water ever shows on the deck (highest inside the hull "+inside.ToString("0.00")+" m; the deck is at 0.25 m)");
+                Check(sideHigh-sideLow>.3f,"The swells rise and fall against the side of the boat ("+sideLow.ToString("0.00")+" to "+sideHigh.ToString("0.00")+" m)");
             }
-            float low=99,high=-99,tall=-99,deep=99,clockOff=0;int startUpdates=waves.updates;float startClock=sea.Clock;bool clockRan=true,sampled=false;
+            // The foam and the spray.
+            Check(waves.foam&&waves.liveFoam&&waves.foam.sharedMesh==waves.liveFoam&&waves.foam.transform.parent==waves.transform&&waves.liveFoam.vertexCount==OceanWaves.FoamCount*3,"Foam rides on the water: "+OceanWaves.Whitecaps+" whitecaps and "+OceanWaves.Wash+" flecks of wash round the hull, in one mesh");
+            var foamRenderer=waves.foam.GetComponent<MeshRenderer>();
+            Check(foamRenderer&&foamRenderer.sharedMaterial&&foamRenderer.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.Off,"The foam casts no shadows");
+            Check(waves.spray&&!waves.spray.main.playOnAwake&&!waves.spray.transform.IsChildOf(ocean.horizon)&&Mathf.Abs(waves.spray.transform.position.z-origin.z-OceanWaves.HullFront)<.5f,"Spray is ready at the bow, and stays with the boat");
+            // Watch the sea for ten seconds: it moves beside the boat, stays in time with the sound, foams on its crests and throws spray at the bow.
+            float low=99,high=-99,tall=-99,deep=99,clockOff=0;int startUpdates=waves.updates,startSprays=waves.sprays,foamLeast=int.MaxValue,foamMost=0;float startClock=sea.Clock;bool clockRan=true,sampled=false;
             for(int i=0;i<40;i++)
             {
-                yield return .25f;SeaAtBoat(out var y);low=Mathf.Min(low,y);high=Mathf.Max(high,y);tall=Mathf.Max(tall,waves.highest);deep=Mathf.Min(deep,waves.lowest);
+                yield return .25f;float y=waves.WaterAt(3,0);low=Mathf.Min(low,y);high=Mathf.Max(high,y);tall=Mathf.Max(tall,waves.highest);deep=Mathf.Min(deep,waves.lowest);
+                foamLeast=Mathf.Min(foamLeast,waves.foamShowing);foamMost=Mathf.Max(foamMost,waves.foamShowing);
                 clockRan&=sea.Clock>=0&&sea.Clock<SeaSounds.WaveLoop;
                 if(sea.swell.isPlaying){float gap=Mathf.Abs(Mathf.Repeat(sea.swell.time-sea.Clock+SeaSounds.WaveLoop*.5f,SeaSounds.WaveLoop)-SeaSounds.WaveLoop*.5f);clockOff=Mathf.Max(clockOff,gap);sampled=true;}
             }
             Check(waves.updates-startUpdates>=100,"The water is rebuilt as the game runs ("+(waves.updates-startUpdates)+" times in ten seconds)");
-            Check(high-low>.12f,"The sea at the boat rises and falls ("+(high-low).ToString("0.00")+" m in ten seconds)");
-            Check(tall<OceanWaves.Ceiling&&deep>-.75f,"No wave climbs above the deck or sinks out of sight (highest "+tall.ToString("0.00")+" m, lowest "+deep.ToString("0.00")+" m)");
+            Check(high-low>.25f,"The sea beside the boat rises and falls ("+(high-low).ToString("0.00")+" m in ten seconds)");
+            Check(tall>.12f&&tall<1f&&deep>-.95f,"Crests stand well up out of the sea, and no trough sinks out of sight (highest "+tall.ToString("0.00")+" m, lowest "+deep.ToString("0.00")+" m)");
+            Check(foamMost>OceanWaves.Wash/2&&foamMost<OceanWaves.FoamCount&&foamMost>foamLeast,"Foam opens and closes with the swells ("+foamLeast+" to "+foamMost+" flecks showing)");
+            Check(waves.sprays-startSprays>=1,"A crest breaks on the bow in spray as the waves pass ("+(waves.sprays-startSprays)+" times in ten seconds)");
             Check(clockRan&&Mathf.Abs(Mathf.Repeat(sea.Clock-startClock+SeaSounds.WaveLoop*.5f,SeaSounds.WaveLoop)-SeaSounds.WaveLoop*.5f-10)<3,"The sea's beat keeps time with the game ("+sea.Clock.ToString("0.0")+" s into the wave loop)");
             lines.Add(sampled?"INFO: the beat was never more than "+clockOff.ToString("0.00")+" s from the wave sound's own position in ten seconds":"INFO: the wave sound was not playing in this run, so its position was not compared");
             Check(!sampled||clockOff<2f,"The water's beat follows the wave sound");

@@ -1641,7 +1641,7 @@ namespace AfterHours
             Art.Text("Rowing instruction","Hold an oar. Push it forward, then draw it back.\nOr point at ROW and select.\nBlink steps keep the boat steady.",new Vector3(-2.577f,2.3f,3.411f),.105f,ivory,2.7f).transform.localRotation=rowTurn;
             // The sea itself: waves that roll in step with the moving water, a bed of open sea, lapping at the hull and wind, and surf from the
             // shore that grows as the boat nears it, with gulls by day and a bell buoy at night (see SeaSounds and OceanWaves).
-            var sea=ocean.gameObject.AddComponent<SeaSounds>();ocean.sea=sea;waves.sea=sea;
+            var sea=ocean.gameObject.AddComponent<SeaSounds>();ocean.sea=sea;waves.sea=sea;waves.spray=BowSpray();
             sea.swell=Sound("Ambience - Waves",.8f);sea.wash=Sound("Ambience - Ocean",.2f);sea.lapping=Sound("Ambience - Sea lapping",.3f);sea.wind=Sound("Ambience - Night sea",0f);
             // The surf is a real place: it is on the shore, and the shore is part of the moving horizon, so it gets louder and clearer as you row.
             var beach=Art.Group("Surf on the shore",new Vector3(0,.6f,17.5f),horizon);
@@ -1649,13 +1649,32 @@ namespace AfterHours
             surf.spatialBlend=1;surf.rolloffMode=AudioRolloffMode.Logarithmic;surf.minDistance=7;surf.maxDistance=90;surf.dopplerLevel=0;sea.surf=surf;
             sea.gulls=new[]{SoundBank.Get("SFX - Gull"),SoundBank.Get("SFX - Gull far")};sea.bell=SoundBank.Get("SFX - Buoy bell");sea.creak=SoundBank.Get("SFX - Oarlock");
         }
-        // The sea: a grid of flat facets that the swells move (OceanWaves). The picture saved in the scene shows it mid-swell.
+        // The sea: a grid of flat facets that the swells move, with foam on it (OceanWaves). The picture saved in the scene shows it mid-swell.
         static MeshRenderer WaterMesh(Transform parent,out OceanWaves waves)
         {
             var go=new GameObject("Low polygon ocean",typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(parent,false);
             go.GetComponent<MeshFilter>().sharedMesh=OceanWaves.CreateMesh(OceanWaves.PreviewTime);
             var water=go.GetComponent<MeshRenderer>();water.sharedMaterial=Art.Water;water.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
-            waves=go.AddComponent<OceanWaves>();return water;
+            waves=go.AddComponent<OceanWaves>();
+            // White foam rides on the water in the same space: whitecaps on the crests and wash around the hull.
+            var foam=new GameObject("Sea foam",typeof(MeshFilter),typeof(MeshRenderer));foam.transform.SetParent(go.transform,false);
+            var foamFilter=foam.GetComponent<MeshFilter>();foamFilter.sharedMesh=OceanWaves.CreateFoam(OceanWaves.PreviewTime);
+            var foamRenderer=foam.GetComponent<MeshRenderer>();foamRenderer.sharedMaterial=Art.Foam;foamRenderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            waves.foam=foamFilter;return water;
+        }
+        // Spray thrown up at the bow each time the main swell's crest breaks on it: a short burst of white chips that arc forward and fall back.
+        static ParticleSystem BowSpray()
+        {
+            var group=Art.Group("Bow spray",new Vector3(0,.2f,OceanWaves.HullFront+.2f));group.localRotation=Quaternion.Euler(-65,0,0);
+            var ps=group.gameObject.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main=ps.main;main.playOnAwake=false;main.loop=false;main.duration=.3f;main.startLifetime=new ParticleSystem.MinMaxCurve(.9f,1.3f);main.startSpeed=new ParticleSystem.MinMaxCurve(2.4f,4f);
+            main.gravityModifier=.6f;main.maxParticles=80;main.simulationSpace=ParticleSystemSimulationSpace.World;main.startSize=new ParticleSystem.MinMaxCurve(.03f,.09f);
+            var anyTurn=new ParticleSystem.MinMaxCurve(0,Mathf.PI*2);main.startRotation3D=true;main.startRotationX=anyTurn;main.startRotationY=anyTurn;main.startRotationZ=anyTurn;
+            var emission=ps.emission;emission.rateOverTime=0;emission.SetBursts(new[]{new ParticleSystem.Burst(0,(short)26,(short)34)});
+            var shape=ps.shape;shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=22;shape.radius=.7f;
+            var shrink=ps.sizeOverLifetime;shrink.enabled=true;shrink.size=new ParticleSystem.MinMaxCurve(1,AnimationCurve.Linear(0,1,1,.3f));
+            var renderer=ps.GetComponent<ParticleSystemRenderer>();renderer.renderMode=ParticleSystemRenderMode.Mesh;renderer.mesh=Geometry.Get(PrimitiveType.Cube);renderer.sharedMaterial=Art.Foam;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+            return ps;
         }
         static Grabbable Item(string label,string category,int room,Vector3 p,Vector3 scale,Material mat)
         {

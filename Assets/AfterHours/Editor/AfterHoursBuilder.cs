@@ -125,6 +125,8 @@ namespace AfterHours.Editor
             Art.Hairs=new[]{"#1F1B1B","#563823","#8B4126","#D2AC6B","#B9BDC2"}.Select((c,i)=>Mat("18 Hair "+Wardrobe.HairColours[i].ToLowerInvariant(),Hex(c),0,.28f)).ToArray();
             // The ocean at night. The lantern, the moon and the stars glow without any real-time light, which Quest does not need.
             Art.NightWater=Mat("20 Night water",Hex("#12293A"),0,.3f);
+            // Foam and spray on the sea: lit, so it is bright by day and a pale moonlit grey by night.
+            Art.Foam=Mat("38 Sea foam",Hex("#E8F1EE"),0,.25f);
             // Unlit, so they show at full brightness whatever the light around them.
             Art.Lantern=Unlit("21 Lantern glass",Hex("#FFCB6B"));Art.Moon=Unlit("22 Moon",Hex("#F3EFDA"));
             Art.BeamGlow=Glow("19 Lighthouse beam",Hex("#FFE7A8"),.2f);Art.BeamGlowNight=Glow("19b Lighthouse beam at night",Hex("#FFE7A8"),.6f);Art.Star=Glow("23 Starlight",Color.white,1f);
