@@ -1,4 +1,4 @@
-2026-10-22 22:38:21Z
+2026-10-24 18:13:17Z
 Passed
 The mirror, the avatar and the wardrobe: pointer input at the mirror, the real unlock events, and a scene reload.
 PASS: A new player owns only the starter pieces: two tops and no hat
@@ -43,16 +43,21 @@ PASS: The orange mug pin is announced, after the scarf
 PASS: The ocean's piece waits until the ocean is finished
 PASS: Reaching the shore earns the harbour jumper
 PASS: Heavy things, A small spill and the archive earn the cap, the cardigan and the still true pin
-PASS: The jacket waits for all seven chapters
+PASS: The jacket waits for all eight chapters
 PASS: The lanyard waits for a true line
 PASS: Choosing a line earns the lanyard; the jacket still waits for the rage room
+PASS: The Paper Jam pin waits for the copier
+PASS: Breaking the copier for good jams it: the Paper Jam easter egg earns its pin
 PASS: The let it out pin waits for the quiet after the last break
 PASS: The quiet after the whole computer earns the let it out pin; the jacket still waits for the ambush
 PASS: Naming all six feelings is not yet standing up: the stood-up pin and the jacket wait
-PASS: Standing up earns the stood-up pin, and finishing all seven chapters the sunrise jacket
+PASS: Standing up earns the stood-up pin; the jacket still waits for the NDA web
+PASS: The hat of flames waits for the unlabelled button
+PASS: Burning the spider earns the hat of flames, but does not finish the chapter
+PASS: Clearing every web finishes all eight chapters: the sunrise jacket
 PASS: Ten seconds on the rooftop is not yet a rest
 PASS: Resting on the rooftop earns the evening beanie: every piece found
-PASS: The desk's MIRROR sign counts the new pieces (12)
+PASS: The desk's MIRROR sign counts the new pieces (14)
 PASS: The mirror's nameplate shows the line you kept
 PASS: TOP > reaches the harbour jumper, and it is no longer new
 PASS: The jumper has long sleeves

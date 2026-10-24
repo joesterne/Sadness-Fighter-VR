@@ -1,0 +1,51 @@
+2026-10-24 18:17:45Z
+Passed
+The ring of webs and the machete in hand, cutting, the webs growing back, clearing them all, the spider and the unlabelled button that burns it, the hat of flames, coming back, TRY AGAIN.
+PASS: The game has ten rooms, and room 9 is The NDA web
+PASS: The NDA web is the eighth chapter, with eighteen webs to cut
+PASS: The lobby has an eighth door, and counts eight rooms
+PASS: Every web has a trigger to cut and silk to show, so pointers and teleports pass through it
+PASS: The silk is see-through
+PASS: The button on the wall has no label at all
+PASS: The hat of flames is a hat to earn, never to buy: one of fourteen pieces
+PASS: The reflection can wear the hat of flames, its flames flickering
+PASS: Walking in
+PASS: The machete is already in your hand
+PASS: All eighteen webs are whole
+PASS: The room says the machete is in your hand
+PASS: The webs circle the seat at arm's reach (0.72 to 0.72 m, 0.62 to 1.95 m up)
+PASS: They wrap round from well behind one shoulder to well behind the other (-120 to 120 degrees)
+PASS: The spider is the size of a person (1.45 m tall, 3.3 m across)
+PASS: It sits in the far corner, 6.5 m from the seat
+PASS: Eight eyes, glowing red
+PASS: Eight legs, and no ash yet
+PASS: Resting the machete against a web, or moving it very slowly, cuts nothing
+PASS: One chop straight ahead cuts both webs of that column
+PASS: The heading counts 2 / 18 cut away, and the chapter waits
+PASS: Silk flies from the cut
+PASS: Nothing else was cut on the way in or out of the chop
+PASS: After a while the cut webs start to grow back
+PASS: Each one that grows back makes the next wait longer (18 s now)
+PASS: The heading counts them back
+PASS: A web grows whole again in 2.5 s
+PASS: However slow the swings, the wait grows to 30 s, so the room always gives in
+PASS: Every web cut before any grew back (9.4 s)
+PASS: That finishes the chapter, saved as chapter 9's flag
+PASS: The heading and the lobby count it
+PASS: Once cleared, the webs stay gone
+PASS: The hat of flames waits for the button
+PASS: The button to press exists
+PASS: The unlabelled button sets the spider ablaze
+PASS: And earns the hat of flames
+PASS: The spider burns away to a heap of ash
+PASS: The button to press exists
+PASS: Pressing it again only clicks
+PASS: The hat of flames is announced
+PASS: Leaving puts the machete back on its hook
+PASS: Coming back, the spider is in its corner again
+PASS: The webs are whole again for another go, the machete is in hand, and the chapter stays finished
+PASS: The hat is kept
+PASS: A column cut before TRY AGAIN
+PASS: The button to press exists
+PASS: TRY AGAIN grows every web back, and the machete stays in hand
+PASS: The finished chapter stays finished
