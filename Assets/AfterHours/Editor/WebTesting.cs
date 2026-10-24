@@ -44,6 +44,13 @@ namespace AfterHours.Editor
             // End looking straight up (the aim leans down a little), so the next chop starts without the slow raise.
             head.rotation=Quaternion.Euler(-85,through.eulerAngles.y,0);yield return .1f;
         }
+        // Turns the view to look at a point slowly enough to cut nothing: snapping it round would swing the machete through the webs.
+        public static IEnumerable<float> TurnTo(Vector3 point)
+        {
+            var head=D.player.Head;var look=Quaternion.LookRotation(point-head.position);
+            while(Quaternion.Angle(head.rotation,look)>.5f){head.rotation=Quaternion.RotateTowards(head.rotation,look,SlowTurn*Time.deltaTime);yield return 0;}
+            head.rotation=look;
+        }
         // Degrees per second at which turning the view moves the blade tip well under the machete's cutting speed.
         public const float SlowTurn=20f;
         // At rest the blade reaches through the webs straight ahead, so the view first turns up to the ceiling slowly enough to cut nothing.

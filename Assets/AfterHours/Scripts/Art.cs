@@ -16,7 +16,7 @@ namespace AfterHours
         public static Material[] Skyline;
         public static Material SkylineCap, SkylineWindowLit, SkylineWindowGlass, SkylineWood, CloudWhite, CloudPink;
         // The ocean at night: glowing lantern glass and moon, dark water, and soft additive light for the lighthouse beam and the stars.
-        public static Material Lantern, Moon, NightWater, BeamGlow, BeamGlowNight, Star;
+        public static Material Lantern, Moon, NightWater, BeamGlow, BeamGlowNight, Star, Foam;
         // The mirror's X-ray: glowing white bones with a soft halo, dark hollows, and a dark veil behind the glass.
         public static Material XrayBone, XrayHalo, XrayHollow, XrayVeil;
         // The avatar's skin tones and hair colours, in wardrobe order.

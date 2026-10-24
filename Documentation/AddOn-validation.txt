@@ -1,0 +1,18 @@
+2026-10-24 18:16:15Z
+Failed: TOP > steps onto the hoodie: the reflection tries it on, the tee stays what you own and wear
+Outfit add-ons against the editor's test store: catalog, trying on, BUY, a bundle, an offline reload and a refund.
+PASS: Every outfit slot has a free starter piece, so nothing needs buying
+PASS: The wardrobe has a row for every outfit slot (7)
+PASS: Every add-on has its own SKU, named after its id (23 add-ons)
+PASS: Several add-ons each for tops, hats, trousers and skirts, gloves and shoes
+PASS: Every piece but the bare ones is built on the reflection
+PASS: Trousers, skirts and gloves are built on both legs or both hands
+PASS: Add-ons are not among the fourteen pieces to earn
+PASS: In the editor the shop starts against the test store
+PASS: The catalog lists every add-on with a price
+PASS: A new player owns no add-ons
+PASS: The STILL TO FIND board never lists an add-on
+PASS: An add-on cannot be earned by playing
+PASS: A new player wears the free trousers and shoes
+PASS: BUY is hidden until something is tried on
+FAIL: TOP > steps onto the hoodie: the reflection tries it on, the tee stays what you own and wear

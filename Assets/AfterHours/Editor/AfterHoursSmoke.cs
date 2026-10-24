@@ -363,7 +363,7 @@ namespace AfterHours.Editor
             yield return Visit(WebRoom.Room);Capture("NDA web");
             var web=d.web;var webRoot=d.rooms[WebRoom.Room].root.transform;
             Check(web.machete.held&&d.player.IsHolding(web.machete)&&web.Standing==18,"The NDA web opens with eighteen webs round the seat and the machete already in hand");
-            Aim(web.spider.position+Vector3.up*.7f);yield return Delay(.2f);Capture("NDA web-Spider");
+            foreach(var w in WebTesting.TurnTo(web.spider.position+Vector3.up*.7f))yield return Wait(w);yield return Delay(.2f);Capture("NDA web-Spider");
             foreach(var w in WebTesting.Chop(4))yield return Wait(w);
             Check(web.Cleared==2&&!d.rooms[WebRoom.Room].complete,"A chop through the webs straight ahead cuts both of them");
             foreach(var w in WebTesting.ClearAll())yield return Wait(w);
