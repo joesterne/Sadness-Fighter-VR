@@ -76,7 +76,8 @@ namespace AfterHours.Editor
             Check(!W.avatar.Wearing("wellies")&&W.TryingOn=="pleated-skirt","Stepping back onto a piece you own ends that try-on, and BUY moves to the skirt");
 
             // Buying at the mirror.
-            StepTo(Hoodie);TestAddOnStore.CancelNext=true;D.BuyTryingOn();yield return .5f;
+            // The hoodie is still on from earlier, so StepTo alone would stay put and BUY would stay with the skirt. Step off it and back to make it the latest.
+            StepTo(Hoodie);W.Cycle((int)OutfitSlot.Top+4,-1);StepTo(Hoodie);TestAddOnStore.CancelNext=true;D.BuyTryingOn();yield return .5f;
             Check(!W.Has(Hoodie)&&W.TryingOn==Hoodie&&D.player.hint.text.Contains("Nothing was bought"),"Closing the checkout buys nothing, and you can keep trying it on");
             D.BuyTryingOn();yield return .5f;
             Check(W.Has(Hoodie)&&W.State.top==Hoodie&&W.avatar.Wearing(Hoodie)&&D.player.hint.text.Contains("Midnight hoodie is yours"),"BUY: once the store confirms, the hoodie is yours and on");
