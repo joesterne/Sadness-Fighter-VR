@@ -95,6 +95,7 @@ namespace AfterHours.Editor
             if(d.currentRoom!=0){yield return Menu(ActionKind.Rest);yield return Delay(.8f);Check(d.currentRoom==0,"Menu LOBBY returns to the lobby");}
             var entry=Button(ActionKind.Travel,room);var approach=entry.transform.position-entry.transform.forward*1.7f;approach.y=.04f;d.player.Place(approach,0);yield return Delay();
             yield return Click(Button(ActionKind.Travel,room));yield return Delay(.85f);Check(d.currentRoom==room,"Portal input reaches room "+room);
+            Check(d.player.LastHaptic==VRPlayer.HapticPattern.RoomChange,"Changing rooms plays the room-change haptic");
         }
         static IEnumerator Run()
         {
@@ -166,6 +167,7 @@ namespace AfterHours.Editor
             foreach(var box in boxes)
             {
                 d.player.Place(box.transform.position+new Vector3(0,-box.transform.position.y+.04f,-1.8f),0);yield return Delay();Aim(box.transform.position);Press(true);yield return Delay(.2f);Check(box.held,"Input grabs "+box.label);
+                Check(d.player.LastHaptic==VRPlayer.HapticPattern.Pickup,"Picking up "+box.label+" plays the pickup haptic");
                 // Hold position over the real trigger; release uses the normal input edge and physics.
                 var point=bay.transform.position+Vector3.up*.3f;d.player.Shift(new Vector3(point.x,.04f,point.z-1.35f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay(.15f);Press(false);yield return Delay(.7f);Check(box.processed,"Truck accepts released "+box.label);
             }

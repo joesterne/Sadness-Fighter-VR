@@ -257,7 +257,7 @@ namespace AfterHours
             if(!held[index]&&grab&&!wasGrip[index]&&!desktop&&held[1-index]&&held[1-index].tool&&Near(held[1-index],grip.position)<.23f)
             {
                 var tool=held[1-index];held[1-index]=null;aimedTarget[1-index]=null;tool.held=false;
-                if(tool.Take(grip,direction*.07f,false,ToolRotation(false,direction))){held[index]=tool;ShowHint(HoldHint(tool),4);Pulse(controller);}
+                if(tool.Take(grip,direction*.07f,false,ToolRotation(false,direction))){held[index]=tool;ShowHint(HoldHint(tool),4);Haptic(HapticPattern.Pickup,controller);}
                 else{tool.held=true;held[1-index]=tool;}
             }
             else if(!held[index] && grab&&!wasGrip[index])
@@ -274,7 +274,7 @@ namespace AfterHours
                 if(pick&&(nearby||Vector3.Distance(origin,pick.transform.position)<GrabRange)&&pick.Take(holder,offset,!nearby,toolRotation))
                 {
                     held[index]=pick;ShowHint(HoldHint(pick),4);
-                    var d=GameDirector.Instance;d.PlayAt(d.grab,pick.transform.position,.6f);Pulse(controller);
+                    var d=GameDirector.Instance;d.PlayAt(d.grab,pick.transform.position,.6f);Haptic(HapticPattern.Pickup,controller);
                 }
             }
             bool floorTarget=hit&&info.collider.GetComponent<TeleportSurface>()&&info.normal.y>.85f&&GameDirector.Instance.currentRoom!=1;
@@ -282,7 +282,7 @@ namespace AfterHours
             {
                 // Lock the purpose of this press. A button that moves the view must never become a floor teleport.
                 teleportGesture[index]=!held[index]&&!target&&floorTarget;
-                if(!carrying&&target){var d=GameDirector.Instance;d.PlayUi(d.select,.5f);target.Activate();Pulse(controller);}
+                if(!carrying&&target){var d=GameDirector.Instance;d.PlayUi(d.select,.5f);Pulse(controller);target.Activate();}
                 else if(teleportGesture[index])ShowHint("Release to teleport",2);
             }
             if(teleportGesture[index]&&!busy)
@@ -411,7 +411,7 @@ namespace AfterHours
             if(!grip||held[index])return false;
             var direction=desktop?Head.forward:grip.forward;
             if(!tool.Take(grip,desktop?Vector3.zero:direction*.07f,false,ToolRotation(desktop,direction)))return false;
-            held[index]=tool;return true;
+            held[index]=tool;Haptic(HapticPattern.Pickup,index==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch);return true;
         }
         // Puts a held object down (a tool goes back to its rack).
         public void Drop(Grabbable item){for(int i=0;i<2;i++)if(item&&held[i]==item){item.Release();held[i]=null;aimedTarget[i]=null;}}
@@ -419,7 +419,7 @@ namespace AfterHours
         // A short buzz in the controller holding this object, stronger for a harder hit. Tracked hands have no haptics.
         public void PulseFor(Grabbable item,float strength)
         {
-            for(int i=0;i<2;i++)if(item&&held[i]==item)StartCoroutine(Haptic(i==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch,Mathf.Clamp01(strength),.09f));
+            for(int i=0;i<2;i++)if(item&&held[i]==item)StartCoroutine(Buzz(i==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch,new[]{Mathf.Clamp01(strength),.09f}));
         }
         public void ReleaseAll(){for(int i=0;i<2;i++){if(held[i])held[i].Release();held[i]=null;aimedTarget[i]=null;teleportReady[i]=teleportGesture[i]=false;inputBlocked[i]=true;}}
         void HideRays(){for(int i=0;i<2;i++){rays[i].enabled=false;cursors[i].gameObject.SetActive(false);}}
@@ -457,14 +457,31 @@ namespace AfterHours
             while(t<duration){t+=Time.unscaledDeltaTime;float a=Mathf.Lerp(from,target,t/duration);fade.color=new Color(.025f,.04f,.07f,a);if(dimAudio)AudioListener.volume=1-a*.9f;yield return null;}
             fade.color=new Color(.025f,.04f,.07f,target);if(dimAudio)AudioListener.volume=1-target*.9f;
         }
-        void Pulse(OVRInput.Controller controller){StartCoroutine(Haptic(controller,.3f,.06f));}
-        // A later buzz in the same hand outlasts an earlier one: the earlier one's end never cuts it short.
-        readonly float[] hapticUntil=new float[2];
-        IEnumerator Haptic(OVRInput.Controller controller,float amplitude,float seconds)
+        // Haptic patterns, kept soft for comfort. A tap answers a button, a throw or a send. A pickup is a firm tick that settles, so taking
+        // hold of something feels different from pressing a button. A room change is three slow, rising beats in both hands while the view
+        // fades. Each pattern is pairs of strength and seconds; a strength of zero is a pause. Tracked hands have no haptics.
+        public enum HapticPattern{None,Tap,Pickup,RoomChange}
+        static readonly float[] TapSteps={.3f,.06f};
+        static readonly float[] PickupSteps={.4f,.04f, 0,.05f, .15f,.07f};
+        static readonly float[] RoomChangeSteps={.12f,.07f, 0,.12f, .18f,.07f, 0,.12f, .25f,.09f};
+        public static float[] Steps(HapticPattern pattern)=>pattern==HapticPattern.Pickup?PickupSteps:pattern==HapticPattern.RoomChange?RoomChangeSteps:pattern==HapticPattern.Tap?TapSteps:new float[0];
+        // The last pattern played, on desktop too, so the tests can see it.
+        public HapticPattern LastHaptic{get;private set;}
+        void Pulse(OVRInput.Controller controller)=>Haptic(HapticPattern.Tap,controller);
+        void Haptic(HapticPattern pattern,OVRInput.Controller controller){LastHaptic=pattern;StartCoroutine(Buzz(controller,Steps(pattern)));}
+        public void RoomChangePulse(){LastHaptic=HapticPattern.RoomChange;StartCoroutine(Buzz(OVRInput.Controller.LTouch,RoomChangeSteps));StartCoroutine(Buzz(OVRInput.Controller.RTouch,RoomChangeSteps));}
+        // The newest buzz in a hand takes it over: an older pattern stops where it is and never switches the newer one off.
+        readonly int[] hapticTurn=new int[2];
+        IEnumerator Buzz(OVRInput.Controller controller,float[] steps)
         {
-            int side=controller==OVRInput.Controller.LTouch?0:1;float until=Time.time+seconds;hapticUntil[side]=Mathf.Max(hapticUntil[side],until);
-            if(IsXR)OVRInput.SetControllerVibration(.25f,amplitude,controller);yield return new WaitForSeconds(seconds);
-            if(IsXR&&Time.time>=hapticUntil[side])OVRInput.SetControllerVibration(0,0,controller);
+            int side=controller==OVRInput.Controller.LTouch?0:1;int turn=++hapticTurn[side];
+            for(int i=0;i+1<steps.Length;i+=2)
+            {
+                if(IsXR)OVRInput.SetControllerVibration(.25f,steps[i],controller);
+                yield return new WaitForSeconds(steps[i+1]);
+                if(hapticTurn[side]!=turn)yield break;
+            }
+            if(IsXR)OVRInput.SetControllerVibration(0,0,controller);
         }
         void OnGUI()
         {
