@@ -467,9 +467,11 @@ namespace AfterHours
         public static float[] Steps(HapticPattern pattern)=>pattern==HapticPattern.Pickup?PickupSteps:pattern==HapticPattern.RoomChange?RoomChangeSteps:pattern==HapticPattern.Tap?TapSteps:new float[0];
         // The last pattern played, on desktop too, so the tests can see it.
         public HapticPattern LastHaptic{get;private set;}
+        // How many room-change patterns have played. A room can hand you a tool as it opens, and that pickup tick then becomes the last pattern.
+        public int RoomChanges{get;private set;}
         void Pulse(OVRInput.Controller controller)=>Haptic(HapticPattern.Tap,controller);
         void Haptic(HapticPattern pattern,OVRInput.Controller controller){LastHaptic=pattern;StartCoroutine(Buzz(controller,Steps(pattern)));}
-        public void RoomChangePulse(){LastHaptic=HapticPattern.RoomChange;StartCoroutine(Buzz(OVRInput.Controller.LTouch,RoomChangeSteps));StartCoroutine(Buzz(OVRInput.Controller.RTouch,RoomChangeSteps));}
+        public void RoomChangePulse(){LastHaptic=HapticPattern.RoomChange;RoomChanges++;StartCoroutine(Buzz(OVRInput.Controller.LTouch,RoomChangeSteps));StartCoroutine(Buzz(OVRInput.Controller.RTouch,RoomChangeSteps));}
         // The newest buzz in a hand takes it over: an older pattern stops where it is and never switches the newer one off.
         readonly int[] hapticTurn=new int[2];
         IEnumerator Buzz(OVRInput.Controller controller,float[] steps)

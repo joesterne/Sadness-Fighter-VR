@@ -94,8 +94,9 @@ namespace AfterHours.Editor
         {
             if(d.currentRoom!=0){yield return Menu(ActionKind.Rest);yield return Delay(.8f);Check(d.currentRoom==0,"Menu LOBBY returns to the lobby");}
             var entry=Button(ActionKind.Travel,room);var approach=entry.transform.position-entry.transform.forward*1.7f;approach.y=.04f;d.player.Place(approach,0);yield return Delay();
+            int changes=d.player.RoomChanges;
             yield return Click(Button(ActionKind.Travel,room));yield return Delay(.85f);Check(d.currentRoom==room,"Portal input reaches room "+room);
-            Check(d.player.LastHaptic==VRPlayer.HapticPattern.RoomChange,"Changing rooms plays the room-change haptic");
+            Check(d.player.RoomChanges==changes+1,"Changing rooms plays the room-change haptic");
         }
         static IEnumerator Run()
         {
