@@ -65,7 +65,8 @@ namespace AfterHours.Editor
             // Trying on: an outfit row steps onto add-ons, the reflection wears them, and nothing is saved.
             Check(!W.buyButton.activeSelf&&W.status.gameObject.activeSelf,"BUY is hidden until something is tried on");
             StepTo(Hoodie);yield return .2f;
-            Check(W.TryingOn==Hoodie&&W.State.top=="tee"&&W.avatar.Wearing(Hoodie)&&!W.avatar.Wearing("tee"),"TOP > steps onto the hoodie: the reflection tries it on, the tee stays what you own and wear");
+            // The row passes the free work shirt on the way, and a piece you own is put on as you step onto it, so the shirt is what you wear.
+            Check(W.TryingOn==Hoodie&&W.State.top=="shirt"&&W.avatar.Wearing(Hoodie)&&!W.avatar.Wearing("shirt")&&!W.avatar.Wearing("tee"),"TOP > steps onto the hoodie: the reflection tries it on, the free shirt it passed stays what you own and wear");
             Check(W.values[4].text.Contains("Midnight hoodie")&&W.values[4].text.Contains(S.Price(Hoodie)),"The row shows the hoodie and its price");
             Check(W.buyButton.activeSelf&&W.buyLabel.text.Contains("MIDNIGHT HOODIE")&&!W.status.gameObject.activeSelf,"BUY appears with the piece's name, over the status board");
             StepTo("pleated-skirt");StepTo("wellies");yield return .2f;
