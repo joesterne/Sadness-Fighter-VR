@@ -156,7 +156,7 @@ namespace AfterHours.Editor
             Check(VRPlayer.ControllerGrab(.8f,0)&&VRPlayer.ControllerGrab(0,.8f)&&!VRPlayer.ControllerGrab(.5f,.5f),"With controllers, the grip or the trigger holds an object");
 
             // Every sign with two wordings keeps the controllers' words free of hands and the hands' words free of controllers.
-            var signs=UnityEngine.Object.FindObjectsByType<InputText>(FindObjectsInactive.Include,FindObjectsSortMode.None);
+            var signs=UnityEngine.Object.FindObjectsByType<InputText>(FindObjectsInactive.Include);
             var signNames=signs.Select(x=>x.name).ToArray();var missingSigns=new[]{"Move instructions","Comfort note","Menu tip"}.Where(n=>!signNames.Contains(n)).ToArray();
             Check(missingSigns.Length==0,"The lobby signs and the menu tip have a wording for each kind of input ("+signs.Length+" signs"+(missingSigns.Length>0?" / missing: "+string.Join(", ",missingSigns)+" / found: "+string.Join(", ",signNames):"")+")");
             string[] handsOnly={"pinch","Pinch","PINCH","palm","Palm"},controllersOnly={"trigger","Trigger","grip","Grip","squeeze","Squeeze","SQUEEZE","B / Y","Menu button","menu button","stick"};
@@ -172,7 +172,7 @@ namespace AfterHours.Editor
             Check(moveSign.text.Contains("SQUEEZE")&&!moveSign.text.Contains("PINCH"),"The lobby board follows the player to controllers without being rebuilt");
             // Nothing else in the world talks about pinching unless it is one of those two-wording signs.
             Wording.Set(InputKind.Hands);
-            var stray=UnityEngine.Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include,FindObjectsSortMode.None)
+            var stray=UnityEngine.Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include)
                 .Where(t=>t.text.IndexOf("pinch",StringComparison.OrdinalIgnoreCase)>=0&&!t.GetComponent<InputText>()&&!t.transform.IsChildOf(D.intro.transform)&&t!=P.hint).Select(t=>t.name).ToArray();
             Check(stray.Length==0,"No other sign mentions pinching"+(stray.Length>0?" / found: "+string.Join(", ",stray):""));
             // The first-visit guide.
