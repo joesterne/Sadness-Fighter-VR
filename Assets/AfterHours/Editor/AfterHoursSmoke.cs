@@ -103,7 +103,11 @@ namespace AfterHours.Editor
             // The day's sky, light and haze, to check that the rooftop's sunrise comes and goes cleanly.
             var daySky=RenderSettings.skybox;var daySun=RenderSettings.sun.intensity;var daySunTurn=RenderSettings.sun.transform.rotation;var dayHaze=RenderSettings.fogColor;var dayAmbient=RenderSettings.ambientSkyColor;
             yield return Delay(.1f);Check(!d.player.IsXR,"Desktop fallback is active");Check(d.player.Head.position.y>1.5f,"Desktop camera remains at eye height");
-            var initial=d.player.transform.position;Queue(keyboard,new KeyboardState(Key.W));yield return Delay(.5f);Queue(keyboard,new KeyboardState());yield return Delay();Check(Vector3.Distance(initial,d.player.transform.position)>.25f,"Movement input moves player");
+            // Right after the editor starts, its first frames can be slow and a key event can be missed, so W is held (and sent again each frame)
+            // until the player has moved, for up to two seconds.
+            var initial=d.player.transform.position;
+            for(float end=Time.time+2;Time.time<end&&Vector3.Distance(initial,d.player.transform.position)<=.25f;){Queue(keyboard,new KeyboardState(Key.W));yield return null;}
+            Queue(keyboard,new KeyboardState());yield return Delay();Check(Vector3.Distance(initial,d.player.transform.position)>.25f,"Movement input moves player");
             d.player.Place(new Vector3(0,.04f,-3.5f),0);yield return Delay();Aim(new Vector3(2,.015f,-1.9f));Press(true);yield return Delay();Press(false);yield return Delay(.7f);Check(d.player.transform.position.x>1.3f,"Floor ray press/release teleports player");
             yield return Visit(1);Capture("Ocean");
             for(int i=0;i<14;i++){yield return Click(Button(ActionKind.Row));yield return Delay(.6f);}

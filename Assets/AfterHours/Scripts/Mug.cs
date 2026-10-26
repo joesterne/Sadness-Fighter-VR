@@ -27,7 +27,7 @@ namespace AfterHours
         Vector3 coffeeHome;bool coffeeKnown;
 
         // Two mugs pressed into each other part gently rather than flinging each other apart (a fling would read as a knock). This is not saved with the scene, so it is set here.
-        void Awake(){if(!item)item=GetComponent<Grabbable>();var body=GetComponent<Rigidbody>();if(body)body.maxDepenetrationVelocity=1.5f;}
+        void Awake(){if(!item)item=GetComponent<Grabbable>();var mugBody=GetComponent<Rigidbody>();if(mugBody)mugBody.maxDepenetrationVelocity=1.5f;}
         void FixedUpdate(){if(item&&item.sending)calmUntil=Time.time+Settling;}
 
         // Level 0 is empty; each pour raises it a little.
