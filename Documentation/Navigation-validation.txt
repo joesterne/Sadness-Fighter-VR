@@ -1,4 +1,4 @@
-2026-10-24 18:08:45Z
+2026-10-26 15:22:23Z
 Passed
 Production mouse/keyboard input and physics, with direct placement for test setup and API calls for race conditions.
 PASS: Menu key opens the menu in room 0
@@ -118,12 +118,15 @@ PASS: Room 0 arrives with movement unlocked
 PASS: Room 0 is the only active environment
 PASS: Room 0 fade clears
 PASS: Room 0 places the head over its safe spawn
+PASS: A carried object goes back to its place as the room closes, instead of falling where it was
 PASS: A trigger held across rooms cannot teleport on release
 PASS: Room 7 arrives with movement unlocked
 PASS: Room 7 is the only active environment
 PASS: Room 7 fade clears
 PASS: Room 7 places the head over its safe spawn
 PASS: The bat stays in hand after the press ends
+PASS: TeleportTo moves the player within the rage room
+PASS: A teleport keeps the bat in hand, and the jump is not a swing
 PASS: Room 0 arrives with movement unlocked
 PASS: Room 0 is the only active environment
 PASS: Room 0 fade clears
