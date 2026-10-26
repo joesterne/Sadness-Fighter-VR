@@ -143,7 +143,7 @@ namespace AfterHours
         }
         IEnumerator ChangeRoom(int room)
         {
-            player.busy=true;player.ReleaseAll();if(menu)menu.Close();if(intro)intro.Dismiss();if(currentRoom==1)ocean.OnDepart();yield return player.Fade(1,.2f,true);
+            player.busy=true;player.ReleaseAll();player.RoomChangePulse();if(menu)menu.Close();if(intro)intro.Dismiss();if(currentRoom==1)ocean.OnDepart();yield return player.Fade(1,.2f,true);
             int from=currentRoom;if(from==0&&wardrobe&&wardrobe.avatar)wardrobe.avatar.SetXray(false);rooms[currentRoom].root.SetActive(false);
             // The sea's night sky and light belong to the ocean room alone. They go before the next room switches on, so a room that
             // takes the scene's light as it opens (the rooftop) takes the day's, not the sea's.

@@ -30,6 +30,7 @@ The game is meant to be free to play. Every chapter and comfort option is free, 
 - Hand tracking first, controllers whenever you pick them up.
 - Snap turns, teleport, a comfort vignette, three seated heights and FACE FORWARD.
 - Gentler options for the kitchen crowd and the ambush, and a CLEAN MODE that hides all text.
+- Soft controller haptics: a firm tick that settles when you pick something up, and three slow, rising beats in both hands as you move between rooms.
 
 ## Run it
 
