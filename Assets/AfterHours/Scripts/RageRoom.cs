@@ -64,7 +64,7 @@ namespace AfterHours
             // Big, messy bursts: glass and plastic throw shards, metal throws sparks as well. Paper throws none.
             if(part.sound!=BreakSound.Paper)Burst(part.sound==BreakSound.Metal?sparks:shards,point,push,part.Broken?40:18);
             if(part.sound==BreakSound.Metal)Burst(shards,point,push,10);
-            director.player.PulseFor(tool?tool.grabbable:bat,Mathf.Clamp(.35f+speed/6f,.35f,1f));
+            director.player.PulseFor(tool?tool.grabbable:bat,Mathf.Clamp(.35f+speed/6f,.35f,1f),part.Broken?VRPlayer.HapticPattern.Smash:VRPlayer.HapticPattern.Hit);
             if(!spoke){spoke=true;director.Say("Again, if you need to. As hard or as soft as you like. Short swings count.");}
             if(part.Broken)
             {

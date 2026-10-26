@@ -269,18 +269,22 @@ namespace AfterHours.Editor
             var rage=d.rage;var bat=rage.bat;var batHome=bat.transform.position;var roomRoot=d.rooms[RageRoom.Room].root.transform;
             Aim(RageTesting.BatMiddle);yield return Delay(.06f);Press(true);yield return Delay(.3f);Press(false);yield return Delay(.3f);
             Check(bat.held&&d.player.IsHolding(bat),"Input picks up the bat, and it stays in hand after the press ends");
+            Check(System.Enum.GetValues(typeof(VRPlayer.HapticPattern)).Cast<VRPlayer.HapticPattern>().All(x=>x==VRPlayer.HapticPattern.None||Resources.Load<Oculus.Haptics.HapticClip>(VRPlayer.ClipPath(x)) is var clip&&clip&&clip.json.Contains("\"amplitude\"")),"Every haptic pattern has its clip in Resources/Haptics");
             Capture("Rage room-Bat in hand");
             foreach(var w in RageTesting.Swing(rage.parts[0],50,4))yield return Wait(w);
             Check(rage.parts[0].damage==0,"Moving the bat slowly through the monitor does not count as a hit");
             int pieceCount=RageTesting.Pieces.Count();
             int computerPieces=rage.parts.Sum(x=>x.stages.Sum(t=>t.debris.Length));
             Check(computerPieces>=4*32&&pieceCount>=200&&rage.extras.Length==9,"The computer holds "+computerPieces+" pieces that can fly off (32 before), and the nine other things "+(pieceCount-computerPieces)+" more");
+            int smashes=d.player.HapticCount(VRPlayer.HapticPattern.Smash),thuds=d.player.HapticCount(VRPlayer.HapticPattern.Hit),hitsBefore=rage.Hits;
             var swings=new List<int>();
             foreach(var extra in rage.extras)
             {
                 foreach(var w in RageTesting.BreakPart(extra,swings))yield return Wait(w);
                 Check(extra.Broken,"Short swings break "+extra.label+" ("+extra.HitsToBreak+(extra.HitsToBreak==1?" hit)":" hits)"));
             }
+            smashes=d.player.HapticCount(VRPlayer.HapticPattern.Smash)-smashes;thuds=d.player.HapticCount(VRPlayer.HapticPattern.Hit)-thuds;
+            Check(smashes>0&&smashes+thuds>=rage.Hits-hitsBefore,"Every hit buzzes the bat hand: "+smashes+" smashes for things broken, "+thuds+" thuds for hits and knocks");
             Check(!d.rooms[RageRoom.Room].complete&&d.rooms[RageRoom.Room].accepted==rage.BrokenCount&&rage.BrokenCount<4,"The desk things are extras: breaking them does not count toward the chapter");
             Check(rage.Jams==1&&d.wardrobe.Has(RageRoom.PaperJamPin)&&(rage.paperBurst.isPlaying||rage.paperBurst.particleCount>0),"The copier, broken for good, jams in a burst of paper: the Paper Jam easter egg and its pin");
             Capture("Rage room-Paper jam");
