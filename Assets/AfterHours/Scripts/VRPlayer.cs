@@ -421,12 +421,26 @@ namespace AfterHours
         {
             for(int i=0;i<2;i++)if(item&&held[i]==item)StartCoroutine(Buzz(i==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch,new[]{Mathf.Clamp01(strength),.09f}));
         }
-        public void ReleaseAll(){for(int i=0;i<2;i++){if(held[i])held[i].Release();held[i]=null;aimedTarget[i]=null;teleportReady[i]=teleportGesture[i]=false;inputBlocked[i]=true;}}
-        void HideRays(){for(int i=0;i<2;i++){rays[i].enabled=false;cursors[i].gameObject.SetActive(false);}}
-        public void Place(Vector3 floor,float yaw)
+        // Lets go of everything. With sendHome (leaving a room) what was carried glides back to its place instead of falling where it was,
+        // so a mug carried out of the kitchen is not left in the air to break as the player comes back. A tool always goes back to its rack.
+        public void ReleaseAll(bool sendHome=false)
         {
-            ReleaseAll();body.enabled=false;float delta=yaw-Head.eulerAngles.y;transform.RotateAround(Head.position,Vector3.up,delta);
+            for(int i=0;i<2;i++)
+            {
+                var item=held[i];
+                if(item){if(sendHome&&!item.tool&&!item.paddle)item.ReturnHome();else item.Release();}
+                held[i]=null;aimedTarget[i]=null;teleportReady[i]=teleportGesture[i]=false;inputBlocked[i]=true;
+            }
+        }
+        void HideRays(){for(int i=0;i<2;i++){rays[i].enabled=false;cursors[i].gameObject.SetActive(false);}}
+        // Moves the player. A teleport within a room keeps whatever is in the hands (the bat, the machete, a box or a mug travel with them);
+        // anything else lets go first.
+        public void Place(Vector3 floor,float yaw,bool keepHeld=false)
+        {
+            if(!keepHeld)ReleaseAll();
+            body.enabled=false;float delta=yaw-Head.eulerAngles.y;transform.RotateAround(Head.position,Vector3.up,delta);
             Vector3 offset=Head.position-transform.position;offset.y=0;transform.position=floor-offset;body.enabled=true;
+            if(keepHeld)for(int i=0;i<2;i++)if(held[i])held[i].Jumped();
         }
         public void Shift(Vector3 delta){body.enabled=false;transform.position+=delta;body.enabled=true;}
         public void TeleportTo(Vector3 point,float yaw){StartCoroutine(Teleport(point,yaw));}
@@ -448,7 +462,7 @@ namespace AfterHours
             foreach(var obstacle in Physics.OverlapCapsule(feet+Vector3.up*.24f,feet+Vector3.up*(Mathf.Max(body.height,1.1f)-.24f),.24f,~0,QueryTriggerInteraction.Ignore))
                 if(!obstacle.transform.IsChildOf(transform))yield break;
             busy=true;var d=GameDirector.Instance;if(d)d.PlayUi(d.teleport,.45f);
-            yield return Fade(1,.12f);Place(point+Vector3.up*.025f,yaw);yield return Fade(0,.18f);busy=false;
+            yield return Fade(1,.12f);Place(point+Vector3.up*.025f,yaw,true);yield return Fade(0,.18f);busy=false;
         }
         // Room changes also dim the sound, so ambience and music never cut off abruptly.
         public IEnumerator Fade(float target,float duration,bool dimAudio=false)

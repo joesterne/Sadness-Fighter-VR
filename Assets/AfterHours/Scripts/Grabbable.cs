@@ -85,6 +85,10 @@ namespace AfterHours
             }
             if(!held&&!processed&&transform.position.y < -3) ResetObject();
         }
+        // The player teleported with this in hand. Where it was a moment ago is not part of a throw or a swing, and a distance grab
+        // still drawing it in finishes at once. Jumps lets the bat and the machete forget their last position too.
+        public int Jumps { get; private set; }
+        public void Jumped(){trailCount=0;pullStart=-1;Jumps++;}
         void Record()
         {
             trailPosition[trailHead]=transform.position;trailTime[trailHead]=Time.time;

@@ -13,12 +13,14 @@ namespace AfterHours
         public const float MinSpeed=1.1f, WhooshSpeed=2.4f;
         public float Speed{get;private set;}
         public Vector3 Velocity{get;private set;}
-        Vector3 lastTip,lastBase;bool tracking;float nextWhoosh;bool whooshArmed=true;
+        Vector3 lastTip,lastBase;bool tracking;float nextWhoosh;bool whooshArmed=true;int jumps;
         public Vector3 Tip=>transform.TransformPoint(0,0,length);
         public Vector3 BladeStart=>transform.TransformPoint(0,0,bladeFrom);
         void LateUpdate()
         {
             if(!grabbable||!grabbable.held||!room){tracking=false;Speed=0;Velocity=Vector3.zero;return;}
+            // A teleport carries it across the room in one frame: that is not a swing, and nothing on the way is hit.
+            if(grabbable.Jumps!=jumps){jumps=grabbable.Jumps;tracking=false;Velocity=Vector3.zero;}
             Vector3 tip=Tip,start=BladeStart;float dt=Mathf.Max(Time.deltaTime,1e-4f);
             if(tracking)
             {

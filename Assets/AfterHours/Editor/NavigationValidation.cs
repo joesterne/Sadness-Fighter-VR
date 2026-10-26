@@ -91,16 +91,22 @@ namespace AfterHours.Editor
             var portal=D.rooms[0].root.GetComponentsInChildren<Portal>().First(x=>x.destination==2);var landing=portal.transform.position;landing.y=.01f;
             var approach=landing-portal.transform.forward*1.5f;approach.y=.04f;P.Place(approach,portal.transform.eulerAngles.y);yield return .2f;Aim(landing);Press(true);yield return .2f;Press(false);yield return 1.3f;Arrived(2);
             // Release carried props before disabling the room; hold input must not act in the destination.
-            var box=D.rooms[2].root.GetComponentsInChildren<Grabbable>().First(x=>!x.processed);P.Place(new Vector3(box.transform.position.x,.04f,box.transform.position.z-1.7f),0);yield return .2f;Aim(box.transform.position);Press(true);yield return .2f;
+            var box=D.rooms[2].root.GetComponentsInChildren<Grabbable>().First(x=>!x.processed);var stand=box.transform.position;P.Place(new Vector3(box.transform.position.x,.04f,box.transform.position.z-1.7f),0);yield return .2f;Aim(box.transform.position);Press(true);yield return .2f;
             Check(box.held,"Input picks up an object before travel");
             Queue(keyboard,new KeyboardState(Key.Escape));yield return .12f;Queue(keyboard,new KeyboardState());yield return .8f;
             Check(!box.held&&box.Holder==null,"Travel releases carried objects in their original room");Arrived(0);
+            Check(Vector3.Distance(box.transform.position,stand)<.15f,"A carried object goes back to its place as the room closes, instead of falling where it was");
             before=P.transform.position;Aim(new Vector3(3,.01f,-3));yield return .2f;Press(false);yield return .5f;
             Check(Vector3.Distance(before,P.transform.position)<.1f,"A trigger held across rooms cannot teleport on release");
             // The bat stays in hand after the press ends, and goes back to its rack when you leave the room.
             var rageEntry=Button(ActionKind.Travel,RageRoom.Room);Approach(rageEntry);yield return .2f;Aim(rageEntry.transform.position);Press(true);yield return .12f;Press(false);yield return .85f;Arrived(RageRoom.Room);
             var bat=D.rage.bat;var rack=bat.transform.position;Aim(RageTesting.BatMiddle);Press(true);yield return .25f;Press(false);yield return .3f;
             Check(bat.held&&P.IsHolding(bat),"The bat stays in hand after the press ends");
+            // A teleport within the room keeps the bat in hand, and the jump across the room is not a swing.
+            var spot=D.rooms[RageRoom.Room].root.transform.TransformPoint(new Vector3(.6f,.04f,-3.4f));int hitsBefore=D.rage.Hits,damageBefore=D.rage.Damage().Sum();
+            P.TeleportTo(spot,P.transform.eulerAngles.y);yield return .6f;
+            Check(Vector3.Distance(new Vector3(P.transform.position.x,0,P.transform.position.z),new Vector3(spot.x,0,spot.z))<.3f,"TeleportTo moves the player within the rage room");
+            Check(bat.held&&P.IsHolding(bat)&&D.rage.Hits==hitsBefore&&D.rage.Damage().Sum()==damageBefore,"A teleport keeps the bat in hand, and the jump is not a swing");
             Queue(keyboard,new KeyboardState(Key.Escape));yield return .12f;Queue(keyboard,new KeyboardState());yield return .8f;Arrived(0);
             Check(!bat.held&&!P.IsHolding(bat)&&Vector3.Distance(bat.transform.position,rack)<.05f,"Leaving the rage room puts the bat back on its rack");
             var remaining=Remaining();while(remaining.MoveNext())yield return remaining.Current;
