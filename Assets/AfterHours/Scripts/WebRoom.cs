@@ -120,7 +120,7 @@ namespace AfterHours
             // A web that is still growing back is cut as easily as a whole one.
             web.cut=true;web.regrowAt=Time.time+regrowDelay;web.grown=0;Show(web);cuts++;
             Burst(point);director.PlayAt(cutSound,point,Mathf.Clamp(.55f+speed/8f,.55f,1f));
-            if(director.player)director.player.PulseFor(machete,Mathf.Clamp(.3f+speed/7f,.3f,.9f));
+            if(director.player)director.player.PulseFor(machete,Mathf.Clamp(.3f+speed/7f,.3f,.9f),VRPlayer.HapticPattern.Cut);
             Count();director.SmallStep();
             if(Standing==0&&!beaten){Beat();return true;}
             if(!spoke){spoke=true;director.Say(CutLines[0]+" Clear every web before any grows back.");}

@@ -416,10 +416,11 @@ namespace AfterHours
         // Puts a held object down (a tool goes back to its rack).
         public void Drop(Grabbable item){for(int i=0;i<2;i++)if(item&&held[i]==item){item.Release();held[i]=null;aimedTarget[i]=null;}}
         public bool IsHolding(Grabbable item)=>item&&(held[0]==item||held[1]==item);
-        // A short buzz in the controller holding this object, stronger for a harder hit. Tracked hands have no haptics.
-        public void PulseFor(Grabbable item,float strength)
+        // A buzz in the controller holding this object, stronger for a harder hit: a thud for a hit, a crunch for a break, a snap for a cut.
+        // Tracked hands have no haptics.
+        public void PulseFor(Grabbable item,float strength,HapticPattern pattern=HapticPattern.Hit)
         {
-            for(int i=0;i<2;i++)if(item&&held[i]==item)StartCoroutine(Buzz(i==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch,new[]{Mathf.Clamp01(strength),.09f}));
+            for(int i=0;i<2;i++)if(item&&held[i]==item)Haptic(pattern,i==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch,Mathf.Clamp01(strength));
         }
         // Lets go of everything. With sendHome (leaving a room) what was carried glides back to its place instead of falling where it was,
         // so a mug carried out of the kitchen is not left in the air to break as the player comes back. A tool always goes back to its rack.
@@ -473,27 +474,75 @@ namespace AfterHours
         }
         // Haptic patterns, kept soft for comfort. A tap answers a button, a throw or a send. A pickup is a firm tick that settles, so taking
         // hold of something feels different from pressing a button. A room change is three slow, rising beats in both hands while the view
-        // fades. Each pattern is pairs of strength and seconds; a strength of zero is a pause. Tracked hands have no haptics.
-        public enum HapticPattern{None,Tap,Pickup,RoomChange}
+        // fades. A hit is a deep thud, a smash a crunch that crackles away as the pieces go, a cut a quick swish that ends in a snap.
+        // Each pattern is a clip in Resources/Haptics (written by Tools/make_haptics.js, in the .haptic format Meta Haptics Studio opens),
+        // played through the Haptics SDK so it suits whichever controllers are in hand. If the SDK cannot start, a rough copy plays through
+        // OVRInput instead: pairs of strength and seconds, where a strength of zero is a pause. Tracked hands have no haptics.
+        public enum HapticPattern{None,Tap,Pickup,RoomChange,Hit,Smash,Cut}
+        static readonly string[] ClipNames={null,"tap","pickup","room_change","hit","smash","cut"};
         static readonly float[] TapSteps={.3f,.06f};
         static readonly float[] PickupSteps={.4f,.04f, 0,.05f, .15f,.07f};
         static readonly float[] RoomChangeSteps={.12f,.07f, 0,.12f, .18f,.07f, 0,.12f, .25f,.09f};
-        public static float[] Steps(HapticPattern pattern)=>pattern==HapticPattern.Pickup?PickupSteps:pattern==HapticPattern.RoomChange?RoomChangeSteps:pattern==HapticPattern.Tap?TapSteps:new float[0];
+        static readonly float[] HitSteps={1,.09f};
+        static readonly float[] SmashSteps={1,.06f, .5f,.12f, .25f,.15f};
+        static readonly float[] CutSteps={.5f,.03f, 1,.03f, .3f,.04f};
+        public static float[] Steps(HapticPattern pattern)=>pattern switch
+        {
+            HapticPattern.Tap=>TapSteps,HapticPattern.Pickup=>PickupSteps,HapticPattern.RoomChange=>RoomChangeSteps,
+            HapticPattern.Hit=>HitSteps,HapticPattern.Smash=>SmashSteps,HapticPattern.Cut=>CutSteps,_=>new float[0]
+        };
+        // Where a pattern's clip lives, for Resources.Load. Null for None.
+        public static string ClipPath(HapticPattern pattern)=>ClipNames[(int)pattern]==null?null:"Haptics/"+ClipNames[(int)pattern];
         // The last pattern played, on desktop too, so the tests can see it.
         public HapticPattern LastHaptic{get;private set;}
         // How many room-change patterns have played. A room can hand you a tool as it opens, and that pickup tick then becomes the last pattern.
         public int RoomChanges{get;private set;}
+        // How many times each pattern has played, in either hand, on desktop too.
+        readonly int[] hapticCounts=new int[ClipNames.Length];
+        public int HapticCount(HapticPattern pattern)=>hapticCounts[(int)pattern];
         void Pulse(OVRInput.Controller controller)=>Haptic(HapticPattern.Tap,controller);
-        void Haptic(HapticPattern pattern,OVRInput.Controller controller){LastHaptic=pattern;StartCoroutine(Buzz(controller,Steps(pattern)));}
-        public void RoomChangePulse(){LastHaptic=HapticPattern.RoomChange;RoomChanges++;StartCoroutine(Buzz(OVRInput.Controller.LTouch,RoomChangeSteps));StartCoroutine(Buzz(OVRInput.Controller.RTouch,RoomChangeSteps));}
-        // The newest buzz in a hand takes it over: an older pattern stops where it is and never switches the newer one off.
+        void Haptic(HapticPattern pattern,OVRInput.Controller controller,float strength=1)
+        {
+            LastHaptic=pattern;hapticCounts[(int)pattern]++;if(!IsXR)return;int side=controller==OVRInput.Controller.LTouch?0:1;
+            if(!PlayClip(pattern,side,strength))StartCoroutine(Buzz(controller,Steps(pattern),strength));
+        }
+        public void RoomChangePulse(){RoomChanges++;Haptic(HapticPattern.RoomChange,OVRInput.Controller.LTouch);Haptic(HapticPattern.RoomChange,OVRInput.Controller.RTouch);}
+        // One clip player per pattern and hand, made the first time it is needed. The newest clip in a hand takes it over: the one before
+        // stops where it is. Null until first needed, and given up for good if the Haptics SDK cannot start.
+        Oculus.Haptics.HapticClipPlayer[,] clipPlayers;bool clipsUnavailable;
+        readonly Oculus.Haptics.HapticClipPlayer[] playing=new Oculus.Haptics.HapticClipPlayer[2];
+        bool PlayClip(HapticPattern pattern,int side,float strength)
+        {
+            if(clipsUnavailable||ClipPath(pattern)==null)return false;
+            try
+            {
+                if(clipPlayers==null)
+                {
+                    if(Oculus.Haptics.Haptics.Instance==null){clipsUnavailable=true;return false;}
+                    clipPlayers=new Oculus.Haptics.HapticClipPlayer[2,ClipNames.Length];
+                }
+                var player=clipPlayers[side,(int)pattern];
+                if(player==null)
+                {
+                    var clip=Resources.Load<Oculus.Haptics.HapticClip>(ClipPath(pattern));
+                    if(!clip)return false;
+                    player=clipPlayers[side,(int)pattern]=new Oculus.Haptics.HapticClipPlayer(clip);
+                }
+                if(playing[side]!=null&&playing[side]!=player)playing[side].Stop();
+                player.amplitude=strength;player.Play(side==0?Oculus.Haptics.Controller.Left:Oculus.Haptics.Controller.Right);playing[side]=player;
+                return true;
+            }
+            catch(System.Exception e){Debug.LogWarning("Haptic clips unavailable, using simple vibration: "+e.Message);clipsUnavailable=true;return false;}
+        }
+        void OnDestroy(){if(clipPlayers!=null)foreach(var player in clipPlayers)player?.Dispose();}
+        // The fallback buzz. The newest buzz in a hand takes it over: an older pattern stops where it is and never switches the newer one off.
         readonly int[] hapticTurn=new int[2];
-        IEnumerator Buzz(OVRInput.Controller controller,float[] steps)
+        IEnumerator Buzz(OVRInput.Controller controller,float[] steps,float strength=1)
         {
             int side=controller==OVRInput.Controller.LTouch?0:1;int turn=++hapticTurn[side];
             for(int i=0;i+1<steps.Length;i+=2)
             {
-                if(IsXR)OVRInput.SetControllerVibration(.25f,steps[i],controller);
+                if(IsXR)OVRInput.SetControllerVibration(.25f,steps[i]*strength,controller);
                 yield return new WaitForSeconds(steps[i+1]);
                 if(hapticTurn[side]!=turn)yield break;
             }
