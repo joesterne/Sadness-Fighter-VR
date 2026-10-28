@@ -317,6 +317,7 @@ namespace AfterHours.Editor
             var strays=landed.Where(b=>!Inside(b)).Take(3).Select(b=>b.name+" at "+roomRoot.InverseTransformPoint(b.position).ToString("0.00")+" (mass "+b.mass.ToString("0.00")+")").ToArray();
             Check(landed.Count==pieceCount&&strays.Length==0,"All "+landed.Count+" pieces stay inside the room, above the floor"+(strays.Length>0?": "+string.Join("; ",strays):""));
             int resting=landed.Count(b=>b.IsSleeping()||b.linearVelocity.magnitude<.05f);
+            if(resting<landed.Count*.9f)results.Add("INFO: still moving: "+string.Join("; ",landed.Where(b=>!b.IsSleeping()&&b.linearVelocity.magnitude>=.05f).Take(12).Select(b=>b.name+" "+b.linearVelocity.magnitude.ToString("0.00")+" m/s, spin "+b.angularVelocity.magnitude.ToString("0.0")+" at y "+roomRoot.InverseTransformPoint(b.position).y.ToString("0.00"))));
             Check(resting>=landed.Count*.9f,resting+" of "+landed.Count+" pieces have come to rest by the end of the quiet");
             var onDesk=landed.Where(b=>{var p=roomRoot.InverseTransformPoint(b.position);return b.mass<.3f&&Mathf.Abs(p.x)<.7f&&p.z>-.55f&&p.z<0&&p.y>.74f&&p.y<.9f;})
                 .OrderBy(b=>Vector3.Distance(roomRoot.InverseTransformPoint(b.position),new Vector3(0,.76f,-.4f))).FirstOrDefault();
