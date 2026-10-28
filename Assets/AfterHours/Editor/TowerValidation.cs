@@ -86,7 +86,7 @@ namespace AfterHours.Editor
             var b0=t.blocks[0];var wood=b0.box.sharedMaterial;
             Check(b0.body.solverIterations==BlockTower.SolverIterations&&b0.body.solverVelocityIterations==BlockTower.VelocityIterations&&Mathf.Approximately(b0.body.mass,BlockTower.Mass),"Each block weighs 140 g and solves its contacts "+BlockTower.SolverIterations+" times a step ("+BlockTower.VelocityIterations+" for velocity)");
             Check(wood&&Mathf.Approximately(wood.staticFriction,BlockTower.StaticFriction)&&Mathf.Approximately(wood.dynamicFriction,BlockTower.DynamicFriction)&&wood.bounciness==0&&b0.box.contactOffset<.002f,"Wood on wood: friction "+BlockTower.StaticFriction+" at rest and "+BlockTower.DynamicFriction+" sliding, no bounce, contacts from 1.5 mm");
-            Check(t.blocks.All(b=>b.height<=BlockTower.Height+1e-6f&&b.height>=BlockTower.Height*(1-BlockTower.HeightSpread)-1e-6f),"Every block is full height or up to 1.5% short, like a real set");
+            Check(t.blocks.All(b=>b.height<=BlockTower.Height+1e-6f&&b.height>=BlockTower.Height*(1-BlockTower.HeightSpread)-1e-6f),"Every block is full height or up to 2.5% short, like a real set");
             int looseRows=Enumerable.Range(0,BlockTower.Levels).Count(r=>Loose(r));
             bool twoBear=Enumerable.Range(0,BlockTower.Levels).All(r=>t.blocks.Count(b=>b.level==r&&Mathf.Approximately(b.height,BlockTower.Height))>=2);
             Check(looseRows>=8&&looseRows<=17&&twoBear,looseRows+" of 18 rows have a loose block, and every row rests on at least two full-height blocks");

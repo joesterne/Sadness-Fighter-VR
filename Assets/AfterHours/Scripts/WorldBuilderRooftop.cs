@@ -261,11 +261,12 @@ namespace AfterHours
             tower.blocks=blocks;
             // The sign stands on a post on the near side of the table, facing the arrival point, with NEW TOWER under it.
             Art.Box("Tower sign post",new Vector3(1.2f,.5f,-.98f),new Vector3(.06f,1f,.06f),Art.ToyWoodDark,true,null,.015f);
-            Art.Box("Tower sign",new Vector3(1.2f,1.12f,-1f),new Vector3(.7f,.44f,.04f),Art.Navy,false,null,.02f);
-            Art.Box("Tower sign trim",new Vector3(1.2f,1.355f,-1.005f),new Vector3(.74f,.04f,.05f),Art.ToySun,false,null,.01f);
-            Art.Text("Tower title","A TOWER OF BLOCKS",new Vector3(1.2f,1.27f,-1.025f),.1f,ivory,.66f);
-            Art.Text("Tower rules","Ease a loose block out and lay it on top.\nPinch or squeeze to hold. A fingertip nudges.",new Vector3(1.2f,1.13f,-1.025f),.06f,muted,.66f);
-            tower.score=Art.Text("Tower score","ON TOP  0     BEST  0",new Vector3(1.2f,.97f,-1.025f),.075f,new Color(1f,.85f,.45f),.66f);
+            Art.Box("Tower sign",new Vector3(1.2f,1.15f,-1f),new Vector3(.76f,.52f,.04f),Art.Navy,false,null,.02f);
+            Art.Box("Tower sign trim",new Vector3(1.2f,1.425f,-1.005f),new Vector3(.8f,.04f,.05f),Art.ToySun,false,null,.01f);
+            Art.Text("Tower title","A TOWER OF BLOCKS",new Vector3(1.2f,1.35f,-1.025f),.09f,ivory,.72f);
+            // Rules for hands and for controllers (only a sign that changes with the input may talk about pinching).
+            Words(Art.Text("Tower rules","",new Vector3(1.2f,1.17f,-1.025f),.055f,muted,.72f),"Ease a loose block out, lay it on top.\nPinch to hold one; a fingertip nudges it.","Ease a loose block out, lay it on top.\nSqueeze to hold one; the tip nudges it.");
+            tower.score=Art.Text("Tower score","ON TOP  0     BEST  0",new Vector3(1.2f,.98f,-1.025f),.07f,new Color(1f,.85f,.45f),.72f);
             Art.Button("New tower","NEW TOWER",new Vector3(1.2f,.78f,-1f),new Vector3(.44f,.14f,.06f),Art.ToySky,ActionKind.NewTower,d);
         }
 

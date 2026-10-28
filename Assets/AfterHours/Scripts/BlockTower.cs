@@ -10,7 +10,7 @@ namespace AfterHours
     // What makes it feel real:
     //   - Blocks are twice the size of a real set (3 x 5 x 15 cm, 140 g) so hands and controllers can work them, with the same proportions,
     //     wood-on-wood friction and no bounce.
-    //   - Like a real set, blocks are not all quite the same height. In about half the rows the middle block is up to 1.5% short and carries
+    //   - Like a real set, blocks are not all quite the same height. In about half the rows the middle block is up to 2.5% short and carries
     //     nothing, in a few an edge block is, and the rest are tight. Feeling for the loose ones is the game.
     //   - A held block is not stuck to the hand. It is pulled toward it with about the force of a pinch, so a block with the tower's
     //     weight on it will not come, and the hand slips off if it goes too far. A fingertip is a small ball pushed the same way.
@@ -21,8 +21,8 @@ namespace AfterHours
     {
         public const int Levels=18,PerLevel=3;
         public const float Length=.15f,Width=.05f,Height=.03f,Mass=.14f;
-        // A loose block is between a fifth of this and all of it shorter than full height.
-        public const float HeightSpread=.015f;
+        // A loose block is between 40% of this and all of it shorter than full height (0.3 to 0.75 mm), so it is clearly free.
+        public const float HeightSpread=.025f;
         public const float StaticFriction=.42f,DynamicFriction=.3f;
         public const int SolverIterations=24,VelocityIterations=8;
         public const float PhysicsRate=90,ContactOffset=.0015f;
@@ -129,7 +129,7 @@ namespace AfterHours
                 for(int k=0;k<PerLevel;k++)
                 {
                     var b=blocks[order[level*PerLevel+k]];
-                    float h=k==loose?Height*(1-HeightSpread*(.2f+.8f*(float)random.NextDouble())):Height;
+                    float h=k==loose?Height*(1-HeightSpread*(.4f+.6f*(float)random.NextDouble())):Height;
                     // Even rows lie along x, odd rows along z. Each block sits a hair apart from its neighbour so none start out touching sideways.
                     bool alongX=level%2==0;float across=(k-1)*(Width+.0006f);
                     var local=alongX?new Vector3(0,y+h/2,across):new Vector3(across,y+h/2,0);
