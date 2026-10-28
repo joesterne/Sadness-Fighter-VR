@@ -1,4 +1,4 @@
-2026-10-26 17:24:11Z
+2026-10-28 16:37:48Z
 Passed
 Desktop input + Unity physics, with editor frames advanced explicitly.
 PASS: Desktop fallback is active
@@ -136,7 +136,7 @@ PASS: Short swings break the laptop (3 hits)
 PASS: Short swings break the work phone (2 hits)
 PASS: Short swings break the side desk (3 hits)
 PASS: Short swings break the copier (4 hits)
-PASS: Every hit buzzes the bat hand: 8 smashes for things broken, 81 thuds for hits and knocks
+PASS: Every hit buzzes the bat hand: 8 smashes for things broken, 79 thuds for hits and knocks
 PASS: The desk things are extras: breaking them does not count toward the chapter
 PASS: The copier, broken for good, jams in a burst of paper: the Paper Jam easter egg and its pin
 PASS: Nine things broken unlock the hammer (3) and the handsaw (6); the nail bat waits for 1 more
@@ -155,9 +155,9 @@ PASS: Every hit throws pieces: 29 hits threw all 342, at least 5 at a time
 PASS: When it is all broken the room goes quiet, then the chapter completes
 PASS: The room's hum fades to silence
 PASS: All 342 pieces stay inside the room, above the floor
-PASS: 329 of 342 pieces have come to rest by the end of the quiet
+PASS: 331 of 342 pieces have come to rest by the end of the quiet
 PASS: Pieces lie on the desk after the quiet
-PASS: A swing knocks a loose key along the desk (105 cm)
+PASS: A swing knocks a loose key along the desk (118 cm)
 PASS: WHEEL IN A NEW ONE brings back a whole computer, and the chapter stays complete
 PASS: The hum returns with the new computer
 PASS: The beat returns with the new computer

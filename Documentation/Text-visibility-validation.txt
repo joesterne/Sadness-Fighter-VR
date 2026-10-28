@@ -1,5 +1,5 @@
-2026-10-26 15:30:40Z
-Passed
+2026-10-28 16:39:56Z
+Failed: 2 of 210 signs have a problem
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
 PASS: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7) 'AFTER HOURS'
@@ -139,6 +139,10 @@ PASS: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE descrip
 PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0) 'You can rest before you are ready.'
 PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0) 'The office is only one room in you...'
 PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0) 'For now: a glass of water. A messa...'
+FAIL: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower title at (1.2, 1.3, -1.0) 'A TOWER OF BLOCKS': printed over text 'Ease a loose block out and lay it ...'
+FAIL: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower rules at (1.2, 1.1, -1.0) 'Ease a loose block out and lay it ...': printed over text 'A TOWER OF BLOCKS'
+PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower score at (1.2, 1.0, -1.0) 'ON TOP  0     BEST  0'
+PASS: room 5 [Room for tomorrow] 05 - Room for tomorrow/New tower label at (1.2, 0.8, -1.0) 'NEW TOWER'
 PASS: room 6 [The old résumé] 06 - The old résumé/Chapter at (0.0, 4.1, 9.6) '05 / THE OLD RÉSUMÉ'
 PASS: room 6 [The old résumé] 06 - The old résumé/Room title at (0.0, 3.5, 9.6) 'You are more than a page.'
 PASS: room 6 [The old résumé] 06 - The old résumé/Room subtitle at (0.0, 2.9, 9.6) 'Let each old résumé go, one at a t...'
@@ -276,6 +280,8 @@ NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE descrip
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): partly blocked from 2 of 105 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-5.5, 2.0, -4.5)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): partly blocked from 4 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-7.0, 1.5, -4.0)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 7 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-6.0, 1.5, 5.5)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower title at (1.2, 1.3, -1.0): partly blocked from 1 of 31 places, by 05 - Room for tomorrow/Batched geometry - 31j Toy dark wood near (6.0, 1.5, -3.5)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/New tower label at (1.2, 0.8, -1.0): partly blocked from 1 of 28 places, by 05 - Room for tomorrow/Batched geometry - 31j Toy dark wood near (6.0, 1.5, -3.5)
 NOTE: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0): partly blocked from 1 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (2.0, 1.5, -0.5); partly blocked from 3 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (1.5, 1.5, -0.5); partly blocked from 4 of 15 places, by 06 - The old résumé/Batched geometry - 10 Brushed aluminium near (1.5, 1.5, -1.0)
 NOTE: room 7 [The rage room] 07 - The rage room/Chapter at (0.0, 4.4, 6.8): partly blocked from 1 of 50 places, by 07 - The rage room/Batched geometry - 08 Warm porcelain near (0.0, 2.5, 0.0)
 NOTE: room 7 [The rage room] 07 - The rage room/Spray paint at (-2.5, 1.9, 6.8): partly blocked from 2 of 53 places, by 07 - The rage room/Batched geometry - 07 Polished limestone near (-1.5, 1.5, -1.5)
@@ -434,6 +440,10 @@ INFO: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE descrip
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): in range of 130 places, faced from 105, clear from 103, outlined
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): in range of 130 places, faced from 106, clear from 102, outlined
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): in range of 130 places, faced from 106, clear from 99, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower title at (1.2, 1.3, -1.0): in range of 79 places, faced from 31, clear from 30, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower rules at (1.2, 1.1, -1.0): in range of 37 places, faced from 16, clear from 16, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower score at (1.2, 1.0, -1.0): in range of 51 places, faced from 23, clear from 23, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/New tower label at (1.2, 0.8, -1.0): in range of 65 places, faced from 28, clear from 27
 INFO: room 6 [The old résumé] 06 - The old résumé/Chapter at (0.0, 4.1, 9.6): in range of 73 places, faced from 65, clear from 65, outlined
 INFO: room 6 [The old résumé] 06 - The old résumé/Room title at (0.0, 3.5, 9.6): in range of 81 places, faced from 73, clear from 73, outlined
 INFO: room 6 [The old résumé] 06 - The old résumé/Room subtitle at (0.0, 2.9, 9.6): in range of 79 places, faced from 71, clear from 71, outlined
@@ -513,4 +523,4 @@ INFO: plate room 4 [The infinite archive] FEAR sign plate: 1.34 by 0.70 m, 2 sig
 INFO: plate room 4 [The infinite archive] Heading plate: 4.86 by 2.10 m, 4 signs on it, smallest margin 20.0 cm
 INFO: plate room 4 [The infinite archive] STILL TRUE sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
 INFO: plate room 7 [The rage room] Rules board: 1.32 by 0.61 m, 1 sign on it, smallest margin 10.0 cm
-INFO: 206 signs checked; 0 skinned meshes in the last scan were not counted as solid.
+INFO: 210 signs checked; 0 skinned meshes in the last scan were not counted as solid.

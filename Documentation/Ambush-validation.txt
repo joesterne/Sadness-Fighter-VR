@@ -1,4 +1,4 @@
-2026-10-26 15:32:24Z
+2026-10-28 16:49:06Z
 Passed
 The dark opening, the two giant clowns and how they shrink, naming six feelings, the five replies, balloons and noses, the paperwork (sent, thrown, torn), standing up, the way out, GENTLE AMBUSH and DARK OPENING, TRY AGAIN, and saving.
 PASS: The game has ten rooms, and room 8 is The ambush
@@ -143,8 +143,8 @@ PASS: The screen counts 6 of 6
 PASS: Both clowns shrink: 1.13 to 0.80
 PASS: Silly things appear as they shrink (propeller from 2, bowtie from 4)
 PASS: The chapter is not complete yet
-PASS: All six named: the clowns are smaller than a person (0.80 times, head at 2.2 m)
-PASS: They stand upright and have come in close [lean 0.0, x -1.30, size 0.80, hit -0.58]
+PASS: All six named: the clowns are smaller than a person (0.80 times, head at 2.1 m)
+PASS: They stand upright and have come in close [lean 0.0, x -1.30, size 0.80, hit -0.56]
 PASS: They have nothing left to say
 PASS: STAND UP appears, and the chapter waits for it
 PASS: The room says so

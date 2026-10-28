@@ -1,4 +1,4 @@
-2026-10-26 15:24:59Z
+2026-10-28 16:43:33Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note

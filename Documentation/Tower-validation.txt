@@ -1,0 +1,13 @@
+2026-10-28 16:34:11Z
+Failed: 7 of 18 rows have a loose block, and every row rests on at least two full-height blocks
+The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, NEW TOWER, leaving and coming back.
+PASS: The rooftop has a tower of 54 blocks: 18 rows of three
+PASS: Every block is a box under physics, held by force rather than carried
+PASS: Every block is 15 by 5 cm (a real set at twice the size)
+PASS: NEW TOWER, the score on the sign, and the knock and fall sounds are there
+PASS: Walking onto the rooftop
+PASS: Physics steps 90 times a second on the roof (it was 50)
+PASS: Each block weighs 140 g and solves its contacts 24 times a step (8 for velocity)
+PASS: Wood on wood: friction 0.42 at rest and 0.3 sliding, no bounce, contacts from 1.5 mm
+PASS: Every block is full height or up to 1.5% short, like a real set
+FAIL: 7 of 18 rows have a loose block, and every row rests on at least two full-height blocks
