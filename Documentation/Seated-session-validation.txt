@@ -1,4 +1,4 @@
-2026-10-28 16:44:22Z
+2026-10-28 17:31:16Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height

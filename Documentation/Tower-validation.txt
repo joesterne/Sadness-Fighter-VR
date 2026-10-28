@@ -1,5 +1,5 @@
-2026-10-28 17:04:48Z
-Failed: Nothing else moved more than 4 mm (largest 1573.5 mm)
+2026-10-28 17:23:06Z
+Passed
 The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, NEW TOWER, leaving and coming back.
 PASS: The rooftop has a tower of 54 blocks: 18 rows of three
 PASS: Every block is a box under physics, held by force rather than carried
@@ -10,12 +10,42 @@ PASS: Physics steps 90 times a second on the roof (it was 50)
 PASS: Each block weighs 140 g and solves its contacts 24 times a step (8 for velocity)
 PASS: Wood on wood: friction 0.42 at rest and 0.3 sliding, no bounce, contacts from 1.5 mm
 PASS: Every block is full height or up to 2.5% short, like a real set
-PASS: 12 of 18 rows have a loose block, and every row rests on at least two full-height blocks
+PASS: 10 of 18 rows have a loose block, and every row rests on at least two full-height blocks
 PASS: The tower stands on a table, its top at 1.18 m
 PASS: The table is 3.6 m from the arrival point
 PASS: Left alone for three seconds the tower stands still (largest drift 0.0 mm)
 INFO: 54 of 54 blocks asleep
+INFO: Row drops after waking (mm, bottom to top): 0.0 0.0 0.1 0.1 0.1 0.1 0.1 0.1 0.2 0.2 0.2 0.2 0.2 0.2 0.3 0.3 0.3 0.3
+PASS: Woken, the whole tower stands still for two seconds (largest drift 0.3 mm)
 PASS: A loose block in the upper middle of the tower
-PASS: Taking hold of the loose block in row 13
+PASS: Taking hold of the loose block in row 10
+INFO: Row 10: [pulled] 29.690 mm at (0.000, 0.285, 0.000), 30.000 mm at (-0.051, 0.285, 0.000), 30.000 mm at (0.051, 0.285, 0.000)
 PASS: Drawn slowly, it slides out (200.0 mm)
-FAIL: Nothing else moved more than 4 mm (largest 1573.5 mm)
+PASS: Nothing else moved more than 4 mm (largest 0.3 mm)
+PASS: Laid on top, it counts: ON TOP  1     BEST  1
+PASS: The best tower is kept
+PASS: The tower takes it without moving (largest drift 0.5 mm)
+PASS: Taking hold of the block the third row rests on
+PASS: It will not come: the rows above press down on it (moved 0.0 mm)
+PASS: And it slips out of the hand that pulls on
+PASS: The tower is still standing (largest drift 1.7 mm)
+PASS: Another loose block, lower down
+PASS: A fingertip beside the tower comes alive
+PASS: Taken away, the fingertip stops pushing
+PASS: Pushed with a fingertip, the loose block slides through (60.7 mm)
+PASS: The touch is felt in that hand
+PASS: Nothing else moved more than 4 mm (largest 1.6 mm)
+PASS: A block in plain view of the arrival point
+PASS: Clicking a block takes hold of it
+PASS: The hint says how: ease it out, and let go of one that will not come
+PASS: Letting go puts it down
+PASS: The tower is still standing
+PASS: Knocked hard, the tower comes down and the game knows
+PASS: The sign says so, and keeps the best (IT FELL.  BEST  1)
+PASS: It is said kindly, with what to do next
+PASS: The button to press exists
+PASS: NEW TOWER stacks it again
+PASS: In a new order, so the loose blocks are somewhere new
+PASS: And it stands still (largest drift 0.0 mm)
+PASS: Leaving the roof puts physics back to its usual rate
+PASS: Coming back, the tower is as it was left

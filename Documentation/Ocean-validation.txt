@@ -1,4 +1,4 @@
-2026-10-28 16:47:30Z
+2026-10-28 17:35:11Z
 Passed
 The rowing oars, the lighthouse light, night in the ocean only, the sea sounds, the menu button that clears everything, and clean mode.
 PASS: The ocean room has oars, a lighthouse light, moving water and sea sounds
@@ -44,8 +44,8 @@ PASS: A crest breaks on the bow in spray as the waves pass (1 times in ten secon
 PASS: The sea's beat keeps time with the game (18.1 s into the wave loop)
 INFO: the wave sound was not playing in this run, so its position was not compared
 PASS: The water's beat follows the wave sound
-INFO: one rebuild of the water takes 0.57 ms in the editor (it is done 30 times a second)
-PASS: Rebuilding the water is cheap (0.57 ms)
+INFO: one rebuild of the water takes 0.58 ms in the editor (it is done 30 times a second)
+PASS: Rebuilding the water is cheap (0.58 ms)
 PASS: The surf comes from the shore itself, which moves with the horizon
 PASS: Rowing brings the surf nearer (17 m, then 11 m)
 PASS: The lighthouse has a light with two beams
