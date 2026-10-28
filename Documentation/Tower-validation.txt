@@ -1,5 +1,5 @@
-2026-10-28 16:34:11Z
-Failed: 7 of 18 rows have a loose block, and every row rests on at least two full-height blocks
+2026-10-28 17:04:48Z
+Failed: Nothing else moved more than 4 mm (largest 1573.5 mm)
 The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, NEW TOWER, leaving and coming back.
 PASS: The rooftop has a tower of 54 blocks: 18 rows of three
 PASS: Every block is a box under physics, held by force rather than carried
@@ -9,5 +9,13 @@ PASS: Walking onto the rooftop
 PASS: Physics steps 90 times a second on the roof (it was 50)
 PASS: Each block weighs 140 g and solves its contacts 24 times a step (8 for velocity)
 PASS: Wood on wood: friction 0.42 at rest and 0.3 sliding, no bounce, contacts from 1.5 mm
-PASS: Every block is full height or up to 1.5% short, like a real set
-FAIL: 7 of 18 rows have a loose block, and every row rests on at least two full-height blocks
+PASS: Every block is full height or up to 2.5% short, like a real set
+PASS: 12 of 18 rows have a loose block, and every row rests on at least two full-height blocks
+PASS: The tower stands on a table, its top at 1.18 m
+PASS: The table is 3.6 m from the arrival point
+PASS: Left alone for three seconds the tower stands still (largest drift 0.0 mm)
+INFO: 54 of 54 blocks asleep
+PASS: A loose block in the upper middle of the tower
+PASS: Taking hold of the loose block in row 13
+PASS: Drawn slowly, it slides out (200.0 mm)
+FAIL: Nothing else moved more than 4 mm (largest 1573.5 mm)
