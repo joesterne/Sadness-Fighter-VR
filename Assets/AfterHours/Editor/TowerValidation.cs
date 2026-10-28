@@ -97,6 +97,10 @@ namespace AfterHours.Editor
             yield return 3f;
             Check(!t.Fallen&&t.blocks.Max(b=>b.Drift)<.002f,"Left alone for three seconds the tower stands still (largest drift "+Mm(t.blocks.Max(b=>b.Drift))+")");
             Info(t.blocks.Count(b=>b.body.IsSleeping())+" of 54 blocks asleep");
+            // Awake, with every contact being solved, it must stand just as still: touching any block wakes the whole tower.
+            foreach(var b in t.blocks)b.body.WakeUp();
+            for(int i=0;i<20;i++){yield return .1f;var w=t.blocks.OrderByDescending(b=>b.Drift).First();if(w.Drift>.002f){Info("Awake drift "+Mm(w.Drift)+" at "+(i+1)*.1f+" s: row "+(w.level+1)+" block "+w.index+" height "+(w.height*1000).ToString("0.00")+" mm, moved "+(w.transform.position-w.RestPosition).ToString("F4"));break;}}
+            Check(!t.Fallen&&t.blocks.Max(b=>b.Drift)<.002f,"Woken, the whole tower stands still for two seconds (largest drift "+Mm(t.blocks.Max(b=>b.Drift))+")");
 
             // ---- Easing a loose block out and laying it on top
             hand=new GameObject("Tower test hand").transform;
@@ -106,7 +110,14 @@ namespace AfterHours.Editor
             hand.SetPositionAndRotation(loose.transform.position,Quaternion.identity);
             Check(loose.grab.TakeBlock(hand,false)&&loose.grab.held,"Taking hold of the loose block in row "+(loose.level+1));
             var start=loose.transform.position;
-            foreach(var x in Move(start+axis*.2f,.1f))yield return x;yield return .3f;
+            Info("Row "+(loose.level+1)+": "+string.Join(", ",t.blocks.Where(b=>b.level==loose.level).Select(b=>(b==loose?"[pulled] ":"")+(b.height*1000).ToString("0.000")+" mm at "+t.foot.InverseTransformPoint(b.transform.position).ToString("F3"))));
+            bool noted=false;var startTurn=loose.transform.rotation;
+            foreach(var x in Move(start+axis*.2f,.1f))
+            {
+                yield return x;
+                if(!noted&&Untouched()>.004f){noted=true;var w=t.blocks.Where(b=>!b.touched).OrderByDescending(b=>b.Drift).First();Info("First movement: "+Mm(w.Drift)+" with the pulled block "+Mm(Vector3.Dot(loose.transform.position-start,axis))+" out (hand "+Mm(Vector3.Dot(hand.position-start,axis))+"): row "+(w.level+1)+" block "+w.index+", moved "+(w.transform.position-w.RestPosition).ToString("F4")+", pulled block turned "+Quaternion.Angle(loose.transform.rotation,startTurn).ToString("0.0")+" deg, height off "+Mm(loose.transform.position.y-start.y));}
+            }
+            yield return .3f;
             float pulled=Vector3.Dot(loose.transform.position-start,axis);
             Check(!loose.grab.Slipped&&pulled>.15f,"Drawn slowly, it slides out ("+Mm(pulled)+")");
             Check(!t.Fallen&&Untouched()<.004f,"Nothing else moved more than 4 mm (largest "+Mm(Untouched())+")");
