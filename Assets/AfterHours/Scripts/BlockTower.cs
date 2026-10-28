@@ -10,8 +10,8 @@ namespace AfterHours
     // What makes it feel real:
     //   - Blocks are twice the size of a real set (3 x 5 x 15 cm, 140 g) so hands and controllers can work them, with the same proportions,
     //     wood-on-wood friction and no bounce.
-    //   - Like a real set, blocks are not all quite the same height. In about half the rows the middle block is up to 2.5% short and carries
-    //     nothing, in a few an edge block is, and the rest are tight. Feeling for the loose ones is the game.
+    //   - Like a real set, blocks are not all quite the same height. In about two rows in three the middle block is up to 2.5% short and
+    //     carries nothing, and the rest are tight. Feeling for the loose ones is the game.
     //   - A held block is not stuck to the hand. It is pulled toward it with about the force of a pinch, so a block with the tower's
     //     weight on it will not come, and the hand slips off if it goes too far. A fingertip is a small ball pushed the same way.
     //   - While the player is on the roof, physics runs at 90 steps a second instead of 50, every block solves its contacts 24 times a step,
@@ -110,10 +110,9 @@ namespace AfterHours
             foreach(var t in tips)if(t)Physics.IgnoreCollision(t.GetComponent<Collider>(),body,true);
         }
 
-        // Stacks a fresh tower: the blocks shuffled into new places, every block still and asleep. Each row is one of three kinds: the middle
-        // block loose (half the rows), all three tight (three in ten), or an edge block loose (one in five). Tight blocks are exactly full
-        // height, so the rows above always rest on two or three blocks at once (over a loose edge block they can settle by
-        // the half millimetre it is short, no more).
+        // Stacks a fresh tower: the blocks shuffled into new places, every block still and asleep. Each row is one of two kinds: the middle
+        // block loose (two rows in three) or all three tight. Tight blocks are exactly full height, so the rows above always rest squarely
+        // on both edge blocks. (A loose edge block would leave the row above balanced on the middle block's edge, and the tower leans.)
         public void NewTower(bool announce=true)
         {
             var d=director?director:GameDirector.Instance;
@@ -125,7 +124,7 @@ namespace AfterHours
             for(int level=0;level<Levels;level++)
             {
                 RowBase[level]=y;
-                double kind=random.NextDouble();int loose=kind<.5?1:kind<.8?-1:random.Next(2)*2;
+                int loose=random.NextDouble()<.65?1:-1;
                 for(int k=0;k<PerLevel;k++)
                 {
                     var b=blocks[order[level*PerLevel+k]];
