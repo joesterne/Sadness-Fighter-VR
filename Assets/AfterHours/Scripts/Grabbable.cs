@@ -20,6 +20,16 @@ namespace AfterHours
         // The ambush's paperwork and the kitchen's mugs can be tossed, as a quiet extra: let go while the hand is moving and with nothing pointed at,
         // and it flies on. It is never helped toward a target, and it stays wherever it lands.
         public bool tossable;
+        // The rooftop tower's blocks are held by force, not carried: the hand pulls the block toward itself about as hard as a pinch can,
+        // and the block stays under physics, so the tower pushes back. A block the tower is pressing down on will not come, and if the
+        // hand gets too far ahead the block slips out of it (Slipped). Held close, it follows the hand's position and turn. Taken from
+        // across the room with a pointer it only slides, keeping its turn, so it can be drawn straight out of the tower.
+        public bool physical;
+        public const float HoldForce=7,HoldSpeed=2,HoldSpin=12,HoldSpinAcceleration=400,SlipDistance=.1f;
+        public bool Slipped { get; private set; }
+        // How far a physically held block is from where the hand wants it.
+        public float HoldError { get; private set; }
+        bool farHold;Vector3 farFrom,farHand;Quaternion farRotation;float slipTime;
         public Transform Holder { get; private set; }
         // When the hand last closed on it (game clock). A box drawn in from across the room is moving fast for a moment; that is not a slam.
         public float TakenAt { get; private set; } = -10;
@@ -56,8 +66,42 @@ namespace AfterHours
             pullStart=pull?Time.time:-1;pullFrom=transform.position;pullFromRotation=transform.rotation;
             return true;
         }
+        // Takes a tower block (see physical). far: drawn with the pointer, so it only slides with the hand.
+        public bool TakeBlock(Transform holder,bool far)
+        {
+            Initialize();if(held||processed||!physical)return false;
+            if(sending){StopAllCoroutines();sending=false;}
+            thrown=false;trailCount=0;pullStart=-1;TakenAt=Time.time;Slipped=false;slipTime=0;HoldError=0;
+            Holder=holder;held=true;Body.isKinematic=false;Body.WakeUp();IgnorePlayer(true);
+            var inverse=Quaternion.Inverse(holder.rotation);holdRotation=inverse*transform.rotation;holdPosition=inverse*(transform.position-holder.position);
+            farHold=far;farFrom=Body.position;farHand=holder.position;farRotation=Body.rotation;
+            return true;
+        }
+        void FixedUpdate()
+        {
+            if(!physical||!held||!Holder||Body.isKinematic)return;
+            Vector3 target;Quaternion turn;
+            if(farHold){target=farFrom+(Holder.position-farHand);turn=farRotation;}
+            else{target=Holder.position+Holder.rotation*holdPosition;turn=Holder.rotation*holdRotation;}
+            float dt=Time.fixedDeltaTime;var error=target-Body.position;HoldError=error.magnitude;
+            // Toward the hand, no faster than a hand moves a block, with no more force than a pinch. Its weight is carried too.
+            var wanted=Vector3.ClampMagnitude(error/dt*.5f,HoldSpeed);
+            Body.AddForce(Vector3.ClampMagnitude(Body.mass*((wanted-Body.linearVelocity)/dt-Physics.gravity),HoldForce));
+            (turn*Quaternion.Inverse(Body.rotation)).ToAngleAxis(out float angle,out Vector3 axis);
+            if(angle>180)angle-=360;
+            var spin=float.IsNaN(axis.x)||float.IsInfinity(axis.x)?Vector3.zero:Vector3.ClampMagnitude(axis*(angle*Mathf.Deg2Rad/dt*.5f),HoldSpin);
+            Body.AddTorque(Vector3.ClampMagnitude((spin-Body.angularVelocity)/dt,HoldSpinAcceleration),ForceMode.Acceleration);
+            if(HoldError>SlipDistance){slipTime+=dt;if(slipTime>.15f)Slipped=true;}else slipTime=0;
+        }
         public void Release()
         {
+            if(physical)
+            {
+                // A block let go keeps the hand's movement, no faster than a gentle toss.
+                held=false;Holder=null;IgnorePlayer(false);HoldError=0;
+                if(!processed){Body.isKinematic=false;Body.linearVelocity=Vector3.ClampMagnitude(Body.linearVelocity,2.5f);}
+                return;
+            }
             held=false;Holder=null;IgnorePlayer(false);
             if(tool){SetLayer(0);ReturnHome();return;}
             // An oar stays in its lock and eases back to rest by itself.
@@ -66,7 +110,7 @@ namespace AfterHours
         }
         void LateUpdate()
         {
-            if(held && Holder)
+            if(held && Holder && !physical)
             {
                 // An oar turns about its lock to follow the hand. Each push through the water is one stroke.
                 if(paddle&&oar)
@@ -213,7 +257,7 @@ namespace AfterHours
         }
         void OnCollisionEnter(Collision collision)
         {
-            if(held||paddle||Time.time<nextImpact)return;float speed=collision.relativeVelocity.magnitude;if(speed<.6f)return;
+            if(held||paddle||physical||Time.time<nextImpact)return;float speed=collision.relativeVelocity.magnitude;if(speed<.6f)return;
             nextImpact=Time.time+.15f;var d=GameDirector.Instance;if(d)d.PlayAt(d.place,transform.position,Mathf.Clamp01(speed/3f)*.7f);
         }
         public void MarkProcessed(Transform destination)

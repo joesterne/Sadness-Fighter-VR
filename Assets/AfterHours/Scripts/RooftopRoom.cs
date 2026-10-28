@@ -21,6 +21,8 @@ namespace AfterHours
         public Transform[] drifting;
         public float[] speeds;
         public Transform balloon;
+        // The tower of blocks on its table, to play while resting.
+        public BlockTower tower;
 
         struct Look{public Color sky,equator,ground,fog,sun;public float sunIntensity,fogStart,fogEnd;public Quaternion sunRotation;public Material skybox;}
         // The sun is ahead of the player and low, so the faces they see are lit by bounce: the ambient is bright and warm, and the sun itself golden.

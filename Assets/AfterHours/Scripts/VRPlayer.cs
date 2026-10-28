@@ -251,6 +251,8 @@ namespace AfterHours
             // A held trigger or pinch must be released after travel or tracking recovery before it can act again.
             if(inputBlocked[index])
             {wasSelect[index]=select;wasGrip[index]=grab;if(!select&&!grab)inputBlocked[index]=false;return;}
+            // A tower block the tower would not give up slips out of the hand.
+            if(held[index]&&held[index].physical&&held[index].Slipped){held[index].Release();held[index]=null;aimedTarget[index]=null;Pulse(controller);carrying=false;}
             // Pointing at another tool on the wall while holding one swaps them: the one in hand goes back to its place.
             if(held[index]&&held[index].tool&&grab&&!wasGrip[index]&&item&&item.tool&&!item.held&&item!=held[index]){held[index].Release();held[index]=null;}
             // A tool in the other hand changes hands when this one closes on it.
@@ -263,15 +265,18 @@ namespace AfterHours
             else if(!held[index] && grab&&!wasGrip[index])
             {
                 Grabbable nearby=null;float closest=.23f;
-                foreach(var col in Physics.OverlapSphere(grip.position,.23f,~0,QueryTriggerInteraction.Ignore))
-                {var candidate=col.GetComponentInParent<Grabbable>();if(candidate&&!candidate.held&&!candidate.processed){float d=Vector3.Distance(grip.position,col.ClosestPoint(grip.position));if(d<closest){nearby=candidate;closest=d;}}}
+                // At the rooftop tower, blocks are packed tight: the one between the finger and thumb (or at the front of the controller) is taken.
+                var tower=BlockTower.Playing;var block=!desktop&&tower?tower.Nearest(PinchPoint(index,trackedHand,grip),.04f):null;
+                if(block)nearby=block.grab;
+                else foreach(var col in Physics.OverlapSphere(grip.position,.23f,~0,QueryTriggerInteraction.Ignore))
+                {var candidate=col.GetComponentInParent<Grabbable>();if(candidate&&!candidate.held&&!candidate.processed&&!candidate.physical){float d=Vector3.Distance(grip.position,col.ClosestPoint(grip.position));if(d<closest){nearby=candidate;closest=d;}}}
                 var pick=nearby?nearby:item;
                 // Close grabs hold the object where the hand closed on it. Distance grabs draw it along the pointer, just clear of the hand.
                 Vector3? offset=desktop?grip.forward*.13f:nearby?(Vector3?)null:pick?direction*(.06f+Extent(pick,direction)):Vector3.zero;
                 // A tool goes straight into a fixed grip: the handle in the palm, the bat pointing forward and up.
                 bool takeTool=pick&&pick.tool;var holder=takeTool&&desktop?desktopToolGrip:grip;Quaternion? toolRotation=null;
                 if(takeTool){offset=desktop?Vector3.zero:direction*.07f;toolRotation=ToolRotation(desktop,direction);}
-                if(pick&&(nearby||Vector3.Distance(origin,pick.transform.position)<GrabRange)&&pick.Take(holder,offset,!nearby,toolRotation))
+                if(pick&&(nearby||Vector3.Distance(origin,pick.transform.position)<GrabRange)&&(pick.physical?pick.TakeBlock(holder,!nearby||desktop):pick.Take(holder,offset,!nearby,toolRotation)))
                 {
                     held[index]=pick;ShowHint(HoldHint(pick),4);
                     var d=GameDirector.Instance;d.PlayAt(d.grab,pick.transform.position,.6f);Haptic(HapticPattern.Pickup,controller);
@@ -323,6 +328,7 @@ namespace AfterHours
         {
             if(item.paddle)return "The oar turns at its lock. Push the handle forward to drive the blade back through the water, then draw it toward you. Or press ROW.";
             if(item.tool&&item.GetComponent<Machete>())return "The machete stays in your hand. Swing it through the webs: short chops count. "+Wording.Pick("Reach over and pinch it with your other hand to swap hands.","Reach over and squeeze it with your other controller to swap hands.");
+            if(item.physical)return "Ease it out slowly. If it will not come, the tower is resting on it: let go and try another. Then lay it on top.";
             if(item.tool)return item.label+" stays in your hand. Swing at the old computer: short swings count. Point at another tool and "+Wording.PutBack+" to swap, or at the rack to put it back.";
             string toss=item.throwable&&CanThrow?" Or throw it.":item.tossable&&item.GetComponent<Mug>()&&CanThrow?" Or throw it: a mug will break.":"";
             foreach(var t in GameDirector.Instance.Targets)if(t&&t.Accepts(item))return item.label.Replace("\n"," ")+"  /  "+t.prompt+toss;
@@ -333,7 +339,8 @@ namespace AfterHours
             Grabbable best=null;float bestAngle=AssistAngle;
             foreach(var g in GameDirector.Instance.Grabbables)
             {
-                if(!g||g.held||g.processed||g.sending||!g.gameObject.activeInHierarchy)continue;
+                // Tower blocks are packed too close for a near miss to mean one of them.
+                if(!g||g.held||g.processed||g.sending||g.physical||!g.gameObject.activeInHierarchy)continue;
                 var to=g.transform.position-origin;float distance=to.magnitude;if(distance>GrabRange||distance<.05f)continue;
                 float angle=Vector3.Angle(direction,to);if(angle>=bestAngle)continue;
                 if(Blocked(origin,g.transform.position,g.transform,null))continue;
@@ -416,6 +423,37 @@ namespace AfterHours
         // Puts a held object down (a tool goes back to its rack).
         public void Drop(Grabbable item){for(int i=0;i<2;i++)if(item&&held[i]==item){item.Release();held[i]=null;aimedTarget[i]=null;}}
         public bool IsHolding(Grabbable item)=>item&&(held[0]==item||held[1]==item);
+        public Grabbable HoldingIn(int index)=>held[index];
+        // Where a hand takes hold: between the thumb and index fingertips of a tracked hand, or just in front of a controller.
+        Vector3 PinchPoint(int index,bool trackedHand,Transform grip)
+        {
+            if(trackedHand&&FingerTips(index,out var indexTip,out var thumbTip))return (indexTip+thumbTip)*.5f;
+            return grip.position+grip.rotation*new Vector3(0,-.01f,.05f);
+        }
+        readonly Transform[] indexTips=new Transform[2],thumbTips=new Transform[2];
+        bool FingerTips(int index,out Vector3 indexTip,out Vector3 thumbTip)
+        {
+            indexTip=thumbTip=default;
+            var hand=index==0?leftHand:rightHand;var skeleton=hand?hand.GetComponent<OVRSkeleton>():null;
+            if(!skeleton||!skeleton.IsInitialized||!skeleton.IsDataValid||skeleton.Bones==null)return false;
+            if(!indexTips[index]||!thumbTips[index])
+                foreach(var bone in skeleton.Bones){if(bone==null||!bone.Transform)continue;var id=bone.Id.ToString();if(id.EndsWith("IndexTip"))indexTips[index]=bone.Transform;else if(id.EndsWith("ThumbTip"))thumbTips[index]=bone.Transform;}
+            if(!indexTips[index]||!thumbTips[index])return false;
+            indexTip=indexTips[index].position;thumbTip=thumbTips[index].position;return true;
+        }
+        // The fingertip that nudges tower blocks: a tracked hand's index fingertip, or the front of a controller. None while that hand
+        // holds something or is pinching or squeezing (taking hold), and none on desktop.
+        public bool TryFingertip(int index,out Vector3 tip)
+        {
+            tip=default;if(!IsXR||busy||held[index]||wasSelect[index]||wasGrip[index])return false;
+            OVRHand hand=index==0?leftHand:rightHand;var controller=index==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch;
+            if(hand&&hand.IsTracked&&hand.HandConfidence==OVRHand.TrackingConfidence.High){if(!FingerTips(index,out tip,out _))return false;return true;}
+            if(OVRInput.IsControllerConnected(controller)&&OVRInput.GetControllerPositionTracked(controller))
+            {var anchor=index==0?rig.leftControllerAnchor:rig.rightControllerAnchor;tip=anchor.position+anchor.rotation*new Vector3(0,-.015f,.055f);return true;}
+            return false;
+        }
+        // A haptic pattern in one hand (0 left, 1 right), whatever it holds.
+        public void PulseHand(int index,HapticPattern pattern,float strength=1)=>Haptic(pattern,index==0?OVRInput.Controller.LTouch:OVRInput.Controller.RTouch,Mathf.Clamp01(strength));
         // A buzz in the controller holding this object, stronger for a harder hit: a thud for a hit, a crunch for a break, a snap for a cut.
         // Tracked hands have no haptics.
         public void PulseFor(Grabbable item,float strength,HapticPattern pattern=HapticPattern.Hit)
@@ -429,7 +467,7 @@ namespace AfterHours
             for(int i=0;i<2;i++)
             {
                 var item=held[i];
-                if(item){if(sendHome&&!item.tool&&!item.paddle)item.ReturnHome();else item.Release();}
+                if(item){if(sendHome&&!item.tool&&!item.paddle&&!item.physical)item.ReturnHome();else item.Release();}
                 held[i]=null;aimedTarget[i]=null;teleportReady[i]=teleportGesture[i]=false;inputBlocked[i]=true;
             }
         }

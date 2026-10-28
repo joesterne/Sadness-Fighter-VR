@@ -78,7 +78,7 @@ namespace AfterHours
         {
             var room=d.rooms[RooftopRoom.Room].root.AddComponent<RooftopRoom>();room.director=d;d.rooftop=room;
             Sound("Ambience - Rooftop",.55f);
-            RooftopDeck();RooftopBoard();RooftopBunting();RooftopFurniture();RooftopHutAndTower();RooftopSkyline();RooftopSky(room);
+            RooftopDeck();RooftopBoard();RooftopBunting();RooftopFurniture();RooftopBlockTower(room);RooftopHutAndTower();RooftopSkyline();RooftopSky(room);
         }
 
         // ----- The deck: warm boards, chunky cream parapets with sky-blue caps on all four sides, and a bright rug -----
@@ -233,6 +233,40 @@ namespace AfterHours
                 var seat=Art.Box("Chair seat",new Vector3(k*.21f,.37f,.14f),new Vector3(.2f,.035f,.64f),m,false,c,.01f);seat.transform.localEulerAngles=new Vector3(-10,0,0);
                 var back=Art.Box("Chair back",new Vector3(k*.21f,.48f,-.4f),new Vector3(.2f,.9f,.035f),m,false,c,.01f);back.transform.localEulerAngles=new Vector3(-38,0,0);
             }
+        }
+
+        // ----- A tower of wooden blocks on a little felt-topped table, ahead and to the right of the arrival point, with a sign and NEW TOWER -----
+        // Everything here is lower than the board's lettering is seen over (the tower's top is at 1.18 m), so nothing new stands in its way.
+        static void RooftopBlockTower(RooftopRoom room)
+        {
+            var table=Art.Group("Tower table",new Vector3(1.9f,0,-1f));
+            const float top=.64f;
+            var tableTop=Art.Box("Tower table top",new Vector3(0,top-.025f,0),new Vector3(.8f,.05f,.8f),Art.ToyWood,true,table,.02f);
+            Art.Box("Tower table felt",new Vector3(0,top+.0008f,0),new Vector3(.68f,.002f,.68f),Art.ToyLeafDark,false,table,0f);
+            for(int sx=-1;sx<=1;sx+=2)for(int sz=-1;sz<=1;sz+=2)Art.Box("Tower table leg",new Vector3(sx*.33f,(top-.05f)/2,sz*.33f),new Vector3(.06f,top-.05f,.06f),Art.ToyWoodDark,true,table,.015f);
+            var foot=Art.Group("Block tower",new Vector3(0,top,0),table);
+            var tower=foot.gameObject.AddComponent<BlockTower>();tower.director=d;tower.foot=foot;tower.tableTop=tableTop.GetComponent<Collider>();room.tower=tower;
+            tower.knock=SoundBank.Get("SFX - Block knock");tower.tumble=SoundBank.Get("SFX - Tower fall");
+            var blocks=new TowerBlock[BlockTower.Levels*BlockTower.PerLevel];
+            for(int level=0;level<BlockTower.Levels;level++)for(int k=0;k<BlockTower.PerLevel;k++)
+            {
+                // Stacked at full height here; every new tower in the game shuffles them and gives each its own height.
+                bool alongX=level%2==0;float across=(k-1)*(BlockTower.Width+.0006f),y=(level+.5f)*BlockTower.Height;
+                var b=Art.Box("Tower block",alongX?new Vector3(0,y,across):new Vector3(across,y,0),new Vector3(BlockTower.Length,BlockTower.Height,BlockTower.Width),Art.ToyWood,true,foot,.004f);
+                if(!alongX)b.transform.localEulerAngles=new Vector3(0,90,0);
+                var body=b.AddComponent<Rigidbody>();body.mass=BlockTower.Mass;body.interpolation=RigidbodyInterpolation.Interpolate;
+                var grab=b.AddComponent<Grabbable>();grab.label="Block";grab.category="block";grab.room=RooftopRoom.Room;grab.physical=true;
+                var block=b.AddComponent<TowerBlock>();block.tower=tower;block.index=level*BlockTower.PerLevel+k;block.level=level;blocks[block.index]=block;
+            }
+            tower.blocks=blocks;
+            // The sign stands on a post on the near side of the table, facing the arrival point, with NEW TOWER under it.
+            Art.Box("Tower sign post",new Vector3(1.2f,.5f,-.98f),new Vector3(.06f,1f,.06f),Art.ToyWoodDark,true,null,.015f);
+            Art.Box("Tower sign",new Vector3(1.2f,1.12f,-1f),new Vector3(.7f,.44f,.04f),Art.Navy,false,null,.02f);
+            Art.Box("Tower sign trim",new Vector3(1.2f,1.355f,-1.005f),new Vector3(.74f,.04f,.05f),Art.ToySun,false,null,.01f);
+            Art.Text("Tower title","A TOWER OF BLOCKS",new Vector3(1.2f,1.27f,-1.025f),.1f,ivory,.66f);
+            Art.Text("Tower rules","Ease a loose block out and lay it on top.\nPinch or squeeze to hold. A fingertip nudges.",new Vector3(1.2f,1.13f,-1.025f),.06f,muted,.66f);
+            tower.score=Art.Text("Tower score","ON TOP  0     BEST  0",new Vector3(1.2f,.97f,-1.025f),.075f,new Color(1f,.85f,.45f),.66f);
+            Art.Button("New tower","NEW TOWER",new Vector3(1.2f,.78f,-1f),new Vector3(.44f,.14f,.06f),Art.ToySky,ActionKind.NewTower,d);
         }
 
         // ----- A stairwell hut in the back-left corner and a wooden water tower in the back-right -----

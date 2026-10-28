@@ -1037,6 +1037,36 @@ def sfx_hiss():
     return fade_edges(normalise(reverb(x, 0.3, 0.1), -8))
 
 
+def wood_tock(seconds=0.25, base=None):
+    # A hard maple block knocked against another: a click, then a few short, hollow wooden resonances.
+    n = int(seconds * SR); tt = np.arange(n) / SR
+    base = base if base is not None else rng.uniform(820, 1150)
+    x = bandpass(white(n), 2000, 9000, 2) * decay(n, 0.0025) * 0.7
+    for ratio, level, ring in ((1.0, 1.0, 0.035), (2.68, 0.45, 0.018), (4.1, 0.22, 0.01)):
+        f = base * ratio * rng.uniform(0.98, 1.02)
+        x += np.sin(2 * np.pi * f * tt + rng.uniform(0, 6.28)) * decay(n, ring) * level
+    return x
+
+def sfx_block_knock():
+    # One block of the rooftop tower tapped or knocked.
+    x = wood_tock(0.25)
+    return fade_edges(normalise(reverb(x, 0.35, 0.08), -6))
+
+def sfx_tower_fall():
+    # The tower coming down: a lean, then a cascade of wooden knocks that thins out, blocks thudding onto the felt table and the deck.
+    seconds = 2.6; n = int(seconds * SR); x = np.zeros(n)
+    for _ in range(70):
+        at = 0.12 + rng.exponential(0.45)
+        if at > seconds - 0.3: continue
+        i = int(at * SR); k = wood_tock(0.25, rng.uniform(650, 1400)) * rng.uniform(0.25, 1.0) * np.exp(-at / 1.2)
+        x[i:i + len(k)] += k[:n - i]
+    for _ in range(8):
+        at = rng.uniform(0.3, 1.6); i = int(at * SR); m = int(0.12 * SR)
+        x[i:i + m] += thump(m, rng.uniform(90, 140), 0.03)[:n - i] * rng.uniform(0.3, 0.6)
+    x += lowpass(white(n), 600, 1) * env_adsr(n, 0.25, 1.6, 3) * 0.08
+    return fade_edges(normalise(reverb(x, 0.6, 0.12), -4))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -1063,6 +1093,7 @@ def main(folder):
         'Music - Slow tide': music_tide, 'Music - Paper lanterns': music_lanterns, 'Music - Night window': music_night,
         'Music - Overtime': music_overtime, 'SFX - Paper jam': sfx_paper_jam,
         'Ambience - Records room': amb_recordsroom, 'SFX - Slash': sfx_slash, 'SFX - Web cut': sfx_web_cut, 'SFX - Web grow': sfx_web_grow, 'SFX - Fire': sfx_fire, 'SFX - Hiss': sfx_hiss,
+        'SFX - Block knock': sfx_block_knock, 'SFX - Tower fall': sfx_tower_fall,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)
