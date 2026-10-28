@@ -184,7 +184,9 @@ namespace AfterHours.Editor
             yield return Menu(ActionKind.CloseMenu);Check(!d.menu.IsOpen,"Menu CLOSE closes the menu");
             yield return Click(Button(ActionKind.Help));Check(d.kitchen.helped,"Help input releases machine pressure");
             var cup=d.kitchen.cup;d.player.Place(new Vector3(238.3f,.04f,2.9f),0);yield return Delay();Aim(cup.transform.position);Press(true);yield return Delay();Check(cup.held,"Input grabs the coffee cup");
-            d.player.Shift(new Vector3(240,.04f,2.96f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay();Press(false);yield return Delay(.7f);
+            // Stand back a little and look at the spout, so the mug in hand is held short of the cup there rather than inside it (pushed into it, it
+            // would shove the cup off the counter, as a real hand would).
+            d.player.Shift(new Vector3(240,.04f,2.5f)-d.player.transform.position);d.player.Head.rotation=Quaternion.LookRotation(d.kitchen.nozzle.position-d.player.Head.position);yield return Delay();Press(false);yield return Delay(.7f);
             // The middle pour is made with the machine's lever, which pulls down as it brews.
             var kitchen=d.kitchen;var lever=kitchen.lever.GetComponentInChildren<Interactable>();float leverRest=kitchen.lever.localEulerAngles.z;
             for(int i=0;i<3;i++)
@@ -194,22 +196,20 @@ namespace AfterHours.Editor
                 yield return Delay(1);
             }
             Check(d.rooms[3].complete&&d.kitchen.fills==3,"Cup placement and three pours complete kitchen");
-            results.Add("INFO: after three pours: the cup at "+kitchen.transform.InverseTransformPoint(kitchen.cup.transform.position).ToString("F3")+", "+Vector3.Distance(kitchen.cup.transform.position,kitchen.nozzle.position).ToString("0.000")+" m from the spout, tilted "+Vector3.Angle(kitchen.cup.transform.up,Vector3.up).ToString("0")+" deg, kinematic "+kitchen.cup.Body.isKinematic+", sleeping "+kitchen.cup.Body.IsSleeping()+", speed "+kitchen.cup.Body.linearVelocity.magnitude.ToString("0.000")+", breaks "+string.Join(",",kitchen.mugs.Select(m=>m.breaks)));
             yield return Delay(.7f);
             Check(Mathf.Abs(Mathf.DeltaAngle(kitchen.lever.localEulerAngles.z,leverRest))<5,"The lever goes back up");
             // The steam wand blows a plume, even though the machine was faulty.
             yield return Click(Button(ActionKind.Steam));Check(kitchen.steams==1&&kitchen.steam.particleCount>0,"Pointing at the steam wand blows steam");
             // A cupboard opens by pointing at it. The fifth hides an orange mug, which can be carried to the spout like any other cup and filled for a pin.
-            results.Add("INFO: after the steam: the cup at "+kitchen.transform.InverseTransformPoint(kitchen.cup.transform.position).ToString("F3")+", "+Vector3.Distance(kitchen.cup.transform.position,kitchen.nozzle.position).ToString("0.000")+" m from the spout, tilted "+Vector3.Angle(kitchen.cup.transform.up,Vector3.up).ToString("0")+" deg, kinematic "+kitchen.cup.Body.isKinematic+", sleeping "+kitchen.cup.Body.IsSleeping()+", speed "+kitchen.cup.Body.linearVelocity.magnitude.ToString("0.000")+", breaks "+string.Join(",",kitchen.mugs.Select(m=>m.breaks)));
             d.player.Place(new Vector3(241.9f,.04f,2.9f),0);yield return Delay();
             Check(!d.wardrobe.Has("orange-pin")&&!kitchen.orangeSeen,"Nothing orange has been found yet");
             yield return Click(Button(ActionKind.Cabinet,KitchenRoom.OrangeCabinet));yield return Delay(.9f);
             var cupboard=kitchen.doors[KitchenRoom.OrangeCabinet];
             Check(cupboard.open&&cupboard.Settled&&Mathf.Abs(cupboard.angle)>=90&&kitchen.orangeSeen&&kitchen.opens==1,"Pointing at a cupboard opens its door, and the orange mug is inside");Capture("Kitchen-Cupboard");
             var hidden=kitchen.orangeMug.item;Aim(hidden.transform.position);Press(true);yield return Delay();Check(hidden.held,"Input takes the orange mug from the open cupboard");
-            results.Add("INFO: with the orange mug in hand: the cup at "+kitchen.transform.InverseTransformPoint(kitchen.cup.transform.position).ToString("F3")+", "+Vector3.Distance(kitchen.cup.transform.position,kitchen.nozzle.position).ToString("0.000")+" m from the spout, tilted "+Vector3.Angle(kitchen.cup.transform.up,Vector3.up).ToString("0")+" deg, kinematic "+kitchen.cup.Body.isKinematic+", sleeping "+kitchen.cup.Body.IsSleeping()+", speed "+kitchen.cup.Body.linearVelocity.magnitude.ToString("0.000")+", breaks "+string.Join(",",kitchen.mugs.Select(m=>m.breaks)));
-            d.player.Shift(new Vector3(240,.04f,2.96f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay();Press(false);
-            for(int i=0;i<14;i++){results.Add("INFO: "+(i*.1f).ToString("0.0")+" s after letting go: orange at "+kitchen.transform.InverseTransformPoint(hidden.transform.position).ToString("F2")+" sending "+hidden.sending+" kinematic "+hidden.Body.isKinematic+"; cup at "+kitchen.transform.InverseTransformPoint(kitchen.cup.transform.position).ToString("F2")+" sending "+kitchen.cup.sending+" kinematic "+kitchen.cup.Body.isKinematic+" breaks "+kitchen.mugs[0].breaks);yield return Delay(.1f);}
+            // Stand back a little and look at the spout, so the mug in hand is held short of the cup there rather than inside it (pushed into it, it
+            // would shove the cup off the counter, as a real hand would).
+            d.player.Shift(new Vector3(240,.04f,2.5f)-d.player.transform.position);d.player.Head.rotation=Quaternion.LookRotation(kitchen.nozzle.position-d.player.Head.position);yield return Delay();Press(false); yield return Delay(1.4f);
             results.Add("INFO: orange mug "+Vector3.Distance(hidden.transform.position,kitchen.nozzle.position).ToString("0.00")+" m from the spout (held "+hidden.held+", sending "+hidden.sending+"), the cup "+Vector3.Distance(kitchen.cup.transform.position,kitchen.transform.TransformPoint(new Vector3(-1.7f,1.23f,4.6f))).ToString("0.00")+" m from its counter spot at "+kitchen.transform.InverseTransformPoint(kitchen.cup.transform.position).ToString("F2")+", breaks "+string.Join(",",kitchen.mugs.Select(m=>m.breaks)));
             Check(Vector3.Distance(hidden.transform.position,kitchen.nozzle.position)<.44f&&Vector3.Distance(kitchen.cup.transform.position,kitchen.transform.TransformPoint(new Vector3(-1.7f,1.23f,4.6f)))<.4f&&kitchen.mugs.All(m=>m.breaks==0),"The orange mug glides to the spout and the mug that was there goes back to the counter; nothing breaks");
             yield return Click(Button(ActionKind.Brew));
