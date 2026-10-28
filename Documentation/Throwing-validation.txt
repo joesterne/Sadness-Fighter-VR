@@ -1,4 +1,4 @@
-2026-10-26 17:15:22Z
+2026-10-28 18:22:16Z
 Passed
 Throwing the boxes into the truck, hands and controller wording that follows the headset, the Quest 2 picture profile, and foveated rendering.
 PASS: The heavy room has five boxes, a truck bay and a send target
@@ -24,11 +24,13 @@ PASS: A change that has lasted less than 0.6 seconds is ignored
 PASS: A change that flickers back resets the wait
 PASS: A change that holds for 0.6 seconds switches the wording back to hands
 PASS: With controllers, the grip or the trigger holds an object
-PASS: The lobby signs and the menu tip have a wording for each kind of input (3 signs)
-PASS: Controller wording on 'Menu tip' says nothing of pinching or palms
-PASS: Hands wording on 'Menu tip' says nothing of triggers, sticks or B / Y
+PASS: The lobby signs and the menu tip have a wording for each kind of input (4 signs)
 PASS: Controller wording on 'Comfort note' says nothing of pinching or palms
 PASS: Hands wording on 'Comfort note' says nothing of triggers, sticks or B / Y
+PASS: Controller wording on 'Tower rules' says nothing of pinching or palms
+PASS: Hands wording on 'Tower rules' says nothing of triggers, sticks or B / Y
+PASS: Controller wording on 'Menu tip' says nothing of pinching or palms
+PASS: Hands wording on 'Menu tip' says nothing of triggers, sticks or B / Y
 PASS: Controller wording on 'Move instructions' says nothing of pinching or palms
 PASS: Hands wording on 'Move instructions' says nothing of triggers, sticks or B / Y
 PASS: The lobby board says pinch to a player using hands
@@ -49,9 +51,9 @@ INFO: before letting go the box had moved 1.44 m with the player moving 0.00 m (
 INFO: after letting go: thrown seen True, sending seen True, peak speed 6.4, processed True, held False
 PASS: The box was thrown and flew at 6.4 m/s
 PASS: A throw straight at the truck is caught and counted once
-INFO: frames after the catch: t10.95 sending 1 at (160.16, 1.98, 4.55) | t10.97 sending 1 at (160.09, 1.88, 4.71) | t10.99 sending 1 at (160.01, 1.77, 4.87) | t11.01 sending 1 at (159.91, 1.63, 5.06) | t11.03 sending 1 at (159.79, 1.47, 5.28) | t11.05 sending 1 at (159.68, 1.31, 5.50) | t11.07 sending 1 at (159.56, 1.16, 5.71) | t11.09 sending 1 at (159.46, 1.02, 5.90) | t11.11 sending 1 at (159.38, 0.90, 6.06) | t11.13 sending 1 at (159.32, 0.83, 6.16) | t11.15 sending 1 at (159.30, 0.80, 6.20) | t11.17 sending 1 at (159.30, 0.80, 6.20) | t11.19 sending 0 at (159.30, 0.80, 6.20)
+INFO: frames after the catch: t10.91 sending 1 at (160.17, 2.00, 4.50) | t10.93 sending 1 at (160.09, 1.88, 4.71) | t10.95 sending 1 at (160.01, 1.77, 4.87) | t10.97 sending 1 at (159.91, 1.63, 5.06) | t10.99 sending 1 at (159.79, 1.47, 5.28) | t11.01 sending 1 at (159.68, 1.31, 5.50) | t11.03 sending 1 at (159.56, 1.16, 5.71) | t11.05 sending 1 at (159.46, 1.02, 5.90) | t11.07 sending 1 at (159.38, 0.90, 6.06) | t11.09 sending 1 at (159.32, 0.83, 6.16) | t11.11 sending 1 at (159.30, 0.80, 6.20) | t11.13 sending 1 at (159.30, 0.80, 6.20) | t11.15 sending 0 at (159.30, 0.80, 6.20)
 INFO: the caught box rests at (159.30, 0.80, 6.20); places in the truck: (159.30, 0.80, 6.20) (160.00, 0.80, 6.20) (160.70, 0.80, 6.20) (159.30, 1.40, 6.20) (160.00, 1.40, 6.20); distances 0.00 0.70 1.40 0.60 0.92
-INFO: and a moment later: t11.19 sending 0 at (159.30, 0.80, 6.20) | t11.21 sending 0 at (159.30, 0.80, 6.20) | t11.23 sending 0 at (159.30, 0.80, 6.20) | t11.25 sending 0 at (159.30, 0.80, 6.20) | t11.27 sending 0 at (159.30, 0.80, 6.20) | t11.29 sending 0 at (159.30, 0.80, 6.20); it was 0.000 m from its place when the glide ended
+INFO: and a moment later: t11.15 sending 0 at (159.30, 0.80, 6.20) | t11.17 sending 0 at (159.30, 0.80, 6.20) | t11.19 sending 0 at (159.30, 0.80, 6.20) | t11.21 sending 0 at (159.30, 0.80, 6.20) | t11.23 sending 0 at (159.30, 0.80, 6.20) | t11.25 sending 0 at (159.30, 0.80, 6.20); it was 0.000 m from its place when the glide ended
 PASS: The caught box glides into its place in the truck
 PASS: It stays where it was put
 PASS: The pointer takes ANGER
@@ -81,7 +83,7 @@ PASS: Only the six ambush papers and the five kitchen mugs are tossed; the résu
 PASS: The pointer takes Always available. Nights and weekends.
 PASS: Picking up a page says it can be thrown
 PASS: The page stays in hand when the player steps clear of the desk
-INFO: the page flick: thrown seen True, peak 5.5 m/s, bursts 1, active False, held False, at (484.13, 0.26, 1.11) (last burst (484.32, 0.00, 1.00)), room 6
+INFO: the page flick: thrown seen True, peak 5.5 m/s, bursts 1, active False, held False, at (484.11, 0.27, 1.11) (last burst (484.32, 0.00, 1.00)), room 6
 PASS: A page flicked at the floor flies off the hand and bursts into confetti
 INFO: the page after the toss: active True, returns 1, 0.00 m from home, processed False, accepted 0
 PASS: It is back on its stand, and nothing is counted
@@ -90,7 +92,7 @@ PASS: A page let go while pointing at the shredder (the hand only lifting) is se
 PASS: TRY AGAIN puts the page back on its stand
 PASS: The shredder stands on the player's side of the desk (in front of its near edge), within a couple of steps of the arrival point
 PASS: The pointer takes Always available. Nights and weekends.
-INFO: the page thrown at the shredder: thrown seen True, peak 3.9 m/s, processed True, at (481.77, 1.86, -0.74), accepted 0
+INFO: the page thrown at the shredder: thrown seen True, peak 3.9 m/s, processed True, at (481.63, 1.97, -0.69), accepted 0
 PASS: A page thrown at the shredder flies in and is taken
 PASS: It is shredded and counted once
 PASS: The kitchen has five mugs that can be carried, sent and tossed, and exactly one is the orange one

@@ -1,4 +1,4 @@
-2026-10-26 15:24:59Z
+2026-10-28 18:05:43Z
 Passed
 The airplane-seat test: the first-visit guide, then every chapter completed from its arrival point using only pointer presses and the menu key. The player never moves.
 PASS: A first visit opens the guide with its content note
@@ -15,7 +15,7 @@ PASS: Heavy things: ANGER goes to the truck from the seat
 PASS: Pinch picks up FEAR from the seat (2.9 m away)
 PASS: Pointing at the destination lights it up
 PASS: Heavy things: FEAR goes to the truck from the seat
-PASS: Pinch picks up RELIEF from the seat (2.3 m away)
+PASS: Pinch picks up RELIEF from the seat (4.4 m away)
 PASS: Pointing at the destination lights it up
 PASS: Heavy things: RELIEF goes to the truck from the seat
 PASS: Pinch picks up GRIEF from the seat (2.9 m away)

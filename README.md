@@ -20,6 +20,8 @@ Seven short chapters, played in any order from a midnight lobby, then a sunrise 
 6. **The rage room**: take a bat to your old work computer.
 7. **The ambush**: name how you feel until two giant clowns shrink.
 
+On the rooftop there is also a tower of wooden blocks to play while you rest, with real physics, by hand or with controllers.
+
 Nothing is timed and nothing can be failed. Every small step saves, so a five-minute visit counts. A mirror in the lobby lets you change your look and wear pieces you earn by playing.
 
 The game is meant to be free to play. Every chapter and comfort option is free, and the optional outfit add-ons are cosmetic only.

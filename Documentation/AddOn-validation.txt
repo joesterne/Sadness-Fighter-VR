@@ -1,4 +1,4 @@
-2026-10-26 15:32:42Z
+2026-10-28 18:12:22Z
 Passed
 Outfit add-ons against the editor's test store: catalog, trying on, BUY, a bundle, an offline reload and a refund.
 PASS: Every outfit slot has a free starter piece, so nothing needs buying

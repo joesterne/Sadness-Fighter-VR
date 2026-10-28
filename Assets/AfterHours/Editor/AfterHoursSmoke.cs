@@ -184,7 +184,9 @@ namespace AfterHours.Editor
             yield return Menu(ActionKind.CloseMenu);Check(!d.menu.IsOpen,"Menu CLOSE closes the menu");
             yield return Click(Button(ActionKind.Help));Check(d.kitchen.helped,"Help input releases machine pressure");
             var cup=d.kitchen.cup;d.player.Place(new Vector3(238.3f,.04f,2.9f),0);yield return Delay();Aim(cup.transform.position);Press(true);yield return Delay();Check(cup.held,"Input grabs the coffee cup");
-            d.player.Shift(new Vector3(240,.04f,2.96f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay();Press(false);yield return Delay(.7f);
+            // Stand back a little and look at the spout, so the mug in hand is held short of the cup there rather than inside it (pushed into it, it
+            // would shove the cup off the counter, as a real hand would).
+            d.player.Shift(new Vector3(240,.04f,2.5f)-d.player.transform.position);d.player.Head.rotation=Quaternion.LookRotation(d.kitchen.nozzle.position-d.player.Head.position);yield return Delay();Press(false);yield return Delay(.7f);
             // The middle pour is made with the machine's lever, which pulls down as it brews.
             var kitchen=d.kitchen;var lever=kitchen.lever.GetComponentInChildren<Interactable>();float leverRest=kitchen.lever.localEulerAngles.z;
             for(int i=0;i<3;i++)
@@ -205,7 +207,10 @@ namespace AfterHours.Editor
             var cupboard=kitchen.doors[KitchenRoom.OrangeCabinet];
             Check(cupboard.open&&cupboard.Settled&&Mathf.Abs(cupboard.angle)>=90&&kitchen.orangeSeen&&kitchen.opens==1,"Pointing at a cupboard opens its door, and the orange mug is inside");Capture("Kitchen-Cupboard");
             var hidden=kitchen.orangeMug.item;Aim(hidden.transform.position);Press(true);yield return Delay();Check(hidden.held,"Input takes the orange mug from the open cupboard");
-            d.player.Shift(new Vector3(240,.04f,2.96f)-d.player.transform.position);d.player.Head.rotation=Quaternion.identity;yield return Delay();Press(false);yield return Delay(1.4f);
+            // Stand back a little and look at the spout, so the mug in hand is held short of the cup there rather than inside it (pushed into it, it
+            // would shove the cup off the counter, as a real hand would).
+            d.player.Shift(new Vector3(240,.04f,2.5f)-d.player.transform.position);d.player.Head.rotation=Quaternion.LookRotation(kitchen.nozzle.position-d.player.Head.position);yield return Delay();Press(false); yield return Delay(1.4f);
+            results.Add("INFO: orange mug "+Vector3.Distance(hidden.transform.position,kitchen.nozzle.position).ToString("0.00")+" m from the spout (held "+hidden.held+", sending "+hidden.sending+"), the cup "+Vector3.Distance(kitchen.cup.transform.position,kitchen.transform.TransformPoint(new Vector3(-1.7f,1.23f,4.6f))).ToString("0.00")+" m from its counter spot at "+kitchen.transform.InverseTransformPoint(kitchen.cup.transform.position).ToString("F2")+", breaks "+string.Join(",",kitchen.mugs.Select(m=>m.breaks)));
             Check(Vector3.Distance(hidden.transform.position,kitchen.nozzle.position)<.44f&&Vector3.Distance(kitchen.cup.transform.position,kitchen.transform.TransformPoint(new Vector3(-1.7f,1.23f,4.6f)))<.4f&&kitchen.mugs.All(m=>m.breaks==0),"The orange mug glides to the spout and the mug that was there goes back to the counter; nothing breaks");
             yield return Click(Button(ActionKind.Brew));
             Check(kitchen.orangeFilled&&kitchen.orangeMug.level==1&&kitchen.fills==3&&d.wardrobe.Has("orange-pin"),"Brewing into the orange mug earns the orange mug pin, and still counts as nothing more than a little warmth");
@@ -312,6 +317,7 @@ namespace AfterHours.Editor
             var strays=landed.Where(b=>!Inside(b)).Take(3).Select(b=>b.name+" at "+roomRoot.InverseTransformPoint(b.position).ToString("0.00")+" (mass "+b.mass.ToString("0.00")+")").ToArray();
             Check(landed.Count==pieceCount&&strays.Length==0,"All "+landed.Count+" pieces stay inside the room, above the floor"+(strays.Length>0?": "+string.Join("; ",strays):""));
             int resting=landed.Count(b=>b.IsSleeping()||b.linearVelocity.magnitude<.05f);
+            if(resting<landed.Count*.9f)results.Add("INFO: still moving: "+string.Join("; ",landed.Where(b=>!b.IsSleeping()&&b.linearVelocity.magnitude>=.05f).Take(12).Select(b=>b.name+" "+b.linearVelocity.magnitude.ToString("0.00")+" m/s, spin "+b.angularVelocity.magnitude.ToString("0.0")+" at y "+roomRoot.InverseTransformPoint(b.position).y.ToString("0.00"))));
             Check(resting>=landed.Count*.9f,resting+" of "+landed.Count+" pieces have come to rest by the end of the quiet");
             var onDesk=landed.Where(b=>{var p=roomRoot.InverseTransformPoint(b.position);return b.mass<.3f&&Mathf.Abs(p.x)<.7f&&p.z>-.55f&&p.z<0&&p.y>.74f&&p.y<.9f;})
                 .OrderBy(b=>Vector3.Distance(roomRoot.InverseTransformPoint(b.position),new Vector3(0,.76f,-.4f))).FirstOrDefault();
