@@ -100,6 +100,7 @@ namespace AfterHours.Editor
             // Awake, with every contact being solved, it must stand just as still: touching any block wakes the whole tower.
             foreach(var b in t.blocks)b.body.WakeUp();
             for(int i=0;i<20;i++){yield return .1f;var w=t.blocks.OrderByDescending(b=>b.Drift).First();if(w.Drift>.002f){Info("Awake drift "+Mm(w.Drift)+" at "+(i+1)*.1f+" s: row "+(w.level+1)+" block "+w.index+" height "+(w.height*1000).ToString("0.00")+" mm, moved "+(w.transform.position-w.RestPosition).ToString("F4"));break;}}
+            Info("Row drops after waking (mm, bottom to top): "+string.Join(" ",Enumerable.Range(0,BlockTower.Levels).Select(r=>((t.blocks.Where(b=>b.level==r).Average(b=>b.RestPosition.y-b.transform.position.y))*1000).ToString("0.0"))));
             Check(!t.Fallen&&t.blocks.Max(b=>b.Drift)<.002f,"Woken, the whole tower stands still for two seconds (largest drift "+Mm(t.blocks.Max(b=>b.Drift))+")");
 
             // ---- Easing a loose block out and laying it on top
