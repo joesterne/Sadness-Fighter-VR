@@ -117,6 +117,8 @@ namespace AfterHours
         {
             var d=director?director:GameDirector.Instance;
             if(d&&d.player)foreach(var b in blocks)if(b.grab.held)d.player.Drop(b.grab);
+            // A live fingertip would be inside the new tower. It comes back once the finger is clear of the blocks.
+            for(int i=0;i<2;i++)Retire(i);
             var random=new System.Random(seed++);
             var order=new int[blocks.Length];for(int i=0;i<order.Length;i++)order[i]=i;
             for(int i=order.Length-1;i>0;i--){int j=random.Next(i+1);(order[i],order[j])=(order[j],order[i]);}
@@ -232,9 +234,24 @@ namespace AfterHours
             int tip=collision.rigidbody&&collision.rigidbody==tips[0]?0:collision.rigidbody&&collision.rigidbody==tips[1]?1:-1;
             if(tip>=0){block.touched=true;if(d.player&&Time.time>nextTouchPulse){d.player.PulseHand(tip,VRPlayer.HapticPattern.Tap,Mathf.Clamp(.2f+speed,.2f,.6f));nextTouchPulse=Time.time+.15f;}}
             if(speed<.12f||Time.time<nextKnock)return;nextKnock=Time.time+.05f;
-            d.PlayAt(knock,collision.GetContact(0).point,Mathf.Clamp01(speed/1.2f)*.6f+.05f);
+            d.PlayAt(knock,collision.contactCount>0?collision.GetContact(0).point:block.transform.position,Mathf.Clamp01(speed/1.2f)*.6f+.05f);
             // A held block that bumps something is felt in that hand.
             if(block.grab.held&&d.player)d.player.PulseFor(block.grab,Mathf.Clamp(speed*.6f,.15f,.8f),VRPlayer.HapticPattern.Hit);
+        }
+        // A block that fell off the roof comes back to rest on the table, beside the tower on one of its four sides, on top of any block already there.
+        public void Recover(TowerBlock block)
+        {
+            var sides=new[]{new Vector3(.25f,0,0),new Vector3(-.25f,0,0),new Vector3(0,0,.25f),new Vector3(0,0,-.25f)};
+            Vector3 position=default;Quaternion rotation=default;
+            for(int layer=0;layer<6;layer++)foreach(var side in sides)
+            {
+                // Lying lengthwise along the tower's side, so it never reaches into the tower or off the table.
+                rotation=foot.rotation*Quaternion.Euler(0,side.x!=0?90:0,0);
+                position=foot.TransformPoint(side+Vector3.up*(layer*Height+block.height*.5f+.001f));
+                var half=new Vector3(Length,block.height,Width)*.47f;
+                if(!Physics.CheckBox(position,half,rotation,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)){block.Lay(position,rotation);return;}
+            }
+            block.Lay(position,rotation);
         }
         // The block in the tower closest to a point, if one is within reach of it.
         public TowerBlock Nearest(Vector3 point,float reach)

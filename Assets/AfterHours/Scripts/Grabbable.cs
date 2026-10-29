@@ -127,7 +127,8 @@ namespace AfterHours
                 // The first moments of a distance grab are the box being drawn in, not a throw.
                 if(throwable||tossable){if(pullStart>=0&&Time.time<pullStart+PullTime)trailCount=0;else Record();}
             }
-            if(!held&&!processed&&transform.position.y < -3) ResetObject();
+            // A tower block dropped off the roof is laid on the table beside the tower: its old place in the tower may be another block's now.
+            if(!held&&!processed&&transform.position.y < -3){if(physical&&TryGetComponent(out TowerBlock block)&&block.tower)block.tower.Recover(block);else ResetObject();}
         }
         // The player teleported with this in hand. Where it was a moment ago is not part of a throw or a swing, and a distance grab
         // still drawing it in finishes at once. Jumps lets the bat and the machete forget their last position too.

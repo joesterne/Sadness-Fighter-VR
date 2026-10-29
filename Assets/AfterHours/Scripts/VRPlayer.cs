@@ -473,13 +473,13 @@ namespace AfterHours
         }
         void HideRays(){for(int i=0;i<2;i++){rays[i].enabled=false;cursors[i].gameObject.SetActive(false);}}
         // Moves the player. A teleport within a room keeps whatever is in the hands (the bat, the machete, a box or a mug travel with them);
-        // anything else lets go first.
+        // anything else lets go first. A tower block is let go where it is: it is held by force, and would be dragged out of the tower after the hand.
         public void Place(Vector3 floor,float yaw,bool keepHeld=false)
         {
             if(!keepHeld)ReleaseAll();
             body.enabled=false;float delta=yaw-Head.eulerAngles.y;transform.RotateAround(Head.position,Vector3.up,delta);
             Vector3 offset=Head.position-transform.position;offset.y=0;transform.position=floor-offset;body.enabled=true;
-            if(keepHeld)for(int i=0;i<2;i++)if(held[i])held[i].Jumped();
+            if(keepHeld)for(int i=0;i<2;i++)if(held[i]){if(held[i].physical){held[i].Release();held[i]=null;aimedTarget[i]=null;}else held[i].Jumped();}
         }
         public void Shift(Vector3 delta){body.enabled=false;transform.position+=delta;body.enabled=true;}
         public void TeleportTo(Vector3 point,float yaw){StartCoroutine(Teleport(point,yaw));}
