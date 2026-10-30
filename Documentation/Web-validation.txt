@@ -1,4 +1,4 @@
-2026-10-28 18:13:43Z
+2026-10-30 00:05:55Z
 Passed
 The ring of webs and the machete in hand, cutting, the webs growing back, clearing them all, the spider and the unlabelled button that burns it, the hat of flames, coming back, TRY AGAIN.
 PASS: The game has ten rooms, and room 9 is The NDA web
@@ -15,7 +15,7 @@ PASS: All eighteen webs are whole
 PASS: The room says the machete is in your hand
 PASS: The webs circle the seat at arm's reach (0.72 to 0.72 m, 0.62 to 1.95 m up)
 PASS: They wrap round from well behind one shoulder to well behind the other (-120 to 120 degrees)
-PASS: The spider is the size of a person (1.45 m tall, 3.3 m across)
+PASS: The spider is the size of a person (1.46 m tall, 3.3 m across)
 PASS: It sits in the far corner, 6.5 m from the seat
 PASS: Eight eyes, glowing red
 PASS: Eight legs, and no ash yet

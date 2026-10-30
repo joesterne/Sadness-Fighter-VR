@@ -1,6 +1,6 @@
-2026-10-28 18:23:16Z
+2026-10-30 00:06:55Z
 Passed
-The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, NEW TOWER, leaving and coming back.
+The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, a block dropped off the roof, NEW TOWER, leaving and coming back.
 PASS: The rooftop has a tower of 54 blocks: 18 rows of three
 PASS: Every block is a box under physics, held by force rather than carried
 PASS: Every block is 15 by 5 cm (a real set at twice the size)
@@ -26,7 +26,7 @@ PASS: Laid on top, it counts: ON TOP  1     BEST  1
 PASS: The best tower is kept
 PASS: The tower takes it without moving (largest drift 0.5 mm)
 PASS: Taking hold of the block the third row rests on
-PASS: It will not come: the rows above press down on it (moved 0.0 mm)
+PASS: It will not come: the rows above press down on it (moved 0.1 mm)
 PASS: And it slips out of the hand that pulls on
 PASS: The tower is still standing (largest drift 1.7 mm)
 PASS: Another loose block, lower down
@@ -43,6 +43,7 @@ PASS: The tower is still standing
 PASS: Knocked hard, the tower comes down and the game knows
 PASS: The sign says so, and keeps the best (IT FELL.  BEST  1)
 PASS: It is said kindly, with what to do next
+PASS: A block dropped off the roof comes back to rest on the table beside the tower (at (0.25, 0.02, 0.00))
 PASS: The button to press exists
 PASS: NEW TOWER stacks it again
 PASS: In a new order, so the loose blocks are somewhere new
