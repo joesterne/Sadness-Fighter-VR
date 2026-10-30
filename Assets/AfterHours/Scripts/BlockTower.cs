@@ -239,11 +239,12 @@ namespace AfterHours
             if(block.grab.held&&d.player)d.player.PulseFor(block.grab,Mathf.Clamp(speed*.6f,.15f,.8f),VRPlayer.HapticPattern.Hit);
         }
         // A block that fell off the roof comes back to rest on the table, beside the tower on one of its four sides, on top of any block already there.
+        // There are more places than blocks, so one is always free even with every block off the tower.
         public void Recover(TowerBlock block)
         {
             var sides=new[]{new Vector3(.25f,0,0),new Vector3(-.25f,0,0),new Vector3(0,0,.25f),new Vector3(0,0,-.25f)};
             Vector3 position=default;Quaternion rotation=default;
-            for(int layer=0;layer<6;layer++)foreach(var side in sides)
+            for(int layer=0;layer<=Levels*PerLevel/sides.Length;layer++)foreach(var side in sides)
             {
                 // Lying lengthwise along the tower's side, so it never reaches into the tower or off the table.
                 rotation=foot.rotation*Quaternion.Euler(0,side.x!=0?90:0,0);
