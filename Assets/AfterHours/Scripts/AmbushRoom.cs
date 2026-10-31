@@ -298,7 +298,7 @@ namespace AfterHours
                 foreach(var b in c.balloons)if(b)b.SetActive(true);
                 c.flinchUntil=0;
             }
-            poppedMask=0;
+            poppedMask=0;balloonsPopped=0;
         }
 
         // ---- Feelings, replies, balloons and noses

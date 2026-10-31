@@ -14,12 +14,12 @@ namespace AfterHours
             switch(kind)
             {
                 case ActionKind.Travel: director.Travel(value); break;
-                case ActionKind.Brew: director.kitchen.Brew(); break;
-                case ActionKind.Help: director.kitchen.AskForHelp(); break;
+                case ActionKind.Brew: if(director.kitchen)director.kitchen.Brew(); break;
+                case ActionKind.Help: if(director.kitchen)director.kitchen.AskForHelp(); break;
                 case ActionKind.Rest: director.Travel(0); break;
                 case ActionKind.SmoothMotion: director.player.smoothMotion=!director.player.smoothMotion; director.Say(director.player.smoothMotion?Wording.Pick("Walking is on, but it needs the controller sticks. Floor teleport still works with your hands.","Walking on. The left stick walks; floor teleport still works."):Wording.Pick("Teleport only. Point at the floor and release.","Teleport only. Point at the floor and release. Either stick snap turns."));break;
-                case ActionKind.GentleAudience: director.gentleAudience=!director.gentleAudience; director.kitchen.RefreshAudience(); director.Say(director.gentleAudience?"Quiet kitchen: no watching crowd.":"Watching crowd enabled. You can change this anytime.");break;
-                case ActionKind.Row: director.ocean.Stroke();break;
+                case ActionKind.GentleAudience: director.gentleAudience=!director.gentleAudience; if(director.kitchen)director.kitchen.RefreshAudience(); director.Say(director.gentleAudience?"Quiet kitchen: no watching crowd.":"Watching crowd enabled. You can change this anytime.");break;
+                case ActionKind.Row: if(director.ocean)director.ocean.Stroke();break;
                 case ActionKind.ResetRoom: if(director.menu)director.menu.Close();director.RestartCurrentRoom();break;
                 case ActionKind.SeatedMode: director.player.ToggleSeated();break;
                 case ActionKind.SeatedHeight: director.player.CycleSeatedHeight();break;

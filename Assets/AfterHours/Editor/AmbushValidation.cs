@@ -28,7 +28,7 @@ namespace AfterHours.Editor
         static Color Sky=>RenderSettings.ambientSkyColor;
         public static void Start()
         {
-            if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
+            if(!EditorApplication.isPlaying||!D||!D.player||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             oldDark=D.darkOpening;oldGentle=D.gentleAmbush;
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
@@ -254,8 +254,8 @@ namespace AfterHours.Editor
             foreach(var t in Take(packet))yield return t;
             Look(c1.aim.LandingPoint);yield return .3f;
             Check(c1.aim.highlight.activeSelf&&!c0.aim.highlight.activeSelf,"Pointing at the right clown with the severance packet lights its outline instead");
-            int before=a.hits;Press(false);yield return 1.3f;
-            Check(a.hits==before+1&&a.IsAway(packet)&&c1.flinchUntil>sent,"The packet hits the right clown");
+            int before=a.hits;float sentPacket=Time.time;Press(false);yield return 1.3f;
+            Check(a.hits==before+1&&a.IsAway(packet)&&c1.flinchUntil>sentPacket,"The packet hits the right clown");
             yield return 2.4f;
             Check(!a.IsAway(packet)&&Vector3.Distance(packet.transform.position,homes[5])<.15f,"And comes back");
 

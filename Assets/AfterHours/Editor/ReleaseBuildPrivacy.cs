@@ -25,7 +25,7 @@ namespace AfterHours.Editor
                 if(property!=null&&property.propertyType==SerializedPropertyType.String&&property.stringValue.Length>0){property.stringValue="";cleared=true;}
             }
             if(!cleared)return;
-            so.ApplyModifiedPropertiesWithoutUndo();
+            so.ApplyModifiedPropertiesWithoutUndo();EditorUtility.SetDirty(settings);AssetDatabase.SaveAssets();
             Debug.Log("After Hours: release build excludes the DevAgent network address and access token.");
         }
     }

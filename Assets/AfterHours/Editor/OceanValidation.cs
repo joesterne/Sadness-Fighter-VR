@@ -24,7 +24,7 @@ namespace AfterHours.Editor
         static VRPlayer P=>D.player;
         public static void Start()
         {
-            if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
+            if(!EditorApplication.isPlaying||!D||!D.player||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
             mouse=InputSystem.AddDevice<Mouse>("OceanValidationMouse");keyboard=InputSystem.AddDevice<Keyboard>("OceanValidationKeyboard");TestInput.Claim(mouse,keyboard);lines.Clear();Status="Running";run=Checks();deadline=0;

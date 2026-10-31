@@ -19,7 +19,6 @@ namespace AfterHours
         public CabinetDoor[] doors;
         public Transform nozzle;
         public GameObject[] crowd, spills;
-        public Transform coffee;
         public ParticleSystem spillSpray;
         public TextMeshPro display;
         // A murmur that grows with the watching crowd and falls silent when it leaves.
@@ -70,8 +69,8 @@ namespace AfterHours
             if(fills>=3&&!bonus){director.Say("You have enough. Let this cup be enough.");return;}
             if(!helped||!under)
             {
-                mistakes=Mathf.Min(8,mistakes+1);RefreshAudience();if(spillSpray)spillSpray.Play();director.PlayAt(director.spill,nozzle.position,.8f);
-                if(spills.Length>0)spills[(mistakes-1)%spills.Length].SetActive(true);
+                mistakes=Mathf.Min(8,mistakes+1);RefreshAudience();if(spillSpray)spillSpray.Play();director.PlayAt(director.spill,nozzle?nozzle.position:transform.position,.8f);
+                if(spills!=null&&spills.Length>0)spills[(mistakes-1)%spills.Length].SetActive(true);
                 display.text=!helped?"PRESSURE FAULT\n<color=#EB997F>Support is available.</color>":"PLACE CUP\n<color=#ABC4C5>Below the brass spout.</color>";
                 director.Say(!helped?"The machine is failing. That is not a verdict on you. ASK FOR HELP is beside the machine.":"Bring the cup under the spout, then try again. It is okay to adjust.");
                 Pull(20,.45f);
@@ -191,18 +190,18 @@ namespace AfterHours
         public void RestoreProgress(bool help,int errors,int pours)
         {
             helped=help;mistakes=Mathf.Clamp(errors,0,8);fills=Mathf.Clamp(pours,0,3);RefreshAudience();
-            for(int i=0;i<spills.Length;i++)spills[i].SetActive(i<mistakes);
+            if(spills!=null)for(int i=0;i<spills.Length;i++)spills[i].SetActive(i<mistakes);
             var own=CupMug;if(own)own.Fill(fills);
             display.text=fills>=3?"ENOUGH\n<color=#ABC4C5>Take a breath.</color>":fills>0?"A LITTLE AT A TIME\n"+fills+" / 3":helped?"PRESSURE RELEASED\n<color=#ABC4C5>Place your cup below the spout.</color>":"READY?\nOne cup. One ordinary task.";
         }
         public void RefreshAudience()
         {
-            int watching=0;for(int i=0;i<crowd.Length;i++){bool on=!helped&&!director.gentleAudience&&i<mistakes;crowd[i].SetActive(on);if(on)watching++;}
-            if(murmur)murmur.volume=watching==0?0:Mathf.Lerp(.12f,.5f,watching/(float)Mathf.Max(1,crowd.Length));
+            int watching=0;if(crowd!=null)for(int i=0;i<crowd.Length;i++){bool on=!helped&&!director.gentleAudience&&i<mistakes;crowd[i].SetActive(on);if(on)watching++;}
+            if(murmur)murmur.volume=watching==0?0:Mathf.Lerp(.12f,.5f,watching/(float)Mathf.Max(1,crowd!=null?crowd.Length:1));
         }
         public void ResetRoom()
         {
-            helped=false;mistakes=0;fills=0;nextBrew=0;RefreshAudience();foreach(var s in spills)s.SetActive(false);
+            helped=false;mistakes=0;fills=0;nextBrew=0;RefreshAudience();if(spills!=null)foreach(var s in spills)s.SetActive(false);
             // Mugs that broke are back at once, every mug is empty, the cupboards are shut and the coffee splashes are mopped up.
             StopAllCoroutines();foreach(var m in away.ToArray())Return(m);away.Clear();
             if(mugs!=null)foreach(var m in mugs)if(m)m.Empty();

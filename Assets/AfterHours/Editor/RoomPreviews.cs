@@ -20,6 +20,7 @@ namespace AfterHours.Editor
             if(!d||d.rooms==null){Debug.LogError("[RoomPreviews] Open "+AfterHoursBuilder.ScenePath+" first.");return;}
             var wasActive=new bool[d.rooms.Length];for(int i=0;i<d.rooms.Length;i++)wasActive[i]=d.rooms[i].root.activeSelf;
             var eye=d.player.rig.centerEyeAnchor.GetComponent<Camera>();
+            if(!eye){Debug.LogError("[RoomPreviews] The player rig's center eye anchor has no Camera.");return;}
             var go=new GameObject("Room preview camera"){hideFlags=HideFlags.HideAndDontSave};var cam=go.AddComponent<Camera>();
             cam.CopyFrom(eye);cam.stereoTargetEye=StereoTargetEyeMask.None;cam.fieldOfView=78;cam.targetTexture=null;
             bool async=ShaderUtil.allowAsyncCompilation;ShaderUtil.allowAsyncCompilation=false;

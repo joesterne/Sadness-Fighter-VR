@@ -158,6 +158,7 @@ namespace AfterHours
                 foreach(var p in msg.Data)owned.skus.Add(p.Sku);
                 if(!msg.Data.HasNextPage)break;msg=await Oculus.Platform.IAP.GetNextPurchaseListPage(msg.Data);
             }
+            if(msg!=null&&msg.IsError){Debug.LogWarning("After Hours add-ons: purchases paging failed ("+Why(msg)+"), so ownership is unknown this time");return null;}
             return owned;
         }
         public async Task<PurchaseResult> Buy(string sku)

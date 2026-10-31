@@ -14,7 +14,6 @@ namespace AfterHours
         {
             get{float az=SunAzimuth*Mathf.Deg2Rad,el=SunElevation*Mathf.Deg2Rad;return new Vector3(Mathf.Sin(az)*Mathf.Cos(el),Mathf.Sin(el),Mathf.Cos(az)*Mathf.Cos(el));}
         }
-        public GameDirector director;
         public Material skybox;
         // Everything that moves while the player rests here keeps its own renderer, under this group (the scene's merging leaves it alone).
         public Transform moving;
@@ -66,10 +65,10 @@ namespace AfterHours
         void Update()
         {
             clock+=Time.deltaTime;
-            if(drifting!=null)for(int i=0;i<drifting.Length;i++)
+            if(drifting!=null&&speeds!=null)for(int i=0;i<drifting.Length;i++)
             {
                 var cloud=drifting[i];if(!cloud)continue;
-                var p=cloud.localPosition;p.x+=speeds[i]*Time.deltaTime;if(p.x>120)p.x-=240;cloud.localPosition=p;
+                var p=cloud.localPosition;p.x+=(i<speeds.Length?speeds[i]:0)*Time.deltaTime;if(p.x>120)p.x-=240;cloud.localPosition=p;
             }
             if(balloon)
             {

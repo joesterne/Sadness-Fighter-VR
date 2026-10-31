@@ -24,7 +24,7 @@ namespace AfterHours.Editor
         static AddOnShop S=>D.shop;
         public static void Start()
         {
-            if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
+            if(!EditorApplication.isPlaying||!D||!D.player||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;
             existed=keys.Select(PlayerPrefs.HasKey).ToArray();values=keys.Select(k=>PlayerPrefs.GetString(k)).ToArray();
             introExisted=PlayerPrefs.HasKey(IntroGuide.Key);intro=PlayerPrefs.GetInt(IntroGuide.Key);
@@ -132,8 +132,8 @@ namespace AfterHours.Editor
     static class AddOnTestStoreMenu
     {
         const string Buy="After Hours/Add-ons/Buy every add-on in the test store (Play Mode)",Refund="After Hours/Add-ons/Refund the test store's add-ons (Play Mode)";
-        [MenuItem(Buy,false,2100)] static async void BuyAll(){foreach(var p in Outfits.AddOns.ToList())Debug.Log("Test store: "+p.name+": "+await GameDirector.Instance.shop.Buy(p.id));}
-        [MenuItem(Refund,false,2101)] static async void RefundAll(){TestAddOnStore.Bought.Clear();await GameDirector.Instance.shop.Restore();Debug.Log("Test store: add-ons refunded");}
+        [MenuItem(Buy,false,2100)] static async void BuyAll(){try{foreach(var p in Outfits.AddOns.ToList())Debug.Log("Test store: "+p.name+": "+await GameDirector.Instance.shop.Buy(p.id));}catch(Exception e){Debug.LogException(e);}}
+        [MenuItem(Refund,false,2101)] static async void RefundAll(){try{TestAddOnStore.Bought.Clear();await GameDirector.Instance.shop.Restore();Debug.Log("Test store: add-ons refunded");}catch(Exception e){Debug.LogException(e);}}
         [MenuItem(Buy,true)][MenuItem(Refund,true)] static bool Ready()=>EditorApplication.isPlaying&&GameDirector.Instance&&GameDirector.Instance.shop!=null&&GameDirector.Instance.shop.store is TestAddOnStore;
     }
 }

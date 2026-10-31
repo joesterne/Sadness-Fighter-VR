@@ -30,7 +30,8 @@ namespace AfterHours.Editor
             string args="-genkeypair -keystore \""+Path.GetFullPath(Keystore)+"\" -storetype PKCS12 -storepass "+password+" -keypass "+password+" -alias "+Alias+
                         " -keyalg RSA -keysize 2048 -validity 10000 -dname \"CN=After Hours, O=After Hours Studio\"";
             var info=new ProcessStartInfo(keytool,args){UseShellExecute=false,RedirectStandardOutput=true,RedirectStandardError=true,CreateNoWindow=true};
-            using var p=Process.Start(info);string output=p.StandardOutput.ReadToEnd()+p.StandardError.ReadToEnd();p.WaitForExit(60000);
+            using var p=Process.Start(info);string output=p.StandardOutput.ReadToEnd()+p.StandardError.ReadToEnd();
+            if(!p.WaitForExit(60000)){try{p.Kill();}catch{}Debug.LogError("[ReleaseSigning] keytool did not finish within a minute, so no key was created.");return;}
             if(p.ExitCode!=0||!File.Exists(Keystore)){Debug.LogError("[ReleaseSigning] keytool failed:\n"+output);return;}
             File.WriteAllText(PasswordFile,password);
             Debug.Log("[ReleaseSigning] Created the release key at "+Path.GetFullPath(Keystore)+". Back up it and "+Path.GetFileName(PasswordFile)+" somewhere safe and private: without them you cannot publish updates to the same app.");

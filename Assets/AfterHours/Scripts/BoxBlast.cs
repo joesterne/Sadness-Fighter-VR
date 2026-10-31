@@ -35,13 +35,13 @@ namespace AfterHours
         public int returns{get;private set;}
         public float blastTime{get;private set;}
         readonly List<Grabbable> away=new List<Grabbable>();
-        Vector3[] last,velocity;bool[] seen;Collider[] bodies;
+        Vector3[] last,velocity;bool[] seen;Collider[] bodies;Grabbable[] cachedBoxes;
         public bool IsAway(Grabbable box)=>away.Contains(box);
 
         void Setup()
         {
-            if(boxes==null||(last!=null&&last.Length==boxes.Length))return;
-            last=new Vector3[boxes.Length];velocity=new Vector3[boxes.Length];seen=new bool[boxes.Length];bodies=new Collider[boxes.Length];
+            if(boxes==null||(cachedBoxes==boxes&&last!=null&&last.Length==boxes.Length))return;
+            cachedBoxes=boxes;last=new Vector3[boxes.Length];velocity=new Vector3[boxes.Length];seen=new bool[boxes.Length];bodies=new Collider[boxes.Length];
             for(int i=0;i<boxes.Length;i++)if(boxes[i])bodies[i]=boxes[i].GetComponent<Collider>();
         }
         // A box that counts: carried in a hand, not being drawn in, not already on its way somewhere.

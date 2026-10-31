@@ -47,7 +47,7 @@ namespace AfterHours.Editor
 
         public static void Start()
         {
-            if(sequence!=null)return;if(!EditorApplication.isPlaying||P.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
+            if(sequence!=null)return;if(!EditorApplication.isPlaying||!D||!D.player||P.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             checkpoint=PlayerPrefs.GetString(CheckpointStore.Key);hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);
             hadProgress=PlayerPrefs.HasKey("AfterHours.Progress.v1");progress=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);
             D.saveEnabled=false;if(D.intro)D.intro.Hide();

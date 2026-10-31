@@ -54,7 +54,7 @@ namespace AfterHours
 
         static void Archive()
         {
-            var room=d.rooms[ArchiveRoom.Room].root.AddComponent<ArchiveRoom>();room.director=d;d.archive=room;d.rooms[ArchiveRoom.Room].total=6;
+            var room=d.rooms[ArchiveRoom.Room].root.AddComponent<ArchiveRoom>();d.archive=room;d.rooms[ArchiveRoom.Room].total=6;
             ReadingFloor();
             // The archive has no ceiling, so beams and light strips cross the dark behind the heading. A deep-blue plate gives its letters a clean ground.
             Backed(4,"Room title",Fitted(Art.Box("Heading plate",new Vector3(0,3.7f,7.52f),new Vector3(7.6f,2.1f,.06f),Art.Navy,false),.24f,1.1f));

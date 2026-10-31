@@ -28,7 +28,7 @@ namespace AfterHours.Editor
         static VRPlayer P=>D.player;
         public static void Start()
         {
-            if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
+            if(!EditorApplication.isPlaying||!D||!D.player||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
             pipeline=GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;if(pipeline){savedScale=pipeline.renderScale;savedShadow=pipeline.shadowDistance;}
@@ -78,7 +78,7 @@ namespace AfterHours.Editor
         static string flingTrace="";
         static IEnumerable<float> Fling(Vector3 direction,float speed,float duration=.3f)
         {
-            var grip=Grip;direction.Normalize();var local=grip.parent.InverseTransformDirection(direction);float t=0;int frames=0;var trace=new System.Text.StringBuilder();
+            var grip=Grip;Check(grip!=null,"The desktop carry point exists");direction.Normalize();var local=grip.parent.InverseTransformDirection(direction);float t=0;int frames=0;var trace=new System.Text.StringBuilder();
             while(t<duration)
             {
                 float dt=Mathf.Max(Time.deltaTime,.001f);var was=grip.position;grip.localPosition+=local*speed*dt;

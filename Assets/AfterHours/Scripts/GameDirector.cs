@@ -110,7 +110,7 @@ namespace AfterHours
         {
             if(buying||!wardrobe||shop==null||wardrobe.TryingOn==null)return;
             var id=wardrobe.TryingOn;var name=Outfits.Get(id).name;buying=true;PurchaseResult result;
-            try{result=await shop.Buy(id);}finally{buying=false;}
+            try{result=await shop.Buy(id);}catch{result=PurchaseResult.Failed;}finally{buying=false;}
             if(!this||!wardrobe)return;
             switch(result)
             {
@@ -143,14 +143,14 @@ namespace AfterHours
         }
         IEnumerator ChangeRoom(int room)
         {
-            player.busy=true;player.ReleaseAll(true);player.RoomChangePulse();if(menu)menu.Close();if(intro)intro.Dismiss();if(currentRoom==1)ocean.OnDepart();yield return player.Fade(1,.2f,true);
+            player.busy=true;player.ReleaseAll(true);player.RoomChangePulse();if(menu)menu.Close();if(intro)intro.Dismiss();if(currentRoom==1&&ocean)ocean.OnDepart();yield return player.Fade(1,.2f,true);
             int from=currentRoom;if(from==0&&wardrobe&&wardrobe.avatar)wardrobe.avatar.SetXray(false);rooms[currentRoom].root.SetActive(false);
             // The sea's night sky and light belong to the ocean room alone. They go before the next room switches on, so a room that
             // takes the scene's light as it opens (the rooftop) takes the day's, not the sea's.
             if(from==1&&ocean)ocean.SetEnvironment(false);
             currentRoom=room;rooms[room].root.SetActive(true);
             player.Place(rooms[room].spawn.position,rooms[room].spawn.eulerAngles.y);
-            if(room==1)ocean.OnArrive();
+            if(room==1&&ocean)ocean.OnArrive();
             if(room==AmbushRoom.Room&&ambush)ambush.OnArrive();
             if(room==WebRoom.Room&&web)web.OnArrive();
             yield return player.Fade(0,.35f,true);player.busy=false;
@@ -190,7 +190,7 @@ namespace AfterHours
             if(!IsChapter(currentRoom))return;
             player.ReleaseAll();foreach(var g in rooms[currentRoom].root.GetComponentsInChildren<Grabbable>(true))g.ResetObject();
             foreach(var z in rooms[currentRoom].root.GetComponentsInChildren<DropZone>(true))z.ResetZone();
-            rooms[currentRoom].accepted=0;if(currentRoom==1)ocean.ResetRoom();if(currentRoom==3)kitchen.ResetRoom();if(currentRoom==Shredder.Room&&shredder)shredder.ResetRoom();if(currentRoom==BoxBlast.Room&&boxBlast)boxBlast.ResetRoom();if(currentRoom==RageRoom.Room&&rage)rage.ResetComputer();if(currentRoom==AmbushRoom.Room&&ambush)ambush.ResetRoom();if(currentRoom==WebRoom.Room&&web)web.ResetRoom();RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
+            rooms[currentRoom].accepted=0;if(currentRoom==1&&ocean)ocean.ResetRoom();if(currentRoom==3&&kitchen)kitchen.ResetRoom();if(currentRoom==Shredder.Room&&shredder)shredder.ResetRoom();if(currentRoom==BoxBlast.Room&&boxBlast)boxBlast.ResetRoom();if(currentRoom==RageRoom.Room&&rage)rage.ResetComputer();if(currentRoom==AmbushRoom.Room&&ambush)ambush.ResetRoom();if(currentRoom==WebRoom.Room&&web)web.ResetRoom();RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
         }
         public void RefreshComfort(){if(menu)menu.Refresh();}
         // Clean mode: every sign that only guides or reassures goes, along with spoken lines and the first-visit guide.

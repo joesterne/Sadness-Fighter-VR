@@ -218,7 +218,7 @@ namespace AfterHours
                 for(int i=0;i<values.Length&&i<Rows.Length;i++)
                 {
                     if(!values[i])continue;string text=Value(i);
-                    if(i>=4&&trying.TryGetValue(SlotOf(i),out var tried))text+="\n<size=70%><color=#E4BD7E>"+director.shop.Price(tried)+"  IN THE STORE</color></size>";
+                    if(i>=4&&trying.TryGetValue(SlotOf(i),out var tried))text+="\n<size=70%><color=#E4BD7E>"+(director&&director.shop!=null?director.shop.Price(tried):null)+"  IN THE STORE</color></size>";
                     else if(i>=4&&Owned(SlotOf(i)).Any(p=>State.fresh.Contains(p.id)))text+="\n<size=70%><color=#E4BD7E>NEW TO TRY</color></size>";
                     values[i].text=text;
                 }
@@ -228,7 +228,7 @@ namespace AfterHours
                 if(buyButton.activeSelf!=selling)buyButton.SetActive(selling);
                 if(selling&&buyLabel)
                 {
-                    buyLabel.text="BUY  "+Outfits.Get(TryingOn).name.ToUpperInvariant()+"  "+director.shop.Price(TryingOn);
+                    buyLabel.text="BUY  "+Outfits.Get(TryingOn).name.ToUpperInvariant()+"  "+(director&&director.shop!=null?director.shop.Price(TryingOn):null);
                     var press=buyButton.GetComponentInChildren<Interactable>(true);if(press)press.prompt=buyLabel.text;
                 }
                 if(status)status.gameObject.SetActive(!selling);

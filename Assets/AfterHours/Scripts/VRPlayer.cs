@@ -25,7 +25,8 @@ namespace AfterHours
         public bool busy;
         public bool seatedMode { get; private set; }
         public int seatedHeightIndex { get; private set; } = 1;
-        public float SeatedEyeHeight => new[]{1.45f,1.65f,1.85f}[seatedHeightIndex];
+        static readonly float[] SeatedHeights={1.45f,1.65f,1.85f};
+        public float SeatedEyeHeight => SeatedHeights[seatedHeightIndex];
         public bool comfortVignette { get; private set; } = true;
         // Clean mode: no signs, messages or guide, only the world and the menu. The menu button still opens the menu.
         public bool cleanMode { get; private set; }
@@ -47,7 +48,7 @@ namespace AfterHours
         // Throwing needs real hands or controllers. Tests switch it on to run the whole path from the desktop.
         public static bool ThrowOnDesktop;
         public bool CanThrow=>IsXR||ThrowOnDesktop;
-        public void ShowHint(string text,float duration=6){if(cleanMode){HideHint();return;}hint.text=text;hintUntil=Time.time+duration;}
+        public void ShowHint(string text,float duration=6){if(!hint)return;if(cleanMode){HideHint();return;}hint.text=text;hintUntil=Time.time+duration;}
         public void HideHint(){hintUntil=0;if(hint)hint.gameObject.SetActive(false);}
         public bool HintVisible=>hint&&!cleanMode&&Time.time<hintUntil;
         public const float SavedSeconds=1.4f;
@@ -96,7 +97,7 @@ namespace AfterHours
                 if(menu.IsOpen||(HintVisible&&!guiding))CloseEverything();else menu.Toggle();
             }
             Move();
-            if(returnPressed)GameDirector.Instance.Travel(0);
+            if(returnPressed&&GameDirector.Instance)GameDirector.Instance.Travel(0);
             handSeen=controllerSeen=false;
             for(int i=0;i<2&&!busy;i++)Interact(i);
             if(IsXR)ObserveHardware();
@@ -136,7 +137,7 @@ namespace AfterHours
             Vector2 right=OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick,OVRInput.Controller.RTouch);
             if(!IsXR&&Keyboard.current!=null)
             {var k=Keyboard.current;left=new Vector2((k.dKey.isPressed?1:0)-(k.aKey.isPressed?1:0),(k.wKey.isPressed?1:0)-(k.sKey.isPressed?1:0));}
-            bool aboard=GameDirector.Instance.currentRoom==1;
+            var d=GameDirector.Instance;bool aboard=d&&d.currentRoom==1;
             bool walking=smoothMotion&&!aboard;float speed=0;
             if(walking)
             {
@@ -167,7 +168,7 @@ namespace AfterHours
         // Turns the player so the room's main view is straight ahead again, wherever the chair points.
         public void FaceForward()
         {
-            var d=GameDirector.Instance;RotateAroundHead(Mathf.DeltaAngle(Head.eulerAngles.y,d.rooms[d.currentRoom].spawn.eulerAngles.y));
+            var d=GameDirector.Instance;if(!d)return;RotateAroundHead(Mathf.DeltaAngle(Head.eulerAngles.y,d.rooms[d.currentRoom].spawn.eulerAngles.y));
             ShowHint("The room is in front of you again.",3);
         }
         // In seated view a teleport also turns the player to face where they pointed, so turning never needs the chair.
@@ -376,11 +377,13 @@ namespace AfterHours
             return best;
         }
         // True when solid scenery stands between the pointer and a point, ignoring the player, the object and the target.
+        static readonly RaycastHit[] BlockHits=new RaycastHit[64];
         bool Blocked(Vector3 from,Vector3 to,Transform item,Transform target,bool seeThrough=false)
         {
             var path=to-from;float distance=path.magnitude;if(distance<.01f)return false;
-            foreach(var hit in Physics.RaycastAll(from,path/distance,distance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
-            {
+            int hitCount=Physics.RaycastNonAlloc(from,path/distance,BlockHits,distance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
+            for(int i=0;i<hitCount;i++)
+            {var hit=BlockHits[i];
                 var t=hit.collider.transform;
                 if(t.IsChildOf(transform)||(item&&t.IsChildOf(item))||(target&&t.IsChildOf(target)))continue;
                 if(seeThrough&&(t.GetComponentInParent<Interactable>()||t.GetComponentInParent<Grabbable>()))continue;
@@ -524,10 +527,11 @@ namespace AfterHours
         static readonly float[] HitSteps={1,.09f};
         static readonly float[] SmashSteps={1,.06f, .5f,.12f, .25f,.15f};
         static readonly float[] CutSteps={.5f,.03f, 1,.03f, .3f,.04f};
+        static readonly float[] NoSteps=new float[0];
         public static float[] Steps(HapticPattern pattern)=>pattern switch
         {
             HapticPattern.Tap=>TapSteps,HapticPattern.Pickup=>PickupSteps,HapticPattern.RoomChange=>RoomChangeSteps,
-            HapticPattern.Hit=>HitSteps,HapticPattern.Smash=>SmashSteps,HapticPattern.Cut=>CutSteps,_=>new float[0]
+            HapticPattern.Hit=>HitSteps,HapticPattern.Smash=>SmashSteps,HapticPattern.Cut=>CutSteps,_=>NoSteps
         };
         // Where a pattern's clip lives, for Resources.Load. Null for None.
         public static string ClipPath(HapticPattern pattern)=>ClipNames[(int)pattern]==null?null:"Haptics/"+ClipNames[(int)pattern];

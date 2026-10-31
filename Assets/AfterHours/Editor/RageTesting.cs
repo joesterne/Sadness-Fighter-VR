@@ -10,7 +10,7 @@ namespace AfterHours.Editor
         static GameDirector D=>GameDirector.Instance;
         public static Bat Bat=>D.rage.bat.GetComponent<Bat>();
         // Where a part's hit volume is centred.
-        public static Vector3 Centre(Breakable part){var box=(BoxCollider)part.hitVolumes[0];return part.transform.TransformPoint(box.center);}
+        public static Vector3 Centre(Breakable part){var box=part.hitVolumes.Length>0?part.hitVolumes[0] as BoxCollider:null;if(!box)throw new System.InvalidOperationException("RageTesting.Centre: "+part.label+" has no box hit volume.");return part.transform.TransformPoint(box.center);}
         // A point on the bat's barrel, for pointing at the bat on its rack.
         public static Vector3 BatMiddle=>D.rage.bat.transform.TransformPoint(0,0,.45f);
         // The view rotation at which the held bat's barrel passes through a point.
@@ -25,7 +25,7 @@ namespace AfterHours.Editor
             return Quaternion.LookRotation(point-head.position,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(local,Vector3.up));
         }
         // Every piece that can break off the computer and the desk things, flown or not.
-        public static IEnumerable<Rigidbody> Pieces=>D.rooms[RageRoom.Room].root.GetComponentsInChildren<Loose>(true).Select(l=>l.GetComponent<Rigidbody>());
+        public static IEnumerable<Rigidbody> Pieces=>D.rooms[RageRoom.Room].root.GetComponentsInChildren<Loose>(true).Select(l=>l.GetComponent<Rigidbody>()).Where(b=>b);
         // The pieces that have flown and are lying about the room.
         public static IEnumerable<Rigidbody> Landed=>Pieces.Where(b=>!b.isKinematic&&b.gameObject.activeInHierarchy);
         // One swing at a part. See SwingAt.

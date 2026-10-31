@@ -86,7 +86,8 @@ namespace AfterHours
                 }
                 if(f.texts.Count==0){Debug.LogWarning("Plate '"+f.plate.name+"' has no words to fit.");continue;}
                 var e=Extent(f.texts,inverse,centre);
-                float s=Mathf.Min(f.grow,(size.x-2*f.pad)/(e.z-e.x),(size.y-2*f.pad)/(e.w-e.y));
+                if(e.z-e.x<=0.001f||e.w-e.y<=0.001f){Debug.LogWarning("Plate '"+f.plate.name+"' has words with no size to fit.");continue;}
+                float s=Mathf.Clamp(Mathf.Min(f.grow,(size.x-2*f.pad)/(e.z-e.x),(size.y-2*f.pad)/(e.w-e.y)),.1f,f.grow);
                 if(s<.6f)Debug.LogWarning("Plate '"+f.plate.name+"' is small for its words; they were shrunk to "+Mathf.RoundToInt(s*100)+"%.");
                 if(Mathf.Abs(s-1)>.01f)
                 {
@@ -295,7 +296,7 @@ namespace AfterHours
             Backed(0,"Move instructions",Fitted(Art.Box("Getting started board",new Vector3(3.5f,3.2f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy),.14f,1.4f));
             Words(Art.Text("Move instructions","",new Vector3(3.5f,3.2f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
             // BEGIN and the mirror button stand side by side on the console, no higher than 1.65 m, so they never cover the far wall.
-            var resume=Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(-1.02f,1.47f,-.3f),new Vector3(1.9f,.36f,.12f),Art.Teal,ActionKind.Resume,d);
+            Art.Button("Continue last room","BEGIN / OCEAN OF SHAME",new Vector3(-1.02f,1.47f,-.3f),new Vector3(1.9f,.36f,.12f),Art.Teal,ActionKind.Resume,d);
             d.resumeLabel=Art.Root.Find("Continue last room label").GetComponent<TextMeshPro>();
             Art.Text("Small sessions","A FEW MINUTES IS ENOUGH\nEach small step saves. Return to the lobby to take a break.",new Vector3(0,.82f,-.64f),.105f,muted,4.4f);
             Words(Art.Text("Comfort note","",new Vector3(0,.2f,-.65f),.095f,muted,3.4f),"SITTING DOWN? OPEN THE MENU\nLeft palm pinch, then SEATED VIEW.\nThe menu's LOBBY button returns here from any room.","SITTING DOWN? OPEN THE MENU\nMenu button, then SEATED VIEW.\nB / Y returns here from any room.");
@@ -1835,7 +1836,7 @@ namespace AfterHours
             var allMugs=new List<Mug>{cupMug,MakeMug("Teal mug",new Vector3(-2.3f,1.23f,4.6f),Art.Teal),MakeMug("Coral mug",new Vector3(-2.9f,1.23f,4.6f),Art.Coral),MakeMug("Navy mug",new Vector3(-2f,1.23f,5.05f),Art.Navy)};
             // The orange mug waits on the shelf in the fifth cupboard from the left, near the front, where it can be seen from the seat once the door is open.
             var hiddenMug=MakeMug("Orange mug",new Vector3(1.75f,.26f,4.78f),Art.Orange);hiddenMug.orange=true;allMugs.Add(hiddenMug);
-            k.mugs=allMugs.ToArray();k.orangeMug=hiddenMug;k.cup=cupMug.item;k.coffee=cupMug.coffee;
+            k.mugs=allMugs.ToArray();k.orangeMug=hiddenMug;k.cup=cupMug.item;
             // What the other cupboards hold: plates, jars, bowls, tins, a kettle and folded cloths. For looking at only.
             void Shelf(string shelfName,PrimitiveType shelfType,float shelfX,float shelfZ,float diameter,float height,Material glaze)
             {Art.Shape(shelfName,shelfType,new Vector3(shelfX,.08f+height/2,shelfZ),new Vector3(diameter,shelfType==PrimitiveType.Sphere?height:height/2,diameter),glaze,false);}

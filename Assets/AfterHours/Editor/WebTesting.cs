@@ -10,7 +10,7 @@ namespace AfterHours.Editor
         static GameDirector D=>GameDirector.Instance;
         public static Machete Machete=>D.web.machete.GetComponent<Machete>();
         // The two webs of a column, low then high, and the point between them that one chop passes through.
-        public static Cobweb[] Column(int col)=>new[]{D.web.webs[col*2],D.web.webs[col*2+1]};
+        public static Cobweb[] Column(int col){if(col<0||col*2+1>=D.web.webs.Length)throw new System.ArgumentOutOfRangeException(nameof(col),"Column "+col+" is outside the web's "+D.web.webs.Length/2+" columns.");return new[]{D.web.webs[col*2],D.web.webs[col*2+1]};}
         public static Vector3 Between(int col)=>(Column(col)[0].transform.position+Column(col)[1].transform.position)*.5f;
         public static int Columns=>D.web.webs.Length/2;
         // The view rotation at which the held blade passes through a point.

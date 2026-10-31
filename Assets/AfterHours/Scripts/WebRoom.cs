@@ -52,7 +52,7 @@ namespace AfterHours
         public bool burned{get;private set;}
         public bool Burning=>burning!=null;
         Coroutine burning;
-        Vector3 spiderHome;Quaternion spiderTurn;Vector3 spiderSize;Quaternion[] legHome;Material[] bodyLook;bool known;
+        Vector3 spiderHome;Quaternion spiderTurn;Vector3 spiderSize;Quaternion[] legHome=new Quaternion[0];Material[] bodyLook;bool known;
         float nextGrowSound;bool spoke,warned;
 
         // ---- Coming and going

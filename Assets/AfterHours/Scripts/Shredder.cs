@@ -58,7 +58,7 @@ namespace AfterHours
         void Scatter(int index){if(litter!=null&&index>=0&&index<litter.Length&&litter[index])litter[index].SetActive(true);}
         // Shows the scraps of every page already shredded. A coroutine cut short by leaving the room cannot do it.
         void ScatterAll(){for(int i=0;i<shredded;i++)Scatter(i);}
-        void Finish(Grabbable item,bool settled=true){Gone(item,settled);director.AcceptItem(Room,item.label,farewells[Array.IndexOf(pages,item)]);}
+        void Finish(Grabbable item,bool settled=true){Gone(item,settled);int i=Array.IndexOf(pages,item);director.AcceptItem(Room,item.label,i>=0&&farewells!=null&&i<farewells.Length?farewells[i]:null);}
         // Leaving mid-shred finishes the page at once; arriving after the last one offers the blank page.
         void OnDisable(){if(busy&&current){var item=current;current=null;busy=false;StopAllCoroutines();Finish(item);}}
         void OnEnable(){ScatterAll();if(director&&shredded>=pages.Length&&string.IsNullOrEmpty(line)&&!Offering)Offer(false);}
@@ -66,7 +66,7 @@ namespace AfterHours
         void Gone(Grabbable item,bool settled)
         {
             item.gameObject.SetActive(false);
-            if(shredded<piles.Length)piles[shredded].SetActive(true);
+            if(piles!=null&&shredded<piles.Length)piles[shredded].SetActive(true);
             if(settled)Scatter(shredded);
             shredded++;
         }
@@ -102,7 +102,7 @@ namespace AfterHours
             // BringBack also tells the page's body where its stand is. Otherwise the body wakes where the page last lay (down in the
             // shredder's slot) and the slot takes the page in again.
             foreach(var page in pages)page.BringBack();
-            foreach(var pile in piles)pile.SetActive(false);
+            if(piles!=null)foreach(var pile in piles)pile.SetActive(false);
             if(litter!=null)foreach(var set in litter)if(set)set.SetActive(false);
             if(strips)strips.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
             if(bits!=null)foreach(var flurry in bits)if(flurry)flurry.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);

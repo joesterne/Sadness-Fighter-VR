@@ -25,7 +25,7 @@ namespace AfterHours.Editor
         static Wardrobe W=>D.wardrobe;
         public static void Start()
         {
-            if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
+            if(!EditorApplication.isPlaying||!D||!D.player||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;
             intExisted=intKeys.Select(PlayerPrefs.HasKey).ToArray();intValues=intKeys.Select(k=>PlayerPrefs.GetInt(k)).ToArray();
             stringExisted=stringKeys.Select(PlayerPrefs.HasKey).ToArray();stringValues=stringKeys.Select(k=>PlayerPrefs.GetString(k)).ToArray();

@@ -38,7 +38,7 @@ namespace AfterHours
         public void Hide(){gameObject.SetActive(false);Step=-1;}
         int seenVersion;
         // If the player picks up controllers (or puts them down) while a step is showing, the step's words follow.
-        void Update(){if(Step==MenuStep&&director.menu&&director.menu.IsOpen)Next();else if(Step>=0&&seenVersion!=Wording.Version)Show();}
+        void Update(){if(Step==MenuStep&&director&&director.menu&&director.menu.IsOpen)Next();else if(Step>=0&&seenVersion!=Wording.Version)Show();}
         void Show()
         {
             seenVersion=Wording.Version;title.text=Title(Step);body.text=Body(Step);
@@ -48,7 +48,7 @@ namespace AfterHours
         void Finish()
         {
             gameObject.SetActive(false);Step=-1;PlayerPrefs.SetInt(Key,1);PlayerPrefs.Save();
-            director.Say("Welcome to After Hours. A few minutes is enough. Progress saves after each small step.");
+            if(director)director.Say("Welcome to After Hours. A few minutes is enough. Progress saves after each small step.");
         }
     }
 }

@@ -36,19 +36,19 @@ namespace AfterHours
         public bool Broken=>damage>=stages.Length;
         // Debris waits inside the part. Where each piece belongs is remembered, so a new computer puts every piece back.
         Rigidbody[] pieces;Transform[] parents;Vector3[] positions;Quaternion[] rotations;bool[] shown;
-        Vector3 visualPosition,visualScale;Quaternion visualRotation;bool ready;
+        Vector3 visualPosition,visualScale;Quaternion visualRotation;bool ready;Coroutine shake;
         void Ready()
         {
             if(ready)return;ready=true;
             pieces=stages.SelectMany(s=>s.debris).Where(r=>r).Distinct().ToArray();
             parents=pieces.Select(p=>p.transform.parent).ToArray();positions=pieces.Select(p=>p.transform.localPosition).ToArray();
             rotations=pieces.Select(p=>p.transform.localRotation).ToArray();shown=pieces.Select(p=>p.gameObject.activeSelf).ToArray();
-            visualPosition=visual.localPosition;visualRotation=visual.localRotation;visualScale=visual.localScale;
+            if(visual){visualPosition=visual.localPosition;visualRotation=visual.localRotation;visualScale=visual.localScale;}
         }
         // Puts the part back as it was built: whole, upright, every piece in place.
         public void Mend()
         {
-            Ready();StopAllCoroutines();damage=0;
+            Ready();StopAllCoroutines();shake=null;damage=0;
             for(int i=0;i<pieces.Length;i++)
             {
                 var p=pieces[i];p.isKinematic=true;p.transform.SetParent(parents[i],false);
@@ -64,7 +64,7 @@ namespace AfterHours
             Ready();if(Broken)return -1;
             var stage=stages[damage];damage++;
             int thrown=Throw(stage,push,away,true);Show(stage);Pose(damage-1);Refresh();
-            if(isActiveAndEnabled)StartCoroutine(Shake(push));
+            if(isActiveAndEnabled){if(shake!=null)StopCoroutine(shake);shake=StartCoroutine(Shake(push));}
             return thrown;
         }
         // Brings back saved damage without the drama: debris settles where it broke off.
@@ -98,6 +98,7 @@ namespace AfterHours
         {
             Vector3 tilt=Vector3.zero,shift=Vector3.zero,scale=Vector3.one;
             for(int k=0;k<=stage&&k<stages.Length;k++){tilt=stages[k].tilt;shift=stages[k].shift;if(stages[k].scale!=Vector3.zero)scale=stages[k].scale;}
+            if(!visual)return;
             visual.localRotation=visualRotation*Quaternion.Euler(tilt);visual.localPosition=visualPosition+shift;visual.localScale=Vector3.Scale(visualScale,scale);
         }
         void Refresh()
@@ -110,6 +111,7 @@ namespace AfterHours
         // A short jolt in the direction of the hit, then the part settles into its new pose.
         IEnumerator Shake(Vector3 push)
         {
+            if(!visual)yield break;
             var rest=visual.localPosition;var away=transform.InverseTransformDirection(push.normalized)*.025f;
             for(float t=0;t<.18f;t+=Time.deltaTime){visual.localPosition=rest+away*Mathf.Sin(t*55)*(1-t/.18f);yield return null;}
             visual.localPosition=rest;

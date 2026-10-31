@@ -21,7 +21,7 @@ namespace AfterHours.Editor
         static GameDirector D=>GameDirector.Instance;
         public static void Start()
         {
-            if(!EditorApplication.isPlaying||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
+            if(!EditorApplication.isPlaying||!D||!D.player||D.player.IsXR)throw new InvalidOperationException("Start desktop Play Mode first.");
             if(run!=null)return;existed=keys.Select(PlayerPrefs.HasKey).ToArray();checkpoint=PlayerPrefs.GetString(keys[0]);wardrobe=PlayerPrefs.GetString(Wardrobe.Key);values=keys.Select(k=>k==Wardrobe.Key?0:PlayerPrefs.GetInt(k)).ToArray();
             foreach(var key in keys)PlayerPrefs.DeleteKey(key);PlayerPrefs.SetInt(IntroGuide.Key,1);D.saveEnabled=false;
             mouse=InputSystem.AddDevice<Mouse>("SeatedValidationMouse");keyboard=InputSystem.AddDevice<Keyboard>("SeatedValidationKeyboard");TestInput.Claim(mouse,keyboard);lines.Clear();Status="Running";run=Checks();deadline=0;
@@ -128,8 +128,8 @@ namespace AfterHours.Editor
             D.rooms[2].root.GetComponentInChildren<DropZone>().RestoreItem(box);D.AcceptItem(2,box.label);
             D.Travel(3);yield return .8f;D.kitchen.AskForHelp();D.kitchen.cup.transform.position=D.kitchen.nozzle.position;D.kitchen.Brew();yield return .2f;
             Check(D.kitchen.fills==1,"Short kitchen session records one pour and help");
-            D.Travel(RageRoom.Room);yield return .8f;var mouse=D.rage.parts[3];D.rage.HitNow(mouse);D.rage.HitNow(mouse);
-            Check(mouse.Broken&&D.rooms[RageRoom.Room].accepted==1&&!D.rooms[RageRoom.Room].complete,"Short rage room session breaks the mouse");
+            D.Travel(RageRoom.Room);yield return .8f;var mousePart=D.rage.parts[3];D.rage.HitNow(mousePart);D.rage.HitNow(mousePart);
+            Check(mousePart.Broken&&D.rooms[RageRoom.Room].accepted==1&&!D.rooms[RageRoom.Room].complete,"Short rage room session breaks the mouse");
             D.darkOpening=false;D.Travel(AmbushRoom.Room);yield return .9f;D.ambush.Feel(0);D.ambush.Feel(4);
             Check(D.ambush.named==2&&D.rooms[AmbushRoom.Room].accepted==2&&!D.rooms[AmbushRoom.Room].complete,"Short ambush session names two feelings");
             D.Travel(4);yield return .8f;

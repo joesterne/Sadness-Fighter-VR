@@ -8,6 +8,6 @@ namespace AfterHours
         // Teleport arrives while the fade owns movement. Retry while occupied once the fade has finished.
         void OnTriggerStay(Collider other){TryEnter(other);}
         void TryEnter(Collider other)
-        {var player=other.GetComponentInParent<VRPlayer>();if(player&&player==director.player&&!player.busy)director.Travel(destination);}
+        {if(!director)return;var player=other.GetComponentInParent<VRPlayer>();if(player&&player==director.player&&!player.busy)director.Travel(destination);}
     }
 }

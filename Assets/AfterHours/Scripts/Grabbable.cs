@@ -54,6 +54,7 @@ namespace AfterHours
         // from the hand at which to hold it. Either way it keeps its orientation relative to the hand.
         public bool Take(Transform holder,Vector3? worldOffset=null,bool pull=false,Quaternion? worldRotation=null)
         {
+            Initialize();
             if(held || processed) return false;
             if(sending){StopAllCoroutines();sending=false;}
             thrown=false;trailCount=0;TakenAt=Time.time;

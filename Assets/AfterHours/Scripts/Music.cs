@@ -53,7 +53,7 @@ namespace AfterHours
             var wanted=Wanted;bool easing=false;
             // Within the rage room the beat eases out before the quiet piece comes in (and back), rather than cutting. A room change
             // swaps at once, while the screen is dark.
-            if(wanted&&source.clip&&source.clip!=wanted&&source.volume>0&&director&&director.currentRoom==RageRoom.Room&&!director.player.busy)easing=true;
+            if(wanted&&source.clip&&source.clip!=wanted&&source.volume>0&&director&&director.currentRoom==RageRoom.Room&&director.player&&!director.player.busy)easing=true;
             else if(wanted&&source.clip!=wanted)
             {
                 // Remember where the old piece was, and pick the new one up where it was left.

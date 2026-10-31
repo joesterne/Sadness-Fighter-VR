@@ -201,13 +201,14 @@ namespace AfterHours.Editor
             var root=new GameObject("Player - hands and controllers");var player=root.AddComponent<VRPlayer>();d.player=player;root.AddComponent<ThumbShortcuts>().player=player;
             var body=root.AddComponent<CharacterController>();body.radius=.24f;body.height=1.7f;body.center=new Vector3(0,.85f,0);body.stepOffset=.25f;body.skinWidth=.025f;
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.meta.xr.sdk.core/Prefabs/OVRCameraRig.prefab");
-            var rig=(GameObject)PrefabUtility.InstantiatePrefab(prefab);rig.transform.SetParent(root.transform,false);player.rig=rig.GetComponent<OVRCameraRig>();
+            if(!prefab)throw new InvalidOperationException("OVRCameraRig prefab not found in the Meta XR SDK package (com.meta.xr.sdk.core). Install or restore that package, then build the scene again.");
+            var rig=(GameObject)PrefabUtility.InstantiatePrefab(prefab);rig.transform.SetParent(root.transform,false);player.rig=rig.GetComponent<OVRCameraRig>();if(!player.rig)throw new InvalidOperationException("The OVRCameraRig prefab has no OVRCameraRig component.");
             var manager=rig.GetComponent<OVRManager>();if(!manager)manager=rig.AddComponent<OVRManager>();manager.trackingOriginType=OVRManager.TrackingOrigin.FloorLevel;
             // Meta's Project Setup Tool recommendation: dynamic resolution, which also unlocks the highest GPU level on Quest.
             manager.enableDynamicResolution=true;manager.quest2MinDynamicResolutionScale=.7f;manager.quest2MaxDynamicResolutionScale=1.3f;manager.quest3MinDynamicResolutionScale=.7f;manager.quest3MaxDynamicResolutionScale=1.6f;
             player.leftHand=Hand(player.rig.leftHandAnchor,player.rig.trackingSpace,false);player.rightHand=Hand(player.rig.rightHandAnchor,player.rig.trackingSpace,true);
             foreach(var camera in rig.GetComponentsInChildren<Camera>(true)){camera.nearClipPlane=.05f;camera.farClipPlane=85;camera.allowHDR=false;camera.backgroundColor=Hex("#9AB5B7");camera.clearFlags=CameraClearFlags.Skybox;}
-            var cam=player.rig.centerEyeAnchor.GetComponent<Camera>();cam.tag="MainCamera";if(!cam.GetComponent<AudioListener>())cam.gameObject.AddComponent<AudioListener>();
+            var cam=player.rig.centerEyeAnchor.GetComponent<Camera>();if(!cam)throw new InvalidOperationException("The OVRCameraRig center eye anchor has no Camera.");cam.tag="MainCamera";if(!cam.GetComponent<AudioListener>())cam.gameObject.AddComponent<AudioListener>();
             player.hint=Art.Text("A quiet thought","",new Vector3(0,-.38f,1.5f),.043f,Hex("#FFF5DB"),1.3f,player.rig.centerEyeAnchor);player.hint.rectTransform.sizeDelta=new Vector2(1.3f,.32f);player.hint.gameObject.SetActive(false);
             // A faint "Saved" in the upper right of the view, shown for a moment after each room change. It sits well clear of the messages below.
             player.savedCue=Art.Halo(Art.Text("Saved cue","Saved",new Vector3(.5f,.34f,1.5f),.03f,Hex("#E6EFEC"),.5f,player.rig.centerEyeAnchor));player.savedCue.rectTransform.sizeDelta=new Vector2(.5f,.1f);player.savedCue.gameObject.SetActive(false);
@@ -289,7 +290,7 @@ namespace AfterHours.Editor
             config.anchorSupport=OVRProjectConfig.AnchorSupport.Disabled;config.sharedAnchorSupport=OVRProjectConfig.FeatureSupport.None;config.sceneSupport=OVRProjectConfig.FeatureSupport.None;
             config.colocationSessionSupport=OVRProjectConfig.FeatureSupport.None;config.boundaryVisibilitySupport=OVRProjectConfig.FeatureSupport.None;
             config.insightPassthroughSupport=OVRProjectConfig.FeatureSupport.None;config.isPassthroughCameraAccessEnabled=false;OVRProjectConfig.CommitProjectConfig(config);
-            XRGeneralSettingsPerBuildTarget container=null;var guids=AssetDatabase.FindAssets("t:XRGeneralSettingsPerBuildTarget");if(guids.Length>0)container=AssetDatabase.LoadAssetAtPath<XRGeneralSettingsPerBuildTarget>(AssetDatabase.GUIDToAssetPath(guids[0]));
+            XRGeneralSettingsPerBuildTarget container=null;var guids=AssetDatabase.FindAssets("t:XRGeneralSettingsPerBuildTarget");if(guids.Length>1)Debug.LogWarning("After Hours: "+guids.Length+" XR settings assets exist; using the first ("+AssetDatabase.GUIDToAssetPath(guids[0])+"). Delete or rename the others if builds pick the wrong one.");if(guids.Length>0)container=AssetDatabase.LoadAssetAtPath<XRGeneralSettingsPerBuildTarget>(AssetDatabase.GUIDToAssetPath(guids[0]));
             if(!container){container=ScriptableObject.CreateInstance<XRGeneralSettingsPerBuildTarget>();AssetDatabase.CreateAsset(container,"Assets/XR/AfterHours XR settings.asset");EditorBuildSettings.AddConfigObject(XRGeneralSettings.settingsKey,container,true);}
             foreach(var group in new[]{BuildTargetGroup.Android,BuildTargetGroup.Standalone})
             {
@@ -330,8 +331,8 @@ namespace AfterHours.Editor
         {
             if(t.GetComponentInParent<Grabbable>(true)||t.GetComponentInParent<MirrorAvatar>(true)||t.GetComponentInParent<Breakable>(true)||t.GetComponentInParent<CabinetDoor>(true))return true;
             for(var p=t;p&&p!=room;p=p.parent)if(!p.gameObject.activeSelf)return true;
-            if(t.IsChildOf(d.ocean.horizon))return true;
-            foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;
+            if(d.ocean&&d.ocean.horizon&&t.IsChildOf(d.ocean.horizon))return true;
+            if(d.kitchen&&d.kitchen.crowd!=null)foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;
             // The ambush: clowns, cards, chair, lamps and the like change while playing.
             if(d.ambush&&d.ambush.changing&&t.IsChildOf(d.ambush.changing))return true;
             // The NDA web: the webs, the machete, the spider and its fire.
@@ -438,7 +439,7 @@ namespace AfterHours.Editor
                 var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{ScenePath},locationPathName=path,target=BuildTarget.Android,options=release?BuildOptions.None:BuildOptions.Development});
                 Debug.Log("After Hours "+(release?"release":"development")+" APK: "+report.summary.result+" / "+report.summary.totalErrors+" errors / "+path+" / version "+PlayerSettings.bundleVersion+" ("+PlayerSettings.Android.bundleVersionCode+")"+(release?signed?" / signed with the release key":" / DEBUG-SIGNED":""));
             }
-            finally{if(signed)ReleaseSigning.Clear();}
+            finally{if(signed)ReleaseSigning.Clear();if(profile)BuildProfile.SetActiveBuildProfile(profile);}
         }
     }
 }

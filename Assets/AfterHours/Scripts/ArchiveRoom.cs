@@ -12,7 +12,6 @@ namespace AfterHours
         // The haze: the colour everything far away fades to, and where the fading starts and ends (metres from the eye).
         public static readonly Color Haze=new Color32(0x0D,0x17,0x26,255);
         public const float HazeStart=6,HazeEnd=48;
-        public GameDirector director;
         public Material skybox;
         // The far stacks, bridges and lamps: a few large meshes of their own, kept out of the room's batches (so rays near the signs stay short).
         public Transform scenery;
@@ -58,14 +57,14 @@ namespace AfterHours
 
         void Update()
         {
-            if(pages==null)return;
+            if(pages==null||speeds==null)return;
             if(homes==null||homes.Length!=pages.Length){homes=new Vector3[pages.Length];for(int i=0;i<pages.Length;i++)if(pages[i])homes[i]=pages[i].localPosition;}
             clock+=Time.deltaTime;
             for(int i=0;i<pages.Length;i++)
             {
                 var page=pages[i];if(!page)continue;
                 // Each page falls slowly and sways from side to side as it goes, turning over now and then.
-                var p=page.localPosition;p.y-=speeds[i]*Time.deltaTime;if(p.y<.1f)p.y+=PageTop;
+                var p=page.localPosition;p.y-=(i<speeds.Length?speeds[i]:0)*Time.deltaTime;if(p.y<.1f)p.y+=PageTop;
                 float phase=clock*.6f+i*1.7f;p.x=homes[i].x+Mathf.Sin(phase)*.8f;p.z=homes[i].z+Mathf.Cos(phase*.7f)*.5f;
                 page.localPosition=p;page.localRotation=Quaternion.Euler(Mathf.Sin(phase)*35,i*37+clock*12,Mathf.Cos(phase*1.3f)*25);
             }

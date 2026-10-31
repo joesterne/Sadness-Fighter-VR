@@ -59,7 +59,7 @@ namespace AfterHours
             if(status&&director.rooms!=null&&room<director.rooms.Length)status.text=director.rooms[room].title.ToUpperInvariant();
             string eye=p.SeatedEyeHeight.ToString("0.00",CultureInfo.InvariantCulture)+" m";
             Set(seated,"SEATED VIEW\n"+(p.seatedMode?"ON":"OFF"));
-            Set(height,"SEATED HEIGHT\n"+new[]{"LOW","MID","HIGH"}[p.seatedHeightIndex]+"  "+eye);
+            Set(height,"SEATED HEIGHT\n"+new[]{"LOW","MID","HIGH"}[Mathf.Clamp(p.seatedHeightIndex,0,2)]+"  "+eye);
             Set(walking,"MOVEMENT\n"+(p.smoothMotion?"WALK + TELEPORT":"TELEPORT ONLY"));
             Set(vignette,"COMFORT VIGNETTE\n"+(p.comfortVignette?"ON":"OFF"));
             Set(crowd,"KITCHEN CROWD\n"+(director.gentleAudience?"HIDDEN":"SHOWN"));

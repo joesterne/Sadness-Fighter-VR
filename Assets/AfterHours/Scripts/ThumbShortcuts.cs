@@ -16,7 +16,7 @@ namespace AfterHours
         public enum Outcome { Ignored, Asked, Stayed, Went }
         [System.NonSerialized] public float armedUntil;
         [System.NonSerialized] public int gesturesSeen;
-        float lastAt=-10; OVRHand.MicrogestureType lastGesture=OVRHand.MicrogestureType.NoGesture;
+        readonly float[] lastAt={-10,-10}; readonly OVRHand.MicrogestureType[] lastGesture={OVRHand.MicrogestureType.NoGesture,OVRHand.MicrogestureType.NoGesture};
         public bool Armed=>Time.time<armedUntil;
         void Update()
         {
@@ -28,8 +28,8 @@ namespace AfterHours
                 var gesture=hand.GetMicrogestureType();
                 if(gesture==OVRHand.MicrogestureType.NoGesture||gesture==OVRHand.MicrogestureType.Invalid)continue;
                 // One gesture is reported once; a repeat of the same one within a moment is the same movement.
-                if(gesture==lastGesture&&Time.time-lastAt<.3f)continue;
-                lastGesture=gesture;lastAt=Time.time;
+                if(gesture==lastGesture[i]&&Time.time-lastAt[i]<.3f)continue;
+                lastGesture[i]=gesture;lastAt[i]=Time.time;
                 var result=Handle(gesture);
                 Debug.Log("[AfterHours] Thumb gesture "+gesture+" on the "+(i==0?"left":"right")+" hand: "+result);
             }

@@ -142,7 +142,7 @@ namespace AfterHours
                 for (int k = 0; k < 4; k++) cs.Add(c);
                 ts.AddRange(new[] { n, n+1, n+2, n, n+2, n+3 });
             }
-            var mesh = new Mesh { name = name + " mesh", indexFormat = IndexFormat.UInt16 }; mesh.SetVertices(vs); mesh.SetColors(cs); mesh.SetTriangles(ts, 0); mesh.RecalculateBounds();
+            var mesh = new Mesh { name = name + " mesh", indexFormat = count*4>65535 ? IndexFormat.UInt32 : IndexFormat.UInt16 }; mesh.SetVertices(vs); mesh.SetColors(cs); mesh.SetTriangles(ts, 0); mesh.RecalculateBounds();
             var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer)); go.GetComponent<MeshFilter>().sharedMesh = mesh;
             var r = go.GetComponent<MeshRenderer>(); r.sharedMaterial = mat; r.shadowCastingMode = ShadowCastingMode.Off; r.receiveShadows = false;
             go.transform.SetParent(parent ? parent : Root, false); return go;
