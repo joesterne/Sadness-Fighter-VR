@@ -1,4 +1,4 @@
-2026-10-30 00:06:55Z
+2026-11-02 18:51:01Z
 Passed
 The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, a block dropped off the roof, NEW TOWER, leaving and coming back.
 PASS: The rooftop has a tower of 54 blocks: 18 rows of three
@@ -26,7 +26,7 @@ PASS: Laid on top, it counts: ON TOP  1     BEST  1
 PASS: The best tower is kept
 PASS: The tower takes it without moving (largest drift 0.5 mm)
 PASS: Taking hold of the block the third row rests on
-PASS: It will not come: the rows above press down on it (moved 0.1 mm)
+PASS: It will not come: the rows above press down on it (moved 0.0 mm)
 PASS: And it slips out of the hand that pulls on
 PASS: The tower is still standing (largest drift 1.7 mm)
 PASS: Another loose block, lower down
