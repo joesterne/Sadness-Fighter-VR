@@ -31,6 +31,13 @@ namespace AfterHours
             body.isKinematic=true;transform.SetPositionAndRotation(position,rotation);body.position=position;body.rotation=rotation;
             restPosition=position;restRotation=rotation;
         }
+        // Puts the block down somewhere off the tower, under physics and still. Where it was stacked is unchanged.
+        public void Lay(Vector3 position,Quaternion rotation)
+        {
+            if(!body.isKinematic){body.linearVelocity=Vector3.zero;body.angularVelocity=Vector3.zero;}
+            body.isKinematic=true;transform.SetPositionAndRotation(position,rotation);body.position=position;body.rotation=rotation;
+            body.isKinematic=false;body.linearVelocity=Vector3.zero;body.angularVelocity=Vector3.zero;
+        }
         // Back under physics, at rest and asleep, so the new tower stands perfectly still until something touches it.
         public void Settle(){body.isKinematic=false;body.linearVelocity=Vector3.zero;body.angularVelocity=Vector3.zero;body.Sleep();}
         // Dropped by more than half its height, or tipped more than 25 degrees, from where it was stacked.

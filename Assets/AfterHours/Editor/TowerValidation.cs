@@ -179,6 +179,11 @@ namespace AfterHours.Editor
             Check(P.hint.text.Contains("Down it comes")&&P.hint.text.Contains("NEW TOWER"),"It is said kindly, with what to do next");
             yield return 2f;
 
+            // ---- A block dropped off the roof
+            var dropped=t.blocks[0];dropped.Lay(new Vector3(t.foot.position.x,-4,t.foot.position.z),dropped.transform.rotation);yield return .5f;
+            var landed=t.foot.InverseTransformPoint(dropped.transform.position);
+            Check(landed.y>-.01f&&landed.y<.3f&&new Vector2(landed.x,landed.z).magnitude<.4f,"A block dropped off the roof comes back to rest on the table beside the tower (at "+landed.ToString("F2")+")");
+
             // ---- NEW TOWER
             int towers=t.Towers;var heights=t.blocks.Select(b=>b.height).ToArray();
             foreach(var x in Click(newTower))yield return x;
@@ -209,7 +214,7 @@ namespace AfterHours.Editor
             if(D&&D.rooftop&&D.rooftop.tower)D.rooftop.tower.fingertipOverride=new Vector3?[2];
             TestInput.Release();if(mouse!=null)InputSystem.RemoveDevice(mouse);if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
             for(int i=0;i<keys.Length;i++){if(!existed[i])PlayerPrefs.DeleteKey(keys[i]);else if(i==0)PlayerPrefs.SetString(keys[i],checkpoint);else PlayerPrefs.SetInt(keys[i],values[i]);}PlayerPrefs.Save();
-            Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Tower-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, NEW TOWER, leaving and coming back."}.Concat(lines));Debug.Log("Tower validation: "+Status);
+            Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Tower-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"The rooftop's tower of blocks: what it is made of and the physics it plays with, standing still, a loose block eased out and laid on top, a load-bearing block that will not come, a fingertip nudge, a desktop grab, the tower coming down, a block dropped off the roof, NEW TOWER, leaving and coming back."}.Concat(lines));Debug.Log("Tower validation: "+Status);
         }
     }
 }
