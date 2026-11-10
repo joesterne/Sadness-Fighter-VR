@@ -240,7 +240,9 @@ namespace AfterHours.Editor
         }
         static void Lighting()
         {
-            var light=new GameObject("Late afternoon sun").AddComponent<Light>();light.type=LightType.Directional;light.color=Hex("#FFF0D7");light.intensity=1.65f;light.transform.rotation=Quaternion.Euler(43,-32,0);light.shadows=LightShadows.Hard;light.shadowStrength=.5f;
+            var light=new GameObject("Late afternoon sun").AddComponent<Light>();light.type=LightType.Directional;light.color=Hex("#FFF0D7");light.intensity=1.65f;light.transform.rotation=Quaternion.Euler(43,-32,0);light.shadowStrength=.5f;
+            // Soft-edged shadows (URP's low-quality filter, a few taps) instead of hard, stair-stepped ones. A Quest 2 switches back to hard (DeviceProfile).
+            light.shadows=LightShadows.Soft;
             // Gradient ambient: up-facing facets read lighter and down-facing ones darker, so flat-shaded forms stay legible.
             RenderSettings.ambientMode=AmbientMode.Trilight;RenderSettings.ambientSkyColor=Hex("#B8C3C1");RenderSettings.ambientEquatorColor=Hex("#9CAAAC");RenderSettings.ambientGroundColor=Hex("#687578");RenderSettings.fog=true;RenderSettings.fogColor=Hex("#9FB6B7");RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=25;RenderSettings.fogEndDistance=72;
             var sky=AssetDatabase.LoadAssetAtPath<Material>(Folder+"15 Sky.mat");if(!sky){sky=new Material(Shader.Find("Skybox/Procedural"));AssetDatabase.CreateAsset(sky,Folder+"15 Sky.mat");}sky.SetColor("_SkyTint",Hex("#8FB7BB"));sky.SetColor("_GroundColor",Hex("#AAB9B7"));sky.SetFloat("_Exposure",1.1f);sky.SetFloat("_AtmosphereThickness",.7f);RenderSettings.skybox=sky;RenderSettings.sun=light;
@@ -309,13 +311,23 @@ namespace AfterHours.Editor
             EditorUtility.SetDirty(container);AssetDatabase.SaveAssets();
         }
         static readonly string[] UnusedMixedRealityFeatures={"ARSessionFeature","ARAnchorFeature","ARPlaneFeature","ARMeshFeature","ARBoundingBoxFeature","ARRaycastFeature","AROcclusionFeature","ARCameraFeature","ColocationDiscoveryFeature","BoundaryVisibilityFeature"};
+        public const int SmoothShadowResolution=2048;
         static void ConfigureRendering()
         {
             // Each quality level can carry its own URP asset. Quest uses Mobile_RPAsset while the editor previews with PC_RPAsset, so tune every one.
             var assets=new HashSet<UniversalRenderPipelineAsset>();
             if(GraphicsSettings.defaultRenderPipeline is UniversalRenderPipelineAsset main)assets.Add(main);
             for(int i=0;i<QualitySettings.count;i++)if(QualitySettings.GetRenderPipelineAssetAt(i) is UniversalRenderPipelineAsset level)assets.Add(level);
-            foreach(var pipeline in assets){pipeline.msaaSampleCount=4;pipeline.renderScale=1;pipeline.shadowDistance=28;pipeline.supportsHDR=false;EditorUtility.SetDirty(pipeline);}
+            foreach(var pipeline in assets)
+            {
+                pipeline.msaaSampleCount=4;pipeline.renderScale=1;pipeline.shadowDistance=28;pipeline.supportsHDR=false;
+                // Smoother shadows: a 2048 shadow map halves the size of each shadow step, and the soft filter blurs what is left.
+                // Low soft-shadow quality is the cheapest filter URP has, and the Quest 2 drops back to 1024 and hard shadows (DeviceProfile).
+                pipeline.mainLightShadowmapResolution=SmoothShadowResolution;
+                var so=new SerializedObject(pipeline);var soft=so.FindProperty("m_SoftShadowsSupported");var quality=so.FindProperty("m_SoftShadowQuality");
+                if(soft!=null)soft.boolValue=true;if(quality!=null)quality.intValue=(int)SoftShadowQuality.Low;so.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(pipeline);
+            }
         }
         static void ConfigureDebugTools()
         {
