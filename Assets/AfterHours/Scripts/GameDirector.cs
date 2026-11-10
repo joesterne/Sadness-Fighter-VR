@@ -33,6 +33,7 @@ namespace AfterHours
         public RooftopRoom rooftop;
         public ArchiveRoom archive;
         public Wardrobe wardrobe;
+        public BadgeBoard badges;
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
         public AudioClip select, grab, send, place, menuOpen, menuClose, teleport, turn, row, spill, pour, shred, unlock;
@@ -49,7 +50,7 @@ namespace AfterHours
         // Every movable object in one room, as found when the scene woke. Saving walks these instead of searching the scene.
         public Grabbable[] GrabbablesOf(int room)=>grabbables!=null&&room>=0&&room<grabbables.Length?grabbables[room]:System.Array.Empty<Grabbable>();
         public int lastRoom;
-        bool ready;
+        bool ready,settled;
         [NonSerialized] public bool saveEnabled=true;
         public int currentRoom;
         public bool gentleAudience;
@@ -68,7 +69,7 @@ namespace AfterHours
             Instance=this;
             targets=new SendTarget[rooms.Length][];grabbables=new Grabbable[rooms.Length][];guidance=new Guidance[rooms.Length][];
             for(int i=0;i<rooms.Length;i++){targets[i]=rooms[i].root.GetComponentsInChildren<SendTarget>(true);grabbables[i]=rooms[i].root.GetComponentsInChildren<Grabbable>(true);guidance[i]=rooms[i].root.GetComponentsInChildren<Guidance>(true);}
-            if(wardrobe)wardrobe.Load();
+            if(wardrobe)wardrobe.Load();if(badges)badges.Load();
         }
         public void PlayUi(AudioClip clip,float volume){if(audioSource&&clip)audioSource.PlayOneShot(clip,volume);}
         public void PlayAt(AudioClip clip,Vector3 position,float volume){if(clip)AudioSource.PlayClipAtPoint(clip,position,volume);}
@@ -80,6 +81,7 @@ namespace AfterHours
             // Progress from before the wardrobe existed still earns its pieces.
             foreach(int i in Chapters)if(rooms[i].complete)Earn(Outfits.ForChapter(i));
             if(CompletedCount==Chapters.Length)Earn("jacket");if(kitchen.helped)Earn("scarf");
+            if(badges)badges.Check(false);settled=true;
             ApplyClean(player.cleanMode);
             if(intro&&PlayerPrefs.GetInt(IntroGuide.Key,0)==0&&!player.cleanMode)intro.Begin();
             else Say("Welcome back. A few minutes is enough. Progress saves after each small step. "+Wording.Pick("A left palm pinch","The menu button")+" opens seated and comfort options.");
@@ -87,7 +89,7 @@ namespace AfterHours
         void Update()
         {
             // Resting on the rooftop for a little while earns the evening beanie.
-            if(currentRoom==5&&!player.busy){restTime+=Time.deltaTime;if(restTime>=RestForBeanie)Earn("beanie");}else restTime=0;
+            if(currentRoom==5&&!player.busy){restTime+=Time.deltaTime;if(restTime>=RestForBeanie){Earn("beanie");CountToday();}}else restTime=0;
             // The quiet timer. Nothing is written unless something changed since the last save, so it never causes a hitch.
             if(ready&&saveEnabled){autosaveClock+=Time.deltaTime;if(autosaveClock>=AutosaveSeconds&&!player.busy)Autosave(false);}
             // New pieces are announced one at a time, after whatever the room has just said.
@@ -97,10 +99,15 @@ namespace AfterHours
         public void Earn(string id)
         {
             if(!wardrobe||!wardrobe.Unlock(id))return;
-            news.Enqueue("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");
+            Announce("New to wear: "+Outfits.Get(id).name+". Try it on at the mirror in the lobby.");
+            if(badges&&settled)badges.Check(true);
         }
         // The first small step anywhere earns a pin. Every step still counts the same.
-        public void SmallStep(){Earn("step-pin");}
+        public void SmallStep(){Earn("step-pin");CountToday();}
+        // Doing something in a room counts the day, once. Tests that do not save do not count either.
+        public void CountToday(){if(badges&&saveEnabled)badges.Count(Streak.Today);}
+        // Announcements wait their turn, one at a time.
+        public void Announce(string text){news.Enqueue(text);}
         public void GoToMirror()
         {
             if(player.busy||currentRoom!=0||!mirrorSpot)return;
@@ -124,6 +131,7 @@ namespace AfterHours
             // The sea's night sky and light belong to the ocean room alone.
             if(from==1&&ocean)ocean.SetEnvironment(false);
             player.Place(rooms[room].spawn.position,rooms[room].spawn.eulerAngles.y);
+            if(room==0&&badges)badges.Refresh();
             if(room==1)ocean.OnArrive();
             if(room==AmbushRoom.Room&&ambush)ambush.OnArrive();
             yield return player.Fade(0,.35f,true);player.busy=false;
@@ -148,13 +156,14 @@ namespace AfterHours
             PlayerPrefs.SetInt(SaveKey,mask);PlayerPrefs.Save();RefreshProgress();if(first)Play(completeSound);
             string[] lines={"","You crossed a feeling. It was never the whole ocean.","Processed does not mean erased. You made room to carry on.","A broken machine is not a broken person. Help belongs here.","Losing a role did not erase what is still true about you.","","The old pages are gone. What you bring with you is still yours.","You let some of it out. What you lost mattered. So do you.","You named it, and then you stood up. Leaving a room like that is allowed. So is coming back."};Say(lines[room]+"  The menu takes you back to the lobby whenever you are ready.");
             Earn(Outfits.ForChapter(room));if(CompletedCount==Chapters.Length)Earn("jacket");
+            CountToday();if(badges)badges.Check(true);
             SaveCheckpoint();
         }
         public int CompletedCount { get {int n=0;foreach(int i in Chapters)if(rooms[i].complete)n++;return n;} }
         public void RefreshProgress()
         {
             if(resumeLabel)resumeLabel.text=lastRoom>0?"CONTINUE / "+rooms[lastRoom].title.ToUpperInvariant():"BEGIN / OCEAN OF SHAME";
-            if(lobbyProgress)lobbyProgress.text=CompletedCount+" / "+Chapters.Length+"   ROOMS EXPLORED\n<color=#ABC4C5>Your pace. No score. No deadline.</color>";
+            if(lobbyProgress)lobbyProgress.text=CompletedCount+" / "+Chapters.Length+"   ROOMS EXPLORED\n<color=#ABC4C5>Your pace. No deadline.</color>";
             foreach(int i in Chapters)if(rooms[i].progress)rooms[i].progress.text=rooms[i].complete?"A LITTLE MORE ROOM TO BREATHE":(i==2||i==4)?rooms[i].accepted+" / "+rooms[i].total+"   GIVEN A PLACE":i==Shredder.Room?rooms[i].accepted+" / "+rooms[i].total+"   LET GO":i==RageRoom.Room?rooms[i].accepted+" / "+rooms[i].total+"   BROKEN":i==AmbushRoom.Room?rooms[i].accepted+" / "+rooms[i].total+"   NAMED":"TAKE YOUR TIME";
             if(ending)ending.text=CompletedCount==Chapters.Length?"You are more\nthan your job.":"You can rest\nbefore you are ready.";
         }
@@ -170,6 +179,7 @@ namespace AfterHours
         public void ApplyClean(bool clean)
         {
             if(guidance!=null)foreach(var room in guidance)foreach(var g in room)if(g)g.Apply(clean);
+            if(badges)badges.gameObject.SetActive(!clean);
             if(clean){if(player)player.HideHint();if(intro&&intro.IsShowing)intro.Hide();news.Clear();}
             RefreshComfort();
         }

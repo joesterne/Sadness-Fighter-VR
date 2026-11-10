@@ -916,3 +916,23 @@ These still need a physical headset playtest (see `Playtest.md`):
 - how the lighthouse beam looks on the headset (soft edges, no banding) and what it costs in frame rate
 - the level of the new sea sounds, gulls and bell buoy on the headset's speakers
 - that clean mode really is calm for someone who wants nothing on screen, and that nothing needed was hidden by it
+
+## November 4: the ambush's lights no longer flash
+
+The ambush's dark opening used to cut the whole view between black and clear four times in about 1.1 seconds. It is on by default and fills the view in a headset, which is the kind of flashing that can trouble people sensitive to it. The lights now come up in steps that hold and only ever get lighter, over 1.5 seconds, with the steps timed to the tubes in `SFX - Lights` (the sound itself is unchanged). The first-visit content note now says that one chapter opens in the dark and that the menu can turn that off. The ambush suite checks that the view never goes darker on the way.
+
+Still to judge on a headset: whether the steps feel like tubes struggling on, and whether the jump in brightness is comfortable. This has not been assessed against any formal photosensitivity test.
+
+The release APK was rebuilt with this change: version 0.8.3, version code 443337, signed with the release key (the same certificate as 441935). The version and signature were read back out of the file, and the new wording was found in its metadata. It was installed on a Quest 2 on November 4 and started.
+
+## November 5: your days and badges
+
+Coming back now counts. A board on the lobby's left shows the run so far, the best run, the total days and twelve badges, and three new pins can be earned at 3, 7 and 30 days, making fifteen pieces to earn. A day counts when the player does something in a room, not when they open the game.
+
+The game used to say it had no score and no streaks, and it is about a hard time in someone's life, so nothing here can be lost: one day off keeps a run going, a longer gap starts a new run without mentioning the old one, and best, total and badges stay. "No score" came off the lobby's desk. Clean mode hides the board and its announcements.
+
+Results, all on this code: badges 45, gameplay journey 172, menu and seated 101, navigation 142, airplane seat 118, wardrobe 67, ocean 88, throwing 117, text visibility 194, ambush 201, which is 1,245 checks with no failures. The dates in the badge checks are set by the test, so no real run of days has been played. The board was looked at in one editor render, not in a headset.
+
+The gameplay journey failed its first check (movement input) on its first run after the scene was rebuilt and passed when run again with nothing changed, as on earlier runs. The wardrobe suite failed twice in a real way: its two announcement checks allowed one slot in the queue, and badges now queue with new pieces. They now wait for their turn. A long finish can leave several announcements waiting, four seconds apart.
+
+This change is not in the release APK yet: version code 443337 does not have it.

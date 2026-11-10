@@ -35,6 +35,8 @@ namespace AfterHours
         float lastTap=-100;int taps;Material pulse;
         float bodyYaw, width=1; bool hasYaw;
         const float Upper=.29f, Fore=.27f, NominalSpine=.61f, NominalHips=.9f;
+        // From the base of the neck to where the head turns. The neck model is .145 long, so its top sits inside the head.
+        public const float NeckLength=.1f;
         static readonly float[] Widths={.88f,1f,1.14f};
 
         void LateUpdate()
@@ -72,13 +74,18 @@ namespace AfterHours
             }
             var body=Quaternion.Euler(0,bodyYaw,0);
             float eyeHeight=Mathf.Clamp(eye.y-floor,.9f,2.2f);
-            var spineBase=new Vector3(eye.x,floor,eye.z)+body*new Vector3(0,0,-.09f);
-            var neckBase=spineBase+Vector3.up*(eyeHeight-.17f);
-            float hipHeight=Mathf.Max(.42f,eyeHeight-.78f);
+            // The head turns on the top of the neck, below and behind the eyes, so the neck runs from the shoulders up to that point
+            // and leans part of the way with the head. Hung from the eyes alone, the head lifted off the neck when looking down.
+            var level=new Vector3(eye.x,floor+eyeHeight,eye.z);
+            var pivot=level+headRot*new Vector3(0,-.07f,-.09f);
+            var tilt=Vector3.Slerp(Vector3.up,headRot*Vector3.up,.6f);
+            var neckBase=pivot-tilt*NeckLength;
+            var spineBase=new Vector3(neckBase.x,floor,neckBase.z);
+            float hipHeight=Mathf.Max(.42f,neckBase.y-floor-.61f);
             var hips=spineBase+Vector3.up*hipHeight;
 
-            head.localPosition=eye+headRot*new Vector3(0,.03f,-.08f);head.localRotation=headRot;
-            neck.localPosition=neckBase;neck.localRotation=body;
+            head.localPosition=level+headRot*new Vector3(0,.03f,-.08f);head.localRotation=headRot;
+            neck.localPosition=neckBase;neck.localRotation=Quaternion.FromToRotation(Vector3.up,tilt)*body;
             var spine=neckBase-hips;var up=spine.normalized;
             var torsoRot=Quaternion.LookRotation(Vector3.ProjectOnPlane(body*Vector3.forward,up),up);
             torso.localPosition=(neckBase+hips)*.5f;torso.localRotation=torsoRot;torso.localScale=new Vector3(width,spine.magnitude/NominalSpine,1);

@@ -28,7 +28,7 @@ namespace AfterHours.Editor
     {
         static GameDirector d;static Mouse mouse;static Keyboard keyboard;static List<string> results;
         static bool running;static double next;static int oldSave;static bool hadSave;static string failure;
-        static string oldCheckpoint,oldWardrobe;static bool hadCheckpoint,hadWardrobe,oldDark;
+        static string oldStreak;static string oldCheckpoint,oldWardrobe;static bool hadCheckpoint,hadWardrobe,oldDark;
         public static string Status="Not run";
         public static void Start()
         {
@@ -36,7 +36,7 @@ namespace AfterHours.Editor
             if(running)return;d=GameDirector.Instance;results=new List<string>();failure=null;
             hadSave=PlayerPrefs.HasKey("AfterHours.Progress.v1");oldSave=PlayerPrefs.GetInt("AfterHours.Progress.v1",0);
             hadCheckpoint=PlayerPrefs.HasKey(CheckpointStore.Key);oldCheckpoint=PlayerPrefs.GetString(CheckpointStore.Key);
-            hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);oldWardrobe=PlayerPrefs.GetString(Wardrobe.Key);
+            hadWardrobe=PlayerPrefs.HasKey(Wardrobe.Key);oldWardrobe=PlayerPrefs.GetString(Wardrobe.Key);oldStreak=PlayerPrefs.HasKey(Streak.Key)?PlayerPrefs.GetString(Streak.Key):null;
             // The ambush opens in the dark by default; its own suite covers that. Here the lights are on from the start.
             oldDark=d.darkOpening;d.darkOpening=false;
             foreach(var room in d.rooms){room.complete=false;room.accepted=0;}d.RefreshProgress();if(d.intro)d.intro.Hide();
@@ -364,7 +364,7 @@ namespace AfterHours.Editor
             if(d){d.saveEnabled=false;d.darkOpening=oldDark;}
             if(hadCheckpoint)PlayerPrefs.SetString(CheckpointStore.Key,oldCheckpoint);else PlayerPrefs.DeleteKey(CheckpointStore.Key);
             if(hadSave)PlayerPrefs.SetInt("AfterHours.Progress.v1",oldSave);else PlayerPrefs.DeleteKey("AfterHours.Progress.v1");
-            if(hadWardrobe)PlayerPrefs.SetString(Wardrobe.Key,oldWardrobe);else PlayerPrefs.DeleteKey(Wardrobe.Key);PlayerPrefs.Save();
+            if(hadWardrobe)PlayerPrefs.SetString(Wardrobe.Key,oldWardrobe);else PlayerPrefs.DeleteKey(Wardrobe.Key);if(oldStreak!=null)PlayerPrefs.SetString(Streak.Key,oldStreak);else PlayerPrefs.DeleteKey(Streak.Key);PlayerPrefs.Save();
             if(failure!=null){results.Add("FAILURE: "+failure);Status="Failed: "+failure;}
             else if(Status!="Passed")Status="Stopped";
             Directory.CreateDirectory("Documentation");File.WriteAllLines("Documentation/Gameplay-validation.txt",new[]{DateTime.UtcNow.ToString("u"),Status,"Desktop input + Unity physics, with editor frames advanced explicitly."}.Concat(results));

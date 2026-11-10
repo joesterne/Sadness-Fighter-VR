@@ -17,11 +17,11 @@ namespace AfterHours.Editor
         static readonly string[] EditorJobs={"clearprefs","buildscene","previews","buildrelease","installrelease","refresh","play","push"};
         static double next;
         static AfterHoursTestQueue(){EditorApplication.update+=Pump;Note("runner loaded"+(EditorApplication.isPlaying?" (in Play Mode)":""));}
-        static bool Busy=>new[]{AfterHoursSmoke.Status,ComfortValidation.Status,NavigationValidation.Status,SeatedReachValidation.Status,WardrobeValidation.Status,OceanValidation.Status,ThrowValidation.Status,TextVisibilityValidation.Status,AmbushValidation.Status}.Any(s=>s=="Running");
+        static bool Busy=>new[]{AfterHoursSmoke.Status,ComfortValidation.Status,NavigationValidation.Status,SeatedReachValidation.Status,WardrobeValidation.Status,OceanValidation.Status,ThrowValidation.Status,TextVisibilityValidation.Status,AmbushValidation.Status,BadgeValidation.Status}.Any(s=>s=="Running");
         static void Note(string text){try{Directory.CreateDirectory("Logs");System.IO.File.AppendAllText(Log,DateTime.Now.ToString("HH:mm:ss")+" "+text+"\n");}catch{}}
         static void ClearPrefs()
         {
-            foreach(var key in new[]{CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,Wardrobe.Key})PlayerPrefs.DeleteKey(key);
+            foreach(var key in new[]{CheckpointStore.Key,"AfterHours.Progress.v1","AfterHours.Seated","AfterHours.SeatedHeight","AfterHours.Vignette","AfterHours.Clean",OceanRoom.NightKey,Wardrobe.Key,Streak.Key})PlayerPrefs.DeleteKey(key);
             PlayerPrefs.SetInt(IntroGuide.Key,1);PlayerPrefs.Save();
             // The editor never writes a backup copy, but a test that failed halfway might have left its temporary one.
             SaveBackup.PathOverride=null;SaveBackup.Delete();
@@ -80,6 +80,7 @@ namespace AfterHours.Editor
                     case "throw":ThrowValidation.Start();break;
                     case "text":TextVisibilityValidation.Start();break;
                     case "ambush":AmbushValidation.Start();break;
+                    case "badges":BadgeValidation.Start();break;
                     default:Note("unknown job "+name);break;
                 }
             }

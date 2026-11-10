@@ -271,7 +271,7 @@ namespace AfterHours
             Art.Box("Reception console",new Vector3(0,.62f,-.3f),new Vector3(4f,1.24f,.65f),Art.Navy);
             Art.Box("Brass console cap",new Vector3(0,1.25f,-.3f),new Vector3(4.1f,.06f,.72f),Art.Gold);
             Art.Text("Welcome","YOU CAN BEGIN ANYWHERE",new Vector3(0,1.07f,-.64f),.17f,ivory,3.4f);
-            d.lobbyProgress=Art.Text("Journey progress","0 / 7   ROOMS EXPLORED\nYour pace. No score. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
+            d.lobbyProgress=Art.Text("Journey progress","0 / 7   ROOMS EXPLORED\nYour pace. No deadline.",new Vector3(0,.55f,-.645f),.13f,muted,3.4f);
             // The board hangs above the lines of sight from the arrival point to the side doors (they pass between 1.1 and 2.4 m here).
             Backed(0,"Move instructions",Fitted(Art.Box("Getting started board",new Vector3(3.5f,3.2f,2.85f),new Vector3(2.9f,1.35f,.08f),Art.Navy),.14f,1.4f));
             Words(Art.Text("Move instructions","",new Vector3(3.5f,3.2f,2.8f),.14f,ivory,2.7f),"POINT AND PINCH TO CHOOSE\nPinch an object to hold it. Point where it belongs and let go.\nLeft palm pinch: the menu.","POINT AND SQUEEZE TO CHOOSE\nTrigger or grip holds an object. Point where it belongs and let go.\nLeft menu button: the menu.");
@@ -287,9 +287,31 @@ namespace AfterHours
             Art.Plant(new Vector3(6.2f,0,9.3f));Art.Plant(new Vector3(-6.2f,0,9.3f));
             for(int side=-1;side<=1;side+=2)Art.Plant(new Vector3(side*2.8f,0,10));
             Mirror();
+            Badges();
             for(int i=0;i<4;i++){Art.Box("Stepping marker",new Vector3(0,.034f,3+i*2.2f),new Vector3(.06f,.015f,.22f),Art.Gold,false);}
             Guide();
             Sound("Ambience - Lobby",.5f);Sound("Music - After hours theme",.22f);
+        }
+        // The badge board hangs opposite the getting-started board, above the lines of sight to the doors on that side. Clean mode takes all of it away.
+        static void Badges()
+        {
+            var root=Art.Group("Badge board",new Vector3(-3.5f,3.2f,2.85f));
+            var board=root.gameObject.AddComponent<BadgeBoard>();board.director=d;d.badges=board;
+            board.earned=Art.Gold;board.locked=Art.Ink;board.tokenEarned=dark;board.tokenLocked=muted;
+            Art.Box("Badge plate",Vector3.zero,new Vector3(2.9f,1.35f,.08f),Art.Navy,true,root);
+            Art.Text("Badge heading","YOUR DAYS HERE",new Vector3(0,.56f,-.05f),.11f,ivory,2.7f,root);
+            board.status=Art.Text("Badge status","",new Vector3(0,.39f,-.05f),.075f,ivory,2.75f,root);
+            int count=BadgeBoard.All.Length;board.medals=new Renderer[count];board.tokens=new TextMeshPro[count];
+            for(int i=0;i<count;i++)
+            {
+                var badge=BadgeBoard.All[i];float x=-1.2f+(i%6)*.48f,y=i<6?.14f:-.24f;
+                var medal=Art.Shape("Badge medal",PrimitiveType.Cylinder,new Vector3(x,y,-.05f),new Vector3(.2f,.006f,.2f),Art.Ink,false,root);
+                medal.transform.localRotation=Quaternion.Euler(90,0,0);board.medals[i]=medal.GetComponentInChildren<Renderer>();
+                if(badge.token.Length>0)board.tokens[i]=Art.Text("Badge token",badge.token,new Vector3(x,y,-.062f),.075f,muted,.2f,root);
+                Art.Text("Badge name",badge.name,new Vector3(x,y-.15f,-.05f),.075f,ivory,.47f,root);
+            }
+            Art.Text("Badge note","One day off never ends a run. Badges are never taken away.",new Vector3(0,-.56f,-.05f),.075f,muted,2.75f,root);
+            board.Refresh();
         }
         // A full-length mirror built into the lobby's left wall, with the wardrobe on either side of it. Behind the glass
         // is a mirror-image copy of this end of the lobby, and the player's reflection stands in it (see MirrorAvatar).
@@ -350,6 +372,7 @@ namespace AfterHours
             Art.Box("Reflected sign",new Vector3(2.55f,1.47f,5.98f),new Vector3(.12f,.36f,1.9f),Art.Teal,false);
             Art.Box("Reflected sign",new Vector3(2.55f,1.45f,8.02f),new Vector3(.1f,.3f,1.9f),Art.Coral,false);
             Art.Box("Reflected board",new Vector3(5.7f,1.9f,10.5f),new Vector3(.08f,1.35f,2.9f),Art.Navy,false);
+            Art.Box("Reflected board",new Vector3(5.7f,3.2f,3.5f),new Vector3(.08f,1.35f,2.9f),Art.Navy,false);
             foreach(var (x,accent) in new[]{(.25f,Art.Gold),(3.95f,Art.Coral)})
             {
                 Art.Box("Reflected door",new Vector3(x,1.4f,13.92f),new Vector3(2.3f,2.8f,.15f),Art.Ink,false);
@@ -409,7 +432,8 @@ namespace AfterHours
             Art.Shape("Beanie",PrimitiveType.Sphere,new Vector3(0,.075f,-.025f),new Vector3(.23f,.19f,.24f),Art.Teal,false,beanie);
             Art.Shape("Beanie band",PrimitiveType.Cylinder,new Vector3(0,.07f,-.022f),new Vector3(.225f,.025f,.232f),Art.Navy,false,beanie);
             Art.Shape("Pompom",PrimitiveType.Sphere,new Vector3(0,.18f,-.03f),Vector3.one*.065f,Art.Gold,false,beanie);
-            Skin(Art.Shape("Neck",PrimitiveType.Cylinder,new Vector3(0,.07f,-.01f),new Vector3(.085f,.075f,.085f),tone,false,m.neck));
+            // The neck reaches below the collar too, so its end stays hidden when it leans with the head.
+            Skin(Art.Shape("Neck",PrimitiveType.Cylinder,new Vector3(0,.04f,-.01f),new Vector3(.085f,.105f,.085f),tone,false,m.neck));
             // The torso's pivot is mid-spine, so its top (+.305) is the base of the neck and its bottom (-.305) the hips.
             Art.Box("Belt",new Vector3(0,-.29f,0),new Vector3(.34f,.07f,.19f),Art.Ink,false,m.torso,.015f);
             Art.Box("Hips",new Vector3(0,-.36f,0),new Vector3(.33f,.14f,.18f),Art.Ink,false,m.torso,.02f);
@@ -468,6 +492,14 @@ namespace AfterHours
             Art.Shape("Pin disc",PrimitiveType.Cylinder,new Vector3(-.095f,.15f,.104f),new Vector3(.06f,.004f,.06f),Art.Gold,false,standPin).transform.localRotation=Quaternion.Euler(90,0,0);
             Art.Box("Pin figure",new Vector3(-.095f,.145f,.109f),new Vector3(.012f,.03f,.006f),Art.Teal,false,standPin,.002f);
             Art.Shape("Pin head",PrimitiveType.Sphere,new Vector3(-.095f,.166f,.109f),Vector3.one*.013f,Art.Teal,false,standPin);
+            // Coming back: a brass disc with three teal beads, a teal disc with seven brass beads, and a brass disc with a coral gem.
+            foreach(var (id,disc,bead,beads) in new[]{("return-pin",Art.Gold,Art.Teal,3),("week-pin",Art.Teal,Art.Gold,7),("month-pin",Art.Gold,Art.Coral,0)})
+            {
+                var pin=Look(id,m.torso).group.transform;
+                Art.Shape("Pin disc",PrimitiveType.Cylinder,new Vector3(-.095f,.15f,.104f),new Vector3(.06f,.004f,.06f),disc,false,pin).transform.localRotation=Quaternion.Euler(90,0,0);
+                for(int k=0;k<beads;k++){float a=k*Mathf.PI*2/beads;Art.Shape("Pin bead",PrimitiveType.Sphere,new Vector3(-.095f+Mathf.Sin(a)*.017f,.15f+Mathf.Cos(a)*.017f,.109f),Vector3.one*.011f,bead,false,pin);}
+                if(beads==0)Art.Facet("Pin gem",new Vector3(-.095f,.15f,.11f),new Vector3(.03f,.04f,.016f),bead,4,pin);
+            }
             // Arms are two fixed-length segments each, bent by the pose; hands follow tracked hands or controllers.
             for(int i=0;i<2;i++)
             {

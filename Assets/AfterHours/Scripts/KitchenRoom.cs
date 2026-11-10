@@ -100,7 +100,7 @@ namespace AfterHours
         {
             helped=true;RefreshAudience();display.text="PRESSURE RELEASED\n<color=#ABC4C5>You do not have to do this alone.</color>";
             director.Say("Someone says: 'That machine does this to everyone.' Put the cup below the spout and brew three small pours.");
-            director.Earn("scarf");
+            director.Earn("scarf");director.CountToday();
             director.SaveCheckpoint();
         }
         // ----- Cabinets -----

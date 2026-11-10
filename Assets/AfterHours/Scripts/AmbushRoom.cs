@@ -6,7 +6,7 @@ using UnityEngine;
 namespace AfterHours
 {
     // The seventh chapter: the sudden meeting where you were let go.
-    // You arrive in the dark. The lights come on (with a flicker) and you are sat at one end of a very long table. Across it, two clowns stand far too tall, leaning in,
+    // You arrive in the dark. The lights come up in uneven steps and you are sat at one end of a very long table. Across it, two clowns stand far too tall, leaning in,
     // smiling a smile that never changes, and saying hollow things. Everything here is done from the seat, by pointing:
     //   - NAME YOUR FEELINGS: six cards on the table. Each one you name makes both clowns a little smaller and a little sillier, until they are life-sized and quiet.
     //   - TALK BACK: five replies, from confused to furious. The clowns answer with the kind of thing a company says.
@@ -22,7 +22,7 @@ namespace AfterHours
         public const float StartSize=2.8f,GentleSize=1.9f,EndSize=.8f;
         // How far the giants lean in over the table at the start. A gentle ambush stands them upright.
         public const float StartLean=11f;
-        // How long the room stays dark before the lights flicker on.
+        // How long the room stays dark before the lights start to come up.
         public const float DarkTime=3f;
         // A page that was hit or torn is back on the table this long afterwards.
         public const float ReturnAfter=1.8f;
@@ -30,7 +30,16 @@ namespace AfterHours
         public const float ShakeSpeed=1.6f,ShakeGap=.7f,ShakeWindow=.1f;public const int ShakeFlips=4;
         // How fast the clowns grow smaller, in size per second.
         const float SizeRate=.9f;
-        public static readonly float[] Flicker={.07f,.14f,.06f,.30f,.45f,.09f};
+        // The lights come up in steps, on the tubes' stutter in the sound, as {seconds, how dark the view is}. It only ever gets lighter: a full view that flashed
+        // back to black would be hard on anyone sensitive to flashing light, so the stutter is in the holds between steps.
+        public static readonly float[,] LightSteps={{0,1},{.08f,.8f},{.21f,.8f},{.29f,.58f},{.57f,.58f},{.65f,.32f},{1.11f,.32f},{1.5f,0}};
+        public static float LightsTime=>LightSteps[LightSteps.GetLength(0)-1,0];
+        public static float Darkness(float seconds)
+        {
+            for(int k=1;k<LightSteps.GetLength(0);k++)
+                if(seconds<LightSteps[k,0])return Mathf.Lerp(LightSteps[k-1,1],LightSteps[k,1],Mathf.InverseLerp(LightSteps[k-1,0],LightSteps[k,0],seconds));
+            return 0;
+        }
 
         public static readonly string[] FeelingNames={"CONFUSED","BLINDSIDED","HURT","ANGRY","I WANT\nA REASON","WORRIED ABOUT\nWHAT'S NEXT"};
         static readonly string[] FeelingLines=
@@ -101,7 +110,7 @@ namespace AfterHours
         public int balloonsPopped{get;private set;}
         public int poppedMask{get;private set;}
         public bool standing{get;private set;}
-        // True while the room is dark (including the flicker). lightsOn becomes true once the lights are up for good.
+        // True while the room is dark (including the lights coming up). lightsOn becomes true once the lights are up for good.
         public bool dark{get;private set;}
         public bool lightsOn{get;private set;}
         public float size{get;private set;}
@@ -115,7 +124,7 @@ namespace AfterHours
         class Shake{public readonly List<Vector2> trail=new List<Vector2>();public float velocity;public int direction,flips;public float flipTime;}
         readonly Dictionary<Grabbable,Shake> shakes=new Dictionary<Grabbable,Shake>();
         float[] floorTime;
-        Coroutine opening;bool flashing;
+        Coroutine opening;float darkness=1;
         Vector3 chairHome;Quaternion chairRotation;bool chairKnown;
         float chairBack,chairTarget;
         // Light and colour of the room: cold and harsh at first, warm once you stand. Sky, light and fog are shared by the whole scene, so the room sets them
@@ -167,14 +176,14 @@ namespace AfterHours
         }
         IEnumerator Opening()
         {
-            dark=true;lightsOn=false;flashing=false;
+            dark=true;lightsOn=false;darkness=1;
             SetLook(Cool,.01f);
             yield return new WaitForSeconds(DarkTime);
             if(director)director.PlayUi(lightsSound,.8f);
-            for(int k=0;k<Flicker.Length;k++){flashing=k%2==0;yield return new WaitForSeconds(Flicker[k]);}
+            for(float t=0;t<LightsTime;t+=Time.deltaTime){darkness=Darkness(t);yield return null;}
             opening=null;LightsUp(true);
         }
-        void StopOpening(){if(opening!=null){StopCoroutine(opening);opening=null;}flashing=false;}
+        void StopOpening(){if(opening!=null){StopCoroutine(opening);opening=null;}darkness=1;}
         // Ends the dark at once (the menu was opened, or something was pressed).
         public void SkipDark(){if(!dark)return;StopOpening();LightsUp(true);}
         void LightsUp(bool announce)
@@ -188,12 +197,12 @@ namespace AfterHours
             var player=director?director.player:null;if(!player||!player.fade)return;
             var c=player.fade.color;player.fade.color=new Color(c.r,c.g,c.b,0);
         }
-        // While the room is dark the view is held black over the usual fade, and flashes clear for each flicker.
+        // While the room is dark the view is held black over the usual fade, and eases clear as the lights come up.
         void LateUpdate()
         {
             if(!dark||!director||director.currentRoom!=Room)return;
             var player=director.player;if(!player||!player.fade)return;
-            var c=player.fade.color;player.fade.color=new Color(c.r,c.g,c.b,flashing?0:1);
+            var c=player.fade.color;player.fade.color=new Color(c.r,c.g,c.b,darkness);
         }
         public string ArrivalMessage()=>dark?"":Line();
         // What the room says as the lights come up, or when you come back to a room that is already lit.

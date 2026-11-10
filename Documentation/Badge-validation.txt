@@ -1,0 +1,48 @@
+2026-11-05 13:29:18Z
+Passed
+Coming back: which days count, that nothing is taken away, what each badge asks for, and everything surviving a reload. The dates are set by the test.
+PASS: The first day starts a run of one
+PASS: A second step on the same day counts nothing more
+PASS: The next day makes two
+PASS: One day off keeps the run going
+PASS: The run is still open after one missed day, and not after two
+PASS: A longer gap starts a new run, and keeps the best and the total
+PASS: A clock moved back one day, as when crossing time zones, ends nothing and counts nothing
+PASS: A clock put right after being far ahead still counts days
+PASS: A day turns over at midnight, across a new year
+PASS: The board has twelve badges, each with its own medal
+PASS: A new player has none, and opening the game counts no day
+PASS: The board says how to begin
+PASS: The board hangs above the lines of sight to the doors below it
+PASS: The first small step counts the day, earns Showed up and lights its medal
+PASS: More steps that day change nothing
+PASS: The board says today counts
+PASS: Two days is not yet three
+PASS: The board says what today would bring
+PASS: Three days earns 3 in a row and the Came back pin
+PASS: One day off keeps the run going in the real game
+PASS: After a long gap the board does not mention the run that ended: BEST 4   /   4 DAYS IN ALL / <color=#ABC4C5>One small step counts today.  1 week is 7 days away.</color>
+PASS: After a long gap every badge, the pin and the best run are still there
+PASS: Coming back starts a new run and adds to the total
+PASS: A week earns 1 week and the Seven days pin
+PASS: 10 days follows the total
+PASS: Ten days in all earns 10 days, whichever days they were
+PASS: Two weeks earns 2 weeks, and not 1 month
+PASS: A month earns 1 month and its pin
+PASS: No room is finished yet
+PASS: The first chapter earns First room
+PASS: Four chapters earns Halfway
+PASS: All seven chapters earns All seven
+PASS: Asking for help and resting on the rooftop earn their badges
+PASS: Keeping a true line earns Still true
+PASS: All twelve medals are lit
+PASS: The reflection can wear the Came back pin
+PASS: The reflection can wear the Seven days pin
+PASS: The reflection can wear the A month of days pin
+PASS: The wardrobe has fifteen pieces to earn
+PASS: Clean mode takes the board away
+PASS: Turning clean mode off brings it back
+PASS: The backup copy of the save carries the streak
+PASS: After a reload: the days, the best run and every badge
+PASS: A save from before the badges earns First room, and counts no day
+PASS: With saving off, nothing is counted

@@ -677,7 +677,7 @@ def amb_boardroom(seconds=30, fade=4):
     return normalise(make_loop(x, fade), -10, rms_db=-33)
 
 def sfx_lights():
-    # The lights coming on: a breaker thunk, then fluorescent tubes stuttering (the same pattern as the flicker on screen) and settling to a steady hum.
+    # The lights coming on: a breaker thunk, then fluorescent tubes stuttering (the view steps brighter on each one) and settling to a steady hum.
     n = int(3.2 * SR)
     x = thump(n, 62, 0.25) * 0.5
     for start, length in [(0.0, 0.07), (0.21, 0.06), (0.57, 0.45)]:

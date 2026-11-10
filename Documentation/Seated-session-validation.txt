@@ -1,4 +1,4 @@
-2026-10-21 16:30:39Z
+2026-11-05 13:30:56Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -60,8 +60,8 @@ PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
 PASS: A shredded résumé restores exactly once, and the paper stays in the bin and on the floor
-PASS: Each page leaves at least 100 scraps (1205 in all)
-PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (11.0 by 14.4 m)
+PASS: Each page leaves at least 100 scraps (1210 in all)
+PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (10.7 by 14.3 m)
 PASS: Scraps have no colliders, and each set is two draws
 PASS: The résumé room carries its confetti: a burst, a shower and a pop sound
 PASS: Every page can be tossed, is never thrown with help, and tells the confetti when it hits something
@@ -81,7 +81,7 @@ PASS: Only the hidden mug is orange
 PASS: One spout target takes any mug
 PASS: Six cupboard doors hang on their outer edges, shut, each opened by pointing at it
 PASS: The orange mug waits inside the fifth cupboard, and nothing else is hidden there
-PASS: The orange mug pin is one of twelve pieces to earn, and its hint is a gentle one
+PASS: The orange mug pin is one of fifteen pieces to earn, and its hint is a gentle one
 PASS: The machine has a lever that brews, a steam wand and valve that blow steam, and the BREW button besides
 PASS: A breaking mug has shards over the counter and over the floor, a puff of dust and four coffee splashes, each waiting to be played
 PASS: The kitchen's effects share the flat paper material, cast no shadows, never hold more than 300 bits (224) and have their three sounds

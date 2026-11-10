@@ -1,4 +1,4 @@
-2026-10-21 16:27:47Z
+2026-11-05 13:40:24Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -78,7 +78,31 @@ PASS: room 0 [The lobby] Mirror wall/Wardrobe row at (1.6, 1.1, -0.2) 'PIN'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2) '<'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2) '>'
 PASS: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2) 'No pin'
-PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 12 PIECES FOUND'
+PASS: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2) '0 OF 15 PIECES FOUND'
+PASS: room 0 [The lobby] Badge board/Badge heading at (0.0, 0.6, -0.1) 'YOUR DAYS HERE'
+PASS: room 0 [The lobby] Badge board/Badge status at (0.0, 0.4, -0.1) 'YOUR DAYS HERE START WITH ONE SMAL...'
+PASS: room 0 [The lobby] Badge board/Badge token at (-1.2, 0.1, -0.1) '1'
+PASS: room 0 [The lobby] Badge board/Badge name at (-1.2, 0.0, -0.1) 'Showed up'
+PASS: room 0 [The lobby] Badge board/Badge token at (-0.7, 0.1, -0.1) '3'
+PASS: room 0 [The lobby] Badge board/Badge name at (-0.7, 0.0, -0.1) '3 in a row'
+PASS: room 0 [The lobby] Badge board/Badge token at (-0.2, 0.1, -0.1) '7'
+PASS: room 0 [The lobby] Badge board/Badge name at (-0.2, 0.0, -0.1) '1 week'
+PASS: room 0 [The lobby] Badge board/Badge token at (0.2, 0.1, -0.1) '14'
+PASS: room 0 [The lobby] Badge board/Badge name at (0.2, 0.0, -0.1) '2 weeks'
+PASS: room 0 [The lobby] Badge board/Badge token at (0.7, 0.1, -0.1) '30'
+PASS: room 0 [The lobby] Badge board/Badge name at (0.7, 0.0, -0.1) '1 month'
+PASS: room 0 [The lobby] Badge board/Badge token at (1.2, 0.1, -0.1) '10'
+PASS: room 0 [The lobby] Badge board/Badge name at (1.2, 0.0, -0.1) '10 days'
+PASS: room 0 [The lobby] Badge board/Badge token at (-1.2, -0.2, -0.1) '1/7'
+PASS: room 0 [The lobby] Badge board/Badge name at (-1.2, -0.4, -0.1) 'First room'
+PASS: room 0 [The lobby] Badge board/Badge token at (-0.7, -0.2, -0.1) '4/7'
+PASS: room 0 [The lobby] Badge board/Badge name at (-0.7, -0.4, -0.1) 'Halfway'
+PASS: room 0 [The lobby] Badge board/Badge token at (-0.2, -0.2, -0.1) '7/7'
+PASS: room 0 [The lobby] Badge board/Badge name at (-0.2, -0.4, -0.1) 'All seven'
+PASS: room 0 [The lobby] Badge board/Badge name at (0.2, -0.4, -0.1) 'Asked for help'
+PASS: room 0 [The lobby] Badge board/Badge name at (0.7, -0.4, -0.1) 'Rested'
+PASS: room 0 [The lobby] Badge board/Badge name at (1.2, -0.4, -0.1) 'Still true'
+PASS: room 0 [The lobby] Badge board/Badge note at (0.0, -0.6, -0.1) 'One day off never ends a run. Badg...'
 PASS: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0) 'YOU ARE STILL WELCOME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0) '01  /  OCEAN OF SHAME'
 PASS: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0) 'A feeling can be vast without bein...'
@@ -171,7 +195,8 @@ PASS: room 8 [The ambush] Confidentiality agreement/Paper text at (0.0, 0.0, 0.0
 PASS: room 8 [The ambush] Restructuring plan/Paper text at (0.0, 0.0, 0.0) 'RESTRUCTURING PLAN Your role is no...'
 PASS: room 8 [The ambush] Benefits ending/Paper text at (0.0, 0.0, 0.0) 'BENEFITS ENDING As of this afterno...'
 PASS: room 8 [The ambush] Severance packet/Paper text at (0.0, 0.0, 0.0) 'SEVERANCE PACKET Sign here. And he...'
-NOTE: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): partly blocked from 3 of 107 places, by text 'BEFORE  /  THE WAY YOU REMEMBER IT'
+NOTE: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): partly blocked from 9 of 107 places, by Badge board/Badge plate
+NOTE: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): partly blocked from 2 of 107 places, by Badge board/Badge plate
 NOTE: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): partly blocked from 14 of 107 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-1.0, 3.0, 13.5)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): partly blocked from 1 of 109 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-3.0, 1.5, 10.0)
 NOTE: room 0 [The lobby] Ocean of shame doorway/Intention at (0.0, 1.5, -0.1): partly blocked from 3 of 67 places, by 00 - The lobby/Batched geometry - 03 Quiet teal near (-2.0, 1.5, -0.5)
@@ -245,8 +270,8 @@ NOTE: room 8 [The ambush] 08 - The ambush/Room subtitle at (-7.6, 4.1, 5.0): par
 NOTE: room 8 [The ambush] 08 - The ambush/Room progress at (-7.6, 3.7, 5.0): partly blocked from 9 of 51 places, by Clown A/Clown A - 05 Burnt coral
 NOTE: room 8 [The ambush] Feeling card 4/Feeling 4 label at (0.0, 0.0, 0.0): partly blocked from 3 of 35 places, by 08 - The ambush/Batched geometry - 02 Deep blue near (-2.0, 1.0, 0.5)
 NOTE: room 8 [The ambush] Feeling card 5/Feeling 5 label at (0.0, 0.0, 0.0): partly blocked from 1 of 36 places, by 08 - The ambush/Batched geometry - 06 Brass and daylight near (-2.5, 1.0, 0.0)
-INFO: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): in range of 126 places, faced from 107, clear from 104, outlined
-INFO: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): in range of 126 places, faced from 107, clear from 107, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7): in range of 126 places, faced from 107, clear from 98, outlined
+INFO: room 0 [The lobby] 00 - The lobby/Title at (0.0, 3.8, 13.7): in range of 126 places, faced from 107, clear from 105, outlined
 INFO: room 0 [The lobby] 00 - The lobby/Tagline at (0.0, 3.2, 13.7): in range of 126 places, faced from 107, clear from 93, outlined
 INFO: room 0 [The lobby] Ocean of shame doorway/Chapter number at (0.0, 2.6, -0.1): in range of 126 places, faced from 109, clear from 109, outlined
 INFO: room 0 [The lobby] Ocean of shame doorway/Destination at (0.0, 2.1, -0.1): in range of 126 places, faced from 109, clear from 108, outlined
@@ -323,6 +348,30 @@ INFO: room 0 [The lobby] Mirror wall/Wardrobe back 7 label at (1.1, 1.0, -0.2): 
 INFO: room 0 [The lobby] Mirror wall/Wardrobe next 7 label at (2.0, 1.0, -0.2): in range of 78 places, faced from 67, clear from 65
 INFO: room 0 [The lobby] Mirror wall/Wardrobe value 7 at (1.6, 1.0, -0.2): in range of 20 places, faced from 17, clear from 17, outlined
 INFO: room 0 [The lobby] Mirror wall/Wardrobe status at (1.6, 0.5, -0.2): in range of 21 places, faced from 18, clear from 18, outlined
+INFO: room 0 [The lobby] Badge board/Badge heading at (0.0, 0.6, -0.1): in range of 81 places, faced from 36, clear from 36
+INFO: room 0 [The lobby] Badge board/Badge status at (0.0, 0.4, -0.1): in range of 40 places, faced from 18, clear from 18
+INFO: room 0 [The lobby] Badge board/Badge token at (-1.2, 0.1, -0.1): in range of 36 places, faced from 16, clear from 16
+INFO: room 0 [The lobby] Badge board/Badge name at (-1.2, 0.0, -0.1): in range of 36 places, faced from 16, clear from 16
+INFO: room 0 [The lobby] Badge board/Badge token at (-0.7, 0.1, -0.1): in range of 39 places, faced from 16, clear from 16
+INFO: room 0 [The lobby] Badge board/Badge name at (-0.7, 0.0, -0.1): in range of 39 places, faced from 16, clear from 16
+INFO: room 0 [The lobby] Badge board/Badge token at (-0.2, 0.1, -0.1): in range of 40 places, faced from 18, clear from 18
+INFO: room 0 [The lobby] Badge board/Badge name at (-0.2, 0.0, -0.1): in range of 40 places, faced from 18, clear from 18
+INFO: room 0 [The lobby] Badge board/Badge token at (0.2, 0.1, -0.1): in range of 43 places, faced from 19, clear from 19
+INFO: room 0 [The lobby] Badge board/Badge name at (0.2, 0.0, -0.1): in range of 43 places, faced from 19, clear from 19
+INFO: room 0 [The lobby] Badge board/Badge token at (0.7, 0.1, -0.1): in range of 44 places, faced from 19, clear from 19
+INFO: room 0 [The lobby] Badge board/Badge name at (0.7, 0.0, -0.1): in range of 44 places, faced from 19, clear from 19
+INFO: room 0 [The lobby] Badge board/Badge token at (1.2, 0.1, -0.1): in range of 46 places, faced from 20, clear from 20
+INFO: room 0 [The lobby] Badge board/Badge name at (1.2, 0.0, -0.1): in range of 46 places, faced from 20, clear from 20
+INFO: room 0 [The lobby] Badge board/Badge token at (-1.2, -0.2, -0.1): in range of 36 places, faced from 16, clear from 16
+INFO: room 0 [The lobby] Badge board/Badge name at (-1.2, -0.4, -0.1): in range of 36 places, faced from 16, clear from 16
+INFO: room 0 [The lobby] Badge board/Badge token at (-0.7, -0.2, -0.1): in range of 40 places, faced from 17, clear from 17
+INFO: room 0 [The lobby] Badge board/Badge name at (-0.7, -0.4, -0.1): in range of 40 places, faced from 17, clear from 17
+INFO: room 0 [The lobby] Badge board/Badge token at (-0.2, -0.2, -0.1): in range of 41 places, faced from 19, clear from 19
+INFO: room 0 [The lobby] Badge board/Badge name at (-0.2, -0.4, -0.1): in range of 41 places, faced from 19, clear from 19
+INFO: room 0 [The lobby] Badge board/Badge name at (0.2, -0.4, -0.1): in range of 43 places, faced from 19, clear from 19
+INFO: room 0 [The lobby] Badge board/Badge name at (0.7, -0.4, -0.1): in range of 46 places, faced from 20, clear from 20
+INFO: room 0 [The lobby] Badge board/Badge name at (1.2, -0.4, -0.1): in range of 47 places, faced from 21, clear from 21
+INFO: room 0 [The lobby] Badge board/Badge note at (0.0, -0.6, -0.1): in range of 43 places, faced from 19, clear from 19
 INFO: room 1 [Ocean of shame] Moving horizon/Distant words at (0.0, 1.3, 17.0): in range of 4 places, faced from 4, clear from 4, outlined
 INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean title at (4.3, 3.9, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
 INFO: room 1 [Ocean of shame] 01 - Ocean of shame/Ocean intention at (4.3, 3.2, 10.0): in range of 9 places, faced from 9, clear from 9, outlined
@@ -415,6 +464,7 @@ INFO: room 8 [The ambush] Confidentiality agreement/Paper text at (0.0, 0.0, 0.0
 INFO: room 8 [The ambush] Restructuring plan/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 7, clear from 7
 INFO: room 8 [The ambush] Benefits ending/Paper text at (0.0, 0.0, 0.0): in range of 5 places, faced from 5, clear from 5
 INFO: room 8 [The ambush] Severance packet/Paper text at (0.0, 0.0, 0.0): in range of 7 places, faced from 7, clear from 7
+INFO: plate room 0 [The lobby] Badge plate: 2.90 by 1.35 m, 24 signs on it, smallest margin 7.2 cm
 INFO: plate room 0 [The lobby] Getting started board: 2.93 by 0.73 m, 1 sign on it, smallest margin 17.4 cm
 INFO: plate room 1 [Ocean of shame] Distance plate: 1.55 by 0.22 m, 1 sign on it, smallest margin 6.0 cm
 INFO: plate room 1 [Ocean of shame] Rowing plate: 2.65 by 0.60 m, 1 sign on it, smallest margin 10.0 cm
@@ -426,4 +476,4 @@ INFO: plate room 4 [The infinite archive] FEAR sign plate: 1.34 by 0.70 m, 2 sig
 INFO: plate room 4 [The infinite archive] Heading plate: 4.86 by 2.10 m, 4 signs on it, smallest margin 20.0 cm
 INFO: plate room 4 [The infinite archive] STILL TRUE sign plate: 1.34 by 0.70 m, 2 signs on it, smallest margin 8.0 cm
 INFO: plate room 7 [The rage room] Rules board: 1.32 by 0.61 m, 1 sign on it, smallest margin 10.0 cm
-INFO: 170 signs checked; 0 skinned meshes in the last scan were not counted as solid.
+INFO: 194 signs checked; 0 skinned meshes in the last scan were not counted as solid.

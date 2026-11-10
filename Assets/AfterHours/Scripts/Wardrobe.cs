@@ -32,6 +32,9 @@ namespace AfterHours
             P("letitout-pin","Let it out pin",OutfitSlot.Pin,"Finish The rage room"),
             P("orange-pin","Orange mug pin",OutfitSlot.Pin,"Something orange is hiding in the kitchen"),
             P("standup-pin","Stood up pin",OutfitSlot.Pin,"Finish The ambush"),
+            P("return-pin","Came back pin",OutfitSlot.Pin,"Come back three days in a row"),
+            P("week-pin","Seven days pin",OutfitSlot.Pin,"Come back for a week"),
+            P("month-pin","A month of days pin",OutfitSlot.Pin,"Come back for a month"),
         };
         public static Piece Get(string id)=>All.FirstOrDefault(p=>p.id==id);
         public static bool Exists(string id)=>All.Any(p=>p.id==id);

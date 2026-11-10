@@ -23,7 +23,7 @@ namespace AfterHours
         {
             switch(step)
             {
-                case 0: return "After Hours is about losing a job: the shame, the worry, and what is still true.\nTake a break whenever you like. It is a gentle experience, not a substitute for professional support.";
+                case 0: return "After Hours is about losing a job: the shame, the worry, and what is still true.\nTake a break whenever you like. It is a gentle experience, not a substitute for professional support.\nOne chapter opens in the dark: the menu can turn that off.";
                 case 1: return desktop?"Point with the mouse and click to choose.\nTry it on the button below.":Wording.Choose+"\nTry it on the button below.";
                 case 2: return desktop?"Press Tab to open the menu.\nIt has seated view, turning, comfort options and the lobby.":Wording.OpenMenu+"\nIt has seated view, turning, comfort options and the lobby.";
                 default: return "Point at a door and choose ENTER, or CONTINUE at the desk.\nEvery small step saves, and earns things to wear at the MIRROR. Stop whenever you like.";

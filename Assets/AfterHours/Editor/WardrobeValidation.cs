@@ -90,6 +90,15 @@ namespace AfterHours.Editor
             P.Head.rotation=Quaternion.LookRotation(Quaternion.Euler(0,30,0)*D.mirrorSpot.forward);yield return .2f;
             var plane=avatar.transform;var look=P.Head.forward;var mirroredLook=look-2*Vector3.Dot(look,plane.forward)*plane.forward;
             Check(Vector3.Angle(avatar.head.TransformVector(Vector3.forward).normalized,mirroredLook)<2,"Turning your head turns the reflection's head the mirrored way");
+            // Look down at your clothes, up, and to the side: the top of the neck stays inside the head and the neck's base on the shoulders.
+            foreach(var (pitch,yaw) in new[]{(0f,0f),(50f,0f),(30f,30f),(-30f,0f),(15f,-35f)})
+            {
+                P.Head.rotation=Quaternion.LookRotation(D.mirrorSpot.forward)*Quaternion.Euler(pitch,yaw,0);yield return .2f;
+                var top=avatar.head.InverseTransformPoint(avatar.neck.TransformPoint(new Vector3(0,.145f,-.01f)));
+                float inside=Mathf.Pow(top.x/.095f,2)+Mathf.Pow(top.y/.1175f,2)+Mathf.Pow(top.z/.1075f,2);
+                var collar=avatar.torso.InverseTransformPoint(avatar.neck.position);
+                Check(inside<.9f&&Mathf.Abs(collar.y-.305f)<.01f&&new Vector2(collar.x,collar.z).magnitude<.01f,"Looking "+pitch+" degrees down and "+yaw+" across, the head stays on the neck ("+inside.ToString("0.00")+" of the way out) and the neck on the shoulders");
+            }
             P.Head.rotation=Quaternion.LookRotation(D.mirrorSpot.forward);yield return .1f;
             // Step closer and the reflection comes closer too.
             float before=Vector3.Distance(P.Head.position,avatar.head.position);P.Shift(D.mirrorSpot.forward*.5f);yield return .2f;
@@ -169,8 +178,10 @@ namespace AfterHours.Editor
             var hiddenMug=D.kitchen.orangeMug;hiddenMug.item.Initialize();hiddenMug.transform.position=D.kitchen.nozzle.position+Vector3.up*.09f;hiddenMug.item.Body.position=hiddenMug.transform.position;hiddenMug.item.Body.linearVelocity=Vector3.zero;yield return .6f;
             D.kitchen.Brew();yield return .3f;
             Check(D.kitchen.orangeFilled&&hiddenMug.level==1&&W.Has("orange-pin"),"Brewing into the orange mug earns the orange mug pin");
-            yield return 4.2f;Check(Announced("Kind scarf")||Announced("Orange mug pin"),"A new piece is announced");
-            yield return 4.2f;Check(Announced("Orange mug pin"),"The orange mug pin is announced, after the scarf");
+            // Announcements wait their turn, one every four seconds, and badges queue with them.
+            for(int wait=0;wait<12&&!Announced("Kind scarf")&&!Announced("Orange mug pin");wait++)yield return 4.2f;
+            Check(Announced("Kind scarf")||Announced("Orange mug pin"),"A new piece is announced");
+            for(int wait=0;wait<12&&!Announced("Orange mug pin");wait++)yield return 4.2f;Check(Announced("Orange mug pin"),"The orange mug pin is announced, after the scarf");
             Check(!W.Has("jumper"),"The ocean's piece waits until the ocean is finished");
             D.ocean.RestoreProgress(13);D.Travel(1);yield return 1f;D.ocean.Stroke();yield return 1.2f;
             Check(D.rooms[1].complete&&W.Has("jumper"),"Reaching the shore earns the harbour jumper");
@@ -195,6 +206,8 @@ namespace AfterHours.Editor
             D.Travel(5);yield return 10f;
             Check(!W.Has("beanie"),"Ten seconds on the rooftop is not yet a rest");
             yield return 12f;
+            // The pins for coming back are earned on later days: the badge checks cover those.
+            foreach(var id in new[]{"return-pin","week-pin","month-pin"})D.Earn(id);
             Check(W.Has("beanie")&&W.FoundCount==Outfits.Earnable,"Resting on the rooftop earns the evening beanie: every piece found");
             int fresh=W.State.fresh.Count;
             Check(fresh==Outfits.Earnable&&D.mirrorLabel.text.Contains(fresh+" NEW"),"The desk's MIRROR sign counts the new pieces ("+fresh+")");

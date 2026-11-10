@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace AfterHours.Editor
 {
-    // Regression test for the seventh chapter, The ambush: the dark opening and the flicker, the two giant clowns and how they shrink,
+    // Regression test for the seventh chapter, The ambush: the dark opening and the lights coming up, the two giant clowns and how they shrink,
     // naming six feelings, the five replies, balloons and noses, the paperwork (sent, thrown, torn), standing up, the way out,
     // the two menu options, TRY AGAIN, and saving.
     public static class AmbushValidation
@@ -114,15 +114,18 @@ namespace AfterHours.Editor
             Check(!P.busy&&P.fade.color.a>.99f,"The view is held black, not just fading in");
             yield return 1.5f;
             Check(a.dark&&P.fade.color.a>.99f,"It stays dark for the first few seconds");
-            bool sawClear=false,sawBlack=false;
+            bool sawLighter=false,sawDarker=false;float lastDark=P.fade.color.a;
             for(int i=0;i<200&&!a.lightsOn;i++)
             {
                 yield return .03f;
-                if(a.dark&&!a.lightsOn){if(P.fade.color.a<.01f)sawClear=true;else if(sawClear)sawBlack=true;}
+                if(a.dark&&!a.lightsOn){float now=P.fade.color.a;if(now<lastDark-.001f)sawLighter=true;if(now>lastDark+.001f)sawDarker=true;lastDark=now;}
             }
             float took=Time.time-started;
             Check(a.lightsOn&&!a.dark,"Then the lights come on");
-            Check(sawClear&&sawBlack,"They flicker first: the view flashes clear and goes black again before they stay on");
+            Check(sawLighter&&!sawDarker,"They come up gradually, and the view never goes dark again on the way");
+            bool steady=true,held=false;float was=AmbushRoom.Darkness(0);
+            for(float s=.001f;s<=AmbushRoom.LightsTime+.01f;s+=.001f){float now=AmbushRoom.Darkness(s);if(now>was+.0001f)steady=false;if(s>.1f&&s<.2f&&Mathf.Abs(now-was)<.0001f)held=true;was=now;}
+            Check(steady&&held&&Mathf.Approximately(AmbushRoom.Darkness(0),1)&&AmbushRoom.Darkness(AmbushRoom.LightsTime)==0,"The steps run from black to clear with holds between them and no flash");
             Check(took>3.8f&&took<5.8f,"The dark lasts about four seconds ("+took.ToString("0.0")+" s)");
             yield return .8f;
             Check(Lit(a),"Once the lights are on the view is clear");

@@ -326,6 +326,8 @@ namespace AfterHours.Editor
             if(t.GetComponentInParent<Grabbable>(true)||t.GetComponentInParent<MirrorAvatar>(true)||t.GetComponentInParent<Breakable>(true)||t.GetComponentInParent<CabinetDoor>(true))return true;
             for(var p=t;p&&p!=room;p=p.parent)if(!p.gameObject.activeSelf)return true;
             if(t.IsChildOf(d.ocean.horizon))return true;
+            // The badges change colour as they are earned, and clean mode hides the board.
+            if(d.badges&&t.IsChildOf(d.badges.transform))return true;
             foreach(var c in d.kitchen.crowd)if(t.IsChildOf(c.transform))return true;
             // The ambush: clowns, cards, chair, lamps and the like change while playing.
             if(d.ambush&&d.ambush.changing&&t.IsChildOf(d.ambush.changing))return true;
