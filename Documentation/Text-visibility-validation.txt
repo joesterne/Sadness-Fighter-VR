@@ -1,4 +1,4 @@
-2026-11-03 14:12:31Z
+2026-11-10 04:08:34Z
 Passed
 Rays from where a player's eyes can be to a grid of points across each sign, tested against the visible triangles of everything solid and against other signs.
 PASS: room 0 [The lobby] 00 - The lobby/Brand eyebrow at (0.0, 4.4, 13.7) 'A WALK THROUGH THE OFFICE OF YOUR ...'
@@ -258,7 +258,7 @@ NOTE: room 2 [Heavy things] 02 - Heavy things/Chapter at (0.0, 4.4, 15.8): partl
 NOTE: room 2 [Heavy things] 02 - Heavy things/Room title at (0.0, 4.0, 15.8): partly blocked from 51 of 136 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (1.5, 2.5, 5.0)
 NOTE: room 2 [Heavy things] 02 - Heavy things/Room subtitle at (0.0, 3.6, 15.8): partly blocked from 64 of 137 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (1.5, 2.5, 5.0)
 NOTE: room 2 [Heavy things] 02 - Heavy things/Room progress at (0.0, 3.3, 15.8): partly blocked from 23 of 83 places, by 02 - Heavy things/Batched geometry - 03 Quiet teal near (-1.5, 2.5, 9.0)
-NOTE: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5): partly blocked from 4 of 30 places, by 02 - Heavy things/RELIEF
+NOTE: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5): partly blocked from 3 of 30 places, by 02 - Heavy things/RELIEF
 NOTE: room 2 [Heavy things] GRIEF/GRIEF tag at (0.0, 0.0, -0.5): partly blocked from 3 of 30 places, by 02 - Heavy things/RELIEF
 NOTE: room 2 [Heavy things] 02 - Heavy things/Truck message at (0.0, 1.5, 4.5): partly blocked from 6 of 64 places, by 02 - Heavy things/Batched geometry - 10 Brushed aluminium near (-5.0, 1.5, 0.5)
 NOTE: room 2 [Heavy things] 02 - Heavy things/Bay sign at (0.0, 1.1, 4.5): partly blocked from 6 of 64 places, by 02 - Heavy things/Batched geometry - 10 Brushed aluminium near (-5.0, 1.5, 0.5)
@@ -266,7 +266,7 @@ NOTE: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): part
 NOTE: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): partly blocked from 3 of 72 places, by 03 - A small spill/Batched geometry - 08 Warm porcelain near (-4.5, 2.0, 5.5)
 NOTE: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): partly blocked from 5 of 72 places, by 03 - A small spill/Help plate
 NOTE: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7): partly blocked from 11 of 60 places, by 03 - A small spill/Batched geometry - 07 Polished limestone near (-3.5, 2.5, 5.5)
-NOTE: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): partly blocked from 2 of 52 places, by 03 - A small spill/Batched geometry - 06 Brass and daylight near (0.0, 1.5, 4.5)
+NOTE: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): partly blocked from 1 of 52 places, by 03 - A small spill/Batched geometry - 06 Brass and daylight near (0.0, 1.5, 4.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/Chapter at (0.0, 4.5, 7.4): partly blocked from 10 of 79 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (-7.0, 2.0, 2.5)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room title at (0.0, 3.9, 7.4): partly blocked from 16 of 89 places, by 04 - The infinite archive/Batched geometry - 03 Quiet teal near (-6.0, 2.5, 3.0)
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/Room subtitle at (0.0, 3.3, 7.4): partly blocked from 22 of 87 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 2.5, 2.5)
@@ -279,7 +279,7 @@ NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE sign at
 NOTE: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE description at (2.3, 1.7, 5.0): partly blocked from 9 of 64 places, by 04 - The infinite archive/Batched geometry - 02 Deep blue near (4.5, 1.5, 2.5)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): partly blocked from 2 of 105 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-5.5, 2.0, -4.5)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): partly blocked from 4 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-7.0, 1.5, -4.0)
-NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 7 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-6.0, 1.5, 5.5)
+NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): partly blocked from 8 of 106 places, by 05 - Room for tomorrow/Batched geometry - 31c Toy sunshine near (-7.0, 1.5, -4.0)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower title at (1.2, 1.4, -1.0): partly blocked from 1 of 29 places, by 05 - Room for tomorrow/Batched geometry - 31j Toy dark wood near (6.0, 1.5, -3.5)
 NOTE: room 5 [Room for tomorrow] 05 - Room for tomorrow/New tower label at (1.2, 0.8, -1.0): partly blocked from 1 of 28 places, by 05 - Room for tomorrow/Batched geometry - 31j Toy dark wood near (6.0, 1.5, -3.5)
 NOTE: room 6 [The old résumé] Page face/Page line at (0.0, 0.1, 0.0): partly blocked from 1 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (2.0, 1.5, -0.5); partly blocked from 3 of 15 places, by 06 - The old résumé/Batched geometry - 02 Deep blue near (1.5, 1.5, -0.5); partly blocked from 4 of 15 places, by 06 - The old résumé/Batched geometry - 10 Brushed aluminium near (1.5, 1.5, -1.0)
@@ -407,7 +407,7 @@ INFO: room 2 [Heavy things] 02 - Heavy things/Room title at (0.0, 4.0, 15.8): in
 INFO: room 2 [Heavy things] 02 - Heavy things/Room subtitle at (0.0, 3.6, 15.8): in range of 148 places, faced from 137, clear from 73, outlined
 INFO: room 2 [Heavy things] 02 - Heavy things/Room progress at (0.0, 3.3, 15.8): in range of 94 places, faced from 83, clear from 60, outlined
 INFO: room 2 [Heavy things] ANGER/ANGER tag at (0.0, 0.0, -0.5): in range of 95 places, faced from 26, clear from 26
-INFO: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5): in range of 104 places, faced from 30, clear from 26
+INFO: room 2 [Heavy things] FEAR/FEAR tag at (0.0, 0.0, -0.5): in range of 104 places, faced from 30, clear from 27
 INFO: room 2 [Heavy things] RELIEF/RELIEF tag at (0.0, 0.0, -0.5): in range of 99 places, faced from 28, clear from 28
 INFO: room 2 [Heavy things] GRIEF/GRIEF tag at (0.0, 0.0, -0.5): in range of 104 places, faced from 30, clear from 27
 INFO: room 2 [Heavy things] UNCERTAINTY/UNCERTAINTY tag at (0.0, 0.0, -0.5): in range of 96 places, faced from 26, clear from 26
@@ -417,7 +417,7 @@ INFO: room 3 [A small spill] 03 - A small spill/Chapter at (0.0, 4.4, 8.7): in r
 INFO: room 3 [A small spill] 03 - A small spill/Room title at (0.0, 4.0, 8.7): in range of 86 places, faced from 72, clear from 69, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Room subtitle at (0.0, 3.6, 8.7): in range of 86 places, faced from 72, clear from 67, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Room progress at (0.0, 3.3, 8.7): in range of 73 places, faced from 60, clear from 49, outlined
-INFO: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): in range of 86 places, faced from 52, clear from 50
+INFO: room 3 [A small spill] 03 - A small spill/Brew coffee label at (0.6, 1.7, 4.5): in range of 86 places, faced from 52, clear from 51
 INFO: room 3 [A small spill] 03 - A small spill/Machine display at (-0.2, 1.8, 4.5): in range of 50 places, faced from 25, clear from 25, outlined
 INFO: room 3 [A small spill] 03 - A small spill/Ask for support label at (2.1, 1.4, 4.4): in range of 86 places, faced from 52, clear from 52
 INFO: room 3 [A small spill] 03 - A small spill/Help permission at (2.1, 1.9, 4.4): in range of 85 places, faced from 51, clear from 51, outlined
@@ -439,7 +439,7 @@ INFO: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE sign at
 INFO: room 4 [The infinite archive] 04 - The infinite archive/STILL TRUE description at (2.3, 1.7, 5.0): in range of 159 places, faced from 64, clear from 55, outlined
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Ending at (0.0, 3.6, 9.0): in range of 130 places, faced from 105, clear from 103, outlined
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Epilogue at (0.0, 2.4, 9.0): in range of 130 places, faced from 106, clear from 102, outlined
-INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): in range of 130 places, faced from 106, clear from 99, outlined
+INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Next step at (0.0, 1.6, 9.0): in range of 130 places, faced from 106, clear from 98, outlined
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower title at (1.2, 1.4, -1.0): in range of 65 places, faced from 29, clear from 28, outlined
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower rules at (1.2, 1.2, -1.0): in range of 28 places, faced from 13, clear from 13, outlined
 INFO: room 5 [Room for tomorrow] 05 - Room for tomorrow/Tower score at (1.2, 1.0, -1.0): in range of 47 places, faced from 22, clear from 22, outlined
