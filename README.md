@@ -10,7 +10,7 @@ I've been laid off a few times. It was rough, but through therapy I found some c
 
 ## What you can do
 
-Seven short chapters, played in any order from a midnight lobby, then a sunrise rooftop to rest on:
+Eight short chapters, played in any order from a midnight lobby, then a sunrise rooftop to rest on:
 
 1. **Ocean of shame**: row toward a lighthouse, by hand or with one button.
 2. **Heavy things**: pick up five named feelings and send them off.
@@ -19,6 +19,7 @@ Seven short chapters, played in any order from a midnight lobby, then a sunrise 
 5. **The old résumé**: shred the old pages and keep one line that is still true.
 6. **The rage room**: take a bat to your old work computer.
 7. **The ambush**: name how you feel until two giant clowns shrink.
+8. **The NDA web**: cut your way out of a ring of cobwebs spun from confidentiality clauses.
 
 On the rooftop there is also a tower of wooden blocks to play while you rest, with real physics, by hand or with controllers.
 
@@ -32,7 +33,8 @@ The game is meant to be free to play. Every chapter and comfort option is free, 
 - Hand tracking first, controllers whenever you pick them up.
 - Snap turns, teleport, a comfort vignette, three seated heights and FACE FORWARD.
 - Gentler options for the kitchen crowd and the ambush, and a CLEAN MODE that hides all text.
-- Soft controller haptics: a firm tick that settles when you pick something up, and three slow, rising beats in both hands as you move between rooms.
+- Soft controller haptics: a firm tick that settles when you pick something up, three slow, rising beats in both hands as you move between rooms, and a thud or a snap for each hit and cut.
+- Calm background music in every room, which MUSIC in the menu turns off.
 
 ## Run it
 
@@ -46,11 +48,11 @@ To try it on a headset, turn on Developer Mode, connect it by USB and use **Afte
 
 ## More detail
 
-[README-AfterHours.md](README-AfterHours.md) is the full developer guide: every room, the menu, controls, sound, tests, builds, signing and the outfit add-on setup. Validation results and playtest notes are in [Documentation](Documentation/).
+[README-AfterHours.md](README-AfterHours.md) is the full developer guide: every room, the menu, controls, sound, haptics, the twelve test suites, builds, signing and the outfit add-on setup. Validation results and playtest notes are in [Documentation](Documentation/).
 
 ## Built with
 
-Unity, the Meta XR SDK and AI coding tools. All geometry, wording, music and sound were made for this project, and the audio is synthesised by `Tools/make_audio.py`.
+Unity, the Meta XR SDK and AI coding tools. All geometry, wording, music and sound were made for this project, the audio is synthesised by `Tools/make_audio.py` and the haptic clips are written by `Tools/make_haptics.js`.
 
 ## What's next
 
