@@ -4,11 +4,14 @@ using System.Globalization;
 using UnityEngine;
 namespace AfterHours
 {
-    // Refined low-poly primitives. Every facet is flat shaded. Boxes and cylinders get a small bevel that stays the same
-    // size in metres however the object is scaled, so edges catch the light evenly on a keyboard key and on a wall.
+    // Refined low-poly primitives with soft, rounded shading. Boxes and cylinders get a small bevel that stays the same
+    // size in metres however the object is scaled. Their flat faces stay flat, but the bevel is shaded as a smooth roll from
+    // one face to the next, so every edge reads as gently rounded and catches the light softly instead of as a hard line.
+    // Curved surfaces (the sides of cylinders, spheres and capsules) are smooth shaded, so they look round, not faceted.
+    // The paper-cut leaves and figures (Art.Facet) and the sea keep their flat facets on purpose.
     public static class Geometry
     {
-        public const float Bevel=.025f;
+        public const float Bevel=.03f;
         static readonly Dictionary<string,Mesh> cache=new Dictionary<string,Mesh>();
 
         public static Mesh Get(PrimitiveType type)=>Get(type,Vector3.one);
@@ -20,21 +23,23 @@ namespace AfterHours
                 case PrimitiveType.Cube:
                 {
                     float b=Mathf.Min(bevel,.18f*Mathf.Min(s.x,Mathf.Min(s.y,s.z)));
-                    return Cached("bevel box",new Vector3(b/s.x,b/s.y,b/s.z),BevelBox);
+                    return Cached("rounded box",new Vector3(b/s.x,b/s.y,b/s.z),BevelBox);
                 }
                 case PrimitiveType.Cylinder:
                 {
                     // Unity's cylinder is 1 unit wide and 2 units tall.
                     float b=Mathf.Min(bevel,.18f*Mathf.Min(2*s.y,Mathf.Min(s.x,s.z)));
-                    int sides=Mathf.Max(s.x,s.z)>1.5f?16:12;
-                    return Cached("faceted cylinder",new Vector3(b/Mathf.Max(s.x,s.z),b/s.y,sides),Cylinder);
+                    // Smooth shading hides the facets, so a few more sides are enough to keep the outline round too.
+                    int sides=Mathf.Max(s.x,s.z)>1.5f?24:16;
+                    return Cached("smooth cylinder",new Vector3(b/Mathf.Max(s.x,s.z),b/s.y,sides),Cylinder);
                 }
                 case PrimitiveType.Capsule:
-                    return Cached("faceted capsule",Vector3.zero,_=>Capsule());
+                    return Cached("smooth capsule",Vector3.zero,_=>Capsule());
                 default:
                 {
-                    int detail=Mathf.Max(s.x,Mathf.Max(s.y,s.z))>2?2:1;
-                    return Cached("icosphere",new Vector3(detail,0,0),k=>Icosphere((int)k.x));
+                    // Small beads and eyes stay at 80 triangles; anything the player looks at closely gets 320 for a round outline.
+                    float size=Mathf.Max(s.x,Mathf.Max(s.y,s.z));int detail=size>2?3:size>=.15f?2:1;
+                    return Cached("smooth sphere",new Vector3(detail,0,0),k=>Icosphere((int)k.x));
                 }
             }
         }
@@ -52,17 +57,19 @@ namespace AfterHours
         static Mesh BevelBox(Vector3 c)
         {
             var m=new Builder();var h=new Vector3(.5f,.5f,.5f);var inner=h-c;
-            // The point on the face of axis a at the corner with signs s.
+            // The point on the face of axis a at the corner with signs s, and its normal: the normal of that face. A face keeps
+            // one normal all over (it stays flat), and each bevel strip and corner blends between the faces it joins (it looks round).
             Vector3 P(int a,Vector3 s){var p=Vector3.Scale(inner,s);p[a]=h[a]*s[a];return p;}
+            Vector3 N(int a,Vector3 s){var n=Vector3.zero;n[a]=s[a];return n;}
             for(int a=0;a<3;a++)for(int sa=-1;sa<=1;sa+=2)
             {
                 int u=(a+1)%3,w=(a+2)%3;
                 Vector3 S(int su,int sw){var s=Vector3.zero;s[a]=sa;s[u]=su;s[w]=sw;return s;}
                 m.Poly(P(a,S(-1,-1)),P(a,S(1,-1)),P(a,S(1,1)),P(a,S(-1,1)));
                 // The bevel strip shared with the neighbouring face on axis u. Each edge is added once.
-                for(int su=-1;su<=1;su+=2)m.Poly(P(a,S(su,-1)),P(a,S(su,1)),P(u,S(su,1)),P(u,S(su,-1)));
+                for(int su=-1;su<=1;su+=2)m.Smooth(new[]{P(a,S(su,-1)),P(a,S(su,1)),P(u,S(su,1)),P(u,S(su,-1))},new[]{N(a,S(su,-1)),N(a,S(su,1)),N(u,S(su,1)),N(u,S(su,-1))});
             }
-            for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)for(int z=-1;z<=1;z+=2){var s=new Vector3(x,y,z);m.Poly(P(0,s),P(1,s),P(2,s));}
+            for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)for(int z=-1;z<=1;z+=2){var s=new Vector3(x,y,z);m.Smooth(new[]{P(0,s),P(1,s),P(2,s)},new[]{N(0,s),N(1,s),N(2,s)});}
             return m.Mesh();
         }
 
@@ -71,12 +78,14 @@ namespace AfterHours
         {
             var m=new Builder();int n=(int)k.z;float r=.5f,ri=.5f-k.x,yi=1-k.y;
             Vector3 R(float radius,float y,int i){float a=(i+.5f)*2*Mathf.PI/n;return new Vector3(Mathf.Cos(a)*radius,y,Mathf.Sin(a)*radius);}
+            // The side is shaded round (each point's normal points straight out from the axis); the caps stay flat, and the bevel rolls between the two.
+            Vector3 Out(int i)=>R(1,0,i);Vector3 up=Vector3.up,down=Vector3.down;
             var top=new Vector3[n];var bottom=new Vector3[n];
             for(int i=0;i<n;i++)
             {
-                m.Poly(R(r,-yi,i),R(r,-yi,i+1),R(r,yi,i+1),R(r,yi,i));
-                m.Poly(R(r,yi,i),R(r,yi,i+1),R(ri,1,i+1),R(ri,1,i));
-                m.Poly(R(r,-yi,i),R(r,-yi,i+1),R(ri,-1,i+1),R(ri,-1,i));
+                m.Smooth(new[]{R(r,-yi,i),R(r,-yi,i+1),R(r,yi,i+1),R(r,yi,i)},new[]{Out(i),Out(i+1),Out(i+1),Out(i)});
+                m.Smooth(new[]{R(r,yi,i),R(r,yi,i+1),R(ri,1,i+1),R(ri,1,i)},new[]{Out(i),Out(i+1),up,up});
+                m.Smooth(new[]{R(r,-yi,i),R(r,-yi,i+1),R(ri,-1,i+1),R(ri,-1,i)},new[]{Out(i),Out(i+1),down,down});
                 top[i]=R(ri,1,i);bottom[i]=R(ri,-1,i);
             }
             m.Poly(top);m.Poly(bottom);
@@ -86,19 +95,21 @@ namespace AfterHours
         // Unity's capsule: radius 0.5, 2 units tall.
         static Mesh Capsule()
         {
-            var m=new Builder();const int n=10,rings=3;var rows=new List<Vector2>();
+            var m=new Builder();const int n=16,rings=4;var rows=new List<Vector2>();
             for(int i=0;i<=rings;i++){float a=i*Mathf.PI*.5f/rings;rows.Add(new Vector2(Mathf.Sin(a)*.5f,Mathf.Cos(a)*.5f+.5f));}
             for(int i=rings;i>=0;i--){float a=i*Mathf.PI*.5f/rings;rows.Add(new Vector2(Mathf.Sin(a)*.5f,-Mathf.Cos(a)*.5f-.5f));}
             Vector3 R(Vector2 row,int i){float a=(i+.5f)*2*Mathf.PI/n;return new Vector3(Mathf.Cos(a)*row.x,row.y,Mathf.Sin(a)*row.x);}
+            // Smooth: each point's normal points away from the nearest point on the capsule's middle line.
+            Vector3 S(Vector3 p)=>(p-new Vector3(0,Mathf.Clamp(p.y,-.5f,.5f),0)).normalized;
             for(int j=0;j+1<rows.Count;j++)for(int i=0;i<n;i++)
             {
                 Vector3 a=R(rows[j],i),b=R(rows[j],i+1),c=R(rows[j+1],i+1),d=R(rows[j+1],i);
-                if(rows[j].x<1e-5f)m.Poly(a,c,d);else if(rows[j+1].x<1e-5f)m.Poly(a,b,c);else m.Poly(a,b,c,d);
+                if(rows[j].x<1e-5f)m.Smooth(new[]{a,c,d},new[]{S(a),S(c),S(d)});else if(rows[j+1].x<1e-5f)m.Smooth(new[]{a,b,c},new[]{S(a),S(b),S(c)});else m.Smooth(new[]{a,b,c,d},new[]{S(a),S(b),S(c),S(d)});
             }
             return m.Mesh();
         }
 
-        // Diameter 1. Detail 1 has 80 facets, detail 2 has 320.
+        // Diameter 1, smooth shaded. Detail 1 has 80 triangles, detail 2 has 320 and detail 3 has 1,280.
         static Mesh Icosphere(int detail)
         {
             float t=(1+Mathf.Sqrt(5))/2;
@@ -112,27 +123,34 @@ namespace AfterHours
                 foreach(var f in faces){int ab=Mid(f[0],f[1]),bc=Mid(f[1],f[2]),ca=Mid(f[2],f[0]);next.Add(new[]{f[0],ab,ca});next.Add(new[]{f[1],bc,ab});next.Add(new[]{f[2],ca,bc});next.Add(new[]{ab,bc,ca});}
                 faces=next;
             }
-            var m=new Builder();foreach(var f in faces)m.Poly(p[f[0]]*.5f,p[f[1]]*.5f,p[f[2]]*.5f);
+            var m=new Builder();foreach(var f in faces)m.Smooth(new[]{p[f[0]]*.5f,p[f[1]]*.5f,p[f[2]]*.5f},new[]{p[f[0]],p[f[1]],p[f[2]]});
             return m.Mesh();
         }
 
         class Builder
         {
-            readonly List<Vector3> v=new List<Vector3>();readonly List<int> t=new List<int>();readonly List<Vector2> uv=new List<Vector2>();
+            readonly List<Vector3> v=new List<Vector3>();readonly List<Vector3> nv=new List<Vector3>();readonly List<int> t=new List<int>();readonly List<Vector2> uv=new List<Vector2>();
             // Adds a convex polygon as its own flat-shaded facet, wound to face away from the centre of the shape.
-            public void Poly(params Vector3[] p)
+            public void Poly(params Vector3[] p)=>Smooth(p,null);
+            // The same, with a normal for each corner (null: the facet's own normal), so the light blends smoothly across it.
+            public void Smooth(Vector3[] p,Vector3[] normals)
             {
                 var centre=Vector3.zero;foreach(var q in p)centre+=q;centre/=p.Length;
                 var n=Vector3.zero;for(int i=1;i+1<p.Length;i++)n+=Vector3.Cross(p[i]-p[0],p[i+1]-p[0]);
                 if(n.sqrMagnitude<1e-14f)return;
                 bool flip=Vector3.Dot(n,centre)<0;var axis=new Vector3(Mathf.Abs(n.x),Mathf.Abs(n.y),Mathf.Abs(n.z));int b=v.Count;
-                foreach(var q in p){v.Add(q);uv.Add(axis.x>=axis.y&&axis.x>=axis.z?new Vector2(q.z,q.y):axis.y>=axis.z?new Vector2(q.x,q.z):new Vector2(q.x,q.y));}
+                var facet=(flip?-n:n).normalized;
+                for(int k=0;k<p.Length;k++)
+                {
+                    var q=p[k];v.Add(q);nv.Add(normals!=null?normals[k].normalized:facet);
+                    uv.Add(axis.x>=axis.y&&axis.x>=axis.z?new Vector2(q.z,q.y):axis.y>=axis.z?new Vector2(q.x,q.z):new Vector2(q.x,q.y));
+                }
                 for(int i=1;i+1<p.Length;i++){if(flip){t.Add(b);t.Add(b+i+1);t.Add(b+i);}else{t.Add(b);t.Add(b+i);t.Add(b+i+1);}}
             }
             public Mesh Mesh()
             {
-                var mesh=new Mesh();mesh.SetVertices(v);mesh.SetTriangles(t,0);mesh.SetUVs(0,uv);
-                mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
+                var mesh=new Mesh();mesh.SetVertices(v);mesh.SetNormals(nv);mesh.SetTriangles(t,0);mesh.SetUVs(0,uv);
+                mesh.RecalculateBounds();return mesh;
             }
         }
     }

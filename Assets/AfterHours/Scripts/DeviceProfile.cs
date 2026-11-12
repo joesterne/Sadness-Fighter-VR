@@ -14,7 +14,10 @@ namespace AfterHours
         public static bool Applied { get; private set; }
         // What was in force before a profile changed it, so it can be put back.
         static float savedScale, savedShadow, savedFrequency; static UniversalRenderPipelineAsset saved; static bool frequencyChanged;
+        static int savedShadowResolution; static Light savedSun; static LightShadows savedSunShadows;
         public const float Quest2RenderScale=.9f, Quest2ShadowDistance=20f, Quest2Frequency=72f;
+        // The newer headsets get soft shadows from a 2048 shadow map; the Quest 2 keeps the cheaper 1024 map with hard shadows.
+        public const int Quest2ShadowResolution=1024;
 
         // Foveated rendering. The level is a ceiling, not a fixed amount: with dynamic foveation on, the headset uses none while
         // the scene is cheap to draw and only reaches for more when the graphics chip is running out of time, so the
@@ -88,9 +91,12 @@ namespace AfterHours
             var pipeline=GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
             if(pipeline)
             {
-                saved=pipeline;savedScale=pipeline.renderScale;savedShadow=pipeline.shadowDistance;
+                saved=pipeline;savedScale=pipeline.renderScale;savedShadow=pipeline.shadowDistance;savedShadowResolution=pipeline.mainLightShadowmapResolution;
                 pipeline.renderScale=Mathf.Min(savedScale,Quest2RenderScale);pipeline.shadowDistance=Mathf.Min(savedShadow,Quest2ShadowDistance);
+                pipeline.mainLightShadowmapResolution=Mathf.Min(savedShadowResolution,Quest2ShadowResolution);
             }
+            var sun=RenderSettings.sun;
+            if(sun&&sun.shadows==LightShadows.Soft){savedSun=sun;savedSunShadows=sun.shadows;sun.shadows=LightShadows.Hard;}
             try
             {
                 // Only a rate the headset really offers is requested.
@@ -98,7 +104,7 @@ namespace AfterHours
                 if(offered!=null&&System.Array.IndexOf(offered,Quest2Frequency)>=0){savedFrequency=display.displayFrequency;display.displayFrequency=Quest2Frequency;frequencyChanged=true;}
             }
             catch(System.Exception){}
-            Debug.Log("[DeviceProfile] Quest 2 detected: render scale "+Quest2RenderScale+", shadows to "+Quest2ShadowDistance+" m, "+Quest2Frequency+" Hz.");
+            Debug.Log("[DeviceProfile] Quest 2 detected: render scale "+Quest2RenderScale+", hard shadows to "+Quest2ShadowDistance+" m, "+Quest2Frequency+" Hz.");
         }
         // Asks the runtime for foveated rendering at the ceiling this headset gets. The runtime may not be ready in the first
         // moments after start-up, so this is called again every half second until it takes the request, up to FoveationAttempts
@@ -130,7 +136,8 @@ namespace AfterHours
         // Puts the render settings and the refresh rate back to what they were. Used by tests so the shared URP asset is never left changed.
         public static void Undo()
         {
-            if(saved){saved.renderScale=savedScale;saved.shadowDistance=savedShadow;saved=null;}
+            if(saved){saved.renderScale=savedScale;saved.shadowDistance=savedShadow;saved.mainLightShadowmapResolution=savedShadowResolution;saved=null;}
+            if(savedSun){savedSun.shadows=savedSunShadows;savedSun=null;}
             if(frequencyChanged){frequencyChanged=false;try{var display=OVRManager.display;if(display!=null)display.displayFrequency=savedFrequency;}catch(System.Exception){}}
             Applied=false;Current=Headset.Unknown;
             Foveation=OVRManager.FoveatedRenderingLevel.Off;FoveationDynamic=false;FoveationApplied=false;FoveationSettled=false;foveationTries=0;

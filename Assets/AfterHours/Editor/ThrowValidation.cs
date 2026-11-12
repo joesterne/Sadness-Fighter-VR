@@ -395,15 +395,17 @@ namespace AfterHours.Editor
             Check(DeviceProfile.Classify(OVRPlugin.SystemHeadset.Meta_Quest_3)==Headset.Quest3&&DeviceProfile.Classify(OVRPlugin.SystemHeadset.Meta_Quest_3S)==Headset.Quest3S&&DeviceProfile.Classify(OVRPlugin.SystemHeadset.Meta_Quest_Pro)==Headset.QuestPro&&DeviceProfile.Classify(OVRPlugin.SystemHeadset.None)==Headset.Unknown,"A Quest 3, 3S and Pro are recognised, and no answer stays unknown");
             if(pipeline)
             {
-                pipeline.renderScale=1;pipeline.shadowDistance=28;
+                int savedResolution=pipeline.mainLightShadowmapResolution;var sun=RenderSettings.sun;var savedSunShadows=sun?sun.shadows:LightShadows.None;
+                pipeline.renderScale=1;pipeline.shadowDistance=28;pipeline.mainLightShadowmapResolution=AfterHoursBuilder.SmoothShadowResolution;if(sun)sun.shadows=LightShadows.Soft;
+                Check(!sun||savedSunShadows==LightShadows.Soft,"The sun casts soft-edged shadows");
                 DeviceProfile.Apply(Headset.Quest3);
-                Check(Mathf.Approximately(pipeline.renderScale,1)&&Mathf.Approximately(pipeline.shadowDistance,28)&&DeviceProfile.Current==Headset.Quest3,"A Quest 3 keeps the full picture");
+                Check(Mathf.Approximately(pipeline.renderScale,1)&&Mathf.Approximately(pipeline.shadowDistance,28)&&pipeline.mainLightShadowmapResolution==AfterHoursBuilder.SmoothShadowResolution&&(!sun||sun.shadows==LightShadows.Soft)&&DeviceProfile.Current==Headset.Quest3,"A Quest 3 keeps the full picture, with soft shadows from a "+pipeline.mainLightShadowmapResolution+" shadow map");
                 DeviceProfile.Undo();
                 DeviceProfile.Apply(Headset.Quest2);
-                Check(DeviceProfile.Current==Headset.Quest2&&pipeline.renderScale<=DeviceProfile.Quest2RenderScale+.001f&&pipeline.shadowDistance<=DeviceProfile.Quest2ShadowDistance+.001f,"A Quest 2 gets a lighter picture: render scale "+pipeline.renderScale.ToString("0.00")+", shadows to "+pipeline.shadowDistance.ToString("0")+" m");
+                Check(DeviceProfile.Current==Headset.Quest2&&pipeline.renderScale<=DeviceProfile.Quest2RenderScale+.001f&&pipeline.shadowDistance<=DeviceProfile.Quest2ShadowDistance+.001f&&pipeline.mainLightShadowmapResolution<=DeviceProfile.Quest2ShadowResolution&&(!sun||sun.shadows==LightShadows.Hard),"A Quest 2 gets a lighter picture: render scale "+pipeline.renderScale.ToString("0.00")+", hard shadows to "+pipeline.shadowDistance.ToString("0")+" m from a "+pipeline.mainLightShadowmapResolution+" shadow map");
                 DeviceProfile.Undo();
-                Check(Mathf.Approximately(pipeline.renderScale,1)&&Mathf.Approximately(pipeline.shadowDistance,28),"The lighter picture can be put back exactly");
-                pipeline.renderScale=savedScale;pipeline.shadowDistance=savedShadow;
+                Check(Mathf.Approximately(pipeline.renderScale,1)&&Mathf.Approximately(pipeline.shadowDistance,28)&&pipeline.mainLightShadowmapResolution==AfterHoursBuilder.SmoothShadowResolution&&(!sun||sun.shadows==LightShadows.Soft),"The lighter picture can be put back exactly");
+                pipeline.renderScale=savedScale;pipeline.shadowDistance=savedShadow;pipeline.mainLightShadowmapResolution=savedResolution;if(sun)sun.shadows=savedSunShadows;
             }
             else lines.Add("SKIP: No Universal Render Pipeline asset is active, so the Quest 2 picture settings were not exercised.");
 
