@@ -415,6 +415,7 @@ namespace AfterHours.Editor
         public static void BuildQuestRelease(){BuildQuest(true);}
         static void BuildQuest(bool release)
         {
+            string password=release?ReleaseSigning.ReadPassword():null;
             // A custom build profile (such as Unity's "Meta Quest" profile) carries its own player, quality and XR settings.
             // The project's tested Quest settings live in the platform profile, so build from that.
             var profile=BuildProfile.GetActiveBuildProfile();
@@ -426,14 +427,15 @@ namespace AfterHours.Editor
             if(Directory.Exists(gradleApks))Directory.Delete(gradleApks,true);
             // Each upload to a Meta release channel needs a higher version code: minutes since 2026 always rise.
             PlayerSettings.Android.bundleVersionCode=Mathf.Max(PlayerSettings.Android.bundleVersionCode+1,(int)(DateTime.UtcNow-new DateTime(2026,1,1,0,0,0,DateTimeKind.Utc)).TotalMinutes);
-            bool signed=release&&ReleaseSigning.Apply();
-            if(release&&!signed)Debug.LogWarning("After Hours: no release key yet, so this APK is signed with the debug key. The Meta Developer Dashboard rejects debug-signed APKs. Use After Hours → Create release signing key first.");
             try
             {
+                if(release)ReleaseSigning.Apply(password);
                 var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{ScenePath},locationPathName=path,target=BuildTarget.Android,options=release?BuildOptions.None:BuildOptions.Development});
-                Debug.Log("After Hours "+(release?"release":"development")+" APK: "+report.summary.result+" / "+report.summary.totalErrors+" errors / "+path+" / version "+PlayerSettings.bundleVersion+" ("+PlayerSettings.Android.bundleVersionCode+")"+(release?signed?" / signed with the release key":" / DEBUG-SIGNED":""));
+                if(report.summary.result!=UnityEditor.Build.Reporting.BuildResult.Succeeded)
+                    throw new BuildFailedException("Quest build "+report.summary.result+" ("+report.summary.totalErrors+" errors).");
+                Debug.Log("After Hours "+(release?"release":"development")+" APK: "+path+" / version "+PlayerSettings.bundleVersion+" ("+PlayerSettings.Android.bundleVersionCode+")"+(release?" / signed with the release key":""));
             }
-            finally{if(signed)ReleaseSigning.Clear();}
+            finally{if(release)ReleaseSigning.Clear();}
         }
     }
 }

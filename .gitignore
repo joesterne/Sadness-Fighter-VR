@@ -114,6 +114,12 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
 # After Hours
+# Android signing material can also be exported outside UserSettings.
+*.[kK][eE][yY][sS][tT][oO][rR][eE]
+*.[jJ][kK][sS]
+*.[pP]12
+*.[pP][fF][xX]
+[Aa][Ff][Tt][Ee][Rr][Hh][Oo][Uu][Rr][Ss]-[Rr][Ee][Ll][Ee][Aa][Ss][Ee]-[Kk][Ee][Yy].[Tt][Xx][Tt]
 # Local-only: removed packages kept for reference, files saved from Claude, Visual Studio upgrade logs.
 /_RemovedPackages/
 /Claude outputs/

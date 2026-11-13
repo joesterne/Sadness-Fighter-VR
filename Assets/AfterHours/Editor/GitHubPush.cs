@@ -18,8 +18,10 @@ namespace AfterHours.Editor
     {
         const string MessageFile="Temp/AfterHours-commit-message.txt",IdentityFile="Temp/AfterHours-git-identity.txt",LogFile="Logs/AfterHours-git-push.txt";
         const string NameKey="AfterHours.GitName",EmailKey="AfterHours.GitEmail";
-        // Files that hold this computer's network address, access tokens or session ids. A push stops if any is staged.
-        static readonly string[] NeverCommit={"Assets/Resources/DevAgentSettings.asset","Assets/#Meta/session_id.id"};
+        // Git matches paths before quoting them for display. The same rules cover the index and outgoing history.
+        const string PrivatePaths=" -- \":(icase,literal)Assets/Resources/DevAgentSettings.asset\""+
+            " \":(icase,literal)Assets/#Meta/session_id.id\" \":(icase,glob)**/*.keystore\" \":(icase,glob)**/*.jks\""+
+            " \":(icase,glob)**/*.p12\" \":(icase,glob)**/*.pfx\" \":(icase,glob)**/AfterHours-release-key.txt\"";
         static volatile bool running;static volatile string status="";
         static readonly object sync=new object();static readonly StringBuilder log=new StringBuilder();
         string message="",authorName="",authorEmail="";Vector2 messageScroll,logScroll;
@@ -78,7 +80,6 @@ namespace AfterHours.Editor
             {
                 Step("Checking the repository");
                 string branch=Git(root,"rev-parse --abbrev-ref HEAD").Trim();
-                string remote=Git(root,"remote get-url origin").Trim();
                 string configured=Git(root,"config user.email",check:false).Trim();
                 if(name.Length>0&&email.Length>0&&!string.Equals(email,configured,StringComparison.OrdinalIgnoreCase))
                 {
@@ -88,7 +89,7 @@ namespace AfterHours.Editor
                     Note("Commits from this repository are now made as "+name+" <"+email+">.");
                 }
                 if(configured.Length==0)throw new Exception("Git doesn't know who you are yet. Fill in Name and Email under 'Commit as', then push again.");
-                Note("Branch "+branch+" → "+remote);
+                Note("Branch "+branch+" → origin");
                 Step("Checking GitHub for newer work");
                 Git(root,"fetch origin",600);
                 bool remoteBranch=Code(root,"rev-parse --verify --quiet origin/"+branch)==0;
@@ -104,17 +105,17 @@ namespace AfterHours.Editor
                     {
                         if(authors.Count>1)throw new Exception("Unpushed commits were made as a different author. Fix them with an interactive rebase, then push again.");
                         Step("Updating the unpushed commit's author to "+configured);
-                        Git(root,"commit --amend --no-edit --reset-author -q",600);
+                        Git(root,"commit --amend --only --no-edit --reset-author -q",600);
                     }
                 }
                 Step("Staging changes");
                 Git(root,"add -A",900);
-                var staged=Git(root,"diff --cached --name-only").Split('\n').Select(s=>s.Trim()).Where(s=>s.Length>0).ToList();
-                var blocked=staged.Where(s=>NeverCommit.Any(n=>string.Equals(s,n,StringComparison.OrdinalIgnoreCase))).ToList();
-                if(blocked.Count>0){Git(root,"reset -q");throw new Exception("Stopped before committing "+string.Join(", ",blocked)+". It holds this computer's address, an access token or a session id. Add it to .gitignore.");}
-                if(staged.Count>0)
+                if(Git(root,"ls-files -z"+PrivatePaths).Length>0)
+                    throw new Exception("The index contains private signing material or Meta device settings. Untrack the private files with git rm --cached before committing.");
+                var staged=Git(root,"diff --cached --name-only -z").Split(new[]{'\0'},StringSplitOptions.RemoveEmptyEntries);
+                if(staged.Length>0)
                 {
-                    Note(staged.Count+" changed files.");
+                    Note(staged.Length+" changed files.");
                     string messagePath=Path.Combine(root,"Temp","AfterHours-commit-message.git.txt");
                     File.WriteAllText(messagePath,text.Replace("\r\n","\n").Trim()+"\n",new UTF8Encoding(false));
                     Step("Committing");
@@ -122,13 +123,15 @@ namespace AfterHours.Editor
                 }
                 else Note("Nothing new to commit.");
                 if(remoteBranch&&Git(root,"rev-list --count origin/"+branch+"..HEAD").Trim()=="0"){Finish("GitHub is already up to date ("+branch+").",false);return;}
+                if(Git(root,"log --full-history -m --no-renames --diff-filter=AMT --format= --name-only -z HEAD --not --remotes=origin"+PrivatePaths).Length>0)
+                    throw new Exception("An outgoing commit includes private signing material or Meta device settings. Remove the private files from the unpublished commits before pushing.");
                 Step("Pushing to GitHub. Large files go through Git LFS, so this can take several minutes");
                 var (pushCode,pushOutput)=Execute(root,"push -u origin "+branch,3600);
                 Note(pushOutput);
                 if(pushCode!=0&&pushOutput.Contains("GH007"))
                     throw new Exception("GitHub keeps your email address private, so it refused commits that show it. Under 'Commit as', use your GitHub noreply address (GitHub → Settings → Emails), then push again. Nothing was lost; the commit is kept here.");
                 if(pushCode!=0)throw new Exception("git push failed ("+pushCode+"). See the log above.");
-                Finish("Pushed "+Git(root,"rev-parse --short HEAD").Trim()+" to "+remote+" ("+branch+").",false);
+                Finish("Pushed "+Git(root,"rev-parse --short HEAD").Trim()+" to origin ("+branch+").",false);
             }
             catch(Exception e){Finish(e.Message,true);}
             finally{running=false;}

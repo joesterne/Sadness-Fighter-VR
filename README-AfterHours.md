@@ -228,7 +228,9 @@ To play on your own headset, connect the Quest with a USB data cable, turn on De
 
 The Meta Developer Dashboard only accepts APKs signed with your own key. **After Hours → Create release signing key** makes one, once, with the JDK that ships with Unity: `UserSettings/AfterHours-release.keystore` and a random password in `UserSettings/AfterHours-release-key.txt`. `UserSettings` is never committed. The release build signs with this key and puts the project back on the debug key afterwards, so no keystore path or password stays in the project settings. The development build stays debug-signed.
 
-**Back up both files somewhere private.** An app on the Meta store can only ever be updated with the key it was first uploaded with.
+**Back up both files somewhere private.** The release build stops if either file is missing or the password file is empty. For an existing app, restore the original signing pair from backup. A new key changes the app's signing identity.
+
+Git ignores Android keystores and copies of the release password file. The editor’s push command also checks the index and unpublished commits for those files, including files added and later deleted before a push.
 
 Every build gets a new version code: the number of minutes since January 1, 2026, and always higher than the last build's. The version name is 0.8.3. The dashboard rejects an upload whose version code it has seen before.
 
