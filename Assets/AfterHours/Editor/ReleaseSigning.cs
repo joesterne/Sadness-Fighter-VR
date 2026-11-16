@@ -15,7 +15,7 @@ namespace AfterHours.Editor
     public static class ReleaseSigning
     {
         public const string Keystore="UserSettings/AfterHours-release.keystore",PasswordFile="UserSettings/AfterHours-release-key.txt";
-        const string Alias="afterhours";
+        const string Alias="afterhours",PasswordVariable="AFTERHOURS_KEY_PASSWORD";
         public static bool Available=>File.Exists(Keystore)&&File.Exists(PasswordFile);
 
         [MenuItem("After Hours/Create release signing key",false,1600)]
@@ -27,9 +27,11 @@ namespace AfterHours.Editor
             var bytes=new byte[18];using(var rng=RandomNumberGenerator.Create())rng.GetBytes(bytes);
             string password=Convert.ToBase64String(bytes).Replace('+','A').Replace('/','b').TrimEnd('=');
             Directory.CreateDirectory("UserSettings");
-            string args="-genkeypair -keystore \""+Path.GetFullPath(Keystore)+"\" -storetype PKCS12 -storepass "+password+" -keypass "+password+" -alias "+Alias+
+            string args="-genkeypair -keystore \""+Path.GetFullPath(Keystore)+"\" -storetype PKCS12 -storepass:env "+PasswordVariable+" -keypass:env "+PasswordVariable+" -alias "+Alias+
                         " -keyalg RSA -keysize 2048 -validity 10000 -dname \"CN=After Hours, O=After Hours Studio\"";
             var info=new ProcessStartInfo(keytool,args){UseShellExecute=false,RedirectStandardOutput=true,RedirectStandardError=true,CreateNoWindow=true};
+            // The password reaches keytool through its environment, not its command line, which other programs on the PC can read.
+            info.EnvironmentVariables[PasswordVariable]=password;
             using var p=Process.Start(info);string output=p.StandardOutput.ReadToEnd()+p.StandardError.ReadToEnd();
             if(!p.WaitForExit(60000)){try{p.Kill();}catch{}Debug.LogError("[ReleaseSigning] keytool did not finish within a minute, so no key was created.");return;}
             if(p.ExitCode!=0||!File.Exists(Keystore)){Debug.LogError("[ReleaseSigning] keytool failed:\n"+output);return;}

@@ -40,7 +40,11 @@ namespace AfterHours
         public event Action Changed;
 
         public AddOnShop(IAddOnStore store,GameDirector director){this.store=store;this.director=director;}
-        public static IAddOnStore ForThisDevice()=>Application.platform==RuntimePlatform.Android?new MetaAddOnStore(AppId):(IAddOnStore)new TestAddOnStore();
+        // The free test store is for the editor only. Any other player build (a desktop build, say) gets no store at all,
+        // so it can never hand out add-ons for nothing.
+        public static IAddOnStore ForThisDevice()=>
+            Application.platform==RuntimePlatform.Android?new MetaAddOnStore(AppId):
+            Application.isEditor?new TestAddOnStore():(IAddOnStore)new NoAddOnStore();
 
         // Runs once at launch. Meta requires the ownership check within ten seconds of launch, and a store build to close
         // when it fails. Development builds and the editor only log it, so a sideloaded test build always opens.
@@ -171,6 +175,16 @@ namespace AfterHours
             Debug.LogWarning("After Hours add-ons: checkout for "+sku+" failed: "+why);
             return PurchaseResult.Failed;
         }
+    }
+
+    // No store: what a player build that is not on a Quest gets. Nothing is on sale and nothing is owned.
+    public class NoAddOnStore : IAddOnStore
+    {
+        public string Name=>"No store";
+        public Task<StoreStart> Start()=>Task.FromResult(StoreStart.Unavailable);
+        public Task<List<AddOn>> Catalog(string[] skus)=>Task.FromResult(new List<AddOn>());
+        public Task<OwnedAddOns> Owned()=>Task.FromResult<OwnedAddOns>(null);
+        public Task<PurchaseResult> Buy(string sku)=>Task.FromResult(PurchaseResult.Unavailable);
     }
 
     // A store that charges nothing, for the editor and the automated checks. What it sells is every add-on and bundle in Outfits.

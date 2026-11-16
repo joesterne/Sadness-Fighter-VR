@@ -179,6 +179,10 @@ namespace AfterHours.Editor
             Check(!SaveBackup.RestoreIfMissing()&&!PlayerPrefs.HasKey(CheckpointStore.Key),"A damaged backup copy is ignored");
             File.WriteAllText(backupFile,JsonUtility.ToJson(new SaveBackup.Copy{entries=new[]{new SaveBackup.Entry{key="Not.Ours",number=7}}}));
             Check(!SaveBackup.RestoreIfMissing()&&!PlayerPrefs.HasKey("Not.Ours"),"Only the game's own saved values are ever restored");
+            var edited=new WardrobeState();edited.bought.Add(Outfits.AddOns.First().id);
+            File.WriteAllText(backupFile,JsonUtility.ToJson(new SaveBackup.Copy{entries=new[]{new SaveBackup.Entry{key=CheckpointStore.Key,text=true,value="{\"version\":1}"},new SaveBackup.Entry{key=Wardrobe.Key,text=true,value=JsonUtility.ToJson(edited)}}}));
+            Check(SaveBackup.RestoreIfMissing()&&PlayerPrefs.HasKey(Wardrobe.Key)&&JsonUtility.FromJson<WardrobeState>(PlayerPrefs.GetString(Wardrobe.Key)).bought.Count==0,"Bought add-ons are never taken from the backup copy: only the store says what was bought");
+            foreach(var key in keys)PlayerPrefs.DeleteKey(key);
             PrefsPut(before);SaveBackup.Delete();SaveBackup.PathOverride=null;
             Check(PrefsNow().SequenceEqual(before),"The saved values are back as they were");
             D.saveEnabled=false;SceneManager.LoadScene("AfterHours");yield return .8f;

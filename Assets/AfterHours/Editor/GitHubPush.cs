@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
@@ -78,7 +79,8 @@ namespace AfterHours.Editor
             {
                 Step("Checking the repository");
                 string branch=Git(root,"rev-parse --abbrev-ref HEAD").Trim();
-                string remote=Git(root,"remote get-url origin").Trim();
+                // A remote URL can carry a user name and token (https://user:token@github.com/...). Only the URL without them is ever shown or logged.
+                string remote=Regex.Replace(Git(root,"remote get-url origin").Trim(),"://[^/@]+@","://");
                 string configured=Git(root,"config user.email",check:false).Trim();
                 if(name.Length>0&&email.Length>0&&!string.Equals(email,configured,StringComparison.OrdinalIgnoreCase))
                 {

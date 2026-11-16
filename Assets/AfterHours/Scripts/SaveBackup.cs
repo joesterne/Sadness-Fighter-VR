@@ -89,7 +89,13 @@ namespace AfterHours
                 foreach(var entry in copy.entries)
                 {
                     if(entry==null||string.IsNullOrEmpty(entry.key)||!Allowed(entry.key)||PlayerPrefs.HasKey(entry.key))continue;
-                    if(entry.text)PlayerPrefs.SetString(entry.key,entry.value??"");else PlayerPrefs.SetInt(entry.key,entry.number);
+                    if(entry.text)
+                    {
+                        string value=entry.value??"";
+                        if(entry.key==Wardrobe.Key){value=WithoutPurchases(value);if(value==null)continue;}
+                        PlayerPrefs.SetString(entry.key,value);
+                    }
+                    else PlayerPrefs.SetInt(entry.key,entry.number);
                     restored++;
                 }
                 if(restored==0)return false;
@@ -98,6 +104,17 @@ namespace AfterHours
                 return true;
             }
             catch(Exception e){Debug.LogWarning("[AfterHours] The backup copy of the save could not be read: "+e.Message);return false;}
+        }
+        // The file sits in the app's shared folder, where anyone with the headset on USB can edit it, so bought add-ons are never
+        // taken from it. The store puts real purchases back on the first launch that reaches it (AddOnShop.Restore).
+        // Null when the wardrobe in the file can't be read.
+        static string WithoutPurchases(string json)
+        {
+            WardrobeState state;
+            try{state=JsonUtility.FromJson<WardrobeState>(json);}catch(ArgumentException){return null;}
+            if(state==null)return null;
+            if(state.bought==null||state.bought.Count==0)return json;
+            state.bought=new List<string>();return JsonUtility.ToJson(state);
         }
         // Forgets the file, for tests and for clearing the save.
         public static void Delete()
