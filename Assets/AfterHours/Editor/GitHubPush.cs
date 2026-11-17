@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
@@ -18,8 +19,8 @@ namespace AfterHours.Editor
     {
         const string MessageFile="Temp/AfterHours-commit-message.txt",IdentityFile="Temp/AfterHours-git-identity.txt",LogFile="Logs/AfterHours-git-push.txt";
         const string NameKey="AfterHours.GitName",EmailKey="AfterHours.GitEmail";
-        // Files that hold this computer's network address, access tokens or session ids. A push stops if any is staged.
-        static readonly string[] NeverCommit={"Assets/Resources/DevAgentSettings.asset","Assets/#Meta/session_id.id"};
+        // Files that hold this computer's network address, access tokens, session ids or local secrets (.env). A push stops if any is staged.
+        static readonly string[] NeverCommit={"Assets/Resources/DevAgentSettings.asset","Assets/#Meta/session_id.id",".env"};
         static volatile bool running;static volatile string status="";
         static readonly object sync=new object();static readonly StringBuilder log=new StringBuilder();
         string message="",authorName="",authorEmail="";Vector2 messageScroll,logScroll;
@@ -78,7 +79,8 @@ namespace AfterHours.Editor
             {
                 Step("Checking the repository");
                 string branch=Git(root,"rev-parse --abbrev-ref HEAD").Trim();
-                string remote=Git(root,"remote get-url origin").Trim();
+                // A remote URL can carry a user name and token (https://user:token@github.com/...). Only the URL without them is ever shown or logged.
+                string remote=Regex.Replace(Git(root,"remote get-url origin").Trim(),"://[^/@]+@","://");
                 string configured=Git(root,"config user.email",check:false).Trim();
                 if(name.Length>0&&email.Length>0&&!string.Equals(email,configured,StringComparison.OrdinalIgnoreCase))
                 {

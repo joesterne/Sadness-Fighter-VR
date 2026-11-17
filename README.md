@@ -44,11 +44,11 @@ You need Unity 6000.6.3f1 with Android build support.
 2. Open `Assets/AfterHours/Scenes/AfterHours.unity` and press Play for desktop preview (WASD, right mouse to look, left click to select, Tab for the menu).
 3. Use the **After Hours** menu to rebuild the scene, run the test suites, or build a Quest APK.
 
-To try it on a headset, turn on Developer Mode, connect it by USB and use **After Hours → Install release APK on connected Quest**. Release builds need your own signing key (**After Hours → Create release signing key**).
+To try it on a headset, turn on Developer Mode, connect it by USB and use **After Hours → Install release APK on connected Quest**. Release builds need your own signing key (**After Hours → Create release signing key**), whose password is kept in a local `.env` file that git ignores (see `.env.example`).
 
 ## More detail
 
-[README-AfterHours.md](README-AfterHours.md) is the full developer guide: every room, the menu, controls, sound, haptics, the twelve test suites, builds, signing and the outfit add-on setup. Validation results and playtest notes are in [Documentation](Documentation/).
+[README-AfterHours.md](README-AfterHours.md) is the full developer guide: every room, the menu, controls, sound, haptics, the thirteen test suites, builds, signing and the outfit add-on setup. Validation results and playtest notes are in [Documentation](Documentation/).
 
 ## Built with
 

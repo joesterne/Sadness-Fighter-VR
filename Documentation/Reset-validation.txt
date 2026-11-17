@@ -1,0 +1,58 @@
+2026-11-17 17:43:47Z
+Passed
+Room resets: RESET ROOM on every lobby door (asks first), the menu binder's pages and arrows, and page 2's room ticks, ALL ROOMS and RESET TICKED ROOMS.
+PASS: The checks start in the lobby
+PASS: Each of the eight lobby doors has one RESET ROOM button for its own room (8)
+PASS: Every door button reads RESET ROOM and resets the room behind its door
+PASS: The ambush's way out back to the lobby has no reset button
+PASS: The lobby itself is never reset
+PASS: Progress made in the ocean, the kitchen, the ambush and the rage room
+PASS: The button to press exists
+PASS: The first press asks first (TAP AGAIN TO RESET) and resets nothing
+PASS: The button to press exists
+PASS: The second press puts the ocean back: no strokes rowed, and the button reads RESET ROOM again
+PASS: The finished ocean chapter stays finished, the player stays in the lobby, and other rooms are untouched
+PASS: The button to press exists
+PASS: Pressed once more, it asks again
+PASS: Left alone, the question lapses after 4 seconds
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: RESET ROOM on the ambush door un-names every feeling, so the clowns are big again
+PASS: The page-turn sound is loaded (python Tools/make_audio.py Assets/AfterHours/Audio, then Build scene)
+PASS: The menu is a binder with two pages
+PASS: It has a cover and curly rings along the top (one mesh)
+PASS: The menu opens on page 1
+PASS: On page 1 only the > arrow shows
+PASS: Every button on page 1 and the arrow are within 39 degrees of straight ahead
+PASS: The button to press exists
+PASS: The > arrow turns to page 2, which ends up lying flat
+PASS: On page 2 only the < arrow shows
+PASS: Every button on page 2 is within 38 degrees of straight ahead (13 buttons)
+PASS: Page 2 lists every room, the rooftop too, each starting as KEEP AS IS
+PASS: Page 2 has ALL ROOMS and RESET TICKED ROOMS
+PASS: The button to press exists
+PASS: RESET TICKED ROOMS with nothing ticked says to tick a room first
+PASS: The button to press exists
+PASS: Ticking the rage room marks it WILL RESET, and only it
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: Ticking a room twice un-ticks it
+PASS: The button to press exists
+PASS: RESET TICKED ROOMS gives the rage room a whole computer and leaves the other rooms alone
+PASS: Afterwards nothing is ticked, the page says what happened, and the menu stays open
+PASS: The button to press exists
+PASS: ALL ROOMS ticks every room
+PASS: The button to press exists
+PASS: ALL ROOMS again clears every tick
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: Resetting all rooms takes away every room's progress
+PASS: Every room is reset once, and the rooftop gets a new tower
+PASS: Finished chapters stay finished, and the page says how many rooms were reset
+PASS: The button to press exists
+PASS: The < arrow turns back to page 1
+PASS: The button to press exists
+PASS: The button to press exists
+PASS: Closed and opened again, the menu is back on page 1 with nothing ticked
+PASS: Resetting the room you are standing in works there and then
+INFO: Rooms reset during the run: 13
