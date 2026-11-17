@@ -211,7 +211,8 @@ namespace AfterHours
             rooms[room].accepted=0;
             if(room==1&&ocean)ocean.ResetRoom();
             if(room==3&&kitchen)kitchen.ResetRoom();
-            if(room==5&&rooftop&&rooftop.tower){rooftop.tower.Prepare();rooftop.tower.NewTower(false);}
+            // Preparing a tower that was never set up already stacks one; only stack again if it didn't.
+            if(room==5&&rooftop&&rooftop.tower){var tower=rooftop.tower;int towers=tower.Towers;tower.Prepare();if(tower.Towers==towers)tower.NewTower(false);}
             if(room==Shredder.Room&&shredder)shredder.ResetRoom();
             if(room==BoxBlast.Room&&boxBlast)boxBlast.ResetRoom();
             if(room==RageRoom.Room&&rage)rage.ResetComputer();

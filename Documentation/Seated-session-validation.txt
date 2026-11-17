@@ -1,4 +1,4 @@
-2026-11-10 03:57:48Z
+2026-11-17 17:19:55Z
 Passed
 Pointer and keyboard input for the comfort menu, turning, walking and resume; partial-progress fixtures for storage; actual scene reload.
 PASS: Fresh profile starts with tracked standing height
@@ -7,14 +7,14 @@ PASS: A returning player sees no first-visit guide
 PASS: Menu key opens the menu at arm's length (0.67 m)
 PASS: The lobby menu hides LOBBY and TRY AGAIN
 PASS: The menu offers GENTLE AMBUSH (off) and DARK OPENING (on)
-PASS: Every one of the menu's 15 buttons is within 39 degrees of straight ahead
+PASS: Every one of the menu's 16 buttons is within 39 degrees of straight ahead
 PASS: The game carries its music: the theme and the quiet piece, on the director rather than in a room
 PASS: Every chapter has its piece: Slow tide, Quiet hours, Paper lanterns, Night window, Quiet hours, Overtime, Night window; the lobby and rooftop the theme
 PASS: The rage room's quiet, once everything is broken, has Slow tide in place of the beat
 PASS: No room plays music of its own, so two pieces never overlap
 PASS: Music plays in the lobby (the theme), and the menu offers MUSIC (on)
 PASS: MUSIC fades the music out and pauses it, and the choice is stored
-PASS: Only doors, CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs
+PASS: Only doors (and their RESET ROOM), CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs
 PASS: Menu SEATED VIEW enables seated view at 1.65 m
 PASS: Menu SEATED HEIGHT changes eye height to 1.85 m
 PASS: The open menu moves up with the new eye height
@@ -33,7 +33,7 @@ PASS: Seated teleports face the pointed direction, unless the point is underfoot
 PASS: Menu MOVEMENT switches walking back on
 PASS: No vignette while standing still
 PASS: The comfort vignette shows while walking and clears after stopping
-PASS: The menu opens near the entrance wall (fitted at 0.59 scale); the next press must reach it
+PASS: The menu opens near the entrance wall (fitted at 0.58 scale); the next press must reach it
 PASS: Menu COMFORT VIGNETTE switches the vignette off
 PASS: Travel closes the menu
 PASS: Chapter menus offer LOBBY and TRY AGAIN and name the room
@@ -58,6 +58,7 @@ PASS: A fresh install takes the checkpoint, progress and settings back from the 
 PASS: An install with progress of its own is never overwritten
 PASS: A damaged backup copy is ignored
 PASS: Only the game's own saved values are ever restored
+PASS: Bought add-ons are never taken from the backup copy: only the store says what was bought
 PASS: The saved values are back as they were
 PASS: Seated mode and eye-height preference survive reload
 PASS: Vignette preference survives reload
@@ -67,7 +68,7 @@ PASS: Delivered box restores exactly once
 PASS: Sorted note restores exactly once
 PASS: Kitchen help and partial coffee restore
 PASS: A shredded résumé restores exactly once, and the paper stays in the bin and on the floor
-PASS: Each page leaves at least 100 scraps (1140 in all)
+PASS: Each page leaves at least 100 scraps (1245 in all)
 PASS: The scraps lie right across the room, on the desk, on the shredder's top and on the window sill (11.1 by 14.4 m)
 PASS: Scraps have no colliders, and each set is two draws
 PASS: The résumé room carries its confetti: a burst, a shower and a pop sound

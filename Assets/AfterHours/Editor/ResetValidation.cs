@@ -120,7 +120,10 @@ namespace AfterHours.Editor
             var shown=M.GetComponentsInChildren<Interactable>(true).Where(b=>b.gameObject.activeInHierarchy).ToArray();
             float widest=shown.Max(b=>Vector3.Angle(Vector3.ProjectOnPlane(P.Head.forward,Vector3.up),b.transform.position-P.Head.position));
             Check(widest<42f,"Every button on page 1 and the arrow are within "+widest.ToString("0")+" degrees of straight ahead");
+            // Pressing > turns the head toward the tab; look straight ahead again so page 2 is measured the same way as page 1.
+            var ahead=P.Head.rotation;
             foreach(var t in Turn(1))yield return t;
+            P.Head.rotation=ahead;
             Check(M.Page==1&&!M.pages[0].activeSelf&&M.pages[1].activeSelf&&M.pages[1].transform.localScale==Vector3.one,"The > arrow turns to page 2, which ends up lying flat");
             Check(back.gameObject.activeInHierarchy&&!forward.gameObject.activeInHierarchy,"On page 2 only the < arrow shows");
             shown=M.GetComponentsInChildren<Interactable>(true).Where(b=>b.gameObject.activeInHierarchy).ToArray();
