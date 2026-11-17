@@ -64,7 +64,7 @@ namespace AfterHours.Editor
             Check(D.menu.gentle&&D.menu.dark&&D.menu.gentle.text.Contains("GENTLE AMBUSH")&&D.menu.gentle.text.Contains("OFF")&&D.menu.dark.text.Contains("DARK OPENING")&&D.menu.dark.text.Contains("ON")&&D.menu.Button(ActionKind.GentleAmbush)&&D.menu.Button(ActionKind.DarkOpening),"The menu offers GENTLE AMBUSH (off) and DARK OPENING (on)");
             var panelButtons=D.menu.GetComponentsInChildren<Interactable>(true).Where(b=>b.gameObject.activeInHierarchy).ToArray();
             float widest=panelButtons.Max(b=>Vector3.Angle(Vector3.ProjectOnPlane(P.Head.forward,Vector3.up),b.transform.position-P.Head.position));
-            Check(panelButtons.Length==15&&widest<42f,"Every one of the menu's "+panelButtons.Length+" buttons is within "+widest.ToString("0")+" degrees of straight ahead");
+            Check(panelButtons.Length==16&&widest<42f,"Every one of the menu's "+panelButtons.Length+" buttons is within "+widest.ToString("0")+" degrees of straight ahead");
             // Calm background music: the theme in the lobby, a quieter piece in the chapters, and MUSIC in the menu to switch it off.
             // The suites step a paused editor, and a paused editor plays no audio, so a playing piece is checked by its clip and its level.
             var music=D.music;
@@ -75,7 +75,7 @@ namespace AfterHours.Editor
             Check(music.on&&music.source.clip==music.theme&&music.Level>Music.Volume*.9f&&D.menu.music&&D.menu.music.text.Contains("MUSIC")&&D.menu.music.text.Contains("ON")&&D.menu.Button(ActionKind.Music),"Music plays in the lobby (the theme), and the menu offers MUSIC (on)");
             foreach(var t in Click(ActionKind.Music))yield return t;yield return Music.FadeSeconds+.3f;
             Check(!music.on&&music.Level==0&&music.Playing==null&&D.menu.music.text.Contains("OFF")&&PlayerPrefs.GetInt(Music.Key,1)==0,"MUSIC fades the music out and pauses it, and the choice is stored");
-            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.MirrorTap||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext||x.kind==ActionKind.WardrobeBuy),"Only doors, CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs");
+            Check(D.rooms[0].root.GetComponentsInChildren<Interactable>(true).All(x=>x.kind==ActionKind.Travel||x.kind==ActionKind.Resume||x.kind==ActionKind.IntroNext||x.kind==ActionKind.IntroSkip||x.kind==ActionKind.GoToMirror||x.kind==ActionKind.MirrorTap||x.kind==ActionKind.WardrobePrev||x.kind==ActionKind.WardrobeNext||x.kind==ActionKind.WardrobeBuy||x.kind==ActionKind.ResetRoomAt),"Only doors (and their RESET ROOM), CONTINUE, the mirror (and its glass), its wardrobe (and BUY) and the first-visit guide remain as lobby signs");
             foreach(var t in Click(ActionKind.SeatedMode))yield return t;
             Check(P.seatedMode&&Mathf.Abs(EyeHeight-1.65f)<.03f,"Menu SEATED VIEW enables seated view at 1.65 m");
             foreach(var t in Click(ActionKind.SeatedHeight))yield return t;

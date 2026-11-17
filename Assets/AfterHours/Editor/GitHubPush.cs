@@ -19,8 +19,8 @@ namespace AfterHours.Editor
     {
         const string MessageFile="Temp/AfterHours-commit-message.txt",IdentityFile="Temp/AfterHours-git-identity.txt",LogFile="Logs/AfterHours-git-push.txt";
         const string NameKey="AfterHours.GitName",EmailKey="AfterHours.GitEmail";
-        // Files that hold this computer's network address, access tokens or session ids. A push stops if any is staged.
-        static readonly string[] NeverCommit={"Assets/Resources/DevAgentSettings.asset","Assets/#Meta/session_id.id"};
+        // Files that hold this computer's network address, access tokens, session ids or local secrets (.env). A push stops if any is staged.
+        static readonly string[] NeverCommit={"Assets/Resources/DevAgentSettings.asset","Assets/#Meta/session_id.id",".env"};
         static volatile bool running;static volatile string status="";
         static readonly object sync=new object();static readonly StringBuilder log=new StringBuilder();
         string message="",authorName="",authorEmail="";Vector2 messageScroll,logScroll;

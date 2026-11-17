@@ -45,6 +45,7 @@ namespace AfterHours.Editor
             director.menuOpen=SoundBank.Get("SFX - Menu open");director.menuClose=SoundBank.Get("SFX - Menu close");director.teleport=SoundBank.Get("SFX - Teleport");director.turn=SoundBank.Get("SFX - Turn");
             director.row=SoundBank.Get("SFX - Row");director.spill=SoundBank.Get("SFX - Spill");director.pour=SoundBank.Get("SFX - Pour");
             director.shred=SoundBank.Get("SFX - Shred");director.unlock=SoundBank.Get("SFX - Unlock");
+            director.pageTurn=SoundBank.Get("SFX - Page turn");
             Lighting();ConfigureQuest();
             foreach(var room in director.rooms)CombineRoom(room.root,director);
             CheckMovableObjects(director);

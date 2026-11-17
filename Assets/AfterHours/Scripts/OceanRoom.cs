@@ -118,6 +118,11 @@ namespace AfterHours
         }
         void UpdateSign(){if(distance)distance.text=strokes>=requiredStrokes?"YOU MADE IT TO THE SHORE":(requiredStrokes-strokes)+"   SMALL STROKES TO SHORE";}
         public void RestoreProgress(int count){Initialize();strokes=Mathf.Clamp(count,0,requiredStrokes);horizon.localPosition=start+Vector3.back*(strokes*.9f);UpdateSign();}
-        public void ResetRoom(){StopAllCoroutines();rowing=false;strokes=0;horizon.localPosition=start;UpdateSign();director.player.StartCoroutine(director.player.Fade(0,.1f));}
+        public void ResetRoom()
+        {
+            Initialize();StopAllCoroutines();rowing=false;strokes=0;horizon.localPosition=start;UpdateSign();
+            // Only the room the player is in can have left the view faded (mid-stroke). A reset from the lobby door leaves the view alone.
+            if(director&&director.currentRoom==1)director.player.StartCoroutine(director.player.Fade(0,.1f));
+        }
     }
 }

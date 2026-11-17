@@ -1067,6 +1067,21 @@ def sfx_tower_fall():
     return fade_edges(normalise(reverb(x, 0.6, 0.12), -4))
 
 
+def sfx_page_turn():
+    # A binder page turned over its rings: a dry rustle as the sheet lifts, a short papery flutter as it swings, a soft slap as it lands,
+    # and a faint metal tick from the curly rings.
+    n = int(0.55 * SR); tt = np.arange(n) / SR
+    lift = bandpass(white(n), 1500, 7000, 2) * env_adsr(n, 0.06, 0.12, 2) * (tt < 0.22) * 0.35
+    swing = sweep_noise(0.55, 600, 3200, 900, 0.7) * np.sin(np.clip((tt - 0.08) / 0.3, 0, 1) * np.pi) ** 2 * 0.5
+    flutter = clicks(0.55, 18, 2500, 8000, 0.6) * env_adsr(n, 0.1, 0.25, 2) * 0.25
+    slap = np.zeros(n); i = int(0.36 * SR); m = n - i
+    slap[i:] = (bandpass(white(m), 400, 3500, 2) * decay(m, 0.02) * 0.7 + thump(m, 160, 0.015) * 0.3)
+    ring = np.zeros(n); j = int(0.04 * SR); r = n - j
+    ring[j:] = np.sin(2 * np.pi * 3900 * np.arange(r) / SR) * decay(r, 0.03) * 0.05
+    x = lift + swing + flutter + slap + ring
+    return fade_edges(normalise(reverb(x, 0.3, 0.08), -9))
+
+
 def main(folder):
     os.makedirs(folder, exist_ok=True)
     items = {
@@ -1094,6 +1109,7 @@ def main(folder):
         'Music - Overtime': music_overtime, 'SFX - Paper jam': sfx_paper_jam,
         'Ambience - Records room': amb_recordsroom, 'SFX - Slash': sfx_slash, 'SFX - Web cut': sfx_web_cut, 'SFX - Web grow': sfx_web_grow, 'SFX - Fire': sfx_fire, 'SFX - Hiss': sfx_hiss,
         'SFX - Block knock': sfx_block_knock, 'SFX - Tower fall': sfx_tower_fall,
+        'SFX - Page turn': sfx_page_turn,
     }
     for name, make in items.items():
         x = make(); write(folder, name, x)

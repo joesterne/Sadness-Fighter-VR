@@ -160,36 +160,110 @@ namespace AfterHours
             var progress=Art.Text("Room progress","TAKE YOUR TIME",at+Vector3.down*.93f*spacing,.15f*scale,new Color(.9f,.66f,.38f),width);progress.transform.localRotation=turn;d.rooms[room].progress=progress;
         }
         // Comfort, turning and room options in one panel that the menu button opens. It belongs to the player, not a room.
+        // The panel is a paper binder: a navy cover board, curly metal rings along the top, and white pages that turn over the rings.
+        // Page 1 holds the comfort options; page 2 resets rooms. The tabs on either side (< and >) turn the page.
+        const float RingLine=.335f;
         static void Menu()
         {
             var root=Art.Group("Comfort menu",Vector3.zero,d.player.transform);
             var menu=root.gameObject.AddComponent<ComfortMenu>();menu.director=d;d.menu=menu;d.player.menu=menu;
-            // Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view. The bottom row is as low
-            // as it can go (42 degrees below straight ahead), so the panel grows upward: the turning buttons and FACE FORWARD sit above eye level.
-            Art.Box("Menu panel",new Vector3(0,-.068f,.014f),new Vector3(.53f,.806f,.012f),Art.Ink,true,root,.006f);
-            Art.Text("Menu title","AFTER HOURS  /  MENU",new Vector3(-.05f,.307f,-.002f),.019f,muted,.36f,root);
-            menu.status=Art.Text("Menu room","THE LOBBY",new Vector3(-.05f,.275f,-.002f),.027f,ivory,.36f,root);
-            MenuButton(root,"Menu close","CLOSE",.19f,.29f,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
-            MenuButton(root,"Menu turn left","< TURN",-.17f,.21f,Art.Teal,ActionKind.TurnLeft,.12f);
-            MenuButton(root,"Menu turn around","TURN AROUND",0,.21f,Art.Teal,ActionKind.TurnAround,.2f);
-            MenuButton(root,"Menu turn right","TURN >",.17f,.21f,Art.Teal,ActionKind.TurnRight,.12f);
-            MenuButton(root,"Menu face forward","FACE FORWARD",0,.125f,Art.Teal,ActionKind.FaceForward,.2f);
-            menu.seated=MenuButton(root,"Menu seated view","SEATED VIEW",-.12f,.04f,Art.Navy,ActionKind.SeatedMode);
-            menu.height=MenuButton(root,"Menu seated height","SEATED HEIGHT",.12f,.04f,Art.Navy,ActionKind.SeatedHeight);
-            menu.walking=MenuButton(root,"Menu movement","MOVEMENT",-.12f,-.045f,Art.Navy,ActionKind.SmoothMotion);
-            menu.vignette=MenuButton(root,"Menu comfort vignette","COMFORT VIGNETTE",.12f,-.045f,Art.Navy,ActionKind.Vignette);
-            menu.crowd=MenuButton(root,"Menu kitchen crowd","KITCHEN CROWD",-.12f,-.13f,Art.Navy,ActionKind.GentleAudience);
-            menu.music=MenuButton(root,"Menu music","MUSIC",.12f,-.13f,Art.Navy,ActionKind.Music);
-            menu.clean=MenuButton(root,"Menu clean mode","CLEAN MODE",-.12f,-.215f,Art.Navy,ActionKind.CleanMode);
-            menu.night=MenuButton(root,"Menu ocean at night","OCEAN AT NIGHT",.12f,-.215f,Art.Navy,ActionKind.NightOcean);
-            menu.gentle=MenuButton(root,"Menu gentle ambush","GENTLE AMBUSH",-.12f,-.30f,Art.Navy,ActionKind.GentleAmbush);
-            menu.dark=MenuButton(root,"Menu dark opening","DARK OPENING",.12f,-.30f,Art.Navy,ActionKind.DarkOpening);
-            MenuButton(root,"Menu try again","TRY AGAIN",-.12f,-.385f,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=root.Find("Menu try again").gameObject;
-            MenuButton(root,"Menu lobby","LOBBY",.12f,-.385f,Art.Teal,ActionKind.Rest);menu.lobby=root.Find("Menu lobby").gameObject;
-            Words(Art.Text("Menu tip","",new Vector3(0,-.433f,-.002f),.016f,muted,.5f,root),"Palm pinch again closes everything.  LOBBY: back to the start.\nTeleports turn you to face where you point.","Menu button again closes everything.  B / Y: lobby.\nRight stick turns; pull it back to turn around.");
+            Color ink=new Color(.1f,.17f,.24f),pencil=new Color(.3f,.37f,.42f);
+            // The cover board behind the pages, a sheet showing beneath the top page, and the rings, none of which turn.
+            Art.Box("Binder cover",new Vector3(0,-.068f,.027f),new Vector3(.56f,.83f,.012f),Art.Navy,true,root,.006f);
+            Art.Box("Binder pages beneath",new Vector3(.003f,-.074f,.0205f),new Vector3(.53f,.806f,.004f),Art.Cream,false,root,.001f);
+            BinderRings(root);
+            var one=BinderPage(root,"Binder page 1",0);var two=BinderPage(root,"Binder page 2",1);
+            menu.pages=new[]{one.gameObject,two.gameObject};
+            // Page 1: comfort options. Two columns, about 44 degrees wide at arm's length, so the whole menu fits a narrower field of view. The bottom row is
+            // as low as it can go (42 degrees below straight ahead), so the panel grows upward: the turning buttons and FACE FORWARD sit above eye level.
+            // Coordinates are the panel's; OnPage() moves them onto the page, whose pivot is on the ring line.
+            Art.Text("Menu title","AFTER HOURS  /  MENU",OnPage(-.05f,.307f,-.002f),.019f,pencil,.36f,one);
+            menu.status=Art.Text("Menu room","THE LOBBY",OnPage(-.05f,.275f,-.002f),.027f,ink,.36f,one);
+            MenuButton(one,"Menu close","CLOSE",.19f,.29f-RingLine,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
+            MenuButton(one,"Menu turn left","< TURN",-.17f,.21f-RingLine,Art.Teal,ActionKind.TurnLeft,.12f);
+            MenuButton(one,"Menu turn around","TURN AROUND",0,.21f-RingLine,Art.Teal,ActionKind.TurnAround,.2f);
+            MenuButton(one,"Menu turn right","TURN >",.17f,.21f-RingLine,Art.Teal,ActionKind.TurnRight,.12f);
+            MenuButton(one,"Menu face forward","FACE FORWARD",0,.125f-RingLine,Art.Teal,ActionKind.FaceForward,.2f);
+            menu.seated=MenuButton(one,"Menu seated view","SEATED VIEW",-.12f,.04f-RingLine,Art.Navy,ActionKind.SeatedMode);
+            menu.height=MenuButton(one,"Menu seated height","SEATED HEIGHT",.12f,.04f-RingLine,Art.Navy,ActionKind.SeatedHeight);
+            menu.walking=MenuButton(one,"Menu movement","MOVEMENT",-.12f,-.045f-RingLine,Art.Navy,ActionKind.SmoothMotion);
+            menu.vignette=MenuButton(one,"Menu comfort vignette","COMFORT VIGNETTE",.12f,-.045f-RingLine,Art.Navy,ActionKind.Vignette);
+            menu.crowd=MenuButton(one,"Menu kitchen crowd","KITCHEN CROWD",-.12f,-.13f-RingLine,Art.Navy,ActionKind.GentleAudience);
+            menu.music=MenuButton(one,"Menu music","MUSIC",.12f,-.13f-RingLine,Art.Navy,ActionKind.Music);
+            menu.clean=MenuButton(one,"Menu clean mode","CLEAN MODE",-.12f,-.215f-RingLine,Art.Navy,ActionKind.CleanMode);
+            menu.night=MenuButton(one,"Menu ocean at night","OCEAN AT NIGHT",.12f,-.215f-RingLine,Art.Navy,ActionKind.NightOcean);
+            menu.gentle=MenuButton(one,"Menu gentle ambush","GENTLE AMBUSH",-.12f,-.30f-RingLine,Art.Navy,ActionKind.GentleAmbush);
+            menu.dark=MenuButton(one,"Menu dark opening","DARK OPENING",.12f,-.30f-RingLine,Art.Navy,ActionKind.DarkOpening);
+            MenuButton(one,"Menu try again","TRY AGAIN",-.12f,-.385f-RingLine,Art.Navy,ActionKind.ResetRoom);menu.tryAgain=one.Find("Menu try again").gameObject;
+            MenuButton(one,"Menu lobby","LOBBY",.12f,-.385f-RingLine,Art.Teal,ActionKind.Rest);menu.lobby=one.Find("Menu lobby").gameObject;
+            Words(Art.Text("Menu tip","",OnPage(0,-.433f,-.002f),.016f,pencil,.5f,one),"Palm pinch again closes everything.  LOBBY: back to the start.\nTeleports turn you to face where you point.","Menu button again closes everything.  B / Y: lobby.\nRight stick turns; pull it back to turn around.");
+            // Page 2: put rooms back the way they started. Tick rooms (or ALL ROOMS), then RESET TICKED ROOMS. Finished chapters stay saved.
+            Art.Text("Menu title page 2","AFTER HOURS  /  MENU",OnPage(-.05f,.307f,-.002f),.019f,pencil,.36f,two);
+            Art.Text("Reset heading","RESET ROOMS",OnPage(-.05f,.275f,-.002f),.027f,ink,.36f,two);
+            MenuButton(two,"Menu close page 2","CLOSE",.19f,.29f-RingLine,Art.Coral,ActionKind.CloseMenu,.12f,.055f);
+            Art.Text("Reset intro","Tick the rooms to put back the way they started:\nobjects home, the clowns big again, a whole computer.\nFinished chapters and earned outfits stay saved.",OnPage(0,.205f,-.002f),.0145f,pencil,.48f,two);
+            menu.resetToggles=new TextMeshPro[d.rooms.Length];
+            int[] order={1,2,3,4,6,RageRoom.Room,AmbushRoom.Room,WebRoom.Room,5};
+            for(int i=0;i<order.Length;i++)
+            {
+                int room=order[i];float x=i%2==0?-.12f:.12f,y=.13f-(i/2)*.085f;
+                menu.resetToggles[room]=MenuButton(two,"Reset toggle "+room,d.rooms[room].title.ToUpperInvariant(),x,y-RingLine,Art.Navy,ActionKind.ResetToggle,value:room);
+            }
+            menu.resetAll=MenuButton(two,"Reset toggle all","ALL ROOMS",.12f,.13f-4*.085f-RingLine,Art.Teal,ActionKind.ResetAllToggle);
+            MenuButton(two,"Reset ticked rooms","RESET TICKED ROOMS",0,-.305f-RingLine,Art.Coral,ActionKind.ResetChosen,.465f);
+            menu.resetNote=Art.Text("Reset note","",OnPage(0,-.375f,-.002f),.017f,ink,.48f,two);
+            // The page-turn tabs stand out from either side of the binder, level with its middle, and never turn with the page.
+            MenuButton(root,"Menu page back","<",-.305f,-.068f,Art.Teal,ActionKind.MenuPage,.05f,.16f,-1);
+            MenuButton(root,"Menu page forward",">",.305f,-.068f,Art.Teal,ActionKind.MenuPage,.05f,.16f,1);
             // A panel floating at arm's length should not throw a shadow onto the room.
             foreach(var r in root.GetComponentsInChildren<Renderer>(true)){r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;r.receiveShadows=false;}
-            menu.Refresh();root.gameObject.SetActive(false);
+            menu.ShowPage(0);menu.Refresh();root.gameObject.SetActive(false);
+        }
+        // A panel position moved onto a page, whose pivot is on the ring line.
+        static Vector3 OnPage(float x,float y,float z)=>new Vector3(x,y-RingLine,z);
+        // One sheet of the binder: white paper, a coral margin line and a punched hole under each ring. The sheet and everything on it turn together.
+        static Transform BinderPage(Transform root,string name,int index)
+        {
+            var page=Art.Group(name,new Vector3(0,RingLine,0),root);
+            Art.Box(name+" sheet",OnPage(0,-.068f,.014f),new Vector3(.53f,.806f,.012f),Art.White,true,page,.004f);
+            Art.Box(name+" margin",OnPage(-.236f,-.08f,.0075f),new Vector3(.0025f,.76f,.001f),Art.Coral,false,page,0);
+            var holes=new List<GameObject>();
+            foreach(float x in RingXs)
+            {
+                var hole=Art.Shape("Hole",PrimitiveType.Cylinder,new Vector3(x,-.013f,.0075f),new Vector3(.011f,.0006f,.011f),Art.Ink,false,page,0);
+                hole.transform.localRotation=Quaternion.Euler(90,0,0);holes.Add(hole);
+            }
+            Merge(name+" holes",page,holes,Art.Ink);
+            return page;
+        }
+        static readonly float[] RingXs={-.22f,-.165f,-.11f,-.055f,0,.055f,.11f,.165f,.22f};
+        // Curly rings: each a loop of short metal bars that comes out of the hole in front, arcs over the top edge and goes in at the back,
+        // leaning a little sideways like a coil. All nine are one mesh.
+        static void BinderRings(Transform root)
+        {
+            var bars=new List<GameObject>();const int Steps=8;const float Radius=.019f,Lean=.006f,Wire=.0035f;
+            var centre=new Vector3(0,RingLine-.013f,.014f);
+            foreach(float x in RingXs)
+            {
+                Vector3 Point(int k){float a=Mathf.Lerp(-35,215,k/(float)Steps)*Mathf.Deg2Rad;return centre+new Vector3(x+Mathf.Lerp(-Lean,Lean,k/(float)Steps),Mathf.Sin(a)*Radius,-Mathf.Cos(a)*Radius);}
+                for(int k=0;k<Steps;k++)
+                {
+                    Vector3 a=Point(k),b=Point(k+1);
+                    var bar=Art.Box("Ring wire",(a+b)/2,new Vector3(Wire,Wire,Vector3.Distance(a,b)+Wire*.6f),Art.Metal,false,root,0);
+                    bar.transform.localRotation=Quaternion.LookRotation(b-a,Vector3.up);bars.Add(bar);
+                }
+            }
+            Merge("Binder rings",root,bars,Art.Metal);
+        }
+        // Many small pieces drawn as one mesh, so the binder costs a couple of draws rather than dozens.
+        static GameObject Merge(string name,Transform parent,List<GameObject> parts,Material material)
+        {
+            var combine=parts.Select(p=>new CombineInstance{mesh=p.GetComponent<MeshFilter>().sharedMesh,transform=parent.worldToLocalMatrix*p.transform.localToWorldMatrix}).ToArray();
+            var mesh=new Mesh{name=name+" mesh"};mesh.CombineMeshes(combine,true,true);mesh.RecalculateBounds();
+            foreach(var p in parts)Object.DestroyImmediate(p);
+            var go=new GameObject(name,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(parent,false);
+            go.GetComponent<MeshFilter>().sharedMesh=mesh;go.GetComponent<MeshRenderer>().sharedMaterial=material;
+            return go;
         }
         // Calm background music for the whole game. It belongs to the director, not a room, so it carries on across room changes.
         static void BackgroundMusic()
@@ -210,10 +284,10 @@ namespace AfterHours
         {
             var words=text.gameObject.AddComponent<InputText>();words.hands=hands;words.controllers=controllers;text.text=hands;return text;
         }
-        static TextMeshPro MenuButton(Transform menu,string name,string label,float x,float y,Material color,ActionKind kind,float width=.225f,float height=.072f)
+        static TextMeshPro MenuButton(Transform menu,string name,string label,float x,float y,Material color,ActionKind kind,float width=.225f,float height=.072f,int value=0)
         {
             var group=Art.Group(name,new Vector3(x,y,0),menu);
-            Art.Button(name,label,Vector3.zero,new Vector3(width,height,.018f),color,kind,d,0,group);
+            Art.Button(name,label,Vector3.zero,new Vector3(width,height,.018f),color,kind,d,value,group);
             var text=group.Find(name+" label").GetComponent<TextMeshPro>();text.fontSizeMin=.1f;text.fontSizeMax=.19f;
             return text;
         }
@@ -264,6 +338,13 @@ namespace AfterHours
             Art.Text("Destination",title,new Vector3(0,2.08f,-.06f),.29f,ivory,2.1f);
             Art.Text("Intention",description,new Vector3(0,1.5f,-.07f),.14f,muted,1.95f);
             Art.Button("Enter "+title,"ENTER",new Vector3(0,.95f,-.04f),new Vector3(1.45f,.4f,.15f),accent,ActionKind.Travel,d,destination);
+            // RESET ROOM puts the room behind this door back the way it started. It asks for a second press first (RoomResetButton).
+            if(GameDirector.CanReset(destination))
+            {
+                var reset=Art.Button("Reset "+title,RoomResetButton.Idle,new Vector3(0,.5f,-.04f),new Vector3(.95f,.2f,.1f),Art.Navy,ActionKind.ResetRoomAt,d,destination);
+                var button=reset.AddComponent<RoomResetButton>();button.director=d;button.room=destination;
+                button.label=t.Find("Reset "+title+" label").GetComponent<TextMeshPro>();
+            }
             var threshold=Art.Box("Walk through portal",new Vector3(0,1,-.4f),new Vector3(2,2,.35f),accent,false);Object.DestroyImmediate(threshold.GetComponent<Renderer>());var trigger=threshold.AddComponent<BoxCollider>();trigger.isTrigger=true;var portal=threshold.AddComponent<Portal>();portal.director=d;portal.destination=destination;
             Art.Box("Threshold",new Vector3(0,.012f,-.65f),new Vector3(2.2f,.015f,1.1f),accent,false);
             Art.Root=old;

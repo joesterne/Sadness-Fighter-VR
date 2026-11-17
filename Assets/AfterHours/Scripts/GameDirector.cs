@@ -40,9 +40,16 @@ namespace AfterHours
         public TextMeshPro mirrorLabel;
         public Transform mirrorSpot;
         public AudioClip select, grab, send, place, menuOpen, menuClose, teleport, turn, row, spill, pour, shred, unlock;
+        // The menu's binder: a paper page turned over its rings.
+        public AudioClip pageTurn;
         // The eight chapters. The lobby is 0 and the rooftop, open from the start, is 5.
         public static readonly int[] Chapters={1,2,3,4,6,7,8,9};
         public static bool IsChapter(int room)=>Array.IndexOf(Chapters,room)>=0;
+        // Rooms that can be put back the way they started: the eight chapters and the rooftop. Not the lobby, whose mirror and wardrobe hold no room state.
+        public static readonly int[] Resettable={1,2,3,4,5,6,7,8,9};
+        public static bool CanReset(int room)=>Array.IndexOf(Resettable,room)>=0;
+        // How many rooms have been reset since the scene loaded, for the tests.
+        [NonSerialized] public int RoomResets;
         const float RestForBeanie=20;
         float restTime, lastSay=-10;
         readonly Queue<string> news=new Queue<string>();
@@ -185,12 +192,44 @@ namespace AfterHours
             foreach(int i in Chapters)if(rooms[i].progress)rooms[i].progress.text=rooms[i].complete?"A LITTLE MORE ROOM TO BREATHE":(i==2||i==4)?rooms[i].accepted+" / "+rooms[i].total+"   GIVEN A PLACE":i==Shredder.Room?rooms[i].accepted+" / "+rooms[i].total+"   LET GO":i==RageRoom.Room?rooms[i].accepted+" / "+rooms[i].total+"   BROKEN":i==AmbushRoom.Room?rooms[i].accepted+" / "+rooms[i].total+"   NAMED":i==WebRoom.Room?rooms[i].accepted+" / "+rooms[i].total+"   CUT AWAY":"TAKE YOUR TIME";
             if(ending)ending.text=CompletedCount==Chapters.Length?"You are more\nthan your job.":"You can rest\nbefore you are ready.";
         }
+        // TRY AGAIN in the menu: the room the player is standing in.
         public void RestartCurrentRoom()
         {
             if(!IsChapter(currentRoom))return;
-            player.ReleaseAll();foreach(var g in rooms[currentRoom].root.GetComponentsInChildren<Grabbable>(true))g.ResetObject();
-            foreach(var z in rooms[currentRoom].root.GetComponentsInChildren<DropZone>(true))z.ResetZone();
-            rooms[currentRoom].accepted=0;if(currentRoom==1&&ocean)ocean.ResetRoom();if(currentRoom==3&&kitchen)kitchen.ResetRoom();if(currentRoom==Shredder.Room&&shredder)shredder.ResetRoom();if(currentRoom==BoxBlast.Room&&boxBlast)boxBlast.ResetRoom();if(currentRoom==RageRoom.Room&&rage)rage.ResetComputer();if(currentRoom==AmbushRoom.Room&&ambush)ambush.ResetRoom();if(currentRoom==WebRoom.Room&&web)web.ResetRoom();RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
+            ResetRoom(currentRoom);RefreshProgress();SaveCheckpoint();Say("This room is ready for another try. Your completed chapters stay saved.");
+        }
+        // Puts one room back the way it started, whether the player is in it or not: every object home, every tray and drop zone empty, and the
+        // room's own state reset (the clowns big again in the ambush, a whole computer in the rage room, a new tower on the roof, and so on).
+        // Finished chapters stay finished, and so does what has been earned (wardrobe pieces, rage-room tools). Saving is left to the caller.
+        public bool ResetRoom(int room)
+        {
+            if(!CanReset(room)||rooms==null||room>=rooms.Length||!rooms[room].root)return false;
+            var root=rooms[room].root;
+            if(room==currentRoom&&player)player.ReleaseAll();
+            foreach(var g in root.GetComponentsInChildren<Grabbable>(true))g.ResetObject();
+            foreach(var z in root.GetComponentsInChildren<DropZone>(true))z.ResetZone();
+            rooms[room].accepted=0;
+            if(room==1&&ocean)ocean.ResetRoom();
+            if(room==3&&kitchen)kitchen.ResetRoom();
+            if(room==5&&rooftop&&rooftop.tower){rooftop.tower.Prepare();rooftop.tower.NewTower(false);}
+            if(room==Shredder.Room&&shredder)shredder.ResetRoom();
+            if(room==BoxBlast.Room&&boxBlast)boxBlast.ResetRoom();
+            if(room==RageRoom.Room&&rage)rage.ResetComputer();
+            if(room==AmbushRoom.Room&&ambush)ambush.ResetRoom();
+            if(room==WebRoom.Room&&web)web.ResetRoom();
+            RoomResets++;
+            return true;
+        }
+        // The door buttons and the menu's reset page: one or more rooms at once, then one save and one message.
+        public int ResetRooms(IEnumerable<int> list)
+        {
+            var done=new List<string>();
+            foreach(int room in list)if(ResetRoom(room))done.Add(rooms[room].title);
+            if(done.Count==0)return 0;
+            RefreshProgress();SaveCheckpoint();PlayUi(acknowledge,.45f);
+            string which=done.Count==Resettable.Length?"Every room is":done.Count==1?done[0]+" is":string.Join(", ",done.GetRange(0,done.Count-1))+" and "+done[done.Count-1]+" are";
+            Say(which+" back the way it started. Your finished chapters stay saved.");
+            return done.Count;
         }
         public void RefreshComfort(){if(menu)menu.Refresh();}
         // Clean mode: every sign that only guides or reassures goes, along with spoken lines and the first-visit guide.

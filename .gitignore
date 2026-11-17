@@ -132,3 +132,9 @@ UpgradeLog*.htm
 # Unity's crash-recovery copies of open scenes. Local only.
 /[Aa]ssets/_Recovery/
 /[Aa]ssets/_Recovery.meta
+
+# Local secrets (the release key password and anything else private). The repository is public: never commit these.
+# .env.example lists the names with placeholder values.
+.env
+.env.*
+!.env.example

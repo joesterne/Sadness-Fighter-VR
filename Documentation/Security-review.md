@@ -38,3 +38,12 @@ nothing to fix. Normals are set per corner and `RecalculateNormals` is correctly
 shadow-map resolution and the sun's shadow type. `Knock` guards `contactCount`.
 
 Outside the repository, the store-art generator (`make_store_art.py` in the project files) had three unused variables, and they're now tidied.
+
+## Local secrets in .env (17 November 2026)
+
+At Joe's request every local secret now lives in one file, `.env` at the project root, which `.gitignore` excludes (`.env` and `.env.*`, except
+`.env.example`). The only secret the project uses is the release key's password: `ReleaseSigning` reads it as `AFTERHOURS_KEY_PASSWORD` (through
+`Editor/DotEnv.cs`; a real environment variable wins over the file), and creating a key writes it there. A password still in the older
+`UserSettings/AfterHours-release-key.txt` is copied into `.env` the first time it is needed; the text file is left for Joe to delete once `.env`
+is backed up. `.env.example` holds placeholder names only. The push window refuses to commit `.env` even if `.gitignore` changes. No secret is
+tracked in git: the same history search as above (keystores, key files, `.env`, tokens) finds nothing.
